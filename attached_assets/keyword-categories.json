@@ -4,6 +4,9 @@
     "Combat Systems": {
       "description": "Types of combat mechanics used in the game."
     },
+    "Shooter Types": {
+      "description": "Mechanics specific to shooter games."
+    },
     "Combat Environments": {
       "description": "The types of environments where combat takes place."
     },
