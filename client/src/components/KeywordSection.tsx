@@ -5,7 +5,8 @@ import { SelectedFilters } from "./SelectedFilters";
 import { useFilters } from "../context/FilterContext";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import keywordCategories from "../assets/keyword-categories.json";
-import { Gamepad2, Globe, Paintbrush } from "lucide-react";
+import { Gamepad2, Globe, Paintbrush, Search, X } from "lucide-react";
+import SearchButton from "./SearchButton";
 
 interface KeywordItem {
   id: number;
@@ -29,6 +30,7 @@ export const KeywordSection: React.FC = () => {
   // Category for filter context
   const category = 'Keywords';
   const [selectedMainCategory, setSelectedMainCategory] = useState<MainCategory | null>(null);
+  const { searchGames, selectedFilters, isLoading, clearAllFilters } = useFilters();
 
   // Define the three main category cards
   const mainCategories: CategoryCard[] = [
@@ -70,11 +72,51 @@ export const KeywordSection: React.FC = () => {
     return (topKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
   };
 
+  const handleSearch = () => {
+    if (selectedFilters.length > 0) {
+      searchGames();
+    }
+  };
+
   return (
     <div className="keyword-section w-full bg-white rounded-lg shadow-md overflow-hidden">
       <div className="keyword-section-header bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4">
-        <h3 className="text-xl font-semibold">Game Keywords</h3>
-        <p className="text-white/80 text-sm mt-1">Select keywords to find games matching your interests</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-semibold">Game Keywords</h3>
+            <p className="text-white/80 text-sm mt-1">Select keywords to find games matching your interests</p>
+          </div>
+          <div className="flex gap-2">
+            <button 
+              className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded text-sm font-medium flex items-center gap-1"
+              onClick={clearAllFilters}
+            >
+              <X className="w-4 h-4" />
+              Clear All
+            </button>
+            
+            <button 
+              className="px-3 py-1.5 bg-white text-indigo-700 hover:bg-indigo-50 rounded text-sm font-medium flex items-center gap-1"
+              onClick={handleSearch}
+              disabled={selectedFilters.length === 0 || isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <Search className="w-4 h-4" />
+                  Search
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
       
       <div className="selected-tags-container bg-gray-50 p-4 border-b border-gray-200">

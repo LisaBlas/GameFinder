@@ -1,5 +1,4 @@
-import React from 'react';
-import Header from '../components/Header';
+import React, { useState } from 'react';
 import Footer from '../components/Footer';
 import FilterSidebar from '../components/FilterSidebar';
 import SearchResults from '../components/SearchResults';
@@ -11,12 +10,15 @@ import { useFilters } from '../context/FilterContext';
 const HomeContent: React.FC = () => {
   const { gameResults, isLoading } = useFilters();
   const hasResults = gameResults.length > 0 || isLoading;
+  const [filterSidebarCollapsed, setFilterSidebarCollapsed] = useState(false);
   
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
       <main className="flex-1 flex flex-col md:flex-row relative">
-        <FilterSidebar />
+        <FilterSidebar 
+          collapsed={filterSidebarCollapsed} 
+          onToggleCollapse={() => setFilterSidebarCollapsed(!filterSidebarCollapsed)} 
+        />
         
         {/* Keywords section - always visible but with different sizing based on search state */}
         <div className={`flex-1 transition-all duration-300 ${hasResults ? 'md:min-h-[30vh]' : 'md:min-h-[80vh]'}`}>
