@@ -1,84 +1,60 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
-    --background: 222.2 47.4% 11.2%;
-    --foreground: 210 40% 98%;
-    
-    --primary: 262 83.3% 57.8%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
-    
-    --card: 222.2 47.4% 15.2%;
-    --card-foreground: 210 40% 98%;
-    
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 262 83.3% 57.8%;
-    
-    --muted: 223 47% 20%;
-    --muted-foreground: 215 20.2% 65.1%;
-    
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    
-    --popover: 222.2 47.4% 15.2%;
-    --popover-foreground: 210 40% 98%;
-    
-    --destructive: 0 62.8% 30.6%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
   }
-  
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+ 
+@layer base {
   * {
     @apply border-border;
   }
-  
   body {
-    @apply font-sans antialiased bg-slate-900 text-slate-200;
+    @apply bg-background text-foreground;
   }
-}
-
-/* Filter component styles */
-.filter-pill {
-  @apply cursor-pointer px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm transition-colors duration-200 flex items-center gap-1.5;
-}
-
-.filter-pill.active {
-  @apply bg-primary-600 hover:bg-primary-700 text-white;
-}
-
-.filter-pill.is-kid {
-  @apply ml-4 text-xs;
-}
-
-.filter-caret {
-  @apply transition-transform duration-200;
-}
-
-.filter-caret.expanded {
-  @apply rotate-180;
-}
-
-/* Filter category styles */
-.filter-category {
-  @apply bg-slate-750 border border-slate-700 rounded-lg overflow-hidden;
-}
-
-.filter-category-header {
-  @apply flex items-center justify-between p-3 cursor-pointer hover:bg-slate-700/50 transition-colors duration-200;
-}
-
-.filter-category-header.expanded .caret {
-  @apply rotate-180;
-}
-
-.filter-category-content {
-  @apply p-3 border-t border-slate-700 bg-slate-800/50;
-}
-
-.caret {
-  @apply transition-transform duration-200;
 }

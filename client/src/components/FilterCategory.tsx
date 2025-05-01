@@ -32,7 +32,7 @@ export const FilterCategory: React.FC<FilterCategoryProps> = ({title, children})
         className={`filter-category-header ${expand ? 'expanded' : ''}`}
         onClick={handleClick}
       >
-        <h3 className="font-medium text-white">{title.replaceAll('_', ' ').charAt(0).toUpperCase() + title.replaceAll('_', ' ').slice(1).toLowerCase().replace(' and ', ' & ')}</h3>
+        <h3>{title.replace(/_/g, ' ').charAt(0).toUpperCase() + title.replace(/_/g, ' ').slice(1).toLowerCase().replace(' and ', ' & ')}</h3>
         <span className={`caret ${expand ? 'expanded' : ''}`}>
           <RxCaretDown />
         </span>

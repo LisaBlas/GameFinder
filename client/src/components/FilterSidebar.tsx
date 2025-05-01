@@ -1,7 +1,7 @@
 import React from 'react';
 import { FilterCategory } from './FilterCategory';
 import { Filter } from './Filter';
-import SelectedFilters from './SelectedFilters';
+import { SelectedFilters } from './SelectedFilters';
 import SearchButton from './SearchButton';
 import { useFilters } from '../context/FilterContext';
 import filterData from '../lib/filters';

@@ -1,68 +1,99 @@
-// Simple in-memory storage for tokens and search history
-// In a production environment, this would be backed by a database
+import { users, type User, type InsertUser, tokens, type Token, type InsertToken, searches, type Search, type InsertSearch } from "@shared/schema";
 
-interface Token {
-  access_token: string;
-  expires_in: number;
-  expires_at: Date;
-  token_type: string;
-}
+// modify the interface with any CRUD methods
+// you might need
 
-interface SearchHistory {
-  id?: number;
-  timestamp: Date;
-  filters: any;
-  results_count: number;
-}
-
-class Storage {
-  private tokens: Token[] = [];
-  private searches: SearchHistory[] = [];
-  private searchIdCounter = 1;
-
+export interface IStorage {
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  
   // Token management
-  async saveToken(token: Token): Promise<void> {
-    this.tokens.push(token);
-    
-    // Keep only the most recent tokens (max 10)
-    if (this.tokens.length > 10) {
-      this.tokens = this.tokens.slice(-10);
-    }
+  getLatestToken(): Promise<Token | undefined>;
+  saveToken(token: InsertToken): Promise<Token>;
+  
+  // Search history
+  saveSearch(search: InsertSearch): Promise<Search>;
+  getRecentSearches(limit?: number): Promise<Search[]>;
+}
+
+export class MemStorage implements IStorage {
+  private users: Map<number, User>;
+  private tokenStorage: Token[];
+  private searches: Search[];
+  userCurrentId: number;
+  tokenCurrentId: number;
+  searchCurrentId: number;
+
+  constructor() {
+    this.users = new Map();
+    this.tokenStorage = [];
+    this.searches = [];
+    this.userCurrentId = 1;
+    this.tokenCurrentId = 1;
+    this.searchCurrentId = 1;
   }
 
-  async getLatestToken(): Promise<Token | null> {
-    if (this.tokens.length === 0) {
-      return null;
-    }
-    
-    // Return the most recent token
-    return this.tokens[this.tokens.length - 1];
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
   }
 
-  // Search history management
-  async saveSearch(searchData: Omit<SearchHistory, 'id' | 'timestamp'>): Promise<SearchHistory> {
-    const newSearch: SearchHistory = {
-      id: this.searchIdCounter++,
-      timestamp: new Date(),
-      ...searchData
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.username === username,
+    );
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.userCurrentId++;
+    const user: User = { ...insertUser, id };
+    this.users.set(id, user);
+    return user;
+  }
+  
+  async getLatestToken(): Promise<Token | undefined> {
+    // Return the most recent token (if any)
+    if (this.tokenStorage.length === 0) return undefined;
+    
+    return this.tokenStorage[this.tokenStorage.length - 1];
+  }
+  
+  async saveToken(token: InsertToken): Promise<Token> {
+    const id = this.tokenCurrentId++;
+    const newToken: Token = { ...token, id };
+    this.tokenStorage.push(newToken);
+    
+    // Keep only the latest token
+    if (this.tokenStorage.length > 1) {
+      this.tokenStorage = [this.tokenStorage[this.tokenStorage.length - 1]];
+    }
+    
+    return newToken;
+  }
+  
+  async saveSearch(search: InsertSearch): Promise<Search> {
+    const id = this.searchCurrentId++;
+    const newSearch: Search = { 
+      ...search, 
+      id, 
+      created_at: new Date() 
     };
     
     this.searches.push(newSearch);
     
-    // Keep only the most recent 100 searches
+    // Limit the number of stored searches
     if (this.searches.length > 100) {
       this.searches = this.searches.slice(-100);
     }
     
     return newSearch;
   }
-
-  async getSearchHistory(limit: number = 20): Promise<SearchHistory[]> {
-    // Return the most recent searches
+  
+  async getRecentSearches(limit: number = 10): Promise<Search[]> {
     return this.searches
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+      .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
       .slice(0, limit);
   }
 }
 
-export const storage = new Storage();
+export const storage = new MemStorage();
