@@ -30,6 +30,7 @@ export const KeywordSection: React.FC = () => {
   // Category for filter context
   const category = 'Keywords';
   const [selectedMainCategory, setSelectedMainCategory] = useState<MainCategory | null>(null);
+  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const { searchGames, selectedFilters, isLoading, clearAllFilters } = useFilters();
 
   // Define the three main category cards
@@ -164,13 +165,54 @@ export const KeywordSection: React.FC = () => {
               </button>
             </div>
             
+            <div className="mb-4">
+              <h4 className="text-sm text-gray-500 mb-2">Subcategories:</h4>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {getSubcategories(selectedMainCategory).map((subCategoryName) => {
+                  const keywords = getKeywordsForSubcategory(subCategoryName);
+                  if (!Array.isArray(keywords) || keywords.length === 0) return null;
+                  
+                  const isActive = activeSubcategory === subCategoryName;
+                  
+                  return (
+                    <div 
+                      key={`subcategory-${subCategoryName}`}
+                      className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium cursor-pointer transition-colors ${
+                        isActive 
+                          ? 'bg-indigo-600 text-white' 
+                          : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                      }`}
+                      onClick={() => {
+                        if (isActive) {
+                          // If already active, deactivate it
+                          setActiveSubcategory(null);
+                        } else {
+                          // Otherwise, set this as active
+                          setActiveSubcategory(subCategoryName);
+                        }
+                      }}
+                    >
+                      {subCategoryName}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            
             <div className="keyword-filters overflow-y-auto max-h-[calc(100vh-300px)]">
               {getSubcategories(selectedMainCategory).map((subCategoryName) => {
                 const keywords = getKeywordsForSubcategory(subCategoryName);
                 if (!Array.isArray(keywords) || keywords.length === 0) return null;
                 
+                // Only show the content for the active subcategory
+                const isVisible = activeSubcategory === subCategoryName;
+                
                 return (
-                  <FilterCategory key={`subcategory-${subCategoryName}`} title={subCategoryName}>
+                  <div 
+                    key={`subcategory-content-${subCategoryName}`} 
+                    className={`mb-4 transition-opacity duration-200 ${isVisible ? 'block opacity-100' : 'hidden opacity-0'}`}
+                  >
+                    <h4 className="text-sm font-medium text-gray-800 mb-2">{subCategoryName}</h4>
                     <div className="flex flex-wrap gap-2">
                       {keywords.map((keyword: KeywordItem) => (
                         <Filter
@@ -183,7 +225,7 @@ export const KeywordSection: React.FC = () => {
                         />
                       ))}
                     </div>
-                  </FilterCategory>
+                  </div>
                 );
               })}
             </div>
