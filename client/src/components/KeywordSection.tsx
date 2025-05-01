@@ -1,43 +1,57 @@
 import React from "react";
-import { FilterCategory } from "@/components/FilterCategory";
-import { Filter } from "@/components/Filter";
-import { SelectedFilters } from "@/components/SelectedFilters";
+import { FilterCategory } from "./FilterCategory";
+import { Filter } from "./Filter";
+import { SelectedFilters } from "./SelectedFilters";
 import { useFilters } from "../context/FilterContext";
-import gameTags from "@/assets/game-filters.json";
+import gameTags from "../assets/game-filters.json";
+import categorizedKeywords from "../assets/all_categorised_keywords.json";
+import keywordCategories from "../assets/keyword-categories.json";
 
 interface KeywordItem {
-  id: string | number;
+  id: number;
   name: string;
-  category?: string;
-  endpoint?: string;
-  slug?: string;
-  children?: KeywordItem[];
-  hasChildren?: boolean;
-  isParentOnly?: boolean;
+  category: string;
+  "sub-category": string;
+  game_count: number;
 }
 
-interface KeywordCategories {
-  [key: string]: KeywordItem[];
+interface CategoryItem {
+  description: string;
+  [key: string]: any;
+}
+
+interface CategoryMap {
+  [key: string]: CategoryItem;
 }
 
 export const KeywordSection: React.FC = () => {
-  // Extract only the Keywords category from the game tags
+  // Category for filter context
   const category = 'Keywords';
-  const keywordsByCategory: KeywordCategories = {};
   
-  // Group keywords by their category property
-  gameTags[category]?.forEach((item: KeywordItem) => {
-    const subCategory = item.category || 'Uncategorized';
-    if (!keywordsByCategory[subCategory]) {
-      keywordsByCategory[subCategory] = [];
+  // Group keywords by their category and sub-category
+  const keywordsByCategory: Record<string, Record<string, KeywordItem[]>> = {};
+  
+  // Process the categorized keywords
+  categorizedKeywords.forEach((keyword: KeywordItem) => {
+    const mainCategory = keyword.category;
+    const subCategory = keyword["sub-category"];
+    
+    if (!keywordsByCategory[mainCategory]) {
+      keywordsByCategory[mainCategory] = {};
     }
-    keywordsByCategory[subCategory].push(item);
+    
+    if (!keywordsByCategory[mainCategory][subCategory]) {
+      keywordsByCategory[mainCategory][subCategory] = [];
+    }
+    
+    keywordsByCategory[mainCategory][subCategory].push(keyword);
   });
 
   return (
     <div className="keyword-section">
       <div className="keyword-section-header">
-        <h3>Keywords</h3>
+        <h3>Game Keywords</h3>
+        <p className="text-slate-500 text-sm mt-2">Select keywords to find games matching your interests</p>
       </div>
       
       <div className="selected-tags-container">
@@ -49,28 +63,34 @@ export const KeywordSection: React.FC = () => {
         </div>
       </div>
 
-      <div className="keyword-filters">
-        <FilterCategory title={category}>
-          {Object.entries(keywordsByCategory).map(([subCategory, items], subCatIndex) => {
-            // Create a parent filter for each subcategory
-            const parentId = `keyword-cat-${subCatIndex}`;
-            return (
-              <div key={`subcategory-${subCategory}`}>
-                <Filter
-                  key={`${category}-${parentId}-subcategory-${subCategory}`}
-                  label={subCategory}
-                  id={parentId}
-                  slug={subCategory.toLowerCase()}
-                  category={category}
-                  endpoint="tags"
-                  hasChildren={true}
-                  isParentOnly={true}
-                  kids={items}
-                />
-              </div>
-            );
-          })}
-        </FilterCategory>
+      <div className="keyword-filters overflow-y-auto p-4">
+        {Object.keys(keywordsByCategory).map((mainCategory) => (
+          <div key={`main-category-${mainCategory}`} className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">{mainCategory}</h3>
+            
+            {Object.keys(keywordsByCategory[mainCategory]).map((subCategory) => {
+              const keywords = keywordsByCategory[mainCategory][subCategory];
+              if (keywords.length === 0) return null;
+              
+              return (
+                <FilterCategory key={`subcategory-${subCategory}`} title={subCategory}>
+                  <div className="flex flex-wrap gap-2">
+                    {keywords.map((keyword) => (
+                      <Filter
+                        key={`keyword-${keyword.id}`}
+                        label={keyword.name}
+                        id={keyword.id}
+                        category={category}
+                        endpoint="keywords"
+                        slug={typeof keyword.name === 'string' ? keyword.name.toLowerCase() : ''}
+                      />
+                    ))}
+                  </div>
+                </FilterCategory>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );
