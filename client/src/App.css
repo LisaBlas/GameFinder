@@ -378,6 +378,69 @@ h3{
   opacity: 1;
 }
 
+/* Subcategory card styling with game aesthetics */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 2px rgba(119, 57, 234, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(119, 57, 234, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 2px rgba(119, 57, 234, 0.2);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.subcategory-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(119, 57, 234, 0.1);
+}
+
+.subcategory-card:hover {
+  border-color: rgba(119, 57, 234, 0.4);
+  animation: glow 2s infinite ease-in-out;
+}
+
+.subcategory-card .emoji {
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.subcategory-card:hover .emoji {
+  animation: float 2s infinite ease-in-out;
+}
+
+.subcategory-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(119, 57, 234, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.subcategory-card:hover::after {
+  opacity: 1;
+}
+
 .filter-category-header svg.caret {
   font-size: 28px;
   color: #c7c7c7;

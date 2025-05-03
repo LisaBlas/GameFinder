@@ -67,6 +67,38 @@ export const KeywordSection: React.FC = () => {
     return Object.keys(categoryData).filter(key => key !== 'description');
   };
   
+  // Get emoji for subcategory
+  const getSubcategoryEmoji = (subCategory: string): string => {
+    // Match subcategories to appropriate emojis
+    const emojiMap: Record<string, string> = {
+      // Game Mechanics & Systems subcategories
+      "Player Actions & Movement": "🏃",
+      "Combat & Conflict": "⚔️",
+      "Progression Systems": "📈",
+      "Game Rules & Objectives": "🎯",
+      "Difficulty & Challenge": "🔥",
+      "Game Modes": "🎮",
+      
+      // Setting & World subcategories
+      "Time Period": "⏳",
+      "Geography & Environment": "🌍",
+      "Culture & Society": "👥",
+      "Narrative Theme": "📚",
+      "Climate & Weather": "☁️",
+      "Worldbuilding Elements": "🏛️",
+      
+      // Aesthetics & Style subcategories
+      "Visual Style": "🎨",
+      "Artistic Influences": "🖌️",
+      "Camera Perspective": "📷",
+      "Mood & Atmosphere": "🌆",
+      "Animation Style": "✨",
+      "Technical Presentation": "💻"
+    };
+    
+    return emojiMap[subCategory] || "🎲"; // Default to dice emoji if not found
+  };
+  
   // Get keywords for a specific subcategory
   const getKeywordsForSubcategory = (subCategoryName: string) => {
     // Safely access the property with index signature to avoid TypeScript error
@@ -192,82 +224,82 @@ export const KeywordSection: React.FC = () => {
               ))
             }
             
-            <div className="mb-6">
-              <h4 className="text-base font-semibold text-foreground mb-3">Choose a Subcategory:</h4>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                {getSubcategories(selectedMainCategory).map((subCategoryName) => {
-                  const keywords = getKeywordsForSubcategory(subCategoryName);
-                  if (!Array.isArray(keywords) || keywords.length === 0) return null;
-                  
-                  const isActive = activeSubcategory === subCategoryName;
-                  const mainCat = mainCategories.find(cat => cat.id === selectedMainCategory);
-                  const gradientClass = mainCat ? mainCat.color : '';
-                  
-                  return (
-                    <div 
-                      key={`subcategory-${subCategoryName}`}
-                      className={`flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium cursor-pointer transition-all duration-200 border ${
-                        isActive 
-                          ? `bg-gradient-to-r ${gradientClass} border-transparent text-white shadow-md transform scale-105` 
-                          : 'bg-card hover:bg-card/90 border-border hover:border-primary/50 text-foreground hover:shadow-sm'
-                      }`}
-                      onClick={() => {
-                        if (isActive) {
-                          // If already active, deactivate it
-                          setActiveSubcategory(null);
-                        } else {
-                          // Otherwise, set this as active
-                          setActiveSubcategory(subCategoryName);
-                        }
-                      }}
-                    >
-                      {subCategoryName}
-                    </div>
-                  );
-                })}
+            {!activeSubcategory ? (
+              <div className="mb-6">
+                <h4 className="text-base font-semibold text-foreground mb-3">Choose a Subcategory:</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                  {getSubcategories(selectedMainCategory).map((subCategoryName) => {
+                    const keywords = getKeywordsForSubcategory(subCategoryName);
+                    if (!Array.isArray(keywords) || keywords.length === 0) return null;
+                    
+                    const mainCat = mainCategories.find(cat => cat.id === selectedMainCategory);
+                    const gradientClass = mainCat ? mainCat.color : '';
+                    const emoji = getSubcategoryEmoji(subCategoryName);
+                    
+                    return (
+                      <div 
+                        key={`subcategory-${subCategoryName}`}
+                        className="subcategory-card flex flex-col items-center rounded-lg p-3 text-sm font-medium cursor-pointer transition-all duration-200 bg-card"
+                        onClick={() => setActiveSubcategory(subCategoryName)}
+                      >
+                        <span className="emoji text-2xl mb-2">{emoji}</span>
+                        <span className="text-center">{subCategoryName}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-            
-            <div className="keyword-filters">
-              {getSubcategories(selectedMainCategory).map((subCategoryName) => {
-                const keywords = getKeywordsForSubcategory(subCategoryName);
-                if (!Array.isArray(keywords) || keywords.length === 0) return null;
-                
-                // Only show the content for the active subcategory
-                const isVisible = activeSubcategory === subCategoryName;
-                const mainCat = mainCategories.find(cat => cat.id === selectedMainCategory);
-                const gradientClass = mainCat ? mainCat.color : '';
-                
-                return (
-                  <div 
-                    key={`subcategory-content-${subCategoryName}`} 
-                    className={`mb-8 transition-all duration-300 ${isVisible ? 'block opacity-100 transform translate-y-0' : 'hidden opacity-0 transform -translate-y-4'}`}
-                  >
-                    <div className="bg-card/50 border border-border rounded-lg p-4 mb-4">
-                      <div className="flex items-center mb-3">
-                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${gradientClass} mr-2`}></div>
-                        <h4 className="text-base font-semibold text-foreground">{subCategoryName} Keywords</h4>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">Select keywords below to refine your game search:</p>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {keywords.map((keyword: KeywordItem) => (
-                          <div key={`keyword-${keyword.id}`} className="filter-card">
-                            <Filter
-                              label={keyword.name}
-                              id={keyword.id}
-                              category={category}
-                              endpoint="keywords"
-                              slug={typeof keyword.name === 'string' ? keyword.name.toLowerCase() : ''}
-                            />
+            ) : (
+              <div className="keyword-filters">
+                {getSubcategories(selectedMainCategory)
+                  .filter(subCategoryName => subCategoryName === activeSubcategory)
+                  .map((subCategoryName) => {
+                    const keywords = getKeywordsForSubcategory(subCategoryName);
+                    if (!Array.isArray(keywords) || keywords.length === 0) return null;
+                    
+                    const mainCat = mainCategories.find(cat => cat.id === selectedMainCategory);
+                    const gradientClass = mainCat ? mainCat.color : '';
+                    const emoji = getSubcategoryEmoji(subCategoryName);
+                    
+                    return (
+                      <div key={`subcategory-content-${subCategoryName}`} className="mb-8">
+                        <div className={`bg-gradient-to-r ${gradientClass} p-3 text-white rounded-lg mb-4 flex items-center relative`}>
+                          <button 
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white hover:text-white/80 flex items-center"
+                            onClick={() => setActiveSubcategory(null)}
+                          >
+                            <ArrowLeft className="w-4 h-4 mr-1" />
+                            Back
+                          </button>
+                          <h3 className="font-medium text-white text-center flex-1 ml-6">
+                            <span className="mr-2">{emoji}</span>
+                            {subCategoryName}
+                          </h3>
+                        </div>
+                        
+                        <div className="bg-card/50 border border-border rounded-lg p-4 mb-4">
+                          <p className="text-sm text-muted-foreground mb-4">Select keywords below to refine your game search:</p>
+                          
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            {keywords.map((keyword: KeywordItem) => (
+                              <div key={`keyword-${keyword.id}`} className="filter-card">
+                                <Filter
+                                  label={keyword.name}
+                                  id={keyword.id}
+                                  category={category}
+                                  endpoint="keywords"
+                                  slug={typeof keyword.name === 'string' ? keyword.name.toLowerCase() : ''}
+                                />
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                    );
+                  })
+                }
+              </div>
+            )}
           </>
         )}
       </div>
