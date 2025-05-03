@@ -80,59 +80,44 @@ export const KeywordSection: React.FC = () => {
   };
 
   return (
-    <div className="keyword-section w-full bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="keyword-section-header bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-xl font-semibold">Game Keywords</h3>
-            <p className="text-white/80 text-sm mt-1">Select keywords to find games matching your interests</p>
-          </div>
-          <div className="flex gap-2">
-            <button 
-              className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded text-sm font-medium flex items-center gap-1"
-              onClick={clearAllFilters}
-            >
-              <X className="w-4 h-4" />
-              Clear All
-            </button>
-            
-            <button 
-              className="px-3 py-1.5 bg-white text-indigo-700 hover:bg-indigo-50 rounded text-sm font-medium flex items-center gap-1"
-              onClick={handleSearch}
-              disabled={selectedFilters.length === 0 || isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Searching...
-                </>
-              ) : (
-                <>
-                  <Search className="w-4 h-4" />
-                  Search
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <div className="selected-tags-container bg-gray-50 p-4 border-b border-gray-200">
-        <div className="selected-tags-header mb-2">
-          <h3 className="text-sm font-medium text-gray-700">Selected Tags:</h3>
-        </div>
-        <div className="selected-tags-wrapper">
-          <SelectedFilters />
-        </div>
-      </div>
-
+    <div className="keyword-section w-full bg-white rounded-lg shadow-md overflow-hidden">      
       <div className="p-4">
         {!selectedMainCategory ? (
           <>
-            <h3 className="font-medium text-gray-800 mb-4">Choose a Category</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-medium text-gray-800">Choose a Category</h3>
+              <div className="flex gap-2">
+                <button 
+                  className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium flex items-center gap-1"
+                  onClick={clearAllFilters}
+                >
+                  <X className="w-4 h-4" />
+                  Clear All
+                </button>
+                
+                <button 
+                  className="px-3 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded text-sm font-medium flex items-center gap-1"
+                  onClick={handleSearch}
+                  disabled={selectedFilters.length === 0 || isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Searching...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4" />
+                      Search
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {mainCategories.map((cat) => (
                 <div 
@@ -156,13 +141,46 @@ export const KeywordSection: React.FC = () => {
         ) : (
           <>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium text-gray-800">{selectedMainCategory}</h3>
-              <button 
-                className="text-sm text-indigo-600 hover:text-indigo-800"
-                onClick={() => setSelectedMainCategory(null)}
-              >
-                Back to Categories
-              </button>
+              <div className="flex items-center">
+                <button 
+                  className="text-sm text-indigo-600 hover:text-indigo-800 mr-2"
+                  onClick={() => setSelectedMainCategory(null)}
+                >
+                  ← Back
+                </button>
+                <h3 className="font-medium text-gray-800">{selectedMainCategory}</h3>
+              </div>
+              
+              <div className="flex gap-2">
+                <button 
+                  className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium flex items-center gap-1"
+                  onClick={clearAllFilters}
+                >
+                  <X className="w-4 h-4" />
+                  Clear All
+                </button>
+                
+                <button 
+                  className="px-3 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded text-sm font-medium flex items-center gap-1"
+                  onClick={handleSearch}
+                  disabled={selectedFilters.length === 0 || isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Searching...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4" />
+                      Search
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
             
             <div className="mb-4">

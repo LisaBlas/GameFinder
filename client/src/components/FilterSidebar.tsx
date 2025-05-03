@@ -1,9 +1,8 @@
 import React from 'react';
 import { FilterCategory } from './FilterCategory';
 import { Filter } from './Filter';
-import { useFilters } from '../context/FilterContext';
 import filterData from '../lib/filters';
-import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { ChevronLeft, SlidersHorizontal } from 'lucide-react';
 
 interface FilterSidebarProps {
   collapsed: boolean;
@@ -66,7 +65,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ collapsed, onToggleCollap
                     id={genre.id}
                     label={genre.name}
                     category="genres"
-                    slug={genre.slug}
+                    slug={(genre as any).slug}
                   />
                 ))}
               </div>
@@ -80,7 +79,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ collapsed, onToggleCollap
                     id={theme.id}
                     label={theme.name}
                     category="themes"
-                    slug={theme.slug}
+                    slug={(theme as any).slug}
                   />
                 ))}
               </div>

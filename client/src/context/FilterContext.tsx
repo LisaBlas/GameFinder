@@ -75,7 +75,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   const [page, setPage] = useState<number>(1);
   
   // Filter management functions
-  const addFilter = useCallback((filter) => {
+  const addFilter = useCallback((filter: Filter) => {
     setSelectedFilters(prevFilters => {
       // For platforms category, only allow one selection at a time
       if (filter.category === 'platforms') {
@@ -113,7 +113,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
   
-  const removeFilter = useCallback((id, category, endpoint) => {
+  const removeFilter = useCallback((id: string | number, category: string, endpoint?: string) => {
     setSelectedFilters(prevFilters => 
       prevFilters.filter(filter => 
         !(filter.id === id && filter.category === category && filter.endpoint === endpoint)
@@ -121,7 +121,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     );
   }, []);
   
-  const isFilterSelected = useCallback((id, category, endpoint) => {
+  const isFilterSelected = useCallback((id: string | number, category: string, endpoint?: string) => {
     return selectedFilters.some(filter => 
       filter.id === id && filter.category === category && filter.endpoint === endpoint
     );
@@ -146,7 +146,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   }, []);
   
   // Filter expansion management
-  const setFilterExpanded = useCallback((filterId, isExpanded) => {
+  const setFilterExpanded = useCallback((filterId: string, isExpanded: boolean) => {
     if (isExpanded) {
       // When expanding a filter, collapse all other filters
       const newExpandedState: Record<string, boolean> = {};
@@ -161,11 +161,11 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
   
-  const isFilterExpanded = useCallback((filterId) => {
+  const isFilterExpanded = useCallback((filterId: string) => {
     return !!expandedFilters[filterId];
   }, [expandedFilters]);
   
-  const setCategoryExpanded = useCallback((category, isExpanded) => {
+  const setCategoryExpanded = useCallback((category: string, isExpanded: boolean) => {
     if (isExpanded) {
       // When expanding a category, collapse all other categories
       const newExpandedState: Record<string, boolean> = {};
@@ -180,7 +180,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
   
-  const isCategoryExpanded = useCallback((category) => {
+  const isCategoryExpanded = useCallback((category: string) => {
     return !!expandedCategories[category];
   }, [expandedCategories]);
   
@@ -199,7 +199,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       // Group filters by category for the API
-      const groupedFilters = selectedFilters.reduce((acc, filter) => {
+      const groupedFilters = selectedFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
         // Skip parent-only filters
         if (filter.isParentOnly) return acc;
         
@@ -221,10 +221,10 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       });
       
       // Process the results to identify which filters matched
-      const processedResults = response.data.map(game => {
+      const processedResults = response.data.map((game: any) => {
         // Track matched and missing filters
-        const matched = [];
-        const missing = [];
+        const matched: Filter[] = [];
+        const missing: Filter[] = [];
         
         // Go through each selected filter and check if it matched
         selectedFilters
@@ -250,7 +250,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       
       setGameResults(processedResults);
       setHasMore(response.data.length >= 30); // If we got 30 results, there might be more
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error searching games:", err);
       setError(err.response?.data?.message || "Failed to search games. Please try again.");
     } finally {
@@ -266,7 +266,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       // Group filters by category for the API
-      const groupedFilters = selectedFilters.reduce((acc, filter) => {
+      const groupedFilters = selectedFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
         if (!acc[filter.category]) {
           acc[filter.category] = [];
         }
@@ -281,9 +281,9 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       });
       
       // Process results like in the searchGames function
-      const processedResults = response.data.map(game => {
-        const matched = [];
-        const missing = [];
+      const processedResults = response.data.map((game: any) => {
+        const matched: Filter[] = [];
+        const missing: Filter[] = [];
         
         selectedFilters
           .filter(filter => !filter.isParentOnly)
@@ -310,7 +310,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       setGameResults(prev => [...prev, ...processedResults]);
       setHasMore(response.data.length >= 30);
       setPage(nextPage);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error loading more games:", err);
       setError(err.response?.data?.message || "Failed to load more games. Please try again.");
     } finally {

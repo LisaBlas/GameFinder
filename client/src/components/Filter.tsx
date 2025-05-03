@@ -100,13 +100,13 @@ export const Filter: React.FC<FilterProps> = ({
   return (
     <>
       <div 
-        className={`filter-pill ${isSelected ? 'active' : ''} ${isKid ? 'is-kid' : ''}`}
+        className={`filter-pill ${isSelected ? 'active' : ''} ${isKid ? 'is-kid' : ''} flex items-center justify-between`}
         onClick={handleClick}
         data-composite-id={compositeId}
       >
-        {label}
+        <span>{label}</span>
         {hasChildren && kids && kids.some(kid => kid.display !== false) && (
-          <span className={`filter-caret ${expanded ? 'expanded' : ''}`}>
+          <span className={`filter-caret ml-1 flex items-center ${expanded ? 'expanded' : ''}`}>
             <RxCaretDown />
           </span>
         )}
