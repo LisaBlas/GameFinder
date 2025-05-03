@@ -184,8 +184,8 @@ export const KeywordSection: React.FC = () => {
                 <div 
                   key={cat.id}
                   className={`cursor-pointer bg-muted/50 border border-border rounded-lg overflow-hidden shadow-md hover:shadow-lg hover:bg-muted transition-all duration-300 ${
-                    selectedMainCategory && selectedMainCategory !== cat.id ? 'opacity-0 h-0 md:h-0 p-0 m-0 border-0 cursor-default' : ''
-                  }`}
+                    selectedMainCategory && selectedMainCategory !== cat.id ? 'opacity-0 h-0 md:h-0 p-0 m-0 border-0 cursor-default' : 'category-enter'
+                  } ${!selectedMainCategory ? 'main-category-container' : ''}`}
                   onClick={() => setSelectedMainCategory(cat.id)}
                 >
                   <div className={`bg-gradient-to-r ${cat.color} p-6 text-white flex flex-col items-center`}>
@@ -247,7 +247,7 @@ export const KeywordSection: React.FC = () => {
                   if (activeSubcategory) {
                     const emoji = getSubcategoryEmoji(activeSubcategory);
                     return (
-                      <div key={`title-subcategory-${activeSubcategory}`} className={`bg-gradient-to-r ${gradientClass} p-4 text-white relative`}>
+                      <div key={`title-subcategory-${activeSubcategory}`} className={`bg-gradient-to-r ${gradientClass} p-4 text-white relative title-bar-change`}>
                         <button 
                           className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white hover:text-white/80 flex items-center"
                           onClick={() => setActiveSubcategory(null)}
@@ -265,7 +265,7 @@ export const KeywordSection: React.FC = () => {
                   
                   // Otherwise show main category in title
                   return (
-                    <div key={`title-category-${cat.id}`} className={`bg-gradient-to-r ${cat.color} p-4 text-white relative`}>
+                    <div key={`title-category-${cat.id}`} className={`bg-gradient-to-r ${cat.color} p-4 text-white relative main-category-enter`}>
                       <button 
                         className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white hover:text-white/80 flex items-center"
                         onClick={() => setSelectedMainCategory(null)}
@@ -284,9 +284,9 @@ export const KeywordSection: React.FC = () => {
             </div>
             
             {!activeSubcategory ? (
-              <div className="mb-6">
+              <div className="mb-6 category-enter">
                 <h4 className="text-base font-semibold text-foreground mb-3">Choose a Subcategory:</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4 filter-grid-enter">
                   {getSubcategories(selectedMainCategory).map((subCategoryName) => {
                     const keywords = getKeywordsForSubcategory(subCategoryName);
                     if (!Array.isArray(keywords) || keywords.length === 0) return null;
@@ -316,10 +316,10 @@ export const KeywordSection: React.FC = () => {
                     
                     return (
                       <div key={`subcategory-content-${subCategoryName}`} className="mb-8">
-                        <div className="bg-card/50 border border-border rounded-lg p-4 mb-4">
+                        <div className="bg-card/50 border border-border rounded-lg p-4 mb-4 subcategory-content-enter">
                           <p className="text-sm text-muted-foreground mb-4">Select keywords below to refine your game search:</p>
                           
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 filter-grid-enter">
                             {keywords.map((keyword: KeywordItem) => (
                               <div key={`keyword-${keyword.id}`} className="filter-card">
                                 <Filter

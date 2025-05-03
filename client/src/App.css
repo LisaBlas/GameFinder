@@ -378,7 +378,7 @@ h3{
   opacity: 1;
 }
 
-/* Subcategory card styling with game aesthetics */
+/* Animation keyframes */
 @keyframes glow {
   0% {
     box-shadow: 0 0 2px rgba(119, 57, 234, 0.2);
@@ -403,16 +403,72 @@ h3{
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Category transitions */
+.category-enter {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.category-exit {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+/* Subcategory card styling with game aesthetics */
 .subcategory-card {
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   border: 1px solid rgba(119, 57, 234, 0.1);
+  animation: fadeIn 0.5s ease forwards;
 }
 
 .subcategory-card:hover {
   border-color: rgba(119, 57, 234, 0.4);
   animation: glow 2s infinite ease-in-out;
+  transform: translateY(-3px);
 }
 
 .subcategory-card .emoji {
@@ -439,6 +495,40 @@ h3{
 
 .subcategory-card:hover::after {
   opacity: 1;
+}
+
+/* Subcategory content transitions */
+.subcategory-content-enter {
+  animation: scaleIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform-origin: top center;
+}
+
+.subcategory-content-exit {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+/* Main category transition */
+.main-category-container {
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.main-category-enter {
+  animation: slideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.main-category-exit {
+  animation: fadeOut 0.4s ease forwards;
+}
+
+/* Title bar transitions */
+.title-bar-change {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+/* Filter grid appearance */
+.filter-grid-enter {
+  animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.1s;
 }
 
 .filter-category-header svg.caret {
