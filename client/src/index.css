@@ -37,3 +37,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Filter Pill Styles */
+.filter-pill {
+  @apply inline-flex rounded-full px-3 py-1.5 text-sm font-medium cursor-pointer border border-secondary transition-colors;
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+}
+
+.filter-pill.active {
+  @apply bg-primary text-primary-foreground border-primary;
+}
+
+.filter-pill.is-kid {
+  @apply ml-4 mt-1 text-xs;
+}
+
+.filter-caret {
+  @apply transition-transform duration-200 ease-in-out text-lg;
+}
+
+.filter-caret.expanded {
+  @apply rotate-180;
+}

@@ -15,14 +15,14 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ collapsed, onToggleCollap
       className={`transition-all duration-300 ease-in-out ${
         collapsed 
           ? 'w-12 md:w-12 p-0' 
-          : 'w-full md:w-80 lg:w-96 bg-slate-800 p-4 md:min-h-screen md:overflow-y-auto border-r border-slate-700'
+          : 'w-full md:w-80 lg:w-96 bg-card p-4 md:min-h-screen md:overflow-y-auto border-r border-border'
       } relative`}
     >
       <button 
         className={`absolute z-10 ${
           collapsed 
-            ? 'top-4 left-1 p-2 text-slate-800 hover:text-slate-600' 
-            : 'top-4 right-4 p-2 rounded-full bg-slate-700 text-white hover:bg-slate-600'
+            ? 'top-4 left-1 p-2 text-primary hover:text-primary/80' 
+            : 'top-4 right-4 p-2 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80'
         } transition-colors`}
         onClick={onToggleCollapse}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -37,7 +37,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ collapsed, onToggleCollap
       {!collapsed && (
         <div className="sticky top-4 pt-2">
           <div className="mb-6">
-            <h2 className="text-xl font-heading font-semibold text-white">Filters</h2>
+            <h2 className="text-xl font-heading font-semibold text-foreground">Filters</h2>
           </div>
           
           <div className="space-y-2">
