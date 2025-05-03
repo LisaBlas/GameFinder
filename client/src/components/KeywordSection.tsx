@@ -78,22 +78,52 @@ export const KeywordSection: React.FC = () => {
       "Game Rules & Objectives": "🎯",
       "Difficulty & Challenge": "🔥",
       "Game Modes": "🎮",
+      "Interface & Controls": "🎛️",
+      "Rewards & Economy": "💰",
+      "Character Abilities": "✨",
+      "Level Design": "🧩",
+      "Multiplayer": "👥",
+      "NPC Behavior": "🤖",
+      "Power-ups": "⚡",
+      "Resource Management": "📦",
+      "Team Dynamics": "🤝",
+      "Tactical Combat": "🛡️",
       
       // Setting & World subcategories
       "Time Period": "⏳",
       "Geography & Environment": "🌍",
-      "Culture & Society": "👥",
+      "Culture & Society": "👨‍👩‍👧‍👦",
       "Narrative Theme": "📚",
       "Climate & Weather": "☁️",
       "Worldbuilding Elements": "🏛️",
+      "Historical Setting": "📜",
+      "Future & Sci-Fi": "🚀",
+      "Fantasy Elements": "🧙",
+      "Religious & Mythical": "✝️",
+      "Modern Day": "🏙️",
+      "Post-Apocalyptic": "☢️",
+      "Political Systems": "🏛️",
+      "Alternate History": "🔄",
+      "Fictional Locations": "🗺️",
+      "Wildlife & Creatures": "🐉",
       
       // Aesthetics & Style subcategories
       "Visual Style": "🎨",
       "Artistic Influences": "🖌️",
       "Camera Perspective": "📷",
       "Mood & Atmosphere": "🌆",
-      "Animation Style": "✨",
-      "Technical Presentation": "💻"
+      "Animation Style": "🎬",
+      "Technical Presentation": "💻",
+      "Color Palette": "🎭",
+      "Audio Design": "🔊",
+      "Lighting Effects": "💡",
+      "UI Design": "📊",
+      "Character Design": "👾",
+      "Environmental Design": "🌲",
+      "Particle Effects": "✨",
+      "Art Direction": "🖼️",
+      "Visual Filters": "🔍",
+      "Soundtrack": "🎵"
     };
     
     return emojiMap[subCategory] || "🎲"; // Default to dice emoji if not found
@@ -205,24 +235,53 @@ export const KeywordSection: React.FC = () => {
               </div>
             </div>
             
-            {/* Find the selected category to display its header with gradient */}
-            {mainCategories
-              .filter(cat => cat.id === selectedMainCategory)
-              .map(cat => (
-                <div key={`expanded-${cat.id}`} className="mb-6 rounded-lg overflow-hidden">
-                  <div className={`bg-gradient-to-r ${cat.color} p-4 text-white relative`}>
-                    <button 
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white hover:text-white/80 flex items-center"
-                      onClick={() => setSelectedMainCategory(null)}
-                    >
-                      <ArrowLeft className="w-4 h-4 mr-1" />
-                      Back
-                    </button>
-                    <h3 className="font-medium text-white text-center text-xl">{cat.title}</h3>
-                  </div>
-                </div>
-              ))
-            }
+            {/* Single title bar that changes based on context (main category or subcategory) */}
+            <div className="mb-6 rounded-lg overflow-hidden">
+              {mainCategories
+                .filter(cat => cat.id === selectedMainCategory)
+                .map(cat => {
+                  const mainCat = mainCategories.find(c => c.id === selectedMainCategory);
+                  const gradientClass = mainCat ? mainCat.color : '';
+                  
+                  // If a subcategory is active, show subcategory in title
+                  if (activeSubcategory) {
+                    const emoji = getSubcategoryEmoji(activeSubcategory);
+                    return (
+                      <div key={`title-subcategory-${activeSubcategory}`} className={`bg-gradient-to-r ${gradientClass} p-4 text-white relative`}>
+                        <button 
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white hover:text-white/80 flex items-center"
+                          onClick={() => setActiveSubcategory(null)}
+                        >
+                          <ArrowLeft className="w-4 h-4 mr-1" />
+                          Back
+                        </button>
+                        <h3 className="font-medium text-white text-center text-xl">
+                          <span className="inline-block mr-2 text-2xl">{emoji}</span>
+                          {activeSubcategory}
+                        </h3>
+                      </div>
+                    );
+                  }
+                  
+                  // Otherwise show main category in title
+                  return (
+                    <div key={`title-category-${cat.id}`} className={`bg-gradient-to-r ${cat.color} p-4 text-white relative`}>
+                      <button 
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white hover:text-white/80 flex items-center"
+                        onClick={() => setSelectedMainCategory(null)}
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-1" />
+                        Back
+                      </button>
+                      <h3 className="font-medium text-white text-center text-xl">
+                        <span className="inline-block mr-2 text-2xl">{cat.icon}</span>
+                        {cat.title}
+                      </h3>
+                    </div>
+                  );
+                })
+              }
+            </div>
             
             {!activeSubcategory ? (
               <div className="mb-6">
@@ -232,8 +291,6 @@ export const KeywordSection: React.FC = () => {
                     const keywords = getKeywordsForSubcategory(subCategoryName);
                     if (!Array.isArray(keywords) || keywords.length === 0) return null;
                     
-                    const mainCat = mainCategories.find(cat => cat.id === selectedMainCategory);
-                    const gradientClass = mainCat ? mainCat.color : '';
                     const emoji = getSubcategoryEmoji(subCategoryName);
                     
                     return (
@@ -257,26 +314,8 @@ export const KeywordSection: React.FC = () => {
                     const keywords = getKeywordsForSubcategory(subCategoryName);
                     if (!Array.isArray(keywords) || keywords.length === 0) return null;
                     
-                    const mainCat = mainCategories.find(cat => cat.id === selectedMainCategory);
-                    const gradientClass = mainCat ? mainCat.color : '';
-                    const emoji = getSubcategoryEmoji(subCategoryName);
-                    
                     return (
                       <div key={`subcategory-content-${subCategoryName}`} className="mb-8">
-                        <div className={`bg-gradient-to-r ${gradientClass} p-3 text-white rounded-lg mb-4 flex items-center relative`}>
-                          <button 
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white hover:text-white/80 flex items-center"
-                            onClick={() => setActiveSubcategory(null)}
-                          >
-                            <ArrowLeft className="w-4 h-4 mr-1" />
-                            Back
-                          </button>
-                          <h3 className="font-medium text-white text-center flex-1 ml-6">
-                            <span className="mr-2">{emoji}</span>
-                            {subCategoryName}
-                          </h3>
-                        </div>
-                        
                         <div className="bg-card/50 border border-border rounded-lg p-4 mb-4">
                           <p className="text-sm text-muted-foreground mb-4">Select keywords below to refine your game search:</p>
                           
