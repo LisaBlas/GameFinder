@@ -24,14 +24,8 @@ const HomeContent: React.FC = () => {
         <div className={`flex-1 transition-all duration-300 ${hasResults ? 'md:min-h-[30vh]' : 'md:min-h-[80vh]'}`}>
           <KeywordSection />
           
-          {/* Results section - positioned differently based on search state */}
-          <div 
-            className={`transition-all duration-500 w-full ${
-              hasResults 
-                ? 'translate-y-0 opacity-100' 
-                : 'translate-y-full opacity-0 absolute bottom-0 left-0 right-0'
-            }`}
-          >
+          {/* Results section - always visible */}
+          <div className="transition-all duration-500 w-full">
             <SearchResults />
           </div>
         </div>

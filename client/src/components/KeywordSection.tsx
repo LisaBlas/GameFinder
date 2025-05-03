@@ -80,15 +80,15 @@ export const KeywordSection: React.FC = () => {
   };
 
   return (
-    <div className="keyword-section w-full bg-white rounded-lg shadow-md overflow-hidden">      
+    <div className="keyword-section w-full bg-card rounded-lg shadow-md overflow-hidden border border-border">      
       <div className="p-4">
         {!selectedMainCategory ? (
           <>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium text-gray-800">Choose a Category</h3>
+              <h3 className="font-medium text-foreground">Choose a Category</h3>
               <div className="flex gap-2">
                 <button 
-                  className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium flex items-center gap-1"
+                  className="px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-sm font-medium flex items-center gap-1"
                   onClick={clearAllFilters}
                 >
                   <X className="w-4 h-4" />
@@ -96,7 +96,7 @@ export const KeywordSection: React.FC = () => {
                 </button>
                 
                 <button 
-                  className="px-3 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded text-sm font-medium flex items-center gap-1"
+                  className="px-3 py-1.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-medium flex items-center gap-1"
                   onClick={handleSearch}
                   disabled={selectedFilters.length === 0 || isLoading}
                 >
@@ -122,7 +122,7 @@ export const KeywordSection: React.FC = () => {
               {mainCategories.map((cat) => (
                 <div 
                   key={cat.id}
-                  className="cursor-pointer bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  className="cursor-pointer bg-muted/50 border border-border rounded-lg overflow-hidden shadow-md hover:shadow-lg hover:bg-muted transition-all"
                   onClick={() => setSelectedMainCategory(cat.id)}
                 >
                   <div className={`bg-gradient-to-r ${cat.color} p-4 text-white`}>
@@ -132,7 +132,7 @@ export const KeywordSection: React.FC = () => {
                     </div>
                   </div>
                   <div className="p-4">
-                    <p className="text-sm text-gray-600">{cat.description}</p>
+                    <p className="text-sm text-muted-foreground">{cat.description}</p>
                   </div>
                 </div>
               ))}
@@ -143,17 +143,17 @@ export const KeywordSection: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <button 
-                  className="text-sm text-indigo-600 hover:text-indigo-800 mr-2"
+                  className="text-sm text-primary hover:text-primary/80 mr-2"
                   onClick={() => setSelectedMainCategory(null)}
                 >
                   ← Back
                 </button>
-                <h3 className="font-medium text-gray-800">{selectedMainCategory}</h3>
+                <h3 className="font-medium text-foreground">{selectedMainCategory}</h3>
               </div>
               
               <div className="flex gap-2">
                 <button 
-                  className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium flex items-center gap-1"
+                  className="px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-sm font-medium flex items-center gap-1"
                   onClick={clearAllFilters}
                 >
                   <X className="w-4 h-4" />
@@ -161,7 +161,7 @@ export const KeywordSection: React.FC = () => {
                 </button>
                 
                 <button 
-                  className="px-3 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded text-sm font-medium flex items-center gap-1"
+                  className="px-3 py-1.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-medium flex items-center gap-1"
                   onClick={handleSearch}
                   disabled={selectedFilters.length === 0 || isLoading}
                 >
@@ -184,7 +184,7 @@ export const KeywordSection: React.FC = () => {
             </div>
             
             <div className="mb-4">
-              <h4 className="text-sm text-gray-500 mb-2">Subcategories:</h4>
+              <h4 className="text-sm text-muted-foreground mb-2">Subcategories:</h4>
               <div className="flex flex-wrap gap-2 mb-4">
                 {getSubcategories(selectedMainCategory).map((subCategoryName) => {
                   const keywords = getKeywordsForSubcategory(subCategoryName);
@@ -197,8 +197,8 @@ export const KeywordSection: React.FC = () => {
                       key={`subcategory-${subCategoryName}`}
                       className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium cursor-pointer transition-colors ${
                         isActive 
-                          ? 'bg-indigo-600 text-white' 
-                          : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                       }`}
                       onClick={() => {
                         if (isActive) {
@@ -230,7 +230,7 @@ export const KeywordSection: React.FC = () => {
                     key={`subcategory-content-${subCategoryName}`} 
                     className={`mb-4 transition-opacity duration-200 ${isVisible ? 'block opacity-100' : 'hidden opacity-0'}`}
                   >
-                    <h4 className="text-sm font-medium text-gray-800 mb-2">{subCategoryName}</h4>
+                    <h4 className="text-sm font-medium text-foreground mb-2">{subCategoryName}</h4>
                     <div className="flex flex-wrap gap-2">
                       {keywords.map((keyword: KeywordItem) => (
                         <Filter
