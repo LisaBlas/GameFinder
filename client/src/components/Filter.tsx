@@ -100,14 +100,20 @@ export const Filter: React.FC<FilterProps> = ({
   return (
     <>
       <div 
-        className={`filter-pill ${isSelected ? 'active' : ''} ${isKid ? 'is-kid' : ''} flex items-center justify-between`}
+        className={`
+          w-full px-3 py-2 rounded-md border text-sm transition-all duration-200 flex items-center justify-between
+          ${isSelected 
+            ? 'border-primary bg-primary/10 text-primary font-medium shadow-sm' 
+            : 'border-border hover:border-muted-foreground/50 bg-card hover:bg-card/80 text-foreground cursor-pointer'}
+          ${isKid ? 'ml-3 text-xs mt-1 border-dashed' : ''}
+        `}
         onClick={handleClick}
         data-composite-id={compositeId}
       >
-        <span>{label}</span>
+        <span className={`${isSelected ? 'font-medium' : ''}`}>{label}</span>
         {hasChildren && kids && kids.some(kid => kid.display !== false) && (
-          <span className={`filter-caret ml-1 flex items-center ${expanded ? 'expanded' : ''}`}>
-            <RxCaretDown />
+          <span className={`flex items-center transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>
+            <RxCaretDown className="h-4 w-4" />
           </span>
         )}
       </div>

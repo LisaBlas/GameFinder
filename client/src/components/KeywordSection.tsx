@@ -192,22 +192,24 @@ export const KeywordSection: React.FC = () => {
               ))
             }
             
-            <div className="mb-4">
-              <h4 className="text-sm text-muted-foreground mb-2">Subcategories:</h4>
-              <div className="flex flex-wrap gap-2 mb-4">
+            <div className="mb-6">
+              <h4 className="text-base font-semibold text-foreground mb-3">Choose a Subcategory:</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
                 {getSubcategories(selectedMainCategory).map((subCategoryName) => {
                   const keywords = getKeywordsForSubcategory(subCategoryName);
                   if (!Array.isArray(keywords) || keywords.length === 0) return null;
                   
                   const isActive = activeSubcategory === subCategoryName;
+                  const mainCat = mainCategories.find(cat => cat.id === selectedMainCategory);
+                  const gradientClass = mainCat ? mainCat.color : '';
                   
                   return (
                     <div 
                       key={`subcategory-${subCategoryName}`}
-                      className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium cursor-pointer transition-colors ${
+                      className={`flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium cursor-pointer transition-all duration-200 border ${
                         isActive 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                          ? `bg-gradient-to-r ${gradientClass} border-transparent text-white shadow-md transform scale-105` 
+                          : 'bg-card hover:bg-card/90 border-border hover:border-primary/50 text-foreground hover:shadow-sm'
                       }`}
                       onClick={() => {
                         if (isActive) {
@@ -226,31 +228,41 @@ export const KeywordSection: React.FC = () => {
               </div>
             </div>
             
-            <div className="keyword-filters overflow-y-auto max-h-[calc(100vh-300px)]">
+            <div className="keyword-filters">
               {getSubcategories(selectedMainCategory).map((subCategoryName) => {
                 const keywords = getKeywordsForSubcategory(subCategoryName);
                 if (!Array.isArray(keywords) || keywords.length === 0) return null;
                 
                 // Only show the content for the active subcategory
                 const isVisible = activeSubcategory === subCategoryName;
+                const mainCat = mainCategories.find(cat => cat.id === selectedMainCategory);
+                const gradientClass = mainCat ? mainCat.color : '';
                 
                 return (
                   <div 
                     key={`subcategory-content-${subCategoryName}`} 
-                    className={`mb-4 transition-opacity duration-200 ${isVisible ? 'block opacity-100' : 'hidden opacity-0'}`}
+                    className={`mb-8 transition-all duration-300 ${isVisible ? 'block opacity-100 transform translate-y-0' : 'hidden opacity-0 transform -translate-y-4'}`}
                   >
-                    <h4 className="text-sm font-medium text-foreground mb-2">{subCategoryName}</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {keywords.map((keyword: KeywordItem) => (
-                        <Filter
-                          key={`keyword-${keyword.id}`}
-                          label={keyword.name}
-                          id={keyword.id}
-                          category={category}
-                          endpoint="keywords"
-                          slug={typeof keyword.name === 'string' ? keyword.name.toLowerCase() : ''}
-                        />
-                      ))}
+                    <div className="bg-card/50 border border-border rounded-lg p-4 mb-4">
+                      <div className="flex items-center mb-3">
+                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${gradientClass} mr-2`}></div>
+                        <h4 className="text-base font-semibold text-foreground">{subCategoryName} Keywords</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">Select keywords below to refine your game search:</p>
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {keywords.map((keyword: KeywordItem) => (
+                          <div key={`keyword-${keyword.id}`} className="filter-card">
+                            <Filter
+                              label={keyword.name}
+                              id={keyword.id}
+                              category={category}
+                              endpoint="keywords"
+                              slug={typeof keyword.name === 'string' ? keyword.name.toLowerCase() : ''}
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 );
