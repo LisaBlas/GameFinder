@@ -231,7 +231,32 @@ export const KeywordSection: React.FC = () => {
                 const keywords = getKeywordsForSubcategory(subCategoryName);
                 if (!Array.isArray(keywords) || keywords.length === 0) return null;
                 
-                // Only show the content for the active subcategory
+                const isActive = activeSubcategory === subCategoryName;
+                
+                return (
+                  <div key={subCategoryName} className="subcategory-group">
+                    <div className="subcategory-header">
+                      {subCategoryName.replace(/_/g, ' ')}
+                    </div>
+                    <div className="subcategory-content">
+                      {keywords.map((keyword) => (
+                        <div
+                          key={keyword.id}
+                          className={`keyword-filter ${isActive ? 'active' : ''}`}
+                          onClick={() => {
+                            if (isActive) {
+                              setActiveSubcategory(null);
+                            } else {
+                              setActiveSubcategory(subCategoryName);
+                            }
+                          }}
+                        >
+                          {keyword.name}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
                 const isVisible = activeSubcategory === subCategoryName;
                 
                 return (

@@ -575,6 +575,55 @@ svg.filter-caret.expanded {
   padding: 1rem;
 }
 
+.subcategory-group {
+  background: hsl(var(--card));
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+}
+
+.subcategory-header {
+  background: hsl(var(--accent));
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: hsl(var(--accent-foreground));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.subcategory-content {
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.keyword-filter {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.keyword-filter:hover {
+  background: hsl(var(--secondary)/0.8);
+  transform: translateY(-1px);
+}
+
+.keyword-filter.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary)/0.3);
+}
+
+.keyword-filter.active:hover {
+  background: hsl(var(--primary)/0.9);
+}
+
 @media (max-width: 1100px) {
   .main-content {
     flex-wrap: wrap;
