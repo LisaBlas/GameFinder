@@ -5,7 +5,7 @@ import { SelectedFilters } from "./SelectedFilters";
 import { useFilters } from "../context/FilterContext";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import keywordCategories from "../assets/keyword-categories.json";
-import { Gamepad2, Globe, Paintbrush, Search, X } from "lucide-react";
+import { Gamepad2, Globe, Paintbrush, Search, X, ArrowLeft } from "lucide-react";
 import SearchButton from "./SearchButton";
 
 interface KeywordItem {
@@ -39,21 +39,21 @@ export const KeywordSection: React.FC = () => {
       id: "Game Mechanics & Systems",
       title: "Game Mechanics",
       description: "Gameplay elements, progression systems, and interactive mechanics",
-      icon: <Gamepad2 className="h-6 w-6" />,
+      icon: <Gamepad2 className="h-12 w-12" />,
       color: "from-blue-500 to-cyan-600"
     },
     {
       id: "Setting & World",
       title: "Setting & World",
       description: "Time periods, locations, and thematic environments",
-      icon: <Globe className="h-6 w-6" />,
+      icon: <Globe className="h-12 w-12" />,
       color: "from-emerald-500 to-teal-600"
     },
     {
       id: "Aesthetics & Style",
       title: "Aesthetics & Style",
       description: "Visual styles, artistic influences, and presentation",
-      icon: <Paintbrush className="h-6 w-6" />,
+      icon: <Paintbrush className="h-12 w-12" />,
       color: "from-purple-500 to-pink-600"
     }
   ];
@@ -84,8 +84,7 @@ export const KeywordSection: React.FC = () => {
       <div className="p-4">
         {!selectedMainCategory ? (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium text-foreground">Choose a Category</h3>
+            <div className="flex justify-end mb-4">
               <div className="flex gap-2">
                 <button 
                   className="px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-sm font-medium flex items-center gap-1"
@@ -122,17 +121,17 @@ export const KeywordSection: React.FC = () => {
               {mainCategories.map((cat) => (
                 <div 
                   key={cat.id}
-                  className="cursor-pointer bg-muted/50 border border-border rounded-lg overflow-hidden shadow-md hover:shadow-lg hover:bg-muted transition-all"
+                  className={`cursor-pointer bg-muted/50 border border-border rounded-lg overflow-hidden shadow-md hover:shadow-lg hover:bg-muted transition-all duration-300 ${
+                    selectedMainCategory && selectedMainCategory !== cat.id ? 'opacity-0 h-0 md:h-0 p-0 m-0 border-0 cursor-default' : ''
+                  }`}
                   onClick={() => setSelectedMainCategory(cat.id)}
                 >
-                  <div className={`bg-gradient-to-r ${cat.color} p-4 text-white`}>
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold">{cat.title}</h4>
+                  <div className={`bg-gradient-to-r ${cat.color} p-6 text-white flex flex-col items-center`}>
+                    <div className="text-4xl mb-3">
                       {cat.icon}
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <p className="text-sm text-muted-foreground">{cat.description}</p>
+                    <h4 className="font-semibold text-xl mb-2">{cat.title}</h4>
+                    <p className="text-sm text-white/90 text-center">{cat.description}</p>
                   </div>
                 </div>
               ))}
@@ -140,17 +139,8 @@ export const KeywordSection: React.FC = () => {
           </>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <button 
-                  className="text-sm text-primary hover:text-primary/80 mr-2"
-                  onClick={() => setSelectedMainCategory(null)}
-                >
-                  ← Back
-                </button>
-                <h3 className="font-medium text-foreground">{selectedMainCategory}</h3>
-              </div>
-              
+            {/* The buttons remain at the top, same as in non-expanded view */}
+            <div className="flex justify-end mb-4">
               <div className="flex gap-2">
                 <button 
                   className="px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-sm font-medium flex items-center gap-1"
@@ -182,6 +172,25 @@ export const KeywordSection: React.FC = () => {
                 </button>
               </div>
             </div>
+            
+            {/* Find the selected category to display its header with gradient */}
+            {mainCategories
+              .filter(cat => cat.id === selectedMainCategory)
+              .map(cat => (
+                <div key={`expanded-${cat.id}`} className="mb-6 rounded-lg overflow-hidden">
+                  <div className={`bg-gradient-to-r ${cat.color} p-4 text-white relative`}>
+                    <button 
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-white hover:text-white/80 flex items-center"
+                      onClick={() => setSelectedMainCategory(null)}
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-1" />
+                      Back
+                    </button>
+                    <h3 className="font-medium text-white text-center text-xl">{cat.title}</h3>
+                  </div>
+                </div>
+              ))
+            }
             
             <div className="mb-4">
               <h4 className="text-sm text-muted-foreground mb-2">Subcategories:</h4>
