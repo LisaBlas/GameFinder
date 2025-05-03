@@ -77,6 +77,15 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   // Filter management functions
   const addFilter = useCallback((filter) => {
     setSelectedFilters(prevFilters => {
+      // For platforms category, only allow one selection at a time
+      if (filter.category === 'platforms') {
+        // Remove all existing platform filters
+        const nonPlatformFilters = prevFilters.filter(f => f.category !== 'platforms');
+        // Add the new platform filter
+        return [...nonPlatformFilters, filter];
+      }
+      
+      // For other categories, maintain the existing logic
       // Check if any filter in the same category already exists
       const existingFilterIndex = prevFilters.findIndex(
         f => f.category === filter.category && !f.isChild

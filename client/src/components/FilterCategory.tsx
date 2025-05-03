@@ -29,11 +29,11 @@ export const FilterCategory: React.FC<FilterCategoryProps> = ({title, children})
   return (
     <div className="filter-category">
       <div 
-        className={`filter-category-header ${expand ? 'expanded' : ''}`}
+        className={`filter-category-header ${expand ? 'expanded' : ''} flex items-center justify-between`}
         onClick={handleClick}
       >
-        <h3>{title.replace(/_/g, ' ').charAt(0).toUpperCase() + title.replace(/_/g, ' ').slice(1).toLowerCase().replace(' and ', ' & ')}</h3>
-        <span className={`caret ${expand ? 'expanded' : ''}`}>
+        <h3 className="font-medium text-white">{title.replace(/_/g, ' ').charAt(0).toUpperCase() + title.replace(/_/g, ' ').slice(1).toLowerCase().replace(' and ', ' & ')}</h3>
+        <span className={`caret ${expand ? 'expanded' : ''} flex items-center`}>
           <RxCaretDown />
         </span>
       </div>

@@ -3,7 +3,7 @@ import { FilterCategory } from './FilterCategory';
 import { Filter } from './Filter';
 import { useFilters } from '../context/FilterContext';
 import filterData from '../lib/filters';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 
 interface FilterSidebarProps {
   collapsed: boolean;
@@ -13,18 +13,26 @@ interface FilterSidebarProps {
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ collapsed, onToggleCollapse }) => {
   return (
     <aside 
-      className={`transition-all duration-300 ease-in-out bg-slate-800 p-4 md:min-h-screen md:overflow-y-auto border-r border-slate-700 relative ${
+      className={`transition-all duration-300 ease-in-out ${
         collapsed 
-          ? 'w-16 md:w-16' 
-          : 'w-full md:w-80 lg:w-96'
-      }`}
+          ? 'w-12 md:w-12 p-0' 
+          : 'w-full md:w-80 lg:w-96 bg-slate-800 p-4 md:min-h-screen md:overflow-y-auto border-r border-slate-700'
+      } relative`}
     >
       <button 
-        className="absolute top-4 right-4 p-2 rounded-full bg-slate-700 text-white hover:bg-slate-600 transition-colors"
+        className={`absolute z-10 ${
+          collapsed 
+            ? 'top-4 left-1 p-2 text-slate-800 hover:text-slate-600' 
+            : 'top-4 right-4 p-2 rounded-full bg-slate-700 text-white hover:bg-slate-600'
+        } transition-colors`}
         onClick={onToggleCollapse}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
-        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        {collapsed ? (
+          <SlidersHorizontal size={20} />
+        ) : (
+          <ChevronLeft size={16} />
+        )}
       </button>
       
       {!collapsed && (
@@ -103,14 +111,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ collapsed, onToggleCollap
                 ))}
               </div>
             </FilterCategory>
-          </div>
-        </div>
-      )}
-      
-      {collapsed && (
-        <div className="flex flex-col items-center pt-12 space-y-4">
-          <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
-            <span className="text-white font-bold">F</span>
           </div>
         </div>
       )}
