@@ -13,7 +13,17 @@ interface FilterProps {
   hasChildren?: boolean;
   isParentOnly?: boolean;
   parentId?: string | number;
+  onClick?: () => void;
 }
+
+// Define the order of categories
+const CATEGORY_ORDER = [
+  "platforms",
+  "genres",
+  "themes",
+  "Game Mode",
+  "Perspective"
+];
 
 export const Filter: React.FC<FilterProps> = ({ 
   label, 
@@ -25,7 +35,8 @@ export const Filter: React.FC<FilterProps> = ({
   hasChildren, 
   endpoint, 
   isParentOnly, 
-  parentId 
+  parentId,
+  onClick
 }) => {
   const { 
     selectedFilters, 
@@ -33,7 +44,8 @@ export const Filter: React.FC<FilterProps> = ({
     removeFilter, 
     isFilterSelected,
     setFilterExpanded,
-    isFilterExpanded
+    isFilterExpanded,
+    setCategoryExpanded
   } = useFilters();
 
   // Create a composite key using all unique identifiers
@@ -57,16 +69,8 @@ export const Filter: React.FC<FilterProps> = ({
     setExpanded(isFilterExpanded(compositeId));
   }, [isFilterExpanded, compositeId]);
 
-  // Handle auto-expansion separately - only when relevant dependencies change
-  useEffect(() => {
-    // Only set expanded state if it needs to change
-    if (hasChildren && (isSelected || hasSelectedChildren) && !expanded) {
-      setExpanded(true);
-      setFilterExpanded(compositeId, true);
-    }
-  }, [hasChildren, isSelected, hasSelectedChildren, expanded, compositeId, setFilterExpanded]);
-
   const handleClick = () => {
+    let filterWasSelected = false;
     // Toggle filter selection
     if (id && id !== 'null') {
       if (!isSelected) {
@@ -80,9 +84,12 @@ export const Filter: React.FC<FilterProps> = ({
             endpoint,
             compositeId,
             isParentOnly,
-            parentId, // Pass parent ID for child filters
-            isChild: !!parentId // Flag to identify child filters
+            parentId,
+            isChild: !!parentId
           });
+          filterWasSelected = true;
+          // Call onClick callback if provided
+          onClick?.();
         }
       } else {
         removeFilter(id, category, endpoint);
@@ -95,49 +102,63 @@ export const Filter: React.FC<FilterProps> = ({
       setExpanded(newExpandedState);
       setFilterExpanded(compositeId, newExpandedState);
     }
+
+    // Category auto-close/open logic (except for parent-filters in Platforms)
+    if (
+      filterWasSelected &&
+      !(category === "platforms" && hasChildren)
+    ) {
+      const currentIdx = CATEGORY_ORDER.indexOf(category);
+      if (currentIdx !== -1) {
+        // Close current
+        setCategoryExpanded(category, false);
+        // Open next if exists
+        const nextCategory = CATEGORY_ORDER[currentIdx + 1];
+        if (nextCategory) {
+          setCategoryExpanded(nextCategory, true);
+        }
+      }
+    }
   };
 
   return (
     <>
-      <div 
-        className={`
-          w-full px-3 py-2 rounded-md border text-sm transition-all duration-200 flex items-center justify-between
-          ${isSelected 
-            ? 'border-primary bg-primary/10 text-primary font-medium shadow-sm' 
-            : 'border-border hover:border-muted-foreground/50 bg-card hover:bg-card/80 text-foreground cursor-pointer'}
-          ${isKid ? 'ml-3 text-xs mt-1 border-dashed' : ''}
-        `}
+      <div
+        className={`filter-pill${isSelected ? " selected animate-blink" : ""}${isKid ? " kid" : ""}${(hasChildren || isParentOnly) ? " parent" : ""}${expanded ? " expanded" : ""}`}
         onClick={handleClick}
         data-composite-id={compositeId}
       >
-        <span className={`${isSelected ? 'font-medium' : ''}`}>{label}</span>
+        <span>{label}</span>
         {hasChildren && kids && kids.some(kid => kid.display !== false) && (
-          <span className={`flex items-center transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>
+          <span className={`caret${expanded ? " expanded" : ""}`}>
             <RxCaretDown className="h-4 w-4" />
           </span>
         )}
       </div>
 
       {/* Show children if expanded */}
-      {kids && expanded && kids
-        .filter(kid => kid.display !== false)
-        .map(kid => {
-          return (
-            <Filter 
-              key={`${category}-${kid.id}-${kid.endpoint || endpoint}-${kid.slug || ""}`}
-              label={kid.name}
-              id={kid.id}
-              slug={kid.slug}
-              category={category}
-              endpoint={kid.endpoint || endpoint}
-              isKid={true}
-              kids={kid.children || []}
-              hasChildren={kid.children && kid.children.length > 0}
-              parentId={id} // Pass the parent ID to child filters
-            />
-          );
-        })
-      }
+      {kids && (
+        <div className={`filter-children${expanded ? " expanded" : ""}`}>
+          {kids
+            .filter(kid => kid.display !== false)
+            .map(kid => {
+              return (
+                <Filter 
+                  key={`${category}-${kid.id}-${kid.endpoint || endpoint}-${kid.slug || ""}`}
+                  label={kid.name}
+                  id={kid.id}
+                  slug={kid.slug}
+                  category={category}
+                  endpoint={kid.endpoint || endpoint}
+                  isKid={true}
+                  kids={kid.children || []}
+                  hasChildren={kid.children && kid.children.length > 0}
+                  parentId={id}
+                />
+              );
+            })}
+        </div>
+      )}
     </>
   );
 };

@@ -1,61 +1,32 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
-@layer base {
-  /* Dark theme by default with purple accents */
-  :root {
-    --background: 222.2 20% 12%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 25% 15%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 25% 15%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 270 90% 60%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 270 30% 25%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 222.2 25% 20%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 270 40% 45%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 222.2 25% 25%;
-    --input: 222.2 25% 25%;
-    --ring: 270 90% 60%;
-    --radius: 0.5rem;
+
+@layer components {
+  /* Make the blink animation more specific */
+  .filter-pill.animate-blink {
+    animation: blink 0.5s ease-in-out !important;
   }
-}
- 
-@layer base {
-  * {
-    @apply border-border;
+
+  /* Make the keyword section transitions more specific */
+  .keyword-section {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
-  body {
-    @apply bg-background text-foreground;
+
+  .keyword-section.collapsing {
+    transform: scale(0.95) !important;
+    opacity: 0 !important;
   }
 }
 
-/* Filter Pill Styles */
-.filter-pill {
-  @apply inline-flex rounded-full px-3 py-1.5 text-sm font-medium cursor-pointer border border-secondary transition-colors;
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
-}
-
-.filter-pill.active {
-  @apply bg-primary text-primary-foreground border-primary;
-}
-
-.filter-pill.is-kid {
-  @apply ml-4 mt-1 text-xs;
-}
-
-.filter-caret {
-  @apply transition-transform duration-200 ease-in-out text-lg;
-}
-
-.filter-caret.expanded {
-  @apply rotate-180;
-}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+} 

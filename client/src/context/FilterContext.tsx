@@ -147,18 +147,24 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   
   // Filter expansion management
   const setFilterExpanded = useCallback((filterId: string, isExpanded: boolean) => {
-    if (isExpanded) {
-      // When expanding a filter, collapse all other filters
-      const newExpandedState: Record<string, boolean> = {};
-      newExpandedState[filterId] = true;
-      setExpandedFilters(newExpandedState);
-    } else {
-      // When collapsing, just update this one filter
-      setExpandedFilters(prev => ({
-        ...prev,
-        [filterId]: false
-      }));
-    }
+    setExpandedFilters(prev => {
+      // Create a new state object
+      const newState = { ...prev };
+      
+      if (isExpanded) {
+        // When expanding, clear all other expanded states
+        Object.keys(newState).forEach(key => {
+          newState[key] = false;
+        });
+        // Set the new filter as expanded
+        newState[filterId] = true;
+      } else {
+        // When collapsing, just set this filter to false
+        newState[filterId] = false;
+      }
+      
+      return newState;
+    });
   }, []);
   
   const isFilterExpanded = useCallback((filterId: string) => {

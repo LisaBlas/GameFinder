@@ -1,10 +1,10 @@
 {
   "Time Periods": [
     {
-      "name": "retro",
+      "name": "Prehistoric",
       "category": "Setting & World",
       "sub-category": "Time Periods",
-      "id": 126
+      "id": 1370
     },
     {
       "name": "medieval",
@@ -611,162 +611,144 @@
   ],
   "Combat Systems": [
     {
-      "name": "explosion",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 3831
-    },
-    {
-      "name": "melee",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 4891
-    },
-    {
-      "name": "martial arts",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 61
-    },
-    {
-      "name": "war",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 1107
-    },
-    {
-      "name": "real-time combat",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 4918
-    },
-    {
-      "name": "bow and arrow",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 4392
-    },
-    {
-      "name": "tank",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 1821
-    },
-    {
-      "name": "mech",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 167
-    },
-    {
-      "name": "military",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 563
-    },
-    {
-      "name": "turn-based combat",
+      "name": "Turn-Based",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 2399
     },
     {
-      "name": "hand-to-hand combat",
+      "name": "Real-Time",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 977
+      "id": 4918
     },
     {
-      "name": "battle",
+      "name": "Cover System",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 4074
+      "id": 5451
     },
     {
-      "name": "tactical turn-based combat",
+      "name": "Real-Time with Pause",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 4248
+      "id": 6057
     },
     {
-      "name": "combat",
+      "name": "Souls-like",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 1884
+      "id": 17326
     },
     {
-      "name": "instant kill",
+      "name": "Auto-Battler",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 4990
+      "id": 40897
     },
     {
-      "name": "violent",
+      "name": "Quick-Time Events",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 3257
+      "id": 512
     },
     {
-      "name": "throwing weapons",
+      "name": "Bullet Hell",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 4179
+      "id": 911
     },
     {
-      "name": "dual wielding",
+      "name": "Twin Stick",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 6716
+      "id": 17371 
     },
     {
-      "name": "special attacks",
+      "name": "Battle Arena",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 4494
+      "id": 114
     },
     {
-      "name": "turn-based tactics",
+      "name": "Vehicle Combat",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 1548
+      "id": 25
+    },
+    {
+      "name": "Bullet Time",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Systems",
+      "id": 1309
+    },
+    {
+      "name": "Parry",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Systems",
+      "id": 5019
+    },
+    {
+      "name": "Active Reload",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Systems",
+      "id": 6278
+    },
+    {
+      "name": "On-the-fly Character Switching",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Systems",
+      "id": 7558
+    },
+    {
+      "name": "Crowd Control",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Systems",
+      "id": 9200
+    },
+    {
+      "name": "Environmental Kills",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Systems",
+      "id": 6457
     }
   ],
   "Challenge Types": [
     {
-      "name": "boss fight",
+      "name": "Resource Management",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 3486
+      "id": 606
     },
     {
-      "name": "gambling",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 729
-    },
-    {
-      "name": "traps",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 1345
-    },
-    {
-      "name": "precision platforming",
+      "name": "Precision Platforming",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
       "id": 25831
     },
     {
-      "name": "permadeath",
+      "name": "Survival Mode",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Challenge Types",
+      "id": 5304
+    },
+    {
+      "name": "Micromanagement",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Challenge Types",
+      "id": 1162
+    },
+    {
+      "name": "Permadeath",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
       "id": 578
     },
     {
-      "name": "hunting",
+      "name": "Moral Decisions",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 64
+      "id": 4850
     },
     {
       "name": "speedrun",
@@ -1401,12 +1383,6 @@
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 1643
-    },
-    {
-      "name": "arena",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 114
     },
     {
       "name": "shanghai",

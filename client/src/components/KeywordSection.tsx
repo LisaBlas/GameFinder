@@ -5,8 +5,10 @@ import { SelectedFilters } from "./SelectedFilters";
 import { useFilters } from "../context/FilterContext";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import keywordCategories from "../assets/keyword-categories.json";
-import { Gamepad2, Globe, Paintbrush, Search, X, ArrowLeft } from "lucide-react";
+import { Gamepad2, Globe, Paintbrush, Search, X, ArrowLeft, ChevronDown } from "lucide-react";
 import SearchButton from "./SearchButton";
+import Tooltip from "./Tooltip";
+import KeywordSearch from './KeywordSearch';
 
 interface KeywordItem {
   id: number;
@@ -24,9 +26,15 @@ interface CategoryCard {
   description: string;
   icon: React.ReactNode;
   color: string;
+  hoverColor: string;
 }
 
-export const KeywordSection: React.FC = () => {
+interface KeywordSectionProps {
+  expanded: boolean;
+  setActiveSection: (section: 'keywords' | 'filters') => void;
+}
+
+export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setActiveSection }) => {
   // Category for filter context
   const category = 'Keywords';
   const [selectedMainCategory, setSelectedMainCategory] = useState<MainCategory | null>(null);
@@ -37,24 +45,27 @@ export const KeywordSection: React.FC = () => {
   const mainCategories: CategoryCard[] = [
     {
       id: "Game Mechanics & Systems",
-      title: "Game Mechanics",
+      title: "Game Mechanics & Systems",
       description: "Gameplay elements, progression systems, and interactive mechanics",
       icon: <Gamepad2 className="h-12 w-12" />,
-      color: "from-blue-500 to-cyan-600"
+      color: "from-blue-500 to-cyan-600",
+      hoverColor: "hover:from-background hover:to-background"
     },
     {
       id: "Setting & World",
       title: "Setting & World",
       description: "Time periods, locations, and thematic environments",
       icon: <Globe className="h-12 w-12" />,
-      color: "from-emerald-500 to-teal-600"
+      color: "from-emerald-500 to-teal-600",
+      hoverColor: "hover:from-background hover:to-background"
     },
     {
       id: "Aesthetics & Style",
       title: "Aesthetics & Style",
       description: "Visual styles, artistic influences, and presentation",
       icon: <Paintbrush className="h-12 w-12" />,
-      color: "from-purple-500 to-pink-600"
+      color: "from-purple-500 to-pink-600",
+      hoverColor: "hover:from-background hover:to-background"
     }
   ];
 
@@ -72,58 +83,40 @@ export const KeywordSection: React.FC = () => {
     // Match subcategories to appropriate emojis
     const emojiMap: Record<string, string> = {
       // Game Mechanics & Systems subcategories
-      "Player Actions & Movement": "🏃",
-      "Combat & Conflict": "⚔️",
-      "Progression Systems": "📈",
-      "Game Rules & Objectives": "🎯",
-      "Difficulty & Challenge": "🔥",
-      "Game Modes": "🎮",
-      "Interface & Controls": "🎛️",
-      "Rewards & Economy": "💰",
-      "Character Abilities": "✨",
-      "Level Design": "🧩",
-      "Multiplayer": "👥",
-      "NPC Behavior": "🤖",
-      "Power-ups": "⚡",
-      "Resource Management": "📦",
-      "Team Dynamics": "🤝",
-      "Tactical Combat": "🛡️",
+      "Combat Systems": "⚔️",
+      "Combat Environments": "🌋",
+      "Combat Styles": "🎯",
+      "Movement Types": "🏃",
+      "Game Structure": "🏗️",
+      "Player Progression": "📈",
+      "Challenge Types": "🔥",
+      "Control Schemes": "🎮",
+      "Game Economy": "💰",
+      "Game Features": "✨",
+      "RPG Elements": "🧙",
+      "Puzzle Types": "🧩",
+      "Shooter Types": "🔫",
+      "Sports Types": "⚽",
+      "Strategy Types": "🎲",
+      "Simulation Elements": "🧠",
       
       // Setting & World subcategories
-      "Time Period": "⏳",
-      "Geography & Environment": "🌍",
-      "Culture & Society": "👨‍👩‍👧‍👦",
-      "Narrative Theme": "📚",
-      "Climate & Weather": "☁️",
-      "Worldbuilding Elements": "🏛️",
-      "Historical Setting": "📜",
-      "Future & Sci-Fi": "🚀",
-      "Fantasy Elements": "🧙",
-      "Religious & Mythical": "✝️",
-      "Modern Day": "🏙️",
-      "Post-Apocalyptic": "☢️",
-      "Political Systems": "🏛️",
-      "Alternate History": "🔄",
-      "Fictional Locations": "🗺️",
-      "Wildlife & Creatures": "🐉",
+      "Time Periods": "⏳",
+      "Locations": "🗺️",
+      "Environmental Features": "🌍",
+      "Historical Events": "📜",
+      "Cultural Elements": "👨‍👩‍👧‍👦",
+      "Setting Conditions": "🌆",
+      "Vehicles & Transportation": "🚗",
+      "Entertainment Franchises": "🎬",
+      "Internet Culture": "🌐",
       
       // Aesthetics & Style subcategories
-      "Visual Style": "🎨",
-      "Artistic Influences": "🖌️",
-      "Camera Perspective": "📷",
-      "Mood & Atmosphere": "🌆",
-      "Animation Style": "🎬",
-      "Technical Presentation": "💻",
-      "Color Palette": "🎭",
-      "Audio Design": "🔊",
-      "Lighting Effects": "💡",
-      "UI Design": "📊",
-      "Character Design": "👾",
-      "Environmental Design": "🌲",
-      "Particle Effects": "✨",
-      "Art Direction": "🖼️",
-      "Visual Filters": "🔍",
-      "Soundtrack": "🎵"
+      "Art Styles": "🎨",
+      "Visual Themes": "🎭",
+      "Atmosphere": "🌆",
+      "Sound Design": "🔊",
+      "Narrative Tone": "📚"
     };
     
     return emojiMap[subCategory] || "🎲"; // Default to dice emoji if not found
@@ -141,59 +134,82 @@ export const KeywordSection: React.FC = () => {
     }
   };
 
+  // Add handler for keyword selection
+  const handleKeywordClick = () => {
+    // Add a class to trigger collapse animation
+    const section = document.querySelector('.keyword-section');
+    if (section) {
+      section.classList.add('collapsing');
+    }
+    
+    // Wait for collapse animation to complete before switching sections
+    setTimeout(() => {
+      setActiveSection('filters');
+    }, 500); // Match this with the CSS animation duration
+  };
+
+  if (!expanded) {
+    return (
+      <div
+        className="keyword-section w-full bg-card rounded-lg overflow-hidden flex flex-col hover:bg-muted/80 items-center justify-center text-center py-10 cursor-pointer min-h-[180px] transition-all duration-500"
+        onClick={() => setActiveSection('keywords')}
+        style={{ userSelect: 'none' }}
+      >
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center justify-center mb-2">
+            <Gamepad2 className="w-10 h-10 text-primary" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-wide mb-1">
+            Choose One Keyword
+          </h2>
+          <p className="text-base md:text-lg text-secondary-foreground/80 mb-2 max-w-xl mx-auto">
+            Start your search by selecting gameplay mechanics, settings, or aesthetics that interest you. This helps us find games you'll love!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="keyword-section w-full bg-card rounded-lg shadow-md overflow-hidden border border-border">      
-      <div className="p-4">
+    <div className="keyword-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 h-[calc(100vh-200px)] overflow-y-auto">
+      {!selectedMainCategory && (
+        <div className="w-full bg-primary/10 border-b border-primary/20 py-3 px-4">
+          <div className="flex items-center justify-center gap-3">
+            <Gamepad2 className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-extrabold text-primary tracking-wide">
+              Choose One Keyword
+            </h2>
+          </div>
+        </div>
+      )}
+
+      {/* Add the search bar only when no category is selected */}
+      {!selectedMainCategory && (
+        <div className="w-full max-w-[500px] mx-auto px-4 mt-6">
+          <KeywordSearch />
+        </div>
+      )}
+
+      <div className="w-full max-w-[500px] mx-auto flex flex-col gap-4">
         {!selectedMainCategory ? (
           <>
-            <div className="flex justify-end mb-4">
-              <div className="flex gap-2">
-                <button 
-                  className="px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-sm font-medium flex items-center gap-1"
-                  onClick={clearAllFilters}
-                >
-                  <X className="w-4 h-4" />
-                  Clear All
-                </button>
-                
-                <button 
-                  className="px-3 py-1.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-medium flex items-center gap-1"
-                  onClick={handleSearch}
-                  disabled={selectedFilters.length === 0 || isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Searching...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-4 h-4" />
-                      Search
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {mainCategories.map((cat) => (
+            <div className="gap-4 max-w-xl mx-auto">
+              {mainCategories.map((cat, index) => (
                 <div 
                   key={cat.id}
-                  className={`cursor-pointer bg-muted/50 border border-border rounded-lg overflow-hidden shadow-md hover:shadow-lg hover:bg-muted transition-all duration-300 ${
+                  className={`cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 ${
                     selectedMainCategory && selectedMainCategory !== cat.id ? 'opacity-0 h-0 md:h-0 p-0 m-0 border-0 cursor-default' : 'category-enter'
-                  } ${!selectedMainCategory ? 'main-category-container' : ''}`}
+                  } ${!selectedMainCategory ? 'main-category-container' : ''} ${
+                    index === 2 ? 'col-span-2 md:col-span-1 md:col-start-2' : ''
+                  }`}
                   onClick={() => setSelectedMainCategory(cat.id)}
                 >
-                  <div className={`bg-gradient-to-r ${cat.color} p-6 text-white flex flex-col items-center`}>
-                    <div className="text-4xl mb-3">
+                  <div className={`p-6 flex flex-col items-center bg-gradient-to-r ${cat.color} ${cat.hoverColor} group transition-all duration-300 relative hover:border-2 hover:border-purple-500 hover:shadow-[0_0_15px_rgba(168,85,247,0.5)]`}>
+                    <div className="text-4xl mb-3 text-white group-hover:text-purple-500 transition-colors">
                       {cat.icon}
                     </div>
-                    <h4 className="font-semibold text-xl mb-2">{cat.title}</h4>
-                    <p className="text-sm text-white/90 text-center">{cat.description}</p>
+                    <h4 className="font-semibold text-xl mb-2 text-white group-hover:text-purple-500 transition-colors">{cat.title}</h4>
+                    <p className="text-sm text-white/90 group-hover:text-white text-center transition-colors">{cat.description}</p>
                   </div>
                 </div>
               ))}
@@ -201,41 +217,6 @@ export const KeywordSection: React.FC = () => {
           </>
         ) : (
           <>
-            {/* The buttons remain at the top, same as in non-expanded view */}
-            <div className="flex justify-end mb-4">
-              <div className="flex gap-2">
-                <button 
-                  className="px-3 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded text-sm font-medium flex items-center gap-1"
-                  onClick={clearAllFilters}
-                >
-                  <X className="w-4 h-4" />
-                  Clear All
-                </button>
-                
-                <button 
-                  className="px-3 py-1.5 bg-primary text-primary-foreground hover:bg-primary/90 rounded text-sm font-medium flex items-center gap-1"
-                  onClick={handleSearch}
-                  disabled={selectedFilters.length === 0 || isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Searching...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-4 h-4" />
-                      Search
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-            
-            {/* Single title bar that changes based on context (main category or subcategory) */}
             <div className="mb-6 rounded-lg overflow-hidden">
               {mainCategories
                 .filter(cat => cat.id === selectedMainCategory)
@@ -243,7 +224,6 @@ export const KeywordSection: React.FC = () => {
                   const mainCat = mainCategories.find(c => c.id === selectedMainCategory);
                   const gradientClass = mainCat ? mainCat.color : '';
                   
-                  // If a subcategory is active, show subcategory in title
                   if (activeSubcategory) {
                     const emoji = getSubcategoryEmoji(activeSubcategory);
                     return (
@@ -263,7 +243,6 @@ export const KeywordSection: React.FC = () => {
                     );
                   }
                   
-                  // Otherwise show main category in title
                   return (
                     <div key={`title-category-${cat.id}`} className={`bg-gradient-to-r ${cat.color} p-4 text-white relative main-category-enter`}>
                       <button 
@@ -284,30 +263,36 @@ export const KeywordSection: React.FC = () => {
             </div>
             
             {!activeSubcategory ? (
-              <div className="mb-6 category-enter">
-                <h4 className="text-base font-semibold text-foreground mb-3">Choose a Subcategory:</h4>
+              <div className="mb-6 category-enter max-w-xl mx-auto">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4 filter-grid-enter">
-                  {getSubcategories(selectedMainCategory).map((subCategoryName) => {
-                    const keywords = getKeywordsForSubcategory(subCategoryName);
-                    if (!Array.isArray(keywords) || keywords.length === 0) return null;
-                    
-                    const emoji = getSubcategoryEmoji(subCategoryName);
-                    
-                    return (
-                      <div 
-                        key={`subcategory-${subCategoryName}`}
-                        className="subcategory-card flex flex-col items-center rounded-lg p-3 text-sm font-medium cursor-pointer transition-all duration-200 bg-card"
-                        onClick={() => setActiveSubcategory(subCategoryName)}
-                      >
-                        <span className="emoji text-2xl mb-2">{emoji}</span>
-                        <span className="text-center">{subCategoryName}</span>
-                      </div>
-                    );
-                  })}
+                  {getSubcategories(selectedMainCategory)
+                    .map((subCategoryName) => {
+                      const keywords = getKeywordsForSubcategory(subCategoryName);
+                      if (!Array.isArray(keywords) || keywords.length === 0) return null;
+                      
+                      const emoji = getSubcategoryEmoji(subCategoryName);
+                      const description =
+                      keywordCategories[selectedMainCategory as MainCategory]?.[subCategoryName]?.description || "No description available.";
+                      
+                      return (
+                        <Tooltip key={`tooltip-${subCategoryName}`} content={description}>
+                          <div 
+                            key={`subcategory-${subCategoryName}`}
+                            className="subcategory-card flex flex-col items-center rounded-lg p-3 text-sm font-medium cursor-pointer transition-all duration-200 bg-card"
+                            onClick={() => {
+                              setActiveSubcategory(subCategoryName);
+                            }}
+                          >
+                            <span className="emoji text-2xl mb-2">{emoji}</span>
+                            <span className="text-center">{subCategoryName}</span>
+                          </div>
+                        </Tooltip>
+                      );
+                    })}
                 </div>
               </div>
             ) : (
-              <div className="keyword-filters">
+              <div className="keyword-filters max-w-xl mx-auto">
                 {getSubcategories(selectedMainCategory)
                   .filter(subCategoryName => subCategoryName === activeSubcategory)
                   .map((subCategoryName) => {
@@ -323,11 +308,11 @@ export const KeywordSection: React.FC = () => {
                             {keywords.map((keyword: KeywordItem) => (
                               <div key={`keyword-${keyword.id}`} className="filter-card">
                                 <Filter
+                                  key={keyword.id}
                                   label={keyword.name}
                                   id={keyword.id}
                                   category={category}
-                                  endpoint="keywords"
-                                  slug={typeof keyword.name === 'string' ? keyword.name.toLowerCase() : ''}
+                                  onClick={handleKeywordClick}
                                 />
                               </div>
                             ))}

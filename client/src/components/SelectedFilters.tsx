@@ -15,7 +15,7 @@ export const SelectedFilters: React.FC = () => {
         {selectedFilters.map(filter => (
           <div 
             key={`${filter.category}-${filter.id}`} 
-            className="selected-filter-pill"
+            className={`selected-filter-pill${filter.isSelected ? " selected" : ""}${filter.isKid ? " kid" : ""}`}
             onClick={() => removeFilter(filter.id, filter.category, filter.endpoint)}
             role="button"
             aria-label={`Remove ${filter.name} filter`}

@@ -27,9 +27,9 @@ export const FilterCategory: React.FC<FilterCategoryProps> = ({title, children})
   }
 
   return (
-    <div className="filter-category mb-4">
+    <div className={`filter-category mb-4 ${expand ? 'expanded' : ''}`}>
       <div 
-        className={`filter-category-header bg-muted/50 hover:bg-muted px-3 py-2 rounded ${expand ? 'expanded' : ''} flex items-center justify-between cursor-pointer`}
+        className={`filter-category-header hover:bg-muted px-3 py-2 rounded ${expand ? 'expanded' : ''} flex items-center justify-between cursor-pointer`}
         onClick={handleClick}
       >
         <h3 className="font-medium text-foreground">{title.replace(/_/g, ' ').charAt(0).toUpperCase() + title.replace(/_/g, ' ').slice(1).toLowerCase().replace(' and ', ' & ')}</h3>
@@ -37,11 +37,9 @@ export const FilterCategory: React.FC<FilterCategoryProps> = ({title, children})
           <RxCaretDown />
         </span>
       </div>
-      {expand && 
-        <div className="filter-category-content mt-3 px-2">
-          {children}
-        </div>
-      }
+      <div className={`filter-category-content ${expand ? 'expanded' : ''}`}>
+        {children}
+      </div>
     </div>
   );
 };

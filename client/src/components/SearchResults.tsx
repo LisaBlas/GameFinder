@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFilters } from '../context/FilterContext';
 import GameCard from './GameCard';
 import EmptyState from './EmptyState';
+import InitialState from './InitialState';
 import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
-import SearchPrompt from './SearchPrompt';
-import { SelectedFilters } from './SelectedFilters';
-import { LayoutGrid, List } from 'lucide-react';
-
-type ViewMode = 'grid' | 'list';
 
 const SearchResults: React.FC = () => {
   const { gameResults, isLoading, error, sortBy, setSortBy, selectedFilters } = useFilters();
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const hasEverSearched = gameResults.length > 0 || isLoading;
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Update hasSearched when a search is performed
+  useEffect(() => {
+    if (isLoading) {
+      setHasSearched(true);
+    }
+  }, [isLoading]);
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
@@ -21,26 +23,17 @@ const SearchResults: React.FC = () => {
 
   // Render different states based on loading and results
   const renderContent = () => {
-    if (!hasEverSearched && selectedFilters.length === 0) {
-      return <SearchPrompt />;
-    }
-    
     if (isLoading && gameResults.length === 0) {
       return <LoadingState />;
     }
     
-    if (!isLoading && gameResults.length === 0 && hasEverSearched) {
-      return <EmptyState />;
+    if (!isLoading && gameResults.length === 0) {
+      return hasSearched ? <EmptyState /> : <InitialState />;
     }
     
     return (
       <>
-        <div className={`
-          ${viewMode === 'grid' 
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
-            : 'space-y-4'
-          }
-        `}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {gameResults.map(game => (
             <GameCard key={`game-${game.id}`} game={game} />
           ))}
@@ -52,21 +45,13 @@ const SearchResults: React.FC = () => {
   };
 
   return (
-    <section className="flex-1 p-6">
-      {/* Selected Filters always visible */}
-      <div className="mb-4 p-4 bg-slate-800 rounded-lg">
-        <div className="mb-2">
-          <h3 className="text-sm font-medium text-slate-300">Selected Tags:</h3>
-        </div>
-        <div className="selected-tags-wrapper">
-          <SelectedFilters />
-        </div>
-      </div>
-      
-      {/* Only show results header if we have results or are searching */}
-      {hasEverSearched && (
+    <section className="flex-1 w-full md:w-4/5 mx-auto">
+      {/* Only show results header if we have results or have searched */}
+      {hasSearched && (
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <h2 className="text-2xl font-heading font-semibold text-white">Game Results</h2>
+          <h2 className="text-2xl font-heading font-semibold text-white">
+            {gameResults.length} {gameResults.length === 1 ? 'Result' : 'Results'}
+          </h2>
           
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-slate-400">
@@ -76,28 +61,10 @@ const SearchResults: React.FC = () => {
                 value={sortBy}
                 onChange={handleSortChange}
               >
-                <option value="relevance">Relevance</option>
                 <option value="rating">Rating</option>
                 <option value="release">Release Date</option>
                 <option value="name">Name</option>
               </select>
-            </div>
-            
-            <div className="flex items-center bg-slate-700 rounded-lg p-0.5">
-              <button 
-                className={`p-2 rounded-md ${viewMode === 'grid' ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-600 hover:text-white'} transition-colors duration-200`}
-                onClick={() => setViewMode('grid')}
-                aria-label="Grid view"
-              >
-                <LayoutGrid className="w-5 h-5" />
-              </button>
-              <button 
-                className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-primary-600 text-white' : 'text-slate-300 hover:bg-slate-600 hover:text-white'} transition-colors duration-200`}
-                onClick={() => setViewMode('list')}
-                aria-label="List view"
-              >
-                <List className="w-5 h-5" />
-              </button>
             </div>
           </div>
         </div>

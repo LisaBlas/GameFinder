@@ -1,5 +1,33 @@
 import axios from 'axios';
-import { storage } from '../storage';
+import { storage } from '../storage.js';
+
+interface Game {
+  id: number;
+  name: string;
+  platforms?: Array<{ id: number; name: string }>;
+  genres?: Array<{ id: number; name: string }>;
+  themes?: Array<{ id: number; name: string }>;
+  game_modes?: Array<{ id: number; name: string }>;
+  keywords?: Array<{ id: number; name: string }>;
+  external_games?: Array<{
+    id: number;
+    name: string;
+    category: number;
+    url: string;
+  }>;
+  websites?: Array<{
+    id: number;
+    url: string;
+    category: number;
+  }>;
+}
+
+interface Store {
+  id: number;
+  name: string;
+  category: number;
+  url: string;
+}
 
 export class IGDBService {
   private baseUrl = 'https://api.igdb.com/v4';
@@ -61,9 +89,18 @@ export class IGDBService {
   /**
    * Make an authenticated request to the IGDB API
    */
-  private async makeRequest(endpoint: string, body: string) {
+  async makeRequest(endpoint: string, body: string) {
     try {
       const accessToken = await this.getAccessToken();
+      
+      console.log('[igdbService] Making request to IGDB:', {
+        endpoint,
+        body,
+        headers: {
+          'Client-ID': this.clientId,
+          'Authorization': `Bearer ${accessToken.substring(0, 10)}...`
+        }
+      });
       
       const response = await axios.post(`${this.baseUrl}/${endpoint}`, body, {
         headers: {
@@ -72,13 +109,23 @@ export class IGDBService {
         }
       });
       
-      return response.data;
-    } catch (error) {
-      console.error(`Error making IGDB API request to ${endpoint}:`, error);
+      console.log('[igdbService] IGDB response:', {
+        status: response.status,
+        dataLength: response.data?.length,
+        firstItem: response.data?.[0]
+      });
       
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
+      return response.data;
+    } catch (error: any) {
+      console.error(`[igdbService] Error making IGDB API request to ${endpoint}:`, {
+        error: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        body: body
+      });
+      
+      if (error.response?.data) {
+        throw new Error(`IGDB API error: ${JSON.stringify(error.response.data)}`);
       }
       
       throw new Error(`IGDB API request failed: ${error.message}`);
@@ -89,203 +136,137 @@ export class IGDBService {
    * Search games based on provided filters
    */
   async searchGames(filters: any, sortOption: string = 'relevance') {
-    console.log('[igdbService] Starting game search:', { filters, sortOption });
-    const filterConditions: string[] = [];
-    const selectedPlatforms: number[] = [];
-    const selectedGenres: number[] = [];
-    const selectedThemes: number[] = [];
-    const selectedModes: number[] = [];
-    const selectedKeywords: number[] = [];
-    
-    console.log('[igdbService] Initialized filter arrays');
-    
-    // Process filter groups
-    Object.entries(filters).forEach(([category, values]) => {
-      const items = values as any[];
+    try {
+      console.log('[igdbService] Starting game search:', { filters, sortOption });
+      const filterConditions: string[] = [];
       
-      // Normalize category name and handle the items
-      const normalizedCategory = category.toLowerCase().replace(/\s+/g, '_');
+      // Process filter groups
+      Object.entries(filters).forEach(([category, values]) => {
+        const items = values as any[];
+        
+        // Normalize category name
+        const normalizedCategory = category.toLowerCase().replace(/\s+/g, '_');
+        
+        // Skip empty arrays
+        if (!items || items.length === 0) return;
+        
+        // Get all valid IDs for this category
+        const validIds = items
+          .filter(item => item.id && !isNaN(Number(item.id)))
+          .map(item => Number(item.id));
+        
+        if (validIds.length === 0) return;
+        
+        // Add filter condition based on category
+        switch(normalizedCategory) {
+          case 'platforms':
+            filterConditions.push(`platforms = [${validIds.join(',')}]`);
+            break;
+          case 'genres':
+            filterConditions.push(`genres = [${validIds.join(',')}]`);
+            break;
+          case 'themes':
+            filterConditions.push(`themes = [${validIds.join(',')}]`);
+            break;
+          case 'game_mode':
+            filterConditions.push(`game_modes = [${validIds.join(',')}]`);
+            break;
+          case 'keywords':
+            filterConditions.push(`keywords = [${validIds.join(',')}]`);
+            break;
+          case 'perspective':
+            filterConditions.push(`player_perspectives = [${validIds.join(',')}]`);
+            break;
+        }
+      });
       
-      switch(normalizedCategory) {
-        case 'platforms':
-          items.forEach(item => {
-            if (item.id && !isNaN(Number(item.id))) {
-              selectedPlatforms.push(Number(item.id));
-            }
-          });
+      // Convert filter conditions to where clause
+      let whereClause = filterConditions.length > 0 
+        ? filterConditions.join(' & ') 
+        : 'id != null';
+      
+      // Determine sort order based on selection
+      let sortClause = '';
+      switch(sortOption) {
+        case 'name':
+          sortClause = 'sort name asc;';
           break;
-        case 'genres':
-          items.forEach(item => {
-            if (item.id && !isNaN(Number(item.id))) {
-              selectedGenres.push(Number(item.id));
-            }
-          });
+        case 'release':
+          sortClause = 'sort first_release_date desc;';
           break;
-        case 'themes':
-          items.forEach(item => {
-            if (item.id && !isNaN(Number(item.id))) {
-              selectedThemes.push(Number(item.id));
-            }
-          });
+        case 'rating':
+          sortClause = 'sort rating desc;';
           break;
-        case 'game_mode':
-          items.forEach(item => {
-            if (item.id && !isNaN(Number(item.id))) {
-              selectedModes.push(Number(item.id));
-            }
-          });
-          break;
-        case 'keywords':
-          items.forEach(item => {
-            if (item.id && !isNaN(Number(item.id))) {
-              selectedKeywords.push(Number(item.id));
-            }
-          });
-          break;
-      case 'perspective':
-          items.forEach(item => {
-            if (item.id && !isNaN(Number(item.id))) {
-              filterConditions.push(`player_perspectives = (${Number(item.id)})`);
-              console.log(`[igdbService] Added perspective filter: ${item.id}`);
-            }
-          });
-          break;
-        default:
-          console.log(`[igdbService] Unhandled filter category: ${category} (normalized: ${normalizedCategory})`);
+        default: // relevance
+          sortClause = 'sort rating desc;';
       }
-    });
-    
-    // Add filter conditions based on selected values
-    // Using [x,y,z] syntax for AND logic within each category
-    if (selectedPlatforms.length > 0) {
-      filterConditions.push(`platforms = [${selectedPlatforms.join(',')}]`);
-      console.log(`[igdbService] Added platforms filter with AND logic: [${selectedPlatforms.join(',')}]`);
-    }
-    
-    if (selectedGenres.length > 0) {
-      filterConditions.push(`genres = [${selectedGenres.join(',')}]`);
-      console.log(`[igdbService] Added genres filter with AND logic: [${selectedGenres.join(',')}]`);
-    }
-    
-    if (selectedThemes.length > 0) {
-      filterConditions.push(`themes = [${selectedThemes.join(',')}]`);
-      console.log(`[igdbService] Added themes filter with AND logic: [${selectedThemes.join(',')}]`);
-    }
-    
-    if (selectedModes.length > 0) {
-      filterConditions.push(`game_modes = [${selectedModes.join(',')}]`);
-      console.log(`[igdbService] Added game modes filter with AND logic: [${selectedModes.join(',')}]`);
-    }
-    
-    if (selectedKeywords.length > 0) {
-      filterConditions.push(`keywords = [${selectedKeywords.join(',')}]`);
-      console.log(`[igdbService] Added keywords filter with AND logic: [${selectedKeywords.join(',')}]`);
-    }
-    
-    // Convert filter conditions to where clause
-    let whereClause = filterConditions.length > 0 
-      ? filterConditions.join(' & ') 
-      : 'rating > 0';
-    
-    console.log('[igdbService] Generated filter conditions:', {
-      individualConditions: filterConditions,
-      combinedWhereClause: whereClause
-    });
-    
-    // Add rating requirement to filter out games without ratings
-    if (filterConditions.length > 0) {
-      whereClause = `(${whereClause}) & rating != null`;
-      console.log('[igdbService] Final where clause with rating requirement:', whereClause);
-    }
-    
-    // Determine sort order based on selection
-    let sortClause = '';
-    switch(sortOption) {
-      case 'name':
-        sortClause = 'sort name asc;';
-        break;
-      case 'release':
-        sortClause = 'sort first_release_date desc;';
-        break;
-      case 'rating':
-        sortClause = 'sort rating desc;';
-        break;
-      default: // relevance
-        sortClause = 'sort rating desc;';
-    }
-    
-    const query = `
-      fields name, summary, first_release_date, cover.url, platforms.name, genres.name, themes.name, game_modes.name, keywords.name, rating;
-      where ${whereClause};
-      ${sortClause}
-      limit 30;
-    `;
-    
-    console.log('[igdbService] Executing IGDB query:', query);
-    const games = await this.makeRequest('games', query);
-    console.log(`[igdbService] Retrieved ${games.length} games from IGDB`);
-    
-    // Process results to add filter match information
-    return games.map(game => {
-      console.log(`[igdbService] Processing game: ${game.name} (ID: ${game.id})`);
-      // Track which filter IDs matched this game
-      const matchedFilterIds = [];
-      
-      // Check platforms
-      if (game.platforms) {
-        console.log(`[igdbService] ${game.name} - Checking platforms:`, {
-          gamePlatforms: game.platforms.map(p => p.id),
-          selectedPlatforms
-        });
-        game.platforms.forEach(platform => {
-          if (selectedPlatforms.includes(platform.id)) {
-            console.log(`[igdbService] ${game.name} - Matched platform ${platform.id}`);
-            matchedFilterIds.push(platform.id);
+
+      // Build the query
+      const query = `
+        fields name, summary, first_release_date, cover.url, platforms.name, genres.name, themes.name, game_modes.name, keywords.name, rating, websites.url, websites.category, external_games.url, external_games.category;
+        where ${whereClause};
+        ${sortClause}
+        limit 50;
+      `.trim();
+
+      console.log('[igdbService] Executing IGDB query:', {
+        query,
+        whereClause,
+        sortClause
+      });
+
+      const games = await this.makeRequest('games', query);
+      console.log(`[igdbService] Retrieved ${games.length} games from IGDB`);
+
+      // Process results and log website information before mapping
+      games.forEach((game: Game) => {
+        console.log(`\n[igdbService] ${game.name} links:`);
+        
+        if (game.websites?.length) {
+          console.log(`Websites (${game.websites.length}):`, 
+            game.websites.map(w => `${this.getWebsiteCategoryName(w.category)}`).join(', '));
+        }
+
+        if (game.external_games?.length) {
+          console.log(`Stores (${game.external_games.length}):`,
+            game.external_games.map(s => `${this.getStoreCategoryName(s.category)}`).join(', '));
+        }
+      });
+
+      // Now process and return the results
+      return games.map((game: Game) => {
+        const matchedFilterIds: number[] = [];
+        
+        // Check each category for matches
+        Object.entries(filters).forEach(([category, values]) => {
+          const items = values as any[];
+          const normalizedCategory = category.toLowerCase().replace(/\s+/g, '_');
+          
+          // Get the corresponding game property
+          const gameProperty = normalizedCategory === 'game_mode' ? 'game_modes' : normalizedCategory;
+          
+          if (game[gameProperty as keyof Game]) {
+            const gameItems = game[gameProperty as keyof Game] as Array<{ id: number }>;
+            gameItems.forEach(item => {
+              if (items.some(filter => Number(filter.id) === item.id)) {
+                matchedFilterIds.push(item.id);
+              }
+            });
           }
         });
+        
+        return {
+          ...game,
+          _matchedFilters: matchedFilterIds
+        };
+      });
+    } catch (error: any) {
+      console.error('[igdbService] Error in searchGames:', error);
+      if (error.response?.data) {
+        console.error('[igdbService] IGDB API error details:', error.response.data);
       }
-      
-      // Check genres
-      if (game.genres) {
-        game.genres.forEach(genre => {
-          if (selectedGenres.includes(genre.id)) {
-            matchedFilterIds.push(genre.id);
-          }
-        });
-      }
-      
-      // Check themes
-      if (game.themes) {
-        game.themes.forEach(theme => {
-          if (selectedThemes.includes(theme.id)) {
-            matchedFilterIds.push(theme.id);
-          }
-        });
-      }
-      
-      // Check game modes
-      if (game.game_modes) {
-        game.game_modes.forEach(mode => {
-          if (selectedModes.includes(mode.id)) {
-            matchedFilterIds.push(mode.id);
-          }
-        });
-      }
-      
-      // Check keywords
-      if (game.keywords) {
-        game.keywords.forEach(keyword => {
-          if (selectedKeywords.includes(keyword.id)) {
-            matchedFilterIds.push(keyword.id);
-          }
-        });
-      }
-      
-      return {
-        ...game,
-        _matchedFilters: matchedFilterIds
-      };
-    });
+      throw new Error(`Failed to search games: ${error.message}`);
+    }
   }
 
   /**
@@ -325,5 +306,137 @@ export class IGDBService {
     `;
     
     return await this.makeRequest('themes', query);
+  }
+
+  /**
+   * Debug function to explore store endpoint
+   */
+  async debugStores() {
+    try {
+      // 1. Get store fields
+      console.log('\n1. Getting store fields...');
+      const storeFields = await this.makeRequest('stores', 'fields *; limit 1;');
+      console.log('Store fields:', JSON.stringify(storeFields, null, 2));
+
+      // 2. Get a sample store
+      console.log('\n2. Getting a sample store...');
+      const sampleStore = await this.makeRequest('stores', 'fields *; limit 1;');
+      console.log('Sample store:', JSON.stringify(sampleStore, null, 2));
+
+      // 3. Get games with stores
+      console.log('\n3. Getting a game with its stores...');
+      const gameWithStores = await this.makeRequest('games', 'fields name, stores.*; where stores != null; limit 1;');
+      console.log('Game with stores:', JSON.stringify(gameWithStores, null, 2));
+
+      // 4. Get store categories
+      console.log('\n4. Getting store categories...');
+      const storeCategories = await this.makeRequest('store_categories', 'fields *; limit 10;');
+      console.log('Store categories:', JSON.stringify(storeCategories, null, 2));
+
+      // 5. Get store websites
+      console.log('\n5. Getting store websites...');
+      const storeWebsites = await this.makeRequest('store_websites', 'fields *; limit 10;');
+      console.log('Store websites:', JSON.stringify(storeWebsites, null, 2));
+
+    } catch (error: any) {
+      console.error('Error:', error.response?.data || error.message);
+    }
+  }
+
+  /**
+   * Get human-readable website category name
+   */
+  private getWebsiteCategoryName(category: number): string {
+    const categories: { [key: number]: string } = {
+      1: 'Official Website',
+      2: 'Wikia',
+      3: 'Wikipedia',
+      4: 'Facebook',
+      5: 'Twitter',
+      6: 'Twitch',
+      8: 'Instagram',
+      9: 'YouTube',
+      13: 'Steam',
+      14: 'Reddit',
+      15: 'Itch.io',
+      16: 'Epic Games',
+      17: 'GOG',
+      18: 'Discord'
+    };
+    return categories[category] || `Category ${category}`;
+  }
+
+  /**
+   * Get human-readable store category name
+   */
+  private getStoreCategoryName(category: number): string {
+    const categories: { [key: number]: string } = {
+      1: 'Steam',
+      2: 'GOG',
+      3: 'Epic Games',
+      4: 'App Store',
+      5: 'Google Play',
+      6: 'Nintendo eShop',
+      7: 'Xbox Store',
+      8: 'PlayStation Store',
+      9: 'itch.io',
+      10: 'Humble Bundle',
+      11: 'Microsoft Store'
+    };
+    return categories[category] || `Store ${category}`;
+  }
+
+  /**
+   * Analyze all stores and websites in the IGDB API
+   */
+  async analyzeStoresAndWebsites() {
+    try {
+      console.log('\n=== Analyzing IGDB Stores and Websites ===\n');
+
+      // 1. Get all store categories
+      console.log('1. Fetching store categories...');
+      const storeCategories = await this.makeRequest('store_categories', 'fields *; sort id asc;');
+      console.log('\nStore Categories:');
+      storeCategories.forEach((category: any) => {
+        console.log(`ID ${category.id}: ${category.name}`);
+      });
+
+      // 2. Get all stores
+      console.log('\n2. Fetching all stores...');
+      const stores = await this.makeRequest('stores', 'fields id, name, category; sort name asc;');
+      console.log('\nStores:');
+      stores.forEach((store: any) => {
+        const categoryName = this.getStoreCategoryName(store.category);
+        console.log(`${store.name} (ID: ${store.id}, Category: ${categoryName})`);
+      });
+
+      // 3. Get all website categories
+      console.log('\n3. Fetching website categories...');
+      const websiteCategories = await this.makeRequest('website_categories', 'fields *; sort id asc;');
+      console.log('\nWebsite Categories:');
+      websiteCategories.forEach((category: any) => {
+        console.log(`ID ${category.id}: ${category.name}`);
+      });
+
+      // 4. Get all websites for a sample game to see the structure
+      console.log('\n4. Fetching sample game websites...');
+      const sampleGame = await this.makeRequest('games', 'fields name, websites.*; limit 1;');
+      if (sampleGame.length > 0) {
+        console.log('\nSample Game Websites Structure:');
+        console.log(JSON.stringify(sampleGame[0], null, 2));
+      }
+
+      // 5. Get store websites
+      console.log('\n5. Fetching store websites...');
+      const storeWebsites = await this.makeRequest('store_websites', 'fields *; sort id asc;');
+      console.log('\nStore Websites:');
+      storeWebsites.forEach((website: any) => {
+        console.log(`ID ${website.id}: ${website.url}`);
+      });
+
+      console.log('\n=== Analysis Complete ===\n');
+    } catch (error: any) {
+      console.error('Error analyzing stores and websites:', error.response?.data || error.message);
+    }
   }
 }

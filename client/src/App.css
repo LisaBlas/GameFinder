@@ -1,3 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 20% 12%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 25% 15%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 25% 15%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 270 90% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 270 30% 25%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222.2 25% 20%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 270 40% 45%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222.2 25% 25%;
+    --input: 222.2 25% 25%;
+    --ring: 270 90% 60%;
+    --radius: 0.5rem;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Filter Pill Styles */
+.filter-pill {
+  @apply inline-flex rounded-full px-3 py-1.5 text-sm font-medium cursor-pointer border border-secondary transition-colors;
+  @apply bg-secondary text-secondary-foreground;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #1D2230;
+  border-color: #262e40;
+}
+
+.filter-pill:hover{
+  border: 1px solid #8B5CF6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+}
+
+/* Add dashed border for children filters in platforms category */
+.filter-pill.kid {
+  border: 1px dashed #8B5CF6;
+}
+
+.filter-pill.active, .filter-pill.selected {
+  @apply bg-primary text-primary-foreground border-primary;
+}
+
+.filter-caret {
+  @apply transition-transform duration-200 ease-in-out text-lg;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.filter-caret.expanded {
+  @apply rotate-180;
+  transform: rotate(180deg);
+}
+
+/* Custom CSS */
+
 .app {
   min-height: 100vh;
   display: flex;
@@ -23,22 +92,18 @@
   padding: 2rem;
 }
 
-.filters {
-  width: 350px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  flex: 0 0 25vw;
-  min-width: 350px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
-  position: relative;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+.filter-section {
+  border-radius: 12px;
+  border-color: #262e40;
+  margin: 0 auto;
 }
 
 .filters::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
+}
+
+.game-results{
+  border-radius: 30px;
 }
 
 @media (max-width: 768px) {
@@ -154,12 +219,6 @@
   max-height: fit-content;
 }
 
-/* Make sure selected tags don't overflow */
-.selected-filters-tags {
-  max-width: 100%;
-  overflow-x: auto; /* Allow horizontal scrolling if too many tags */
-  padding-bottom: 4px; /* Space for scrollbar */
-}
 
 .results-header {
   display: flex;
@@ -243,18 +302,6 @@
   opacity: 0.8;
 }
 
-.selected-filters-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.selected-filters-header h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
 .clear-all-selected {
   background: none;
   border: none;
@@ -312,7 +359,11 @@
   font-size: 1.1rem;
 }
 
-/* We're using the theme CSS variables from index.css instead of hardcoded colors */
+.bottom-bar {
+  background-color: transparent;
+  border: none;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -321,13 +372,14 @@ body {
 .filter-category {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   margin-bottom: 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 2px solid #282849;
+  border-radius: 12px 12px 12px 12px;
 }
+
+
 .filter-category-header{
-  background-color: #f7fafc;
+  border-radius: 12px 12px 12px 12px;
   padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
@@ -343,11 +395,44 @@ h3{
   font-weight: 600;
 }
 
-.filter-category-content{
+.filter-category-content.expanded{
   padding: 0.5rem 1rem;
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
+}
+
+.filter-category-content,
+.filter-children {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+  pointer-events: none;
+}
+
+.filter-category-content.expanded,
+.filter-children.expanded {
+  max-height: 1000px;
+  opacity: 1;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s;
+  pointer-events: auto;
+}
+
+/* Parent filter styles */
+.filter-pill.parent{
+  background-color: #1D2230;
+  border-color: #262e40;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-pill.parent.expanded{
+  border: 2px solid #8B5CF6;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-pill.parent:hover{
+  border: 1px solid #8B5CF6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
 }
 
 /* Filter card game-inspired styles */
@@ -436,14 +521,12 @@ h3{
   }
 }
 
-@keyframes slideIn {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateX(-20px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
   }
 }
 
@@ -510,10 +593,12 @@ h3{
 /* Main category transition */
 .main-category-container {
   transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .main-category-enter {
-  animation: slideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .main-category-exit {
@@ -540,6 +625,8 @@ h3{
 .filter-category-header.expanded svg.caret {
   transform: rotate(180deg);
 }
+
+
 
 .filter-pill.active svg.caret {
   transition: transform 0.2s ease;
@@ -581,6 +668,7 @@ h3{
   border: 1px solid hsl(var(--border));
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  max-height: 550px;
 }
 
 .game-card:hover {
@@ -676,19 +764,12 @@ svg.filter-caret.expanded {
 }
 
 /* KeywordSection styles with gaming aesthetics */
+
 .keyword-section {
-  width: 300px;
-  flex: 0 0 300px;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
   border-radius: 12px;
-  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.25);
-  overflow-y: auto;
-  max-height: calc(100vh - 100px);
-  scrollbar-width: thin;
-  -ms-overflow-style: auto;
-  position: relative;
+  margin: 0 auto;
 }
+
 
 .keyword-section::before {
   content: '';
@@ -788,5 +869,78 @@ svg.filter-caret.expanded {
   .keyword-section {
     width: 100%;
     flex: auto;
+  }
+}
+
+/* Filter children container */
+.filter-children {
+  max-height: 0;
+  display: none;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+}
+
+.filter-children.expanded {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 500px; /* Adjust based on your needs */
+  opacity: 1;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease-in-out;
+}
+
+.filter-category.expanded {
+  border: 2px solid #8B5CF6;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+/* Hero Button Light Streak Animation */
+.hero-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 45%,
+    rgba(255, 255, 255, 0.8) 48%,
+    rgba(255, 255, 255, 0.8) 52%,
+    transparent 55%,
+    transparent 100%
+  );
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.hero-button:hover::before {
+  opacity: 1;
+  animation: light-streak 0.4s ease-out forwards;
+}
+
+@keyframes light-streak {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+    opacity: 0;
   }
 }

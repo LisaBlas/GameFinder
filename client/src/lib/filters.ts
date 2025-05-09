@@ -11,7 +11,7 @@ const filterData = {
       "children": [
         {
           "id": 6,
-          "name": "PC (Microsoft Windows)"
+          "name": "Windows"
         },
         {
           "id": 14,
@@ -107,11 +107,11 @@ const filterData = {
       "children": [
         {
           "id": 130,
-          "name": "Nintendo Switch"
+          "name": "Switch"
         },
         {
           "id": 508,
-          "name": "Nintendo Switch 2"
+          "name": "Switch 2"
         },
         {
           "id": 41,
@@ -123,7 +123,7 @@ const filterData = {
         },
         {
           "id": 21,
-          "name": "Nintendo GameCube"
+          "name": "GameCube"
         },
         {
           "id": 4,
@@ -131,27 +131,27 @@ const filterData = {
         },
         {
           "id": 19,
-          "name": "Super Nintendo Entertainment System"
+          "name": "SNES"
         },
         {
           "id": 18,
-          "name": "Nintendo Entertainment System"
+          "name": "NES"
         },
         {
           "id": 37,
-          "name": "Nintendo 3DS"
+          "name": "3DS"
         },
         {
           "id": 137,
-          "name": "New Nintendo 3DS"
+          "name": "New 3DS"
         },
         {
           "id": 20,
-          "name": "Nintendo DS"
+          "name": "DS"
         },
         {
           "id": 159,
-          "name": "Nintendo DSi"
+          "name": "DSi"
         },
         {
           "id": 24,
@@ -232,9 +232,16 @@ const filterData = {
       ]
     },
     {
-      "id": 52,
+      "id": "Arcade",
       "name": "Arcade",
-      "hasChildren": false
+      "hasChildren": true,
+      "isParentOnly": true,
+      "children": [
+        {
+          "id": 52,
+          "name": "Arcade Hardware"
+        }
+      ]
     },
     {
       "id": "sega-parent",
@@ -248,23 +255,23 @@ const filterData = {
         },
         {
           "id": 32,
-          "name": "Sega Saturn"
+          "name": "Saturn"
         },
         {
           "id": 29,
-          "name": "Sega Mega Drive/Genesis"
+          "name": "Mega Drive/Genesis"
         },
         {
           "id": 78,
-          "name": "Sega CD"
+          "name": "CD"
         },
         {
           "id": 35,
-          "name": "Sega Game Gear"
+          "name": "Game Gear"
         },
         {
           "id": 64,
-          "name": "Sega Master System/Mark III"
+          "name": "Master System/Mark III"
         }
       ]
     },
@@ -434,7 +441,7 @@ const filterData = {
     },
     {
       "id": 41,
-      "name": "4X (explore, expand, exploit, and exterminate)"
+      "name": "4X"
     },
     {
       "id": 42,

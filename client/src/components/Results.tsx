@@ -6,7 +6,7 @@ export const Results: React.FC = () => {
   const { selectedFilters, gameResults, isLoading, error, sortBy, setSortBy } = useFilters();
 
   return (
-    <div className="results">
+    <div className="game-results results">
       <div className="results-header">
         <div className="results-sort">
           <span className="sort-label">Sort by:</span>
