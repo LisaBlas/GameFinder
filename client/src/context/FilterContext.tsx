@@ -35,6 +35,7 @@ interface FilterContextType {
   searchGames: () => Promise<void>;
   hasMore: boolean;
   loadMoreGames: () => Promise<void>;
+  retryLoadMore: () => Promise<void>;
 }
 
 // Create the FilterContext with the defined type
@@ -73,6 +74,12 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
+  const [pageCache, setPageCache] = useState<Record<number, any[]>>({});
+  const [pendingRequests, setPendingRequests] = useState<Record<number, Promise<any>>>({});
+  const [retryCount, setRetryCount] = useState<Record<number, number>>({});
+  const [lastError, setLastError] = useState<{page: number, error: any} | null>(null);
+  const MAX_RETRIES = 3;
+  const RESULTS_PER_PAGE = 30;
   
   // Filter management functions
   const addFilter = useCallback((filter: Filter) => {
@@ -200,23 +207,21 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     
     setIsLoading(true);
     setError(null);
-    setPage(1); // Reset to first page for new searches
-    console.log('[FilterContext] Reset page to 1, cleared errors');
+    setPage(1);
+    setPageCache({}); // Clear cache on new search
+    setPendingRequests({}); // Clear pending requests
+    setRetryCount({}); // Clear retry counts
+    setLastError(null); // Clear last error
+    console.log('[FilterContext] Reset page to 1, cleared cache and errors');
     
     try {
       // Group filters by category for the API
       const groupedFilters = selectedFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
-        // Skip parent-only filters
         if (filter.isParentOnly) return acc;
-        
-        // Initialize category array if it doesn't exist
         if (!acc[filter.category]) {
           acc[filter.category] = [];
         }
-        
-        // Add filter to its category group
         acc[filter.category].push(filter);
-        
         return acc;
       }, {});
       
@@ -226,18 +231,14 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         page: 1
       });
       
-      // Process the results to identify which filters matched
       const processedResults = response.data.map((game: any) => {
-        // Track matched and missing filters
         const matched: Filter[] = [];
         const missing: Filter[] = [];
         
-        // Go through each selected filter and check if it matched
         selectedFilters
-          .filter(filter => !filter.isParentOnly) // Skip parent-only filters
+          .filter(filter => !filter.isParentOnly)
           .forEach(filter => {
             const matchId = game._matchedFilters?.includes(Number(filter.id));
-            
             if (matchId) {
               matched.push(filter);
             } else {
@@ -254,11 +255,18 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         };
       });
       
+      // Cache the first page results
+      setPageCache(prev => ({
+        ...prev,
+        1: processedResults
+      }));
+      
       setGameResults(processedResults);
-      setHasMore(response.data.length >= 30); // If we got 30 results, there might be more
+      setHasMore(response.data.length >= RESULTS_PER_PAGE);
     } catch (err: any) {
       console.error("Error searching games:", err);
       setError(err.response?.data?.message || "Failed to search games. Please try again.");
+      setLastError({ page: 1, error: err });
     } finally {
       setIsLoading(false);
     }
@@ -268,6 +276,26 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     if (isLoading || !hasMore) return;
     
     const nextPage = page + 1;
+    console.log(`[FilterContext] Loading more games:`, {
+      page: nextPage,
+      currentCount: gameResults.length,
+      excludeIds: gameResults.map(g => g.id)
+    });
+    
+    // Check cache first
+    if (pageCache[nextPage]) {
+      console.log(`[FilterContext] Using cached results for page ${nextPage}`);
+      setGameResults(prev => [...prev, ...pageCache[nextPage]]);
+      setPage(nextPage);
+      return;
+    }
+    
+    // Check if there's already a pending request for this page
+    if (pendingRequests[nextPage]) {
+      console.log(`[FilterContext] Using existing request for page ${nextPage}`);
+      return pendingRequests[nextPage];
+    }
+    
     setIsLoading(true);
     
     try {
@@ -280,13 +308,27 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         return acc;
       }, {});
       
-      const response = await axios.post('/api/games/search', {
+      const excludeIds = gameResults.map(game => game.id);
+      
+      const request = axios.post('/api/games/search', {
         filters: groupedFilters,
         sort: sortBy,
-        page: nextPage
+        page: nextPage,
+        excludeIds
       });
       
-      // Process results like in the searchGames function
+      setPendingRequests(prev => ({
+        ...prev,
+        [nextPage]: request
+      }));
+      
+      const response = await request;
+      console.log(`[FilterContext] Received response:`, {
+        page: nextPage,
+        newCount: response.data.length,
+        excludeCount: excludeIds.length
+      });
+      
       const processedResults = response.data.map((game: any) => {
         const matched: Filter[] = [];
         const missing: Filter[] = [];
@@ -295,7 +337,6 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
           .filter(filter => !filter.isParentOnly)
           .forEach(filter => {
             const matchId = game._matchedFilters?.includes(Number(filter.id));
-            
             if (matchId) {
               matched.push(filter);
             } else {
@@ -312,17 +353,89 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         };
       });
       
-      // Append new results to existing ones
-      setGameResults(prev => [...prev, ...processedResults]);
-      setHasMore(response.data.length >= 30);
+      // Check for duplicates before updating state
+      const newIds = processedResults.map((g: { id: number }) => g.id);
+      const existingIds = gameResults.map((g: { id: number }) => g.id);
+      const duplicates = newIds.filter((id: number) => existingIds.includes(id));
+      
+      if (duplicates.length > 0) {
+        console.warn(`[FilterContext] Found duplicate games:`, {
+          count: duplicates.length,
+          ids: duplicates
+        });
+      }
+      
+      // Cache the results
+      setPageCache(prev => ({
+        ...prev,
+        [nextPage]: processedResults
+      }));
+      
+      // Reset retry count on success
+      setRetryCount(prev => {
+        const newRetries = { ...prev };
+        delete newRetries[nextPage];
+        return newRetries;
+      });
+      
+      setGameResults(prev => {
+        const updatedResults = [...prev, ...processedResults];
+        console.log(`[FilterContext] Updated results:`, {
+          previousCount: prev.length,
+          newCount: processedResults.length,
+          totalCount: updatedResults.length
+        });
+        return updatedResults;
+      });
+      
+      setHasMore(response.data.length >= RESULTS_PER_PAGE);
       setPage(nextPage);
+      setLastError(null);
     } catch (err: any) {
-      console.error("Error loading more games:", err);
-      setError(err.response?.data?.message || "Failed to load more games. Please try again.");
+      console.error(`[FilterContext] Error loading more games:`, {
+        page: nextPage,
+        error: err.message
+      });
+      setLastError({ page: nextPage, error: err });
+      
+      const currentRetries = retryCount[nextPage] || 0;
+      
+      if (currentRetries < MAX_RETRIES) {
+        setRetryCount(prev => ({
+          ...prev,
+          [nextPage]: currentRetries + 1
+        }));
+        
+        setError(`Failed to load more games. Retrying... (${currentRetries + 1}/${MAX_RETRIES})`);
+        
+        // Retry after a delay with exponential backoff
+        setTimeout(() => {
+          loadMoreGames();
+        }, 1000 * Math.pow(2, currentRetries));
+      } else {
+        setError('Failed to load more games. Please try again.');
+      }
     } finally {
+      // Clear the pending request
+      setPendingRequests(prev => {
+        const newPending = { ...prev };
+        delete newPending[nextPage];
+        return newPending;
+      });
       setIsLoading(false);
     }
-  }, [isLoading, hasMore, page, selectedFilters, sortBy]);
+  }, [isLoading, hasMore, page, selectedFilters, sortBy, gameResults, pageCache, pendingRequests, retryCount]);
+  
+  const retryLoadMore = useCallback(async () => {
+    if (lastError) {
+      setRetryCount(prev => ({
+        ...prev,
+        [lastError.page]: 0
+      }));
+      setError(null);
+      await loadMoreGames();
+    }
+  }, [lastError, loadMoreGames]);
   
   // Provide all our values and functions through the context
   const value = {
@@ -344,7 +457,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     setSortBy,
     searchGames,
     hasMore,
-    loadMoreGames
+    loadMoreGames,
+    retryLoadMore
   };
   
   return (

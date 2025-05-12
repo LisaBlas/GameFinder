@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useFilters } from '../context/FilterContext';
 import GameCard from './GameCard';
 import EmptyState from './EmptyState';
-import InitialState from './InitialState';
 import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
 
 const SearchResults: React.FC = () => {
-  const { gameResults, isLoading, error, sortBy, setSortBy, selectedFilters } = useFilters();
+  const { gameResults, isLoading, error, sortBy, setSortBy, selectedFilters, hasMore } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
 
   // Update hasSearched when a search is performed
@@ -27,21 +26,25 @@ const SearchResults: React.FC = () => {
       return <LoadingState />;
     }
     
-    if (!isLoading && gameResults.length === 0) {
-      return hasSearched ? <EmptyState /> : <InitialState />;
+    if (!isLoading && gameResults.length === 0 && hasSearched) {
+      return <EmptyState />;
     }
     
-    return (
-      <>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {gameResults.map(game => (
-            <GameCard key={`game-${game.id}`} game={game} />
-          ))}
-        </div>
-        
-        <LoadMoreButton />
-      </>
-    );
+    if (gameResults.length > 0) {
+      return (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {gameResults.map(game => (
+              <GameCard key={`game-${game.id}`} game={game} />
+            ))}
+          </div>
+          
+          <LoadMoreButton />
+        </>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -50,7 +53,7 @@ const SearchResults: React.FC = () => {
       {hasSearched && (
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <h2 className="text-2xl font-heading font-semibold text-white">
-            {gameResults.length} {gameResults.length === 1 ? 'Result' : 'Results'}
+            {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
           </h2>
           
           <div className="flex items-center gap-4">

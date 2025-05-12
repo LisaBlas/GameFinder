@@ -19,40 +19,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Game search endpoint
   app.post('/api/games/search', async (req, res) => {
     try {
-      console.log('[routes] Search request received:', {
-        body: req.body,
-        headers: req.headers
+      // Log the raw request body to see what we're receiving
+      console.log('[routes] Raw request body:', {
+        page: req.body.page,
+        excludeIds: req.body.excludeIds,
+        excludeCount: req.body.excludeIds?.length
       });
       
-      const { filters, sort = 'relevance' } = req.body;
+      const { 
+        filters, 
+        sort = 'relevance', 
+        page = 1, 
+        excludeIds = [] 
+      } = req.body;
       
       if (!filters || Object.keys(filters).length === 0) {
-        console.log('[routes] Rejecting request - no filters provided');
         return res.status(400).json({ message: 'No filters provided' });
       }
 
-      console.log('[routes] Processing search with filters:', JSON.stringify(filters, null, 2));
+      console.log('[routes] Processing search:', {
+        page,
+        excludeIds,
+        excludeCount: excludeIds.length
+      });
 
       // Get games from IGDB API based on filters
-      const games = await igdbService.searchGames(filters, sort);
+      const games = await igdbService.searchGames(filters, sort, page, excludeIds);
       
-      console.log('[routes] Search completed successfully:', {
+      console.log('[routes] Search completed:', {
         resultCount: games.length,
-        firstGame: games[0]?.name
+        page,
+        excludeCount: excludeIds.length
       });
 
       // Store search in history (optional)
       await storage.saveSearch({
         filters: filters,
-        results_count: games.length
+        results_count: games.length,
+        page,
+        exclude_count: excludeIds.length
       });
 
       res.json(games);
     } catch (error: any) {
       console.error('[routes] Error searching games:', {
         error: error.message,
-        stack: error.stack,
-        filters: req.body.filters
+        page: req.body.page,
+        excludeIds: req.body.excludeIds,
+        excludeCount: req.body.excludeIds?.length
       });
       res.status(500).json({ 
         message: 'Failed to search games',

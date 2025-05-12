@@ -31,14 +31,30 @@ router.get('/search', (req, res) => {
   console.log('Searching for:', searchTerm);
   console.log('Total keywords:', allKeywords.length);
   
-  // Search through all keywords
+  // Search through all keywords and sort by match priority
   const results = allKeywords
     .filter((keyword: Keyword) => {
-      const matches = keyword.name.toLowerCase().includes(searchTerm);
-      if (matches) {
-        console.log('Found match:', keyword.name);
-      }
-      return matches;
+      const keywordName = keyword.name.toLowerCase();
+      return keywordName.includes(searchTerm);
+    })
+    .sort((a: Keyword, b: Keyword) => {
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+
+      // Exact match gets highest priority
+      if (aName === searchTerm && bName !== searchTerm) return -1;
+      if (bName === searchTerm && aName !== searchTerm) return 1;
+
+      // Starts with search term gets second priority
+      if (aName.startsWith(searchTerm) && !bName.startsWith(searchTerm)) return -1;
+      if (bName.startsWith(searchTerm) && !aName.startsWith(searchTerm)) return 1;
+
+      // Contains search term gets third priority
+      if (aName.includes(searchTerm) && !bName.includes(searchTerm)) return -1;
+      if (bName.includes(searchTerm) && !aName.includes(searchTerm)) return 1;
+
+      // If both have same priority, sort alphabetically
+      return aName.localeCompare(bName);
     })
     .slice(0, 10); // Limit to 10 results for performance
 

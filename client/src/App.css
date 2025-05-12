@@ -71,6 +71,23 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.app::before {
+  content: 'Gamefinder';
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15vw;
+  font-weight: 900;
+  color: rgba(119, 57, 234, 0.03);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
 }
 
 .header {
@@ -817,6 +834,11 @@ svg.filter-caret.expanded {
   letter-spacing: 0.5px;
 }
 
+.category-description{
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 .selected-tags-container {
   padding: 1rem;
   border-bottom: 1px solid hsl(var(--border));
@@ -859,7 +881,6 @@ svg.filter-caret.expanded {
   }
 
   .keyword-section {
-    width: calc(100% - 350px);
     flex: 1 1 auto;
     max-height: auto;
   }

@@ -5,16 +5,20 @@ import { SelectedFilters } from './SelectedFilters';
 
 interface BottomBarProps {
   resetSections: () => void;
+  resultsSectionRef: React.RefObject<HTMLDivElement>;
 }
 
-const BottomBar: React.FC<BottomBarProps> = ({ resetSections }) => {
+const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef }) => {
   const { clearAllFilters, searchGames, selectedFilters, isLoading } = useFilters();
 
-  const handleSearch = () => {
-    searchGames();
+  const handleSearch = async () => {
+    await searchGames();
+    // Scroll to results section after search is complete
+    resultsSectionRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
     resetSections();
-    // Scroll to results section
-    document.querySelector('.game-results')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleClearAll = () => {
@@ -25,8 +29,8 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections }) => {
   };
 
   return (
-    <div className="bottom-bar fixed bottom-0 left-0 right-0 flex justify-center items-center p-4 z-50">
-      <div className="backdrop-blur-sm rounded-t-lg">
+    <div className="bottom-bar fixed bottom-0 left-0 right-0 flex justify-center items-center p-4 z-50 animate-in slide-in-from-bottom duration-300">
+      <div className="rounded-t-lg">
         <div className="flex flex-col items-center gap-4 p-4">
           {/* Selected Filters */}
           <div className={`backdrop-blur-sm inline-flex rounded-lg p-4 transition-all duration-300 ${

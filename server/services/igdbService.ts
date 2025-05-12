@@ -135,29 +135,28 @@ export class IGDBService {
   /**
    * Search games based on provided filters
    */
-  async searchGames(filters: any, sortOption: string = 'relevance') {
+  async searchGames(filters: any, sortOption: string = 'relevance', page: number = 1, excludeIds: number[] = []) {
     try {
-      console.log('[igdbService] Starting game search:', { filters, sortOption });
+      console.log('[igdbService] Starting search:', { 
+        page, 
+        excludeCount: excludeIds.length 
+      });
+      
       const filterConditions: string[] = [];
       
       // Process filter groups
       Object.entries(filters).forEach(([category, values]) => {
         const items = values as any[];
-        
-        // Normalize category name
         const normalizedCategory = category.toLowerCase().replace(/\s+/g, '_');
         
-        // Skip empty arrays
         if (!items || items.length === 0) return;
         
-        // Get all valid IDs for this category
         const validIds = items
           .filter(item => item.id && !isNaN(Number(item.id)))
           .map(item => Number(item.id));
         
         if (validIds.length === 0) return;
         
-        // Add filter condition based on category
         switch(normalizedCategory) {
           case 'platforms':
             filterConditions.push(`platforms = [${validIds.join(',')}]`);
@@ -180,11 +179,21 @@ export class IGDBService {
         }
       });
       
+      // Add exclusion clause if there are IDs to exclude
+      let excludeClause = '';
+      if (excludeIds.length > 0) {
+        excludeClause = ` & id != (${excludeIds.join(',')})`;
+        console.log('[igdbService] Added exclusion clause:', {
+          excludeCount: excludeIds.length,
+          excludeClause
+        });
+      }
+
       // Convert filter conditions to where clause
       let whereClause = filterConditions.length > 0 
-        ? filterConditions.join(' & ') 
-        : 'id != null';
-      
+        ? filterConditions.join(' & ') + excludeClause
+        : 'id != null' + excludeClause;
+
       // Determine sort order based on selection
       let sortClause = '';
       switch(sortOption) {
@@ -209,40 +218,31 @@ export class IGDBService {
         limit 50;
       `.trim();
 
-      console.log('[igdbService] Executing IGDB query:', {
-        query,
-        whereClause,
-        sortClause
-      });
-
       const games = await this.makeRequest('games', query);
-      console.log(`[igdbService] Retrieved ${games.length} games from IGDB`);
-
-      // Process results and log website information before mapping
-      games.forEach((game: Game) => {
-        console.log(`\n[igdbService] ${game.name} links:`);
-        
-        if (game.websites?.length) {
-          console.log(`Websites (${game.websites.length}):`, 
-            game.websites.map(w => `${this.getWebsiteCategoryName(w.category)}`).join(', '));
-        }
-
-        if (game.external_games?.length) {
-          console.log(`Stores (${game.external_games.length}):`,
-            game.external_games.map(s => `${this.getStoreCategoryName(s.category)}`).join(', '));
-        }
+      console.log(`[igdbService] Retrieved games:`, {
+        count: games.length,
+        page,
+        excludeCount: excludeIds.length
       });
 
-      // Now process and return the results
-      return games.map((game: Game) => {
+      // Check for any games that should have been excluded
+      if (excludeIds.length > 0) {
+        const shouldBeExcluded = games.filter((game: Game) => excludeIds.includes(game.id));
+        if (shouldBeExcluded.length > 0) {
+          console.warn('[igdbService] Found games that should have been excluded:', {
+            count: shouldBeExcluded.length,
+            ids: shouldBeExcluded.map((g: Game) => g.id)
+          });
+        }
+      }
+
+      // Process and return the results
+      const processedGames = games.map((game: Game) => {
         const matchedFilterIds: number[] = [];
         
-        // Check each category for matches
         Object.entries(filters).forEach(([category, values]) => {
           const items = values as any[];
           const normalizedCategory = category.toLowerCase().replace(/\s+/g, '_');
-          
-          // Get the corresponding game property
           const gameProperty = normalizedCategory === 'game_mode' ? 'game_modes' : normalizedCategory;
           
           if (game[gameProperty as keyof Game]) {
@@ -260,11 +260,14 @@ export class IGDBService {
           _matchedFilters: matchedFilterIds
         };
       });
+
+      return processedGames;
     } catch (error: any) {
-      console.error('[igdbService] Error in searchGames:', error);
-      if (error.response?.data) {
-        console.error('[igdbService] IGDB API error details:', error.response.data);
-      }
+      console.error('[igdbService] Error in searchGames:', {
+        error: error.message,
+        page,
+        excludeCount: excludeIds.length
+      });
       throw new Error(`Failed to search games: ${error.message}`);
     }
   }

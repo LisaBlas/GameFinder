@@ -7,64 +7,46 @@
       "id": 1370
     },
     {
-      "name": "medieval",
+      "name": "Middle Ages",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 3852
+    },
+    {
+      "name": "Medieval",
       "category": "Setting & World",
       "sub-category": "Time Periods",
       "id": 151
     },
     {
-      "name": "post-apocalyptic",
+      "name": "Ancient Rome",
       "category": "Setting & World",
       "sub-category": "Time Periods",
-      "id": 69
+      "id": 293
     },
     {
-      "name": "modern military",
+      "name": "Ancient Greece",
       "category": "Setting & World",
       "sub-category": "Time Periods",
-      "id": 4259
+      "id": 34
     },
     {
-      "name": "world war ii - ww2",
+      "name": "Ancient Egypt",
       "category": "Setting & World",
       "sub-category": "Time Periods",
-      "id": 19
+      "id": 421
     },
     {
-      "name": "year in the title",
+      "name": "Ancient China",
       "category": "Setting & World",
       "sub-category": "Time Periods",
-      "id": 4650
+      "id": 1909
     },
     {
-      "name": "futuristic",
+      "name": "Ancient Japan",
       "category": "Setting & World",
       "sub-category": "Time Periods",
-      "id": 923
-    },
-    {
-      "name": "western",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 9
-    },
-    {
-      "name": "egypt",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 1138
-    },
-    {
-      "name": "prehistoric",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 1370
-    },
-    {
-      "name": "e3 2000",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 6061
+      "id": 38810
     },
     {
       "name": "1990s",
@@ -79,47 +61,60 @@
       "id": 128
     },
     {
-      "name": "feudal japan",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 2458
-    },
-    {
-      "name": "alternate history",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 605
-    },
-    {
-      "name": "cold war",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 8
-    },
-    {
-      "name": "wild west",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 985
-    },
-    {
-      "name": "world war i - ww1",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 29
-    },
-    {
-      "name": "future",
+      "name": "Future",
       "category": "Setting & World",
       "sub-category": "Time Periods",
       "id": 465
     },
     {
-      "name": "mayan",
+      "name": "Retro Future",
       "category": "Setting & World",
       "sub-category": "Time Periods",
-      "id": 5173
+      "id": 4976
+    },
+    {
+      "name": "Time Travel",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 170
+    },
+    {
+      "name": "Modern",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 1368
+    },
+    {
+      "name": "Wild West",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 985
+    },
+    {
+      "name": "Renaissance",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 2545
+    },
+    {
+      "name": "17th Century",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 29379
+    },
+    {
+      "name": "18th Century",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 552
+    },
+    {
+      "name": "Victorian",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 31259
     }
+
   ],
   "Sports Types": [
     {
@@ -1325,118 +1320,136 @@
   ],
   "Locations": [
     {
-      "name": "space",
+      "name": "Space",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 974
     },
     {
-      "name": "pax east 2016",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 4871
-    },
-    {
-      "name": "pax west 2016",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 4882
-    },
-    {
-      "name": "pax west 2017",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 4154
-    },
-    {
-      "name": "forest",
+      "name": "Forest",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 1119
     },
     {
-      "name": "high school",
+      "name": "High school",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 1504
     },
     {
-      "name": "secret area",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 4991
-    },
-    {
-      "name": "submarine",
+      "name": "Submarine",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 5825
     },
     {
-      "name": "planet",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 6230
-    },
-    {
-      "name": "brazil",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 1643
-    },
-    {
-      "name": "shanghai",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 1902
-    },
-    {
-      "name": "village",
+      "name": "Village",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 1151
     },
     {
-      "name": "hell",
+      "name": "Hell",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 122
     },
     {
-      "name": "airship",
+      "name": "Airship",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 7304
     },
     {
-      "name": "castle",
+      "name": "Castle",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 2113
     },
     {
-      "name": "pax south 2017",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 4466
-    },
-    {
-      "name": "restaurant",
+      "name": "Restaurant",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 1356
     },
     {
-      "name": "pax east 2015",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 5632
-    },
-    {
-      "name": "casino",
+      "name": "Casino",
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 611
+    },
+    {
+      "name": "Jungle",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 611
+    },
+    {
+      "name": "Desert",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 44592
+    },
+    {
+      "name": "Islands",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 32538
+    },
+    {
+      "name": "Underwater",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 138
+    },
+    {
+      "name": "Underground",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 38085
+    },
+    {
+      "name": "Laboratory",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 42141
+    },
+    {
+      "name": "Haunted House",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 198
+    },
+    {
+      "name": "Mansion",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 42111
+    },
+    {
+      "name": "Graveyard",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 43761
+    },
+    {
+      "name": "Asylum",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 42103
+    },
+    {
+      "name": "Hospital",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 1296
+    },
+    {
+      "name": "Cyberspace",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 18772
     }
   ],
   "Atmosphere": [
@@ -1605,34 +1618,10 @@
       "id": 5453
     },
     {
-      "name": "moving platforms",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 5441
-    },
-    {
-      "name": "underwater gameplay",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 4940
-    },
-    {
       "name": "nature",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 1111
-    },
-    {
-      "name": "blocks",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 1395
-    },
-    {
-      "name": "mining",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 2177
     },
     {
       "name": "underwater",
@@ -1641,168 +1630,102 @@
       "id": 138
     },
     {
-      "name": "corpse",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 4637
-    },
-    {
-      "name": "vending machine interaction",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 5264
-    },
-    {
       "name": "aquatic",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 4440
     },
     {
-      "name": "trains",
+      "name": "Lava",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
-      "id": 915
+      "id": 42207
     },
     {
-      "name": "ice stage",
+      "name": "Ocean",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
-      "id": 4760
-    },
-    {
-      "name": "falling damage",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 4781
-    },
-    {
-      "name": "interactive environments",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 5542
+      "id": 41929
     }
   ],
   "Historical Events": [
     {
-      "name": "nazis",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 7016
-    },
-    {
-      "name": "fascism",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 7113
-    },
-    {
-      "name": "slavery",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 1886
-    },
-    {
-      "name": "alternative history",
+      "name": "Alternative History",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 39200
     },
     {
-      "name": "civil war",
+      "name": "Civil War",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 1351
     },
     {
-      "name": "war veterans",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 9322
-    },
-    {
-      "name": "vietnam war",
+      "name": "Vietnam War",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 634
     },
     {
-      "name": "historical inaccuracy",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 7095
-    },
-    {
-      "name": "nuclear war",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 9321
-    },
-    {
-      "name": "world war iii",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 9353
-    },
-    {
-      "name": "the crusades",
+      "name": "The Crusades",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 9518
     },
     {
-      "name": "genocide",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 7105
-    },
-    {
-      "name": "based on - true story",
+      "name": "Based on - true story",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 10839
     },
     {
-      "name": "korean war",
+      "name": "Korean War",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 4070
     },
     {
-      "name": "french revolution",
+      "name": "French Revolution",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 1093
     },
     {
-      "name": "gulf war",
+      "name": "Gulf War",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 1054
     },
     {
-      "name": "american history",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 23406
-    },
-    {
-      "name": "terrorism",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 17156
-    },
-    {
-      "name": "american revolution",
+      "name": "American Revolution",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 6640
     },
     {
-      "name": "titanic",
+      "name": "Titanic",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 1956
+    },
+    {
+      "name": "World War One - WW1",
+      "category": "Setting & World",
+      "sub-category": "Historical Events",
+      "id": 29
+    },
+    {
+      "name": "World War Two - WW2",
+      "category": "Setting & World",
+      "sub-category": "Historical Events",
+      "id": 19
+    },
+    {
+      "name": "Cold War",
+      "category": "Setting & World",
+      "sub-category": "Historical Events",
+      "id": 8
     }
   ],
   "Puzzle Types": [
@@ -2173,362 +2096,428 @@
   ],
   "Cultural Elements": [
     {
-      "name": "product placement",
-      "category": "Cultural Elements",
-      "sub-category": "Cultural Elements",
-      "id": 9222
-    },
-    {
-      "name": "yandere",
-      "category": "Setting & World",
-      "sub-category": "Cultural Elements",
-      "id": 8900
-    },
-    {
-      "name": "alien protagonist",
-      "category": "Setting & World",
-      "sub-category": "Cultural Elements",
-      "id": 7389
-    },
-    {
-      "name": "invented language",
-      "category": "Setting & World",
-      "sub-category": "Cultural Elements",
-      "id": 7473
-    },
-    {
-      "name": "shaman",
+      "name": "Shaman",
       "category": "Cultural Elements",
       "sub-category": "Cultural Elements",
       "id": 8242
     },
     {
-      "name": "sex work",
+      "name": "Feudal Japan",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 2458
+    },
+    {
+      "name": "Ancient Curse",
       "category": "Cultural Elements",
-      "sub-category": "Cultural Elements",
-      "id": 8150
-    },
-    {
-      "name": "united federation of planets",
-      "category": "Setting & World",
-      "sub-category": "Cultural Elements",
-      "id": 11507
-    },
-    {
-      "name": "alien languages",
-      "category": "Setting & World",
-      "sub-category": "Cultural Elements",
-      "id": 8901
-    },
-    {
-      "name": "a.i. construct",
-      "category": "Setting & World",
-      "sub-category": "Cultural Elements",
-      "id": 8262
-    },
-    {
-      "name": "greek alphabet",
-      "category": "Setting & World",
-      "sub-category": "Cultural Elements",
-      "id": 10359
-    },
-    {
-      "name": "ancient curse",
-      "category": "Setting & World",
       "sub-category": "Cultural Elements",
       "id": 10804
     },
     {
-      "name": "biotechnology",
-      "category": "Cultural Elements",
-      "sub-category": "Cultural Elements",
-      "id": 7555
-    },
-    {
-      "name": "tribe",
+      "name": "Tribe",
       "category": "Cultural Elements",
       "sub-category": "Cultural Elements",
       "id": 9025
     },
     {
-      "name": "h. p. lovecraft",
+      "name": "Punks",
       "category": "Cultural Elements",
-      "sub-category": "Cultural Elements",
-      "id": 23680
-    },
-    {
-      "name": "punks",
-      "category": "Setting & World",
       "sub-category": "Cultural Elements",
       "id": 9354
     },
     {
-      "name": "lifestyle",
-      "category": "Cultural Elements",
-      "sub-category": "Cultural Elements",
-      "id": 914
-    },
-    {
-      "name": "josei",
+      "name": "Nazis",
       "category": "Setting & World",
       "sub-category": "Cultural Elements",
-      "id": 38729
+      "id": 7016
     },
     {
-      "name": "indiegogo",
-      "category": "Cultural Elements",
-      "sub-category": "Cultural Elements",
-      "id": 1141
-    },
-    {
-      "name": "celebrity",
+      "name": "Fascism",
       "category": "Setting & World",
       "sub-category": "Cultural Elements",
-      "id": 761
+      "id": 7113
     },
     {
-      "name": "military jargon",
-      "category": "Cultural Elements",
+      "name": "Slavery",
+      "category": "Setting & World",
       "sub-category": "Cultural Elements",
-      "id": 10367
+      "id": 1886
+    },
+    {
+      "name": "Norse Mythology",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 367
+    },
+    {
+      "name": "Greek Mythology",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 35
+    },
+    {
+      "name": "Japanese Folklore",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 31899
+    },
+    {
+      "name": "Native American",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 4534
+    },
+    {
+      "name": "Celtic Mythology",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 1091
+    },
+    {
+      "name": "Hinduism",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 1886
+    },
+    {
+      "name": "Christianity",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 5418
+    },
+    {
+      "name": "Buddhism",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 4710
+    },
+    {
+      "name": "Islam",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 2762
+    },
+    {
+      "name": "Mayan",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 5173
+    },
+    {
+      "name": "Occult",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 1066
+    },
+    {
+      "name": "Soviet Union",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 2442
+    },
+    {
+      "name": "Slavery",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 1886
+    },
+    {
+      "name": "Indigenous",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 41234
+    },
+    {
+      "name": "Chinese Mythology",
+      "category": "Setting & World",
+      "sub-category": "Cultural Elements",
+      "id": 41581
     }
   ],
   "Vehicles & Transportation": [
     {
-      "name": "vehicles",
-      "category": "Setting & World",
-      "sub-category": "Vehicles & Transportation",
-      "id": 17083
-    },
-    {
-      "name": "camel",
+      "name": "Camel",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 7572
     },
     {
-      "name": "kangaroo",
+      "name": "Kangaroo",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 10488
     },
     {
-      "name": "travel",
-      "category": "Setting & World",
-      "sub-category": "Vehicles & Transportation",
-      "id": 17396
-    },
-    {
-      "name": "rc vehicle",
+      "name": "RC Vehicle",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 16716
     },
     {
-      "name": "panzer iv",
+      "name": "Panzer IV",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 8721
     },
     {
-      "name": "horses",
+      "name": "Tank",
+      "category": "Setting & World",
+      "sub-category": "Vehicles & Transportation",
+      "id": 1821
+    },
+    {
+      "name": "Horse",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 44765
     },
     {
-      "name": "eurofighter typhoon",
+      "name": "Eurofighter Typhoon",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 11439
     },
     {
-      "name": "trucks",
+      "name": "Trucks",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 42107
     },
     {
-      "name": "roadtrip",
+      "name": "Monster Truck",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
-      "id": 37806
+      "id": 625
     },
     {
-      "name": "space shuttle",
+      "name": "Spaceship",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
-      "id": 43184
+      "id": 947
     },
     {
-      "name": "hoverboard",
+      "name": "Hoverboard",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 44171
     },
     {
-      "name": "hovercraft",
+      "name": "Hovercraft",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 41904
     },
     {
-      "name": "s.s. dolphin",
+      "name": "Helicopter",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
-      "id": 14572
+      "id": 21
     },
     {
-      "name": "mining droid",
+      "name": "Airplane",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
-      "id": 42058
+      "id": 2841
     },
     {
-      "name": "aviation",
+      "name": "Motorcycle",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
-      "id": 43130
+      "id": 57
     },
     {
-      "name": "snowmobile",
+      "name": "Submarine",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
-      "id": 38790
+      "id": 5825
     },
     {
-      "name": "vehicle dlc",
+      "name": "Mech",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
-      "id": 41905
+      "id": 167
     },
     {
-      "name": "desert bus",
+      "name": "Bicycle",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
-      "id": 38291
+      "id": 44687
+    },
+    {
+      "name": "Skateboard",
+      "category": "Setting & World",
+      "sub-category": "Vehicles & Transportation",
+      "id": 2913
+    },
+    {
+      "name": "Drone",
+      "category": "Setting & World",
+      "sub-category": "Vehicles & Transportation",
+      "id": 2746
+    },
+    {
+      "name": "Trains",
+      "category": "Setting & World",
+      "sub-category": "Vehicles & Transportation",
+      "id": 915
+    },
+    {
+      "name": "Teleportation",
+      "category": "Setting & World",
+      "sub-category": "Vehicles & Transportation",
+      "id": 1986
+    },
+    {
+      "name": "Airship",
+      "category": "Setting & World",
+      "sub-category": "Vehicles & Transportation",
+      "id": 7304
+    },
+    {
+      "name": "Flying",
+      "category": "Setting & World",
+      "sub-category": "Vehicles & Transportation",
+      "id": 1283
     }
   ],
   "Setting Conditions": [
     {
-      "name": "evil empire",
+      "name": "Evil Empire",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 9349
     },
     {
-      "name": "alien world",
+      "name": "Alien World",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 18055
     },
     {
-      "name": "another world",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 8896
-    },
-    {
-      "name": "secret history",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 8300
-    },
-    {
-      "name": "alien abduction",
+      "name": "Alien Abduction",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 7384
     },
     {
-      "name": "armageddon",
+      "name": "Armageddon",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 9695
     },
     {
-      "name": "nuclear holocaust",
+      "name": "Nuclear Holocaust",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 9338
     },
     {
-      "name": "futuristic game show",
+      "name": "Futuristic Game Show",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 11596
     },
     {
-      "name": "urban fantasy",
+      "name": "Urban Fantasy",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 27433
     },
     {
-      "name": "extinction",
+      "name": "Extinction",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 9343
     },
     {
-      "name": "poltergeist",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 7560
-    },
-    {
-      "name": "space opera",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 19113
-    },
-    {
-      "name": "moon",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 43212
-    },
-    {
-      "name": "cyberspace",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 18772
-    },
-    {
-      "name": "ecological",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 25844
-    },
-    {
-      "name": "inner-thoughts world",
+      "name": "Inner-Thoughts World",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 11113
     },
     {
-      "name": "wasteland",
+      "name": "Wasteland",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 19191
     },
     {
-      "name": "apocalyptic",
+      "name": "Apocalyptic",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 16957
     },
     {
-      "name": "utopian civilization",
+      "name": "Post-Apocalyptic",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 69
+    },
+    {
+      "name": "Utopian Civilization",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 8841
     },
     {
-      "name": "modern day earth",
+      "name": "Dystopian",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
-      "id": 26616
+      "id": 429
+    },
+    {
+      "name": "Zombie Apocalypse",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 28274
+    },
+    {
+      "name": "Virus",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 228
+    },
+    {
+      "name": "World War III",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 9353
+    },
+    {
+      "name": "Time Loop",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 2158
+    },
+    {
+      "name": "Virtual World",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 18557
+    },
+    {
+      "name": "Day/Night Cycle",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 2452
+    },
+    {
+      "name": "Dream World",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 2884
+    },
+    {
+      "name": "Underworld",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 8841
+    },
+    {
+      "name": "Multiverse",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 8841
     }
   ],
   "Internet Culture": [

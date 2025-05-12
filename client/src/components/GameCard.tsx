@@ -97,7 +97,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
 
         {isExpanded && (
           <div className="mt-auto">
-            <div className="text-center text-sm text-slate-400 mb-2">Find on</div>
+            <div className="text-center text-sm text-slate-400 mb-2">Stores</div>
             <div className="h-px bg-slate-700 mb-3"></div>
             <div className="store-buttons grid grid-cols-4 gap-2">
               {/* Official Website */}

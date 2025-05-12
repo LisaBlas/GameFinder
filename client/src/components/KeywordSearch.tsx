@@ -7,7 +7,12 @@ interface Keyword {
   name: string;
 }
 
-const KeywordSearch: React.FC = () => {
+interface KeywordSearchProps {
+  inputRef?: React.RefObject<HTMLInputElement>;
+  onKeywordSelect?: () => void;
+}
+
+const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState<Keyword[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,7 +78,30 @@ const KeywordSearch: React.FC = () => {
         
         const data = await response.json();
         console.log('Received response:', data);
-        setSuggestions(data);
+
+        // Sort suggestions to prioritize exact matches
+        const sortedSuggestions = data.sort((a: Keyword, b: Keyword) => {
+          const aName = a.name.toLowerCase();
+          const bName = b.name.toLowerCase();
+          const searchTermLower = searchTerm.toLowerCase();
+
+          // Exact match gets highest priority
+          if (aName === searchTermLower && bName !== searchTermLower) return -1;
+          if (bName === searchTermLower && aName !== searchTermLower) return 1;
+
+          // Starts with search term gets second priority
+          if (aName.startsWith(searchTermLower) && !bName.startsWith(searchTermLower)) return -1;
+          if (bName.startsWith(searchTermLower) && !aName.startsWith(searchTermLower)) return 1;
+
+          // Contains search term gets third priority
+          if (aName.includes(searchTermLower) && !bName.includes(searchTermLower)) return -1;
+          if (bName.includes(searchTermLower) && !aName.includes(searchTermLower)) return 1;
+
+          // If both have same priority, sort alphabetically
+          return aName.localeCompare(bName);
+        });
+
+        setSuggestions(sortedSuggestions);
       } catch (error) {
         console.error('Error fetching suggestions:', error);
         setSuggestions([]);
@@ -99,12 +127,18 @@ const KeywordSearch: React.FC = () => {
     setSearchTerm('');
     setSuggestions([]);
     setShowSuggestions(false);
+    
+    // Trigger the section switch
+    if (onKeywordSelect) {
+      onKeywordSelect();
+    }
   };
 
   return (
     <div className="relative w-full" ref={searchContainerRef}>
       <div className="relative">
         <input
+          ref={inputRef}
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
