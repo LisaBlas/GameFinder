@@ -181,8 +181,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
         className={`
           keyword-section px-4 w-full bg-card rounded-lg overflow-hidden flex flex-col 
           hover:bg-muted/80 items-center justify-center text-center py-10 cursor-pointer 
-          animate-[shadow-pulse_2s_ease-in-out_infinite]
-          border-2 border-primary/20 animate-[border-pulse_2s_ease-in-out_infinite]
+          animate-shadow-pulse
+          border-2 border-primary/40
           min-h-[180px] transition-all duration-500
           ${!expanded ? 'lg:mt-auto lg:mb-auto' : ''}
         `}
@@ -191,7 +191,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
       >
         <div className="flex flex-col items-center gap-2">
           <div className="flex items-center justify-center mb-2">
-            <span className="text-4xl font-bold text-primary animate-pulse">1.</span>
+            <span className="text-4xl font-bold text-primary">1.</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-wide mb-1">
             Select A Keyword
@@ -199,7 +199,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
           <p className="category-description text-base md:text-lg text-secondary-foreground/80 mb-2 max-w-xl mx-auto">
             By using the search bar or our curated categories.
           </p>
-          <p className="text-sm text-primary/60 animate-pulse">Click to expand</p>
+          <p className="text-lm text-primary/60 animate-pulse">Click to expand</p>
         </div>
       </div>
     );
@@ -207,12 +207,17 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
 
   return (
     <div className="keyword-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 lg:h-[calc(100vh-200px)] overflow-y-auto">
-      {!selectedMainCategory && (
-        <div className="w-full bg-primary/10 border-b border-primary/20 py-3">
-          <div className="flex items-center justify-center gap-3 relative">
-            <button 
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
-              onClick={() => {
+      {/* Title bar shows differently based on current view */}
+      <div className="w-full bg-primary/10 border-b border-primary/20 py-3">
+        <div className="flex items-center justify-center gap-3 relative">
+          <button 
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
+            onClick={() => {
+              if (activeSubcategory) {
+                setActiveSubcategory(null);
+              } else if (selectedMainCategory) {
+                setSelectedMainCategory(null);
+              } else {
                 // Add a class to trigger collapse animation
                 const section = document.querySelector('.keyword-section');
                 if (section) {
@@ -223,43 +228,60 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
                 setTimeout(() => {
                   setActiveSection('none');
                 }, 500); // Match this with the CSS animation duration
-              }}
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
-            </button>
-            <span className="text-2xl font-bold text-primary">1.</span>
-            <h2 className="text-xl font-extrabold text-primary tracking-wide">
-              Select A Keyword
-            </h2>
-          </div>
-        </div>
-      )}
-
-      {/* Add the search bar only when no category is selected */}
-      {!selectedMainCategory && (
-        <div className="w-full max-w-[500px] mx-auto px-4 mt-6">
-          <KeywordSearch 
-            inputRef={searchInputRef} 
-            onKeywordSelect={() => {
-              // Add a class to trigger collapse animation
-              const section = document.querySelector('.keyword-section');
-              if (section) {
-                section.classList.add('collapsing');
               }
-              
-              // Wait for collapse animation to complete before switching sections
-              setTimeout(() => {
-                setActiveSection('filters');
-                // Scroll to filter section on mobile
-                if (window.innerWidth < 1024) { // lg breakpoint
-                  filterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                }
-              }, 500); // Match this with the CSS animation duration
             }}
-          />
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back
+          </button>
+          
+          {activeSubcategory ? (
+            <h3 className="font-medium text-primary text-center text-xl flex items-center justify-center gap-2">
+              <span className="inline-flex items-center justify-center w-6 h-6 text-2xl">
+                {getSubcategoryEmoji(activeSubcategory)}
+              </span>
+              {activeSubcategory}
+            </h3>
+          ) : selectedMainCategory ? (
+            <h3 className="font-medium text-primary text-center text-xl flex items-center justify-center gap-2">
+              <span className="inline-flex items-center justify-center w-6 h-6">
+                {mainCategories.find(cat => cat.id === selectedMainCategory)?.icon}
+              </span>
+              {selectedMainCategory}
+            </h3>
+          ) : (
+            <>
+              <span className="text-2xl font-bold text-primary">1.</span>
+              <h2 className="text-xl font-extrabold text-primary tracking-wide">
+                Select A Keyword
+              </h2>
+            </>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Search Bar - now appears in ALL views */}
+      <div className="w-full max-w-[500px] mx-auto px-4 mt-6 mb-4">
+        <KeywordSearch 
+          inputRef={searchInputRef} 
+          onKeywordSelect={() => {
+            // Add a class to trigger collapse animation
+            const section = document.querySelector('.keyword-section');
+            if (section) {
+              section.classList.add('collapsing');
+            }
+            
+            // Wait for collapse animation to complete before switching sections
+            setTimeout(() => {
+              setActiveSection('filters');
+              // Scroll to filter section on mobile
+              if (window.innerWidth < 1024) { // lg breakpoint
+                filterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+              }
+            }, 500); // Match this with the CSS animation duration
+          }}
+        />
+      </div>
 
       <div className="w-full max-w-[500px] mx-auto flex flex-col gap-4">
         {!selectedMainCategory ? (
@@ -288,52 +310,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
           </>
         ) : (
           <>
-            <div className="mb-6 rounded-lg overflow-hidden">
-              {mainCategories
-                .filter(cat => cat.id === selectedMainCategory)
-                .map(cat => {
-                  const mainCat = mainCategories.find(c => c.id === selectedMainCategory);
-                  const gradientClass = mainCat ? mainCat.color : '';
-                  
-                  if (activeSubcategory) {
-                    const emoji = getSubcategoryEmoji(activeSubcategory);
-                    const description = keywordCategories[selectedMainCategory as MainCategory]?.[activeSubcategory]?.description || "No description available.";
-                    return (
-                      <div key={`title-subcategory-${activeSubcategory}`} className="bg-primary/10 border-b border-primary/20 p-4 relative title-bar-change">
-                        <button 
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
-                          onClick={() => setActiveSubcategory(null)}
-                        >
-                          <ArrowLeft className="w-4 h-4 mr-1" />
-                          Back
-                        </button>
-                        <h3 className="font-medium text-primary text-center text-xl flex items-center justify-center gap-2">
-                          <span className="inline-flex items-center justify-center w-6 h-6 text-2xl">{emoji}</span>
-                          {activeSubcategory}
-                        </h3>
-                      </div>
-                    );
-                  }
-                  
-                  return (
-                    <div key={`title-category-${cat.id}`} className="bg-primary/10 border-b border-primary/20 p-4 relative main-category-enter">
-                      <button 
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
-                        onClick={() => setSelectedMainCategory(null)}
-                      >
-                        <ArrowLeft className="w-4 h-4 mr-1" />
-                        Back
-                      </button>
-                      <h3 className="font-medium text-primary text-center text-xl flex items-center justify-center gap-2">
-                        <span className="inline-flex items-center justify-center w-6 h-6">{cat.icon}</span>
-                        {cat.title}
-                      </h3>
-                    </div>
-                  );
-                })
-              }
-            </div>
-            
             {!activeSubcategory ? (
               <div className="mb-6 category-enter max-w-xl mx-auto">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4 filter-grid-enter">

@@ -50,7 +50,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
           <p className="category-description text-base md:text-lg text-secondary-foreground/80 mb-2 max-w-xl mx-auto">
             Choose up to 5 filters to narrow down your game results.
           </p>
-          <p className="text-sm text-primary/60 animate-pulse">Click to expand</p>
+          <p className="text-lm text-primary/60 animate-pulse">Click to expand</p>
         </div>
       </div>
     );

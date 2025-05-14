@@ -240,16 +240,10 @@
   ],
   "Movement Types": [
     {
-      "name": "flight",
+      "name": "Gravity Control",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
-      "id": 992
-    },
-    {
-      "name": "helicopter",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
-      "id": 21
+      "id": 4939
     },
     {
       "name": "walking simulator",
@@ -624,7 +618,7 @@
       "id": 5451
     },
     {
-      "name": "Real-Time with Pause",
+      "name": "Real-Time Pause",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 6057
@@ -640,12 +634,6 @@
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 40897
-    },
-    {
-      "name": "Quick-Time Events",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Systems",
-      "id": 512
     },
     {
       "name": "Bullet Hell",
@@ -684,13 +672,13 @@
       "id": 5019
     },
     {
-      "name": "Active Reload",
+      "name": "Counter",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
-      "id": 6278
+      "id": 7345
     },
     {
-      "name": "On-the-fly Character Switching",
+      "name": "Character Swap",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 7558
@@ -701,6 +689,12 @@
       "sub-category": "Combat Systems",
       "id": 9200
     },
+    {
+      "name": "Battle Arena",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Systems",
+      "id": 23082
+    },    
     {
       "name": "Environmental Kills",
       "category": "Game Mechanics & Systems",
@@ -832,125 +826,143 @@
   ],
   "Art Styles": [
     {
-      "name": "anime",
+      "name": "Anime",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 78
     },
     {
-      "name": "2d",
+      "name": "2D",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 288
     },
     {
-      "name": "polygonal 3d",
+      "name": "Polygonal 3D",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 4359
     },
     {
-      "name": "pixel art",
+      "name": "Pixel Art",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 1705
     },
     {
-      "name": "cute",
+      "name": "Cute",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 1387
     },
     {
-      "name": "3d",
+      "name": "3D",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 250
     },
     {
-      "name": "abstract",
+      "name": "Abstract",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 1495
     },
     {
-      "name": "pixel graphics",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 1780
-    },
-    {
-      "name": "based on - anime",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 4141
-    },
-    {
-      "name": "anthropomorphism",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 4162
-    },
-    {
-      "name": "cartoony",
+      "name": "Cartoony",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 3560
     },
     {
-      "name": "hand-drawn",
+      "name": "Hand-drawn",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 2814
     },
     {
-      "name": "colorful",
+      "name": "Colorful",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 3138
     },
     {
-      "name": "box art - real photos",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 4228
-    },
-    {
-      "name": "stylized",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 1204
-    },
-    {
-      "name": "2.5d",
+      "name": "2.5D",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 589
     },
     {
-      "name": "surreal",
+      "name": "Surreal",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 1721
     },
     {
-      "name": "deliberately retro",
+      "name": "Retro",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 4465
     },
     {
-      "name": "realism",
+      "name": "Realism",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 5789
     },
     {
-      "name": "steampunk",
+      "name": "Steampunk",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 906
-    }
+    },
+    {
+      "name": "Cel shading",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 5331
+    },
+    {
+      "name": "Voxel",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 595
+    },
+    {
+      "name": "Minimalist",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 38850
+    },
+    {
+      "name": "8 Bit",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 3079
+    },
+    {
+      "name": "16 Bit",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 382
+    },
+    {
+      "name": "Claymation",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 964
+    },
+    {
+      "name": "Paper aesthetic",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 43244
+    },
+    {
+      "name": "Monochrome",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 1203
+    } 
   ],
   "Visual Themes": [
     {
@@ -1454,124 +1466,130 @@
   ],
   "Atmosphere": [
     {
-      "name": "atmospheric",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 1697
-    },
-    {
-      "name": "bloody",
+      "name": "Bloody",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 129
     },
     {
-      "name": "psychological horror",
+      "name": "Psychological horror",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 131
     },
     {
-      "name": "relaxing",
+      "name": "Relaxing",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 2084
     },
     {
-      "name": "dark",
+      "name": "Dark",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 223
     },
     {
-      "name": "funny",
+      "name": "Funny",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 1511
     },
     {
-      "name": "kid friendly",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 1563
-    },
-    {
-      "name": "survival horror",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 1836
-    },
-    {
-      "name": "dark fantasy",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 537
-    },
-    {
-      "name": "dystopian",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 429
-    },
-    {
-      "name": "darkness",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 3203
-    },
-    {
-      "name": "dark humor",
+      "name": "Dark humor",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 1754
     },
     {
-      "name": "extreme violence",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 4614
-    },
-    {
-      "name": "creepy",
+      "name": "Creepy",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 2653
     },
     {
-      "name": "great soundtrack",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 3403
-    },
-    {
-      "name": "emotional",
+      "name": "Emotional",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 2202
     },
     {
-      "name": "lovecraftian",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 1295
-    },
-    {
-      "name": "dreams",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 2170
-    },
-    {
-      "name": "weird",
+      "name": "Weird",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 220
     },
     {
-      "name": "ambient music",
+      "name": "Wholesome",
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
-      "id": 6326
+      "id": 23931
+    },
+    {
+      "name": "Melancholic",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 42165
+    },
+    {
+      "name": "Meditative",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 24919
+    },
+    {
+      "name": "Bizarre",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 18827
+    },
+    {
+      "name": "Satire",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 1539
+    },
+    {
+      "name": "Parody",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 413
+    },
+    {
+      "name": "Chaos",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 38862
+    },
+    {
+      "name": "Body horror",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 25555
+    },
+    {
+      "name": "Gore",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 1308
+    },
+    {
+      "name": "Violent",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 3257
+    },
+    {
+      "name": "Anxiety",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 1912
+    },
+    {
+      "name": "Fear",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 2939
     }
   ],
   "Environmental Features": [
@@ -1580,6 +1598,12 @@
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 1710
+    },
+    {
+      "name": "Verticality",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Environmental Features",
+      "id": 7665
     },
     {
       "name": "maze",
@@ -1852,125 +1876,150 @@
   ],
   "Entertainment Franchises": [
     {
-      "name": "based on - tv show",
+      "name": "Based on TV show",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 997
     },
     {
-      "name": "touhou project",
+      "name": "Indiana Jones",
       "category": "Entertainment Franchises",
       "sub-category": "Entertainment Franchises",
-      "id": 17655
+      "id": 2206
     },
     {
-      "name": "e3 2006",
+      "name": "Star Wars",
       "category": "Entertainment Franchises",
       "sub-category": "Entertainment Franchises",
-      "id": 13106
+      "id": 896
     },
     {
-      "name": "dracula",
-      "category": "Entertainment Franchises",
-      "sub-category": "Entertainment Franchises",
-      "id": 1288
-    },
-    {
-      "name": "e3 2012",
-      "category": "Entertainment Franchises",
-      "sub-category": "Entertainment Franchises",
-      "id": 7503
-    },
-    {
-      "name": "pokemon",
+      "name": "Pokemon",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 409
     },
     {
-      "name": "e3 2002",
-      "category": "Entertainment Franchises",
-      "sub-category": "Entertainment Franchises",
-      "id": 13117
-    },
-    {
-      "name": "sonic fangame",
+      "name": "Sonic",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
-      "id": 38275
+      "id": 24797
     },
     {
-      "name": "e3 2011",
+      "name": "One Piece",
       "category": "Entertainment Franchises",
       "sub-category": "Entertainment Franchises",
-      "id": 9951
+      "id": 25456
     },
     {
-      "name": "the game awards - nominee",
+      "name": "Harry Potter",
       "category": "Entertainment Franchises",
       "sub-category": "Entertainment Franchises",
-      "id": 12556
+      "id": 523
     },
     {
-      "name": "pax east 2012",
+      "name": "Lord of the Rings",
       "category": "Entertainment Franchises",
       "sub-category": "Entertainment Franchises",
-      "id": 7402
+      "id": 525
     },
     {
-      "name": "pax prime 2010",
-      "category": "Entertainment Franchises",
-      "sub-category": "Entertainment Franchises",
-      "id": 11122
-    },
-    {
-      "name": "mega man",
+      "name": "Mega Man",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 16992
     },
     {
-      "name": "slender",
+      "name": "Slender",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 19488
     },
     {
-      "name": "sponsored by a tv network",
-      "category": "Setting & World",
-      "sub-category": "Entertainment Franchises",
-      "id": 9579
-    },
-    {
-      "name": "the game awards 2016",
-      "category": "Entertainment Franchises",
-      "sub-category": "Entertainment Franchises",
-      "id": 14051
-    },
-    {
-      "name": "adapted to - movie",
+      "name": "Adapted to movie",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 11853
     },
     {
-      "name": "sherlock holmes",
+      "name": "Sherlock Holmes",
       "category": "Entertainment Franchises",
       "sub-category": "Entertainment Franchises",
       "id": 256
     },
     {
-      "name": "unofficial crossover",
+      "name": "Unofficial crossover",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 30303
     },
     {
-      "name": "starfleet",
+      "name": "Game of Thrones",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
-      "id": 13030
+      "id": 46735
+    },
+    {
+      "name": "Adapted to TV show",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 7028
+    },
+    {
+      "name": "Based on book",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 1538
+    },
+    {
+      "name": "Based on board game",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 16875
+    },
+    {
+      "name": "Marvel",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 668
+    },
+    {
+      "name": "Dragon ball",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 2402
+    },
+    {
+      "name": "Jurassic Park",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 30277
+    },
+    {
+      "name": "Lara Croft",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 2876
+    },
+    {
+      "name": "Based on cartoon",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 24033
+    },
+    {
+      "name": "Based on comic",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 4310
+    },
+    {
+      "name": "Based on brand",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 4813
     }
+    
   ],
   "Game Features": [
     {
@@ -2095,6 +2144,42 @@
     }
   ],
   "Cultural Elements": [
+    {
+      "name": "Shaman",
+      "category": "Cultural Elements",
+      "sub-category": "Cultural Elements",
+      "id": 8242
+    },
+    {
+      "name": "Based on manga",
+      "category": "Cultural Elements",
+      "sub-category": "Cultural Elements",
+      "id": 2648
+    },
+    {
+      "name": "Based on fairy tale",
+      "category": "Cultural Elements",
+      "sub-category": "Cultural Elements",
+      "id": 42632
+    },
+    {
+      "name": "Based on folk tale",
+      "category": "Cultural Elements",
+      "sub-category": "Cultural Elements",
+      "id": 42629
+    },
+    {
+      "name": "Slavic folklore",
+      "category": "Cultural Elements",
+      "sub-category": "Cultural Elements",
+      "id": 1963
+    },
+    {
+      "name": "Brazilian folklore",
+      "category": "Cultural Elements",
+      "sub-category": "Cultural Elements",
+      "id": 28977
+    },
     {
       "name": "Shaman",
       "category": "Cultural Elements",
@@ -2522,88 +2607,76 @@
   ],
   "Internet Culture": [
     {
-      "name": "machinima",
+      "name": "Machinima",
       "category": "Internet Culture",
       "sub-category": "Internet Culture",
       "id": 9578
     },
     {
-      "name": "streamers",
+      "name": "Streamer Game",
       "category": "Internet Culture",
       "sub-category": "Internet Culture",
-      "id": 11886
+      "id": 28408
     },
     {
-      "name": "viral achievement",
+      "name": "Markiplier",
+      "category": "Internet Culture",
+      "sub-category": "Internet Culture",
+      "id": 29554
+    },
+    {
+      "name": "Pewdiepie",
+      "category": "Internet Culture",
+      "sub-category": "Internet Culture",
+      "id": 2054
+    },
+    {
+      "name": "Viral Achievement",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
       "id": 11557
     },
     {
-      "name": "scp",
+      "name": "SCP",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
       "id": 39890
     },
     {
-      "name": "first on discord",
-      "category": "Internet Culture",
-      "sub-category": "Internet Culture",
-      "id": 23293
-    },
-    {
-      "name": "deep web",
+      "name": "Memes",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
-      "id": 37918
+      "id": 2807
     },
     {
-      "name": "kpop",
-      "category": "Internet Culture",
-      "sub-category": "Internet Culture",
-      "id": 38661
-    },
-    {
-      "name": "twitter",
+      "name": "Backrooms",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
-      "id": 38942
+      "id": 33719
     },
     {
-      "name": "damn daniel",
+      "name": "Rage Game",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
-      "id": 38128
+      "id": 27086
     },
     {
-      "name": "steamed hams",
+      "name": "Based on internet phenomena",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
-      "id": 37823
+      "id": 4922
     },
     {
-      "name": "orkut games",
+      "name": "Internet culture reference",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
-      "id": 38280
+      "id": 5151
     },
     {
-      "name": "neopets",
-      "category": "Internet Culture",
-      "sub-category": "Internet Culture",
-      "id": 38639
-    },
-    {
-      "name": "mini jam 74 - chaos",
-      "category": "Internet Culture",
-      "sub-category": "Internet Culture",
-      "id": 46639
-    },
-    {
-      "name": "meme",
+      "name": "Internet celebrity",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
-      "id": 45995
+      "id": 1896
     }
   ],
   "Game Economy": [
@@ -2832,38 +2905,6 @@
       "id": 10794
     }
   ],
-  "Combat Environments": [
-    {
-      "name": "naval warfare",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Environments",
-      "id": 8146
-    },
-    {
-      "name": "ship deck battle",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Environments",
-      "id": 12357
-    },
-    {
-      "name": "space battles",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Environments",
-      "id": 18424
-    },
-    {
-      "name": "jungle warfare",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Environments",
-      "id": 10433
-    },
-    {
-      "name": "battle arena",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Environments",
-      "id": 23082
-    }
-  ],
   "Simulation Elements": [
     {
       "name": "farming simulator",
@@ -2988,254 +3029,320 @@
   ],
   "Narrative Tone": [
     {
-      "name": "reluctant hero",
+      "name": "Reluctant hero",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 9374
     },
     {
-      "name": "bad endings with story",
+      "name": "Gibberish",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 9935
+    },
+    {
+      "name": "Silent protagonist",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 2199
+    },
+    {
+      "name": "Full voice acting",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 38828
+    },
+    {
+      "name": "Bad endings",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 24392
     },
     {
-      "name": "surreal comedy",
+      "name": "Surreal comedy",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 38292
     },
     {
-      "name": "unrequited love",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 8109
-    },
-    {
-      "name": "catch phrase",
+      "name": "Catch phrase",
       "category": "Game Features",
       "sub-category": "Narrative Tone",
       "id": 8285
     },
     {
-      "name": "running gag",
+      "name": "Running gag",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 9273
     },
     {
-      "name": "monologue",
+      "name": "Monologue",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 9597
     },
     {
-      "name": "kissing scene",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 24295
-    },
-    {
-      "name": "dramatic",
+      "name": "Dramatic",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 38861
     },
     {
-      "name": "family drama",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 38106
-    },
-    {
-      "name": "narrator",
+      "name": "Narrator",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 19132
     },
     {
-      "name": "puns",
+      "name": "Unreliable narrator",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 5255
+    },
+    {
+      "name": "Narrative driven",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 1439
+    },
+    {
+      "name": "Narrative adventure",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 17378
+    },
+    {
+      "name": "Third-person narrative",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 24457
+    },
+    {
+      "name": "Dynamic narrative",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 26126
+    },
+    {
+      "name": "Nonlinear",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 45058
+    },
+    {
+      "name": "Meta",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 17865
+    },
+    {
+      "name": "No dialogue",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 5802
+    },
+    {
+      "name": "Dialogue choices",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 23739
+    },
+    {
+      "name": "Invented language",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 7473
+    },
+    {
+      "name": "Puns",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 38711
-    },
-    {
-      "name": "literary",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 44015
-    },
-    {
-      "name": "love",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 47272
-    },
-    {
-      "name": "prose",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 38725
     }
   ],
   "Sound Design": [
     {
-      "name": "ai-generated music",
+      "name": "Ai-generated music",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 43816
     },
     {
-      "name": "ai-generated sound effects",
+      "name": "Ai-generated sound effects",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 44743
     },
     {
-      "name": "music speed up",
+      "name": "Music speed up",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 9275
     },
     {
-      "name": "full voice acting",
-      "category": "Aesthetics & Style",
-      "sub-category": "Sound Design",
-      "id": 38828
-    },
-    {
-      "name": "music exportation",
-      "category": "Aesthetics & Style",
-      "sub-category": "Sound Design",
-      "id": 12681
-    },
-    {
-      "name": "adlib sound",
+      "name": "Adlib sound",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 45454
+    },
+    {
+      "name": "Dynamic soundtrack",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 5896
+    },
+    {
+      "name": "Ambient music",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 6326
+    },
+    {
+      "name": "Music based",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 1687
+    },
+    {
+      "name": "Lo-fi",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 23748
+    },
+    {
+      "name": "In-game radio",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 5474
+    },
+    {
+      "name": "Synthwave",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 3784
+    },
+    {
+      "name": "Custom soundtrack",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 1503
+    },
+    {
+      "name": "Great soundtrack",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 3403
     }
   ],
   "Combat Styles": [
     {
-      "name": "swarming enemies",
-      "category": "Combat Styles",
-      "sub-category": "Combat Styles",
-      "id": 7568
-    },
-    {
-      "name": "environment as weapons",
-      "category": "Combat Styles",
-      "sub-category": "Combat Styles",
-      "id": 8969
-    },
-    {
-      "name": "black magic",
+      "name": "Siege Warfare",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 7529
+      "id": 9733
     },
     {
-      "name": "crowd control",
-      "category": "Combat Styles",
-      "sub-category": "Combat Styles",
-      "id": 9200
-    },
-    {
-      "name": "white magic",
-      "category": "Combat Styles",
-      "sub-category": "Combat Styles",
-      "id": 9557
-    },
-    {
-      "name": "carjacking",
-      "category": "Combat Styles",
-      "sub-category": "Combat Styles",
-      "id": 9066
-    },
-    {
-      "name": "shadow stealth",
+      "name": "Dual Wielding",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 9376
+      "id": 6716
     },
     {
-      "name": "berserkers",
+      "name": "Cybernetics",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Styles",
+      "id": 106
+    },
+    {
+      "name": "Traps",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Styles",
+      "id": 1345
+    },
+    {
+      "name": "Duels",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Styles",
+      "id": 4860
+    },
+    {
+      "name": "Assassin",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Styles",
+      "id": 22
+    },
+    {
+      "name": "Pets",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Styles",
+      "id": 816
+    },
+    {
+      "name": "Spell Casting",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Combat Styles",
+      "id": 5124
+    },
+    {
+      "name": "Berserkers",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 7561
     },
     {
-      "name": "chemical warfare",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Combat Styles",
-      "id": 9713
-    },
-    {
-      "name": "sword fighting",
+      "name": "Sword Fighting",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 18537
     },
     {
-      "name": "horse archery",
-      "category": "Combat Styles",
+      "name": "Horse Archery",
+      "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 9604
     },
     {
-      "name": "active stealth",
+      "name": "Summons",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 8827
+      "id": 497
     },
     {
-      "name": "spaceships",
-      "category": "Combat Styles",
-      "sub-category": "Combat Styles",
-      "id": 44909
-    },
-    {
-      "name": "battle mage",
-      "category": "RPG Elements",
-      "sub-category": "Combat Styles",
-      "id": 7610
-    },
-    {
-      "name": "spell caster",
+      "name": "Sniping",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 39504
+      "id": 4730
     },
     {
-      "name": "navy seals",
+      "name": "Naval Warfare",
       "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 9798
+      "id": 8146
     },
     {
-      "name": "fact-based shooter",
-      "category": "Combat Styles",
+      "name": "Space Battles",
+      "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 9697
+      "id": 18424
     },
     {
-      "name": "pyromancer",
-      "category": "Combat Styles",
+      "name": "Jungle Warfare",
+      "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 9782
+      "id": 10433
     },
     {
-      "name": "psg1",
-      "category": "Combat Styles",
+      "name": "Swarming Enemies",
+      "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 11712
-    },
+      "id": 7568
+    },   
     {
-      "name": "advanced tactical fighter",
-      "category": "Combat Styles",
+      "name": "Stealth Takedown",
+      "category": "Game Mechanics & Systems",
       "sub-category": "Combat Styles",
-      "id": 10430
+      "id": 5999
     }
   ],
   "Strategy Types": [

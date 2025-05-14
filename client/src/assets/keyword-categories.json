@@ -53,14 +53,7 @@
   "Setting & World": {
     "description": "The environment, time period, and world-building aspects of the game.",
     "Time Periods": {
-      "description": "Different time periods and historical eras in which the game takes place.",
-      "Century-Based": {},
-      "Decade-Specific": {},
-      "Ancient": {},
-      "Medieval": {},
-      "Modern": {},
-      "Futuristic": {},
-      "Fantasy": {}
+      "description": "Different time periods and historical eras in which the game takes place."
     },
     "Locations": {
       "description": "Various locations where the game takes place."
