@@ -118,73 +118,73 @@
   ],
   "Sports Types": [
     {
-      "name": "soccer",
+      "name": "Soccer",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 26
     },
     {
-      "name": "football",
+      "name": "Football",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 27
     },
     {
-      "name": "motorsports",
+      "name": "Motorsports",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 4205
     },
     {
-      "name": "baseball",
+      "name": "Baseball",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 20
     },
     {
-      "name": "fishing",
+      "name": "Fishing",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 509
     },
     {
-      "name": "golf",
+      "name": "Golf",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 30
     },
     {
-      "name": "basketball",
+      "name": "Basketball",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 58
     },
     {
-      "name": "billiards",
+      "name": "Billiards",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 2016
     },
     {
-      "name": "tennis",
+      "name": "Tennis",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 311
     },
     {
-      "name": "wrestling",
+      "name": "Wrestling",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 234
     },
     {
-      "name": "boxing",
+      "name": "Boxing",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 632
     },
     {
-      "name": "skiing",
+      "name": "Skiing",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 917
@@ -196,43 +196,43 @@
       "id": 5572
     },
     {
-      "name": "combat racing",
+      "name": "Combat racing",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 4803
     },
     {
-      "name": "american football",
+      "name": "American football",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 32
     },
     {
-      "name": "skateboarding",
+      "name": "Skateboarding",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 2913
     },
     {
-      "name": "bowling",
+      "name": "Bowling",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 299
     },
     {
-      "name": "ice hockey",
+      "name": "Ice hockey",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 44
     },
     {
-      "name": "rally",
+      "name": "Rally",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 28
     },
     {
-      "name": "fitness",
+      "name": "Fitness",
       "category": "Genre-Specific Elements",
       "sub-category": "Sports Types",
       "id": 777
@@ -246,34 +246,34 @@
       "id": 4939
     },
     {
-      "name": "walking simulator",
+      "name": "Walk-Heavy",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
       "id": 1493
     },
     {
-      "name": "airplane",
+      "name": "Wall jump",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
-      "id": 2841
+      "id": 2155
     },
     {
-      "name": "teleportation",
+      "name": "Teleportation",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
       "id": 1986
     },
     {
-      "name": "flight simulator",
+      "name": "Parkour",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
-      "id": 56
+      "id": 390
     },
     {
-      "name": "dancing",
+      "name": "On Rails",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
-      "id": 1699
+      "id": 1478
     },
     {
       "name": "vertical scrolling",

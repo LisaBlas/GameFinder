@@ -5,7 +5,9 @@ import { KeywordSection } from '../components/KeywordSection';
 import { FilterProvider } from '../context/FilterContext';
 import { useFilters } from '../context/FilterContext';
 import BottomBar from '../components/BottomBar';
-import Headline from '../components/Headline';
+import AnimatedBackground from '../components/AnimatedBackground';
+import Hero from '../components/Hero';
+import Navbar from '../components/Navbar';
 
 // Inner component to access context
 const HomeContent: React.FC = () => {
@@ -14,24 +16,10 @@ const HomeContent: React.FC = () => {
   const keywordSectionRef = useRef<HTMLDivElement>(null);
   const filterSectionRef = useRef<HTMLDivElement>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
-  const [showIntro, setShowIntro] = useState(true);
 
   // Changed initial state to null instead of 'keywords'
   const [activeSection, setActiveSection] = useState<'keywords' | 'filters' | 'results' | 'none' | null>(null);
   const [hasExpandedSection, setHasExpandedSection] = useState(false);
-
-  useEffect(() => {
-    // Show intro for 4 seconds
-    const timer = setTimeout(() => {
-      setShowIntro(false);
-    }, 3000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  const resetSections = () => {
-    setActiveSection(null);
-  };
 
   // Update hasExpandedSection whenever activeSection changes
   React.useEffect(() => {
@@ -40,13 +28,19 @@ const HomeContent: React.FC = () => {
     }
   }, [activeSection]);
 
+  const resetSections = () => {
+    setActiveSection(null);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <Headline isVisible={showIntro} />
+    <div className="min-h-screen">
+      <AnimatedBackground />
+      <Navbar />
       
-      <main className={`w-full transition-opacity duration-500 ${showIntro ? 'opacity-0' : 'opacity-100'}`}>
+      <main className="w-full min-h-[150vh]">
         <div className="container mx-auto px-4 lg:py-8">
-          <div className={`flex flex-col lg:flex-row gap-8 ${!activeSection ? 'mt-[140px]' : 'lg:mt-8'}`}>
+          <Hero />
+          <div className="flex flex-col lg:flex-row gap-8">
             {/* Left side - Keyword Section */}
             <div className="w-full lg:w-1/2">
               <KeywordSection 

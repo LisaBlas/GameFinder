@@ -1,0 +1,83 @@
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom, #030407, #0a0b14);
+  overflow: hidden;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  pointer-events: none;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+/* Different drift patterns */
+@keyframes drift1 {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(100px, 50px);
+  }
+  66% {
+    transform: translate(-50px, 100px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes drift2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(-80px, -40px);
+  }
+  66% {
+    transform: translate(40px, -90px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes drift3 {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(60px, -70px);
+  }
+  66% {
+    transform: translate(-90px, -40px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes drift4 {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(-40px, 80px);
+  }
+  66% {
+    transform: translate(70px, -60px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+} 

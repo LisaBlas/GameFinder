@@ -128,9 +128,11 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
     setSuggestions([]);
     setShowSuggestions(false);
     
-    // Trigger the section switch
+    // Trigger the section switch with a small delay to ensure smooth transition
     if (onKeywordSelect) {
-      onKeywordSelect();
+      setTimeout(() => {
+        onKeywordSelect();
+      }, 100);
     }
   };
 

@@ -13,9 +13,6 @@ const Headline: React.FC<HeadlineProps> = ({ isVisible }) => {
         ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}
       `}
     >
-      {/* Background gradient animation */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 via-background to-primary-500/10 animate-gradient pointer-events-none" />
-
       {/* Loading Animation */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative w-24 h-24">
