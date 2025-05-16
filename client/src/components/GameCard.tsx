@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SiSteam, SiEpicgames, SiGogdotcom, SiHumblebundle, SiItchdotio, SiAppstore, SiGoogleplay, SiNintendo, SiPlaystation } from 'react-icons/si';
 import { FaGamepad, FaShoppingCart, FaGlobe, FaXbox } from 'react-icons/fa';
 // Import icon images with different names to avoid conflicts
@@ -225,7 +225,29 @@ const useKinguinRedirect = (gameTitle: string) => {
 
 const GameCard: React.FC<GameCardProps> = ({ game }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [hasBeenClicked, setHasBeenClicked] = useState(false);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
+
+  // Check localStorage on mount to see if this card has been clicked before
+  useEffect(() => {
+    const clickedGames = JSON.parse(localStorage.getItem('clickedGames') || '[]');
+    if (clickedGames.includes(game.id)) {
+      setHasBeenClicked(true);
+    }
+  }, [game.id]);
+
+  const handleClick = () => {
+    if (!hasBeenClicked) {
+      // Add this game to the clicked games in localStorage
+      const clickedGames = JSON.parse(localStorage.getItem('clickedGames') || '[]');
+      if (!clickedGames.includes(game.id)) {
+        clickedGames.push(game.id);
+        localStorage.setItem('clickedGames', JSON.stringify(clickedGames));
+      }
+      setHasBeenClicked(true);
+    }
+    setIsExpanded(!isExpanded);
+  };
 
   // Format the image URL to get a thumbnail size
   const imageUrl = game.cover?.url 
@@ -253,8 +275,8 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
 
   return (
     <div 
-      className={`game-card bg-slate-800 rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition-all duration-300 flex flex-col h-full cursor-pointer ${isExpanded ? 'expanded' : ''}`}
-      onClick={() => setIsExpanded(!isExpanded)}
+      className={`game-card bg-slate-800 rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition-all duration-300 flex flex-col h-full cursor-pointer ${isExpanded ? 'expanded' : ''} ${hasBeenClicked ? 'clicked' : ''}`}
+      onClick={handleClick}
     >
       <div className={`relative bg-slate-900 transition-all duration-300 ${isExpanded ? 'h-0' : 'h-[300px]'}`}>
         <img 
