@@ -25,6 +25,19 @@ const AnimatedBackground: React.FC = () => {
       const animations = ['drift1', 'drift2', 'drift3', 'drift4'];
       particle.style.animationName = animations[Math.floor(Math.random() * animations.length)];
       
+      // Randomly assign variants
+      if (Math.random() < 0.3) { // 30% chance of being purple
+        particle.classList.add('purple');
+      }
+      
+      if (Math.random() < 0.2) { // 20% chance of being large
+        particle.classList.add('large');
+      }
+      
+      if (Math.random() < 0.25) { // 25% chance of being shiny
+        particle.classList.add('shiny');
+      }
+      
       return particle;
     };
 
