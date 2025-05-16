@@ -103,18 +103,11 @@
       "id": 29379
     },
     {
-      "name": "18th Century",
-      "category": "Setting & World",
-      "sub-category": "Time Periods",
-      "id": 552
-    },
-    {
       "name": "Victorian",
       "category": "Setting & World",
       "sub-category": "Time Periods",
       "id": 31259
     }
-
   ],
   "Sports Types": [
     {
@@ -838,6 +831,12 @@
       "id": 288
     },
     {
+      "name": "2.5D",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 589
+    },
+    {
       "name": "Polygonal 3D",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
@@ -848,18 +847,6 @@
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 1705
-    },
-    {
-      "name": "Cute",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 1387
-    },
-    {
-      "name": "3D",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 250
     },
     {
       "name": "Abstract",
@@ -886,12 +873,6 @@
       "id": 3138
     },
     {
-      "name": "2.5D",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 589
-    },
-    {
       "name": "Surreal",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
@@ -908,12 +889,6 @@
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 5789
-    },
-    {
-      "name": "Steampunk",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 906
     },
     {
       "name": "Cel shading",
@@ -966,124 +941,94 @@
   ],
   "Visual Themes": [
     {
-      "name": "nudity",
+      "name": "Includes Nudity",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
       "id": 1961
     },
     {
-      "name": "nsfw",
+      "name": "Nsfw-Heavy",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
       "id": 2509
     },
     {
-      "name": "cyberpunk",
+      "name": "Steampunk",
+      "category": "Aesthetics & Style",
+      "sub-category": "Visual Themes",
+      "id": 906
+    },
+    {
+      "name": "Cyberpunk",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
       "id": 103
     },
     {
-      "name": "spaceship",
+      "name": "Cute",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
-      "id": 947
+      "id": 1387
     },
     {
-      "name": "gore",
+      "name": "Minimalist",
+      "category": "Aesthetics & Style",
+      "sub-category": "Visual Themes",
+      "id": 4784
+    },
+    {
+      "name": "Gore",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
       "id": 1308
     },
     {
-      "name": "mecha",
+      "name": "Psychedelic",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
-      "id": 1448
+      "id": 1467
     },
     {
-      "name": "supernatural",
+      "name": "Low-Poly",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
-      "id": 1105
+      "id": 2225
     },
     {
-      "name": "halloween",
+      "name": "Gothic",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
-      "id": 1207
+      "id": 423
     },
     {
-      "name": "ancient advanced civilization technology",
-      "category": "Aesthetics & Style",
-      "sub-category": "Visual Themes",
-      "id": 6304
-    },
-    {
-      "name": "fashion",
-      "category": "Aesthetics & Style",
-      "sub-category": "Visual Themes",
-      "id": 793
-    },
-    {
-      "name": "heterochromia",
+      "name": "Heterochromia",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
       "id": 6463
     },
     {
-      "name": "fake in-game advertising",
+      "name": "Body Horror",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
-      "id": 4623
+      "id": 25555
     },
     {
-      "name": "heavy metal",
+      "name": "Furries",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
-      "id": 2153
+      "id": 17073
     },
     {
-      "name": "holiday themes",
+      "name": "Tentacles",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
-      "id": 4914
+      "id": 5703
     },
     {
-      "name": "punctuation mark above head",
+      "name": "Uncanny Valley",
       "category": "Aesthetics & Style",
       "sub-category": "Visual Themes",
-      "id": 5518
-    },
-    {
-      "name": "no hud",
-      "category": "Aesthetics & Style",
-      "sub-category": "Visual Themes",
-      "id": 5533
-    },
-    {
-      "name": "androgyny",
-      "category": "Aesthetics & Style",
-      "sub-category": "Visual Themes",
-      "id": 6221
-    },
-    {
-      "name": "shaky camera",
-      "category": "Aesthetics & Style",
-      "sub-category": "Visual Themes",
-      "id": 5100
-    },
-    {
-      "name": "food-themed stage",
-      "category": "Aesthetics & Style",
-      "sub-category": "Visual Themes",
-      "id": 6193
-    },
-    {
-      "name": "hologram",
-      "category": "Aesthetics & Style",
-      "sub-category": "Visual Themes",
-      "id": 4621
+      "id": 12440
     }
   ],
   "RPG Elements": [
@@ -1368,12 +1313,6 @@
       "id": 122
     },
     {
-      "name": "Airship",
-      "category": "Setting & World",
-      "sub-category": "Locations",
-      "id": 7304
-    },
-    {
       "name": "Castle",
       "category": "Setting & World",
       "sub-category": "Locations",
@@ -1470,12 +1409,6 @@
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 129
-    },
-    {
-      "name": "Psychological horror",
-      "category": "Aesthetics & Style",
-      "sub-category": "Atmosphere",
-      "id": 131
     },
     {
       "name": "Relaxing",
@@ -1590,15 +1523,15 @@
       "category": "Aesthetics & Style",
       "sub-category": "Atmosphere",
       "id": 2939
+    },
+    {
+      "name": "Psychological horror",
+      "category": "Aesthetics & Style",
+      "sub-category": "Atmosphere",
+      "id": 131
     }
   ],
   "Environmental Features": [
-    {
-      "name": "snow",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 1710
-    },
     {
       "name": "Verticality",
       "category": "Game Mechanics & Systems",
@@ -1606,7 +1539,7 @@
       "id": 7665
     },
     {
-      "name": "maze",
+      "name": "Maze",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 687
@@ -1618,25 +1551,25 @@
       "id": 4787
     },
     {
-      "name": "gravity",
+      "name": "Gravity-Focus",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 137
     },
     {
-      "name": "day/night cycle",
+      "name": "Day/Night cycle",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 2452
     },
     {
-      "name": "physics",
+      "name": "Physics-Focus",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 287
     },
     {
-      "name": "destructible environment",
+      "name": "Destructible Environment",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 5453
@@ -1674,18 +1607,6 @@
   ],
   "Historical Events": [
     {
-      "name": "Alternative History",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 39200
-    },
-    {
-      "name": "Civil War",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 1351
-    },
-    {
       "name": "Vietnam War",
       "category": "Setting & World",
       "sub-category": "Historical Events",
@@ -1698,7 +1619,7 @@
       "id": 9518
     },
     {
-      "name": "Based on - true story",
+      "name": "True Story",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 10839
@@ -1710,22 +1631,10 @@
       "id": 4070
     },
     {
-      "name": "French Revolution",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 1093
-    },
-    {
       "name": "Gulf War",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 1054
-    },
-    {
-      "name": "American Revolution",
-      "category": "Setting & World",
-      "sub-category": "Historical Events",
-      "id": 6640
     },
     {
       "name": "Titanic",
@@ -1734,13 +1643,13 @@
       "id": 1956
     },
     {
-      "name": "World War One - WW1",
+      "name": "WW1",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 29
     },
     {
-      "name": "World War Two - WW2",
+      "name": "WW2",
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 19
@@ -1750,6 +1659,24 @@
       "category": "Setting & World",
       "sub-category": "Historical Events",
       "id": 8
+    },
+    {
+      "name": "American Revolution",
+      "category": "Setting & World",
+      "sub-category": "Historical Events",
+      "id": 6640
+    },
+    {
+      "name": "French Revolution",
+      "category": "Setting & World",
+      "sub-category": "Historical Events",
+      "id": 1093
+    },
+    {
+      "name": "Alternative History",
+      "category": "Setting & World",
+      "sub-category": "Historical Events",
+      "id": 39200
     }
   ],
   "Puzzle Types": [
@@ -1876,7 +1803,7 @@
   ],
   "Entertainment Franchises": [
     {
-      "name": "Based on TV show",
+      "name": "Based on Show",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 997
@@ -1936,22 +1863,10 @@
       "id": 19488
     },
     {
-      "name": "Adapted to movie",
-      "category": "Setting & World",
-      "sub-category": "Entertainment Franchises",
-      "id": 11853
-    },
-    {
       "name": "Sherlock Holmes",
       "category": "Entertainment Franchises",
       "sub-category": "Entertainment Franchises",
       "id": 256
-    },
-    {
-      "name": "Unofficial crossover",
-      "category": "Setting & World",
-      "sub-category": "Entertainment Franchises",
-      "id": 30303
     },
     {
       "name": "Game of Thrones",
@@ -1960,22 +1875,16 @@
       "id": 46735
     },
     {
-      "name": "Adapted to TV show",
+      "name": "Adapted to TV",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 7028
     },
     {
-      "name": "Based on book",
+      "name": "From a Book",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 1538
-    },
-    {
-      "name": "Based on board game",
-      "category": "Setting & World",
-      "sub-category": "Entertainment Franchises",
-      "id": 16875
     },
     {
       "name": "Marvel",
@@ -2002,24 +1911,41 @@
       "id": 2876
     },
     {
-      "name": "Based on cartoon",
+      "name": "From a Cartoon",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 24033
     },
     {
-      "name": "Based on comic",
+      "name": "From a Comic",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 4310
     },
     {
-      "name": "Based on brand",
+      "name": "From a Brand",
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 4813
+    },
+    {
+      "name": "Adapted to Movie",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 11853
+    },
+    {
+      "name": "From a Board Game",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 16875
+    },
+    {
+      "name": "Unofficial crossover",
+      "category": "Setting & World",
+      "sub-category": "Entertainment Franchises",
+      "id": 30303
     }
-    
   ],
   "Game Features": [
     {
@@ -2145,37 +2071,31 @@
   ],
   "Cultural Elements": [
     {
-      "name": "Shaman",
-      "category": "Cultural Elements",
-      "sub-category": "Cultural Elements",
-      "id": 8242
-    },
-    {
-      "name": "Based on manga",
+      "name": "From a Manga",
       "category": "Cultural Elements",
       "sub-category": "Cultural Elements",
       "id": 2648
     },
     {
-      "name": "Based on fairy tale",
+      "name": "Fairy tales",
       "category": "Cultural Elements",
       "sub-category": "Cultural Elements",
       "id": 42632
     },
     {
-      "name": "Based on folk tale",
+      "name": "Folk Tales",
       "category": "Cultural Elements",
       "sub-category": "Cultural Elements",
       "id": 42629
     },
     {
-      "name": "Slavic folklore",
+      "name": "Slavic",
       "category": "Cultural Elements",
       "sub-category": "Cultural Elements",
       "id": 1963
     },
     {
-      "name": "Brazilian folklore",
+      "name": "Brasil",
       "category": "Cultural Elements",
       "sub-category": "Cultural Elements",
       "id": 28977
@@ -2191,12 +2111,6 @@
       "category": "Setting & World",
       "sub-category": "Cultural Elements",
       "id": 2458
-    },
-    {
-      "name": "Ancient Curse",
-      "category": "Cultural Elements",
-      "sub-category": "Cultural Elements",
-      "id": 10804
     },
     {
       "name": "Tribe",
@@ -2229,19 +2143,19 @@
       "id": 1886
     },
     {
-      "name": "Norse Mythology",
+      "name": "Norse Myths",
       "category": "Setting & World",
       "sub-category": "Cultural Elements",
       "id": 367
     },
     {
-      "name": "Greek Mythology",
+      "name": "Greek Myths",
       "category": "Setting & World",
       "sub-category": "Cultural Elements",
       "id": 35
     },
     {
-      "name": "Japanese Folklore",
+      "name": "Japanese Myths",
       "category": "Setting & World",
       "sub-category": "Cultural Elements",
       "id": 31899
@@ -2253,7 +2167,7 @@
       "id": 4534
     },
     {
-      "name": "Celtic Mythology",
+      "name": "Celtic Myths",
       "category": "Setting & World",
       "sub-category": "Cultural Elements",
       "id": 1091
@@ -2313,7 +2227,7 @@
       "id": 41234
     },
     {
-      "name": "Chinese Mythology",
+      "name": "Chinese Myths",
       "category": "Setting & World",
       "sub-category": "Cultural Elements",
       "id": 41581
@@ -2339,12 +2253,6 @@
       "id": 16716
     },
     {
-      "name": "Panzer IV",
-      "category": "Setting & World",
-      "sub-category": "Vehicles & Transportation",
-      "id": 8721
-    },
-    {
       "name": "Tank",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
@@ -2355,12 +2263,6 @@
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 44765
-    },
-    {
-      "name": "Eurofighter Typhoon",
-      "category": "Setting & World",
-      "sub-category": "Vehicles & Transportation",
-      "id": 11439
     },
     {
       "name": "Trucks",
@@ -2435,12 +2337,6 @@
       "id": 2913
     },
     {
-      "name": "Drone",
-      "category": "Setting & World",
-      "sub-category": "Vehicles & Transportation",
-      "id": 2746
-    },
-    {
       "name": "Trains",
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
@@ -2451,12 +2347,6 @@
       "category": "Setting & World",
       "sub-category": "Vehicles & Transportation",
       "id": 1986
-    },
-    {
-      "name": "Airship",
-      "category": "Setting & World",
-      "sub-category": "Vehicles & Transportation",
-      "id": 7304
     },
     {
       "name": "Flying",
@@ -2491,18 +2381,6 @@
       "id": 9695
     },
     {
-      "name": "Nuclear Holocaust",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 9338
-    },
-    {
-      "name": "Futuristic Game Show",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 11596
-    },
-    {
       "name": "Urban Fantasy",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
@@ -2515,7 +2393,7 @@
       "id": 9343
     },
     {
-      "name": "Inner-Thoughts World",
+      "name": "Inner-Thoughts",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 11113
@@ -2539,7 +2417,7 @@
       "id": 69
     },
     {
-      "name": "Utopian Civilization",
+      "name": "Utopian",
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 8841
@@ -2549,12 +2427,6 @@
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 429
-    },
-    {
-      "name": "Zombie Apocalypse",
-      "category": "Setting & World",
-      "sub-category": "Setting Conditions",
-      "id": 28274
     },
     {
       "name": "Virus",
@@ -2603,6 +2475,12 @@
       "category": "Setting & World",
       "sub-category": "Setting Conditions",
       "id": 8841
+    },
+    {
+      "name": "Zombies",
+      "category": "Setting & World",
+      "sub-category": "Setting Conditions",
+      "id": 28274
     }
   ],
   "Internet Culture": [
@@ -2631,12 +2509,6 @@
       "id": 2054
     },
     {
-      "name": "Viral Achievement",
-      "category": "Setting & World",
-      "sub-category": "Internet Culture",
-      "id": 11557
-    },
-    {
       "name": "SCP",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
@@ -2661,22 +2533,28 @@
       "id": 27086
     },
     {
-      "name": "Based on internet phenomena",
+      "name": "Internet celebrity",
+      "category": "Setting & World",
+      "sub-category": "Internet Culture",
+      "id": 1896
+    },
+    {
+      "name": "Internet Phenomena",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
       "id": 4922
     },
     {
-      "name": "Internet culture reference",
+      "name": "Internet Culture Reference",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
       "id": 5151
     },
     {
-      "name": "Internet celebrity",
+      "name": "Viral Achievement",
       "category": "Setting & World",
       "sub-category": "Internet Culture",
-      "id": 1896
+      "id": 11557
     }
   ],
   "Game Economy": [
@@ -3041,12 +2919,6 @@
       "id": 9935
     },
     {
-      "name": "Silent protagonist",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 2199
-    },
-    {
       "name": "Full voice acting",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
@@ -3089,40 +2961,10 @@
       "id": 38861
     },
     {
-      "name": "Narrator",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 19132
-    },
-    {
-      "name": "Unreliable narrator",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 5255
-    },
-    {
-      "name": "Narrative driven",
+      "name": "Narrative Driven",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 1439
-    },
-    {
-      "name": "Narrative adventure",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 17378
-    },
-    {
-      "name": "Third-person narrative",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 24457
-    },
-    {
-      "name": "Dynamic narrative",
-      "category": "Aesthetics & Style",
-      "sub-category": "Narrative Tone",
-      "id": 26126
     },
     {
       "name": "Nonlinear",
@@ -3137,7 +2979,7 @@
       "id": 17865
     },
     {
-      "name": "No dialogue",
+      "name": "No Dialogue",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 5802
@@ -3149,57 +2991,75 @@
       "id": 23739
     },
     {
-      "name": "Invented language",
+      "name": "Puns",
+      "category": "Aesthetics & Style",
+      "sub-category": "Narrative Tone",
+      "id": 38711
+    },
+    {
+      "name": "Invented Language",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 7473
     },
     {
-      "name": "Puns",
+      "name": "Unreliable Narrator",
       "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
-      "id": 38711
+      "id": 5255
     }
   ],
   "Sound Design": [
     {
-      "name": "Ai-generated music",
+      "name": "Ai Music",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 43816
     },
     {
-      "name": "Ai-generated sound effects",
+      "name": "Ai Sound Effects",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 44743
     },
     {
-      "name": "Music speed up",
+      "name": "Heavy Metal",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 2153
+    },
+    {
+      "name": "Hip-Hop",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 2949
+    },
+    {
+      "name": "J-Pop",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 9331
+    },
+    {
+      "name": "Rock",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 5287
+    },
+    {
+      "name": "Music Speed Up",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 9275
     },
     {
-      "name": "Adlib sound",
+      "name": "Adlib Sound",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 45454
     },
     {
-      "name": "Dynamic soundtrack",
-      "category": "Aesthetics & Style",
-      "sub-category": "Sound Design",
-      "id": 5896
-    },
-    {
-      "name": "Ambient music",
-      "category": "Aesthetics & Style",
-      "sub-category": "Sound Design",
-      "id": 6326
-    },
-    {
-      "name": "Music based",
+      "name": "Music Based",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 1687
@@ -3211,7 +3071,7 @@
       "id": 23748
     },
     {
-      "name": "In-game radio",
+      "name": "In-game Radio",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 5474
@@ -3223,13 +3083,19 @@
       "id": 3784
     },
     {
-      "name": "Custom soundtrack",
+      "name": "Dynamic Soundtrack",
+      "category": "Aesthetics & Style",
+      "sub-category": "Sound Design",
+      "id": 5896
+    },
+    {
+      "name": "Custom Soundtrack",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 1503
     },
     {
-      "name": "Great soundtrack",
+      "name": "Great Soundtrack",
       "category": "Aesthetics & Style",
       "sub-category": "Sound Design",
       "id": 3403

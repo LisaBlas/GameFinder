@@ -71,10 +71,7 @@
       "description": "Overall conditions that define the world or setting of the game."
     },
     "Vehicles & Transportation": {
-      "description": "Types of transportation and travel available within the game world including vehicles, animals, creatures and other devices.",
-      "Land Vehicles": {},
-      "Air Vehicles": {},
-      "Water Vessels": {}
+      "description": "Types of transportation and travel available within the game world including vehicles, animals, creatures and other devices."
     },
     "Entertainment Franchises": {
       "description": "Well-known entertainment franchises like movies, books and series that the game is part of."
