@@ -103,11 +103,18 @@
       "id": 29379
     },
     {
+      "name": "18th Century",
+      "category": "Setting & World",
+      "sub-category": "Time Periods",
+      "id": 552
+    },
+    {
       "name": "Victorian",
       "category": "Setting & World",
       "sub-category": "Time Periods",
       "id": 31259
     }
+
   ],
   "Sports Types": [
     {
@@ -269,204 +276,150 @@
       "id": 1478
     },
     {
-      "name": "vertical scrolling",
+      "name": "Vertical Scrolling",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
       "id": 4967
     },
     {
-      "name": "motorcycle",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
-      "id": 57
-    },
-    {
-      "name": "2d platformer",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
-      "id": 3014
-    },
-    {
-      "name": "grid-based movement",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
-      "id": 1923
-    },
-    {
-      "name": "grapple",
+      "name": "Grapple",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
       "id": 4903
     },
     {
-      "name": "sprinting mechanics",
+      "name": "2D Platformer",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Movement Types",
+      "id": 3014
+    },
+    {
+      "name": "Grid-Based",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Movement Types",
+      "id": 1923
+    },
+    {
+      "name": "Sprint Mechanic",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
       "id": 4711
     },
     {
-      "name": "swimming",
+      "name": "Swimming",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
       "id": 2324
     },
     {
-      "name": "driving",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
-      "id": 778
-    },
-    {
-      "name": "climbing",
+      "name": "Climbing",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
       "id": 2280
     },
     {
-      "name": "parkour",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
-      "id": 390
-    },
-    {
-      "name": "ragdoll physics",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
-      "id": 4770
-    },
-    {
-      "name": "3d platformer",
+      "name": "3D Platformer",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
       "id": 2231
     },
     {
-      "name": "auto-scrolling levels",
+      "name": "Gliding",
       "category": "Game Mechanics & Systems",
       "sub-category": "Movement Types",
-      "id": 5722
+      "id": 6145
     }
   ],
   "Game Structure": [
     {
-      "name": "multiple endings",
+      "name": "Multiple Endings",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
       "id": 1313
     },
     {
-      "name": "exploration",
+      "name": "Exploration",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
       "id": 72
     },
     {
-      "name": "death",
+      "name": "Quest Hub",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
-      "id": 558
+      "id": 9510
     },
     {
-      "name": "music and rhythm",
+      "name": "Linear",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
-      "id": 4137
+      "id": 6137
     },
     {
-      "name": "difficulty level",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
-      "id": 5029
-    },
-    {
-      "name": "single-player only",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
-      "id": 4138
-    },
-    {
-      "name": "metroidvania",
+      "name": "Metroidvania",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
       "id": 477
     },
     {
-      "name": "roguelite",
+      "name": "Roguelite",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
       "id": 17292
     },
     {
-      "name": "text adventure",
+      "name": "Roguelike",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Game Structure",
+      "id": 416
+    },
+    {
+      "name": "Text Adventure",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
       "id": 4260
     },
     {
-      "name": "tower defense",
+      "name": "Tower Defense",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
       "id": 77
     },
     {
-      "name": "collectibles",
+      "name": "Mission-Based",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
-      "id": 4484
+      "id": 4384
     },
     {
-      "name": "building",
+      "name": "Episodic",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
-      "id": 1403
+      "id": 901
     },
     {
-      "name": "minigame collection",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
-      "id": 4328
-    },
-    {
-      "name": "leaderboard",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
-      "id": 5523
-    },
-    {
-      "name": "dungeon crawler",
+      "name": "Dungeon Crawler",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
       "id": 2228
     },
     {
-      "name": "procedural generation",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
-      "id": 577
-    },
-    {
-      "name": "countdown timer",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
-      "id": 4213
-    },
-    {
-      "name": "character select screen",
+      "name": "Character Select Screen",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
       "id": 4286
     },
     {
-      "name": "level selection",
+      "name": "Procedural Generation",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
-      "id": 2109
+      "id": 577
     },
     {
-      "name": "cheat code",
+      "name": "Random Ecounters",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Structure",
-      "id": 5436
+      "id": 6642
     }
   ],
   "Shooter Types": [
@@ -697,25 +650,32 @@
   ],
   "Challenge Types": [
     {
-      "name": "Resource Management",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 606
-    },
-    {
-      "name": "Precision Platforming",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 25831
-    },
-    {
       "name": "Survival Mode",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
       "id": 5304
     },
     {
-      "name": "Micromanagement",
+      "name": "Difficult",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Challenge Types",
+      "id": 905
+    },
+    {
+      "name": "Casual",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Challenge Types",
+      "id": 101
+    },
+
+    {
+      "name": "Minigames",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Challenge Types",
+      "id": 274
+    },
+    {
+      "name": "Micro",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
       "id": 1162
@@ -727,94 +687,64 @@
       "id": 578
     },
     {
+      "name": "Automation",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Challenge Types",
+      "id": 12950
+    },
+    {
       "name": "Moral Decisions",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
       "id": 4850
     },
     {
-      "name": "speedrun",
+      "name": "Jump Scares",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 5962
+      "id": 5176
     },
     {
-      "name": "pve",
+      "name": "Multi-Phase Boss",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 1332
+      "id": 5105
     },
     {
-      "name": "quick time event",
+      "name": "Base Defense",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 5989
+      "id": 2793
     },
     {
-      "name": "hacking",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 1423
-    },
-    {
-      "name": "suicide",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 5675
-    },
-    {
-      "name": "score attack",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 2216
-    },
-    {
-      "name": "theft",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 5517
-    },
-    {
-      "name": "hostages",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 1373
-    },
-    {
-      "name": "time trials",
+      "name": "Time Trials",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
       "id": 6765
     },
     {
-      "name": "transforming boss",
+      "name": "Escort Mission",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 4405
+      "id": 4776
     },
     {
-      "name": "boss assistance",
+      "name": "Resource Management",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 5967
+      "id": 606
     },
     {
-      "name": "duel",
+      "name": "Inventory Management",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 4860
+      "id": 2489
     },
     {
-      "name": "difficulty achievement",
+      "name": "Quick Time Events",
       "category": "Game Mechanics & Systems",
       "sub-category": "Challenge Types",
-      "id": 5691
-    },
-    {
-      "name": "challenges",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
-      "id": 4215
+      "id": 5989
     }
   ],
   "Art Styles": [
@@ -831,12 +761,6 @@
       "id": 288
     },
     {
-      "name": "2.5D",
-      "category": "Aesthetics & Style",
-      "sub-category": "Art Styles",
-      "id": 589
-    },
-    {
       "name": "Polygonal 3D",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
@@ -847,6 +771,18 @@
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 1705
+    },
+    {
+      "name": "Cute",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 1387
+    },
+    {
+      "name": "3D",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 250
     },
     {
       "name": "Abstract",
@@ -873,6 +809,12 @@
       "id": 3138
     },
     {
+      "name": "2.5D",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 589
+    },
+    {
       "name": "Surreal",
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
@@ -889,6 +831,12 @@
       "category": "Aesthetics & Style",
       "sub-category": "Art Styles",
       "id": 5789
+    },
+    {
+      "name": "Steampunk",
+      "category": "Aesthetics & Style",
+      "sub-category": "Art Styles",
+      "id": 906
     },
     {
       "name": "Cel shading",
@@ -1155,124 +1103,58 @@
   ],
   "Player Progression": [
     {
-      "name": "steam achievements",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4004
-    },
-    {
-      "name": "high score",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 2152
-    },
-    {
-      "name": "playstation trophies",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4245
-    },
-    {
-      "name": "leveling up",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4284
-    },
-    {
-      "name": "unlockables",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4544
-    },
-    {
-      "name": "steam leaderboards",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4151
-    },
-    {
-      "name": "regenerating health",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 6295
-    },
-    {
-      "name": "stat tracking",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4984
-    },
-    {
-      "name": "upgradeable vehicles",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 6832
-    },
-    {
-      "name": "grinding",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 236
-    },
-    {
-      "name": "ranking system",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4333
-    },
-    {
-      "name": "skill points in game",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4390
-    },
-    {
-      "name": "secret achievements",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 7369
-    },
-    {
-      "name": "skill tree",
+      "name": "Skill Tree",
       "category": "Game Mechanics & Systems",
       "sub-category": "Player Progression",
       "id": 5792
     },
     {
-      "name": "collecting",
+      "name": "Stat Tracking",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Player Progression",
+      "id": 4984
+    },
+    {
+      "name": "Leveling Up",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Player Progression",
+      "id": 4284
+    },
+    {
+      "name": "Upgrades",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Player Progression",
+      "id": 1566
+    },
+    {
+      "name": "Loot",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Player Progression",
+      "id": 4399
+    },
+    {
+      "name": "Grinding",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Player Progression",
+      "id": 236
+    },
+    {
+      "name": "Crafting",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Player Progression",
+      "id": 510
+    },
+    {
+      "name": "Collecting",
       "category": "Game Mechanics & Systems",
       "sub-category": "Player Progression",
       "id": 247
     },
     {
-      "name": "trophies",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 5704
-    },
-    {
-      "name": "tech trees",
+      "name": "Tech Trees",
       "category": "Game Mechanics & Systems",
       "sub-category": "Player Progression",
       "id": 6019
-    },
-    {
-      "name": "training",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 193
-    },
-    {
-      "name": "character growth",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 4801
-    },
-    {
-      "name": "grind",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
-      "id": 6487
     }
   ],
   "Locations": [
@@ -1311,6 +1193,12 @@
       "category": "Setting & World",
       "sub-category": "Locations",
       "id": 122
+    },
+    {
+      "name": "Airship",
+      "category": "Setting & World",
+      "sub-category": "Locations",
+      "id": 7304
     },
     {
       "name": "Castle",
@@ -1533,6 +1421,18 @@
   ],
   "Environmental Features": [
     {
+      "name": "Radiation",
+      "category": "Setting & World",
+      "sub-category": "Environmental Features",
+      "id": 3931
+    },
+    {
+      "name": "Secret Area",
+      "category": "Setting & World",
+      "sub-category": "Environmental Features",
+      "id": 4991
+    },
+    {
       "name": "Verticality",
       "category": "Game Mechanics & Systems",
       "sub-category": "Environmental Features",
@@ -1545,19 +1445,13 @@
       "id": 687
     },
     {
-      "name": "treasure chest",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 4787
-    },
-    {
       "name": "Gravity-Focus",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 137
     },
     {
-      "name": "Day/Night cycle",
+      "name": "Day/Night Cycle",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 2452
@@ -1569,40 +1463,34 @@
       "id": 287
     },
     {
-      "name": "Destructible Environment",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 5453
-    },
-    {
-      "name": "nature",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 1111
-    },
-    {
-      "name": "underwater",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 138
-    },
-    {
-      "name": "aquatic",
-      "category": "Setting & World",
-      "sub-category": "Environmental Features",
-      "id": 4440
-    },
-    {
       "name": "Lava",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
       "id": 42207
     },
     {
-      "name": "Ocean",
+      "name": "Vents",
       "category": "Setting & World",
       "sub-category": "Environmental Features",
-      "id": 41929
+      "id": 6621
+    },
+    {
+      "name": "Rotating Platforms",
+      "category": "Setting & World",
+      "sub-category": "Environmental Features",
+      "id": 9394
+    },
+    {
+      "name": "Destructible Environment",
+      "category": "Setting & World",
+      "sub-category": "Environmental Features",
+      "id": 5453
+    },
+    {
+      "name": "Environmental Puzzles",
+      "category": "Setting & World",
+      "sub-category": "Environmental Features",
+      "id": 4928
     }
   ],
   "Historical Events": [
@@ -1945,128 +1833,6 @@
       "category": "Setting & World",
       "sub-category": "Entertainment Franchises",
       "id": 30303
-    }
-  ],
-  "Game Features": [
-    {
-      "name": "steam",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 1158
-    },
-    {
-      "name": "casual",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Features",
-      "id": 101
-    },
-    {
-      "name": "minigames",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Features",
-      "id": 274
-    },
-    {
-      "name": "side-scrolling",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 1059
-    },
-    {
-      "name": "compilation",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 960
-    },
-    {
-      "name": "difficult",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 905
-    },
-    {
-      "name": "game show",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 772
-    },
-    {
-      "name": "fictional currencies",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 8784
-    },
-    {
-      "name": "controller support",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 16877
-    },
-    {
-      "name": "real-time",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 993
-    },
-    {
-      "name": "pinball",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 934
-    },
-    {
-      "name": "online co-op",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Features",
-      "id": 988
-    },
-    {
-      "name": "e-reader",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 10091
-    },
-    {
-      "name": "graphic adventure",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 1079
-    },
-    {
-      "name": "automation",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Features",
-      "id": 12950
-    },
-    {
-      "name": "hidden room",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 7653
-    },
-    {
-      "name": "pc to console port",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 10048
-    },
-    {
-      "name": "on-the-fly character switching",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Features",
-      "id": 7558
-    },
-    {
-      "name": "escape game",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 23568
-    },
-    {
-      "name": "3d platform",
-      "category": "Game Features",
-      "sub-category": "Game Features",
-      "id": 18448
     }
   ],
   "Cultural Elements": [
@@ -2559,228 +2325,138 @@
   ],
   "Game Economy": [
     {
-      "name": "pay-to-play",
+      "name": "Loot",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Economy",
-      "id": 9841
+      "id": 4399
     },
     {
-      "name": "mii",
-      "category": "Game Features",
-      "sub-category": "Game Economy",
-      "id": 17141
-    },
-    {
-      "name": "cards",
+      "name": "Black Market",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Economy",
-      "id": 41594
+      "id": 4884
     },
     {
-      "name": "foraging",
+      "name": "Grinding",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Economy",
-      "id": 10114
+      "id": 236
     },
     {
-      "name": "souls as currency",
+      "name": "Factions",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Game Economy",
+      "id": 4250
+    },
+    {
+      "name": "Microtransactions",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Game Economy",
+      "id": 4400
+    },
+    {
+      "name": "NFT",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Game Economy",
+      "id": 26834
+    },
+    {
+      "name": "Blockchain",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Game Economy",
+      "id": 25341
+    },
+    {
+      "name": "Souls As Currency",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Economy",
       "id": 9533
     },
     {
-      "name": "dragon kill points",
+      "name": "Gacha",
       "category": "Game Mechanics & Systems",
       "sub-category": "Game Economy",
-      "id": 12500
-    },
-    {
-      "name": "logistics",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 42108
-    },
-    {
-      "name": "loot",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 45535
-    },
-    {
-      "name": "storage",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 38543
-    },
-    {
-      "name": "finance",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 38858
-    },
-    {
-      "name": "nft racing",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 37877
-    },
-    {
-      "name": "auction",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 41985
-    },
-    {
-      "name": "contract",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 37896
-    },
-    {
-      "name": "blockchain version exists",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 38905
-    },
-    {
-      "name": "game of fortune",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 37834
-    },
-    {
-      "name": "playtoearn",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 46529
-    },
-    {
-      "name": "gachat",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
-      "id": 47666
+      "id": 7545
     }
   ],
   "Control Schemes": [
     {
-      "name": "sixaxis support",
+      "name": "Twin Sticks",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
-      "id": 11247
+      "id": 5311
     },
     {
-      "name": "snes mouse support",
+      "name": "Controller Support",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
-      "id": 9725
+      "id": 16877
     },
     {
-      "name": "tank controls",
+      "name": "Hotkeys",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
-      "id": 10149
+      "id": 5671
     },
     {
-      "name": "contextual controller rumble",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
-      "id": 8156
-    },
-    {
-      "name": "typing",
+      "name": "Typing",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
       "id": 38116
     },
     {
-      "name": "nintendo ds rumble pak",
+      "name": "Auto-Aim",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
-      "id": 46206
+      "id": 4885
     },
     {
-      "name": "dance mat",
+      "name": "Dance Mat",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
       "id": 12853
     },
     {
-      "name": "balance board support",
+      "name": "Balance Board",
       "category": "Control Schemes",
       "sub-category": "Control Schemes",
       "id": 10699
     },
     {
-      "name": "fully customizable controls",
+      "name": "Idle Gameplay",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
-      "id": 7476
+      "id": 17003
     },
     {
-      "name": "kinect required",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
-      "id": 10897
-    },
-    {
-      "name": "custom ui",
+      "name": "Custom UI",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
       "id": 12502
     },
     {
-      "name": "playstation mouse support",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
-      "id": 12900
-    },
-    {
-      "name": "motion plus support",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
-      "id": 11059
-    },
-    {
-      "name": "tap controls",
-      "category": "Control Schemes",
-      "sub-category": "Control Schemes",
-      "id": 25800
-    },
-    {
-      "name": "dual-monitor arcade games",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
-      "id": 8270
-    },
-    {
-      "name": "controller overlay",
-      "category": "Control Schemes",
-      "sub-category": "Control Schemes",
-      "id": 11455
-    },
-    {
-      "name": "multitouch",
+      "name": "Multitouch",
       "category": "Control Schemes",
       "sub-category": "Control Schemes",
       "id": 100
     },
     {
-      "name": "power glove support",
+      "name": "Fixed Camera Angles",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
-      "id": 15079
+      "id": 10149
     },
     {
-      "name": "wii speak support",
+      "name": "Fully Customisable",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
-      "id": 12706
+      "id": 7476
     },
     {
-      "name": "playlink",
+      "name": "Dual-Monitor Arcade Games",
       "category": "Game Mechanics & Systems",
       "sub-category": "Control Schemes",
-      "id": 10794
+      "id": 8270
     }
   ],
   "Simulation Elements": [
@@ -2938,7 +2614,7 @@
     },
     {
       "name": "Catch phrase",
-      "category": "Game Features",
+      "category": "Aesthetics & Style",
       "sub-category": "Narrative Tone",
       "id": 8285
     },
