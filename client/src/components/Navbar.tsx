@@ -31,17 +31,17 @@ const Navbar: React.FC = () => {
             href="https://linkedin.com/in/blas-alviz"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white hover:text-primary transition-colors"
+            className="text-white/70 hover:text-primary transition-colors"
           >
-            <FaLinkedin size={24} />
+            <FaLinkedin size={20} />
           </a>
           <a
             href="https://x.com/BerliozGordon"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white hover:text-primary transition-colors"
+            className="text-white/70 hover:text-primary transition-colors"
           >
-            <FaXTwitter size={24} />
+            <FaXTwitter size={20} />
           </a>
         </div>
       </div>
