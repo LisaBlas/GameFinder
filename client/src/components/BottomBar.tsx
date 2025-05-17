@@ -29,11 +29,11 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef 
   };
 
   return (
-    <div className="bottom-bar fixed bottom-0 left-0 right-0 flex justify-center items-center p-4 z-50 animate-in slide-in-from-bottom duration-300">
-      <div className="rounded-t-lg">
-        <div className="flex flex-col items-center gap-4 p-4">
+    <div className="bottom-bar fixed bottom-0 left-0 right-0 flex justify-center items-center p-4 z-50 animate-in slide-in-from-bottom duration-300 pointer-events-none">
+      <div className="rounded-t-lg pointer-events-none">
+        <div className="flex flex-col items-center gap-4 p-4 pointer-events-none">
           {/* Selected Filters */}
-          <div className={`backdrop-blur-sm inline-flex rounded-lg p-4 transition-all duration-300 ${
+          <div className={`backdrop-blur-sm inline-flex rounded-lg p-4 transition-all duration-300 pointer-events-auto ${
             selectedFilters.length > 0 
               ? 'border-2 border-primary shadow-[0_0_10px_rgba(124,58,237,0.5)]' 
               : 'border border-border'
@@ -44,7 +44,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef 
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-4 pointer-events-auto">
             <button
               onClick={handleClearAll}
               className="bg-background flex items-center gap-2 px-4 py-2 text-sm font-medium text-white border border-border hover:bg-red-500 rounded-lg transition-colors"
