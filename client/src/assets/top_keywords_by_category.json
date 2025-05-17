@@ -116,371 +116,371 @@
     }
 
   ],
-  "Sports Types": [
+  "Sports": [
     {
       "name": "Soccer",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 26
     },
     {
       "name": "Football",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 27
     },
     {
       "name": "Motorsports",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 4205
     },
     {
       "name": "Baseball",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 20
     },
     {
       "name": "Fishing",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 509
     },
     {
       "name": "Golf",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 30
     },
     {
       "name": "Basketball",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 58
     },
     {
       "name": "Billiards",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 2016
     },
     {
       "name": "Tennis",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 311
     },
     {
       "name": "Wrestling",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 234
     },
     {
       "name": "Boxing",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 632
     },
     {
       "name": "Skiing",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 917
     },
     {
       "name": "Combat Racing",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 4803
     },
     {
       "name": "U.S. Football",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 32
     },
     {
       "name": "Skateboarding",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 2913
     },
     {
       "name": "Bowling",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 299
     },
     {
       "name": "Ice Hockey",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 44
     },
     {
       "name": "Rally",
       "category": "Genre-Specific Elements",
-      "sub-category": "Sports Types",
+      "sub-category": "Sports",
       "id": 28
     }
   ],
-  "Movement Types": [
+  "Movement": [
     {
       "name": "Gravity Control",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 4939
     },
     {
       "name": "Walk-Heavy",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 1493
     },
     {
       "name": "Wall jump",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 2155
     },
     {
       "name": "Teleportation",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 1986
     },
     {
       "name": "Parkour",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 390
     },
     {
       "name": "On Rails",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 1478
     },
     {
       "name": "Vertical Scrolling",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 4967
     },
     {
       "name": "Grapple",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 4903
     },
     {
       "name": "2D Platformer",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 3014
     },
     {
       "name": "Grid-Based",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 1923
     },
     {
       "name": "Sprint Mechanic",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 4711
     },
     {
       "name": "Swimming",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 2324
     },
     {
       "name": "Climbing",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 2280
     },
     {
       "name": "3D Platformer",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 2231
     },
     {
       "name": "Gliding",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Movement Types",
+      "sub-category": "Movement",
       "id": 6145
     }
   ],
-  "Game Structure": [
+  "Structure": [
     {
       "name": "Multiple Endings",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 1313
     },
     {
       "name": "Exploration",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 72
     },
     {
       "name": "Quest Hub",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 9510
     },
     {
       "name": "Linear",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 6137
     },
     {
       "name": "Metroidvania",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 477
     },
     {
       "name": "Roguelite",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 17292
     },
     {
       "name": "Roguelike",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 416
     },
     {
       "name": "Text Adventure",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 4260
     },
     {
       "name": "Tower Defense",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 77
     },
     {
       "name": "Mission-Based",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 4384
     },
     {
       "name": "Episodic",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 901
     },
     {
       "name": "Dungeon Crawler",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 2228
     },
     {
       "name": "Character Select Screen",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 4286
     },
     {
       "name": "Procedural Generation",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 577
     },
     {
       "name": "Random Ecounters",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Structure",
+      "sub-category": "Structure",
       "id": 6642
     }
   ],
-  "Shooter Types": [
+  "Shooters": [
     {
       "name": "Shoot 'Em Up",
       "category": "Genre-Specific Elements",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 166
     },
     {
       "name": "Vehicle Combat",
       "category": "Genre-Specific Elements",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 25
     },
     {
       "name": "Run and Gun",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 660
     },
     {
       "name": "Sniping",
       "category": "Genre-Specific Elements",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 4730
     },
     {
       "name": "Arena Shooter",
       "category": "Genre-Specific Elements",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 1451
     },
     {
       "name": "Flight Combat",
       "category": "Genre-Specific Elements",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 36
     },
     {
       "name": "Manic",
       "category": "Genre-Specific Elements",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 2712
     },
     {
       "name": "Retro Arcade",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 37923
     },
     {
       "name": "Squads",
       "category": "Genre-Specific Elements",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 6244
     },
     {
       "name": "Danmaku",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 39248
     },
     {
       "name": "Auto-Aim",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 4885
     },
     {
       "name": "Bullet Time",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Shooter Types",
+      "sub-category": "Shooters",
       "id": 1309
     }
   ],
@@ -588,95 +588,95 @@
       "id": 6457
     }
   ],
-  "Challenge Types": [
+  "Challenges": [
     {
       "name": "Survival Mode",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 5304
     },
     {
       "name": "Difficult",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 905
     },
     {
       "name": "Casual",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 101
     },
     {
       "name": "Die & Retry",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 24126
     },
     {
       "name": "Minigames",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 274
     },
     {
       "name": "Micro",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 1162
     },
     {
       "name": "Permadeath",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 578
     },
     {
       "name": "Moral Decisions",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 4850
     },
     {
       "name": "Jump Scares",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 5176
     },
     {
       "name": "Multi-Phase Boss",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 5105
     },
     {
       "name": "Time Trials",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 6765
     },
     {
       "name": "Escort Mission",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 4776
     },
     {
       "name": "Resource Management",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 606
     },
     {
       "name": "Inventory Management",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 2489
     },
     {
       "name": "Quick Time Events",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Challenge Types",
+      "sub-category": "Challenges",
       "id": 5989
     }
   ],
@@ -912,115 +912,115 @@
       "id": 12440
     }
   ],
-  "RPG Elements": [
+  "RPGs": [
     {
       "name": "Magic",
       "category": "Genre-Specific Elements",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 226
     },
     {
       "name": "JRPG",
       "category": "Game Mechanics & Systems",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 521
     },
     {
       "name": "Dialogue Trees",
       "category": "Game Mechanics & Systems",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 1523
     },
     {
       "name": "Crafting",
       "category": "Genre-Specific Elements",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 510
     },
     {
       "name": "Side Quests",
       "category": "Genre-Specific Elements",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 4852
     },
     {
       "name": "Party System",
       "category": "Genre-Specific Elements",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 4468
     },
     {
       "name": "Alchemy",
       "category": "Genre-Specific Elements",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 2668
     },
     {
       "name": "Potions",
       "category": "Genre-Specific Elements",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 4879
     },
     {
       "name": "Choices Matter",
       "category": "Genre-Specific Elements",
-      "sub-category": "RPG Elements",
+      "sub-category": "RPGs",
       "id": 3534
     }
   ],
-  "Player Progression": [
+  "Progression": [
     {
       "name": "Skill Tree",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 5792
     },
     {
       "name": "Stat Tracking",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 4984
     },
     {
       "name": "Leveling Up",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 4284
     },
     {
       "name": "Upgrades",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 1566
     },
     {
       "name": "Loot",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 4399
     },
     {
       "name": "Grinding",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 236
     },
     {
       "name": "Crafting",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 510
     },
     {
       "name": "Collecting",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 247
     },
     {
       "name": "Tech Trees",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Player Progression",
+      "sub-category": "Progression",
       "id": 6019
     }
   ],
@@ -1434,95 +1434,95 @@
       "id": 39200
     }
   ],
-  "Puzzle Types": [
+  "Puzzles": [
     {
       "name": "Match 3",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 734
     },
     {
       "name": "Word Game",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 2366
     },
     {
       "name": "Mahjong",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 1011
     },
     {
       "name": "Block Matching",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 4467
     },
     {
       "name": "Math",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 918
     },
     {
       "name": "Solitaire",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 1372
     },
     {
       "name": "Sudoku",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 2244
     },
     {
       "name": "Physics",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 2451
     },
     {
       "name": "Falling Blocks",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 2528
     },
     {
       "name": "Nonogram",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 2423
     },
     {
       "name": "Tile Matching",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 2541
     },
     {
       "name": "Brick Breaker",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 2838
     },
     {
       "name": "With Story",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 6714
     },
     {
       "name": "Environmental",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 4928
     },
     {
       "name": "Platformer",
       "category": "Genre-Specific Elements",
-      "sub-category": "Puzzle Types",
+      "sub-category": "Puzzles",
       "id": 4527
     }
   ],
@@ -2160,189 +2160,189 @@
       "id": 11557
     }
   ],
-  "Game Economy": [
+  "Economy Value": [
     {
       "name": "Loot",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 4399
     },
     {
       "name": "Black Market",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 4884
     },
     {
       "name": "Grinding",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 236
     },
     {
       "name": "Factions",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 4250
     },
     {
       "name": "Microtransactions",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 4400
     },
     {
       "name": "NFT",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 26834
     },
     {
       "name": "Blockchain",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 25341
     },
     {
       "name": "Souls As Currency",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 9533
     },
     {
       "name": "Gacha",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Game Economy",
+      "sub-category": "Economy Value",
       "id": 7545
     }
   ],
-  "Control Schemes": [
+  "Controls": [
     {
       "name": "Twin Sticks",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 5311
     },
     {
       "name": "Hotkeys",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 5671
     },
     {
       "name": "Typing",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 38116
     },
     {
       "name": "Auto-Aim",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 4885
     },
     {
       "name": "Dance Mat",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 12853
     },
     {
       "name": "Balance Board",
-      "category": "Control Schemes",
-      "sub-category": "Control Schemes",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Controls",
       "id": 10699
     },
     {
       "name": "Idle Gameplay",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 17003
     },
     {
       "name": "Custom UI",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 12502
     },
     {
       "name": "Multitouch",
-      "category": "Control Schemes",
-      "sub-category": "Control Schemes",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Controls",
       "id": 100
     },
     {
       "name": "Fixed Camera Angles",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 10149
     },
     {
       "name": "Controller Support",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 16877
     },
     {
       "name": "Fully Customisable",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Control Schemes",
+      "sub-category": "Controls",
       "id": 7476
     }
   ],
-  "Simulation Elements": [
+  "Simulation": [
     {
       "name": "Farming",
-      "category": "Simulation Elements",
-      "sub-category": "Simulation Elements",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Simulation",
       "id": 18437
     },
     {
       "name": "Life",
-      "category": "Simulation Elements",
-      "sub-category": "Simulation Elements",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Simulation",
       "id": 43
     },
     {
       "name": "Dating",
-      "category": "Simulation Elements",
-      "sub-category": "Simulation Elements",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Simulation",
       "id": 358
     },
     {
       "name": "City Builder",
-      "category": "Simulation Elements",
-      "sub-category": "Simulation Elements",
+      "category": "Game Mechanics & Systems",
+      "sub-category": "Simulation",
       "id": 3533
     },
     {
       "name": "Truck",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Simulation Elements",
+      "sub-category": "Simulation",
       "id": 1156
     },
     {
       "name": "Restaurant",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Simulation Elements",
+      "sub-category": "Simulation",
       "id": 38859
     },
     {
       "name": "Politics",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Simulation Elements",
+      "sub-category": "Simulation",
       "id": 25409
     },
     {
       "name": "Real Time",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Simulation Elements",
+      "sub-category": "Simulation",
       "id": 993
     },
     {
       "name": "Sports Manager",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Simulation Elements",
+      "sub-category": "Simulation",
       "id": 44173
     }
   ],
@@ -2652,77 +2652,77 @@
       "id": 5999
     }
   ],
-  "Strategy Types": [
+  "Strategy": [
     {
       "name": "Macro",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 10739
     },
     {
       "name": "Micro",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 1162
     },
     {
       "name": "Static Defense",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 13038
     },
     {
       "name": "Diplomacy",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 1143
     },
     {
       "name": "Automation",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 12950
     },
     {
       "name": "Base Defense",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 2793
     },
     {
       "name": "Tech Trees",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 6019
     },
     {
       "name": "No Pause",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 10045
     },
     {
       "name": "Morale",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 4851
     },
     {
       "name": "Resource Gathering",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 4767
     },
     {
       "name": "Resource Management",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 606
     },
     {
       "name": "Time Management",
       "category": "Game Mechanics & Systems",
-      "sub-category": "Strategy Types",
+      "sub-category": "Strategy",
       "id": 3430
     }
   ],

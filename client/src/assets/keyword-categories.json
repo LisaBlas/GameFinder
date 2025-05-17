@@ -10,43 +10,43 @@
     "Combat Styles": {
       "description": "Different approaches and styles of combat."
     },
-    "Movement Types": {
+    "Movement": {
       "description": "The ways players can move within the game world."
     },
-    "Game Structure": {
+    "Structure": {
       "description": "The overall structure and flow of the game's levels and progression."
     },
-    "Player Progression": {
+    "Progression": {
       "description": "Mechanisms that allow players to improve or evolve their character or gameplay abilities."
     },
-    "Challenge Types": {
+    "Challenges": {
       "description": "Different types of challenges the player faces throughout the game."
     },
-    "Control Schemes": {
+    "Controls": {
       "description": "Ways players interact with the game through input devices."
     },
-    "Game Economy": {
+    "Economy Value": {
       "description": "The in-game systems related to resources, trade, and economy."
     },
     "Game Features": {
       "description": "Special features that enhance or alter the gameplay experience."
     },
-    "RPG Elements": {
+    "RPGs": {
       "description": "Key elements of role-playing games, focused on gameplay."
     },
-    "Puzzle Types": {
+    "Puzzles": {
       "description": "Different puzzle mechanics found in the game."
     },
-    "Shooter Types": {
+    "Shooters": {
       "description": "Different types of shooting gameplay mechanics."
     },
-    "Sports Types": {
+    "Sports": {
       "description": "Various types of sports games."
     },
-    "Strategy Types": {
+    "Strategy": {
       "description": "Types of strategic gameplay and approaches."
     },
-    "Simulation Elements": {
+    "Simulation": {
       "description": "Mechanics that simulate real-life systems or activities."
     }
   },
@@ -58,8 +58,8 @@
     "Locations": {
       "description": "Various locations where the game takes place."
     },
-    "Environmental Features": {
-      "description": "Specific natural and man made landscape and infrastructure features in the game world."
+    "Internet Culture": {
+      "description": "Elements of internet culture embedded in the game world."
     },
     "Historical Events": {
       "description": "Real historical events that happened on a day or over a time period like wars, revolutions, assasinations, bombings, that form the backdrop or influence the game's world."
@@ -76,8 +76,8 @@
     "Entertainment Franchises": {
       "description": "Well-known entertainment franchises like movies, books and series that the game is part of."
     },
-    "Internet Culture": {
-      "description": "Elements of internet culture embedded in the game world."
+    "Environmental Features": {
+      "description": "Specific natural and man made landscape and infrastructure features in the game world."
     }
   },
   "Aesthetics & Style": {

@@ -109,19 +109,19 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
       "Combat Systems": "⚔️",
       "Combat Environments": "🌋",
       "Combat Styles": "🎯",
-      "Movement Types": "🏃",
-      "Game Structure": "🏗️",
-      "Player Progression": "📈",
-      "Challenge Types": "🔥",
-      "Control Schemes": "🎮",
-      "Game Economy": "💰",
+      "Movement": "🏃",
+      "Structure": "🏗️",
+      "Progression": "📈",
+      "Challenges": "🔥",
+      "Controls": "🎮",
+      "Economy Value": "💰",
       "Game Features": "✨",
-      "RPG Elements": "🧙",
-      "Puzzle Types": "🧩",
-      "Shooter Types": "🔫",
-      "Sports Types": "⚽",
-      "Strategy Types": "🎲",
-      "Simulation Elements": "🧠",
+      "RPGs": "🧙",
+      "Puzzles": "🧩",
+      "Shooters": "🔫",
+      "Sports": "⚽",
+      "Strategy": "🎲",
+      "Simulation": "🧠",
       
       // Setting & World subcategories
       "Time Periods": "⏳",
@@ -333,13 +333,13 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
                         <Tooltip key={`tooltip-${subCategoryName}`} content={description}>
                           <div 
                             key={`subcategory-${subCategoryName}`}
-                            className="subcategory-card flex flex-col items-center rounded-lg p-3 text-sm font-medium cursor-pointer transition-all duration-200 bg-card"
+                            className="subcategory-card flex flex-col items-center rounded-lg p-3 text-sm font-medium cursor-pointer transition-all duration-200 bg-card w-full min-w-[120px] max-w-[160px] mx-auto hover:bg-accent/50"
                             onClick={() => {
                               setActiveSubcategory(subCategoryName);
                             }}
                           >
                             <span className="emoji text-2xl mb-2">{emoji}</span>
-                            <span className="text-center">{subCategoryName}</span>
+                            <span className="text-center w-full line-clamp-2">{subCategoryName}</span>
                           </div>
                         </Tooltip>
                       );
