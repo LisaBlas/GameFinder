@@ -99,6 +99,10 @@
   padding: 2rem;
 }
 
+.main h1{
+  line-height: 1.5;
+}
+
 .filter-section {
   border-radius: 12px;
   margin: 0 auto;
