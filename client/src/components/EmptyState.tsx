@@ -9,7 +9,7 @@ const EmptyState: React.FC = () => {
       </div>
       <h3 className="text-2xl font-medium text-white mb-3">No Games Found</h3>
       <p className="text-slate-400 max-w-md text-lg">
-        We couldn't find any games matching your current filters. Try adjusting your criteria or selecting different options to discover new games.
+        Consider using <b className="text-slate-50">less filters</b> or <b className="text-slate-50">adjusting</b> your criterias.
       </p>
     </div>
   );

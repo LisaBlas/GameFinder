@@ -9,9 +9,9 @@ const Hero: React.FC = () => {
           Find Better Games.
         </span>
       </h1>
-      <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4 leading-[1.8]">
-          Hyper-targeted game recommendations<br /> powered by gamer-crafted filters.
-      </p>
+      <h2 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4 leading-[1.8]">
+      Get Smarter Game Recommendations <br /> Based on What Actually Matters.
+      </h2>
     </div>
   );
 };

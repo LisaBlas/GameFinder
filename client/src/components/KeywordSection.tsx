@@ -201,10 +201,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
             <span className="text-4xl font-bold text-primary">1.</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-wide mb-1">
-            Select A Keyword
+            Start With a Tag
           </h2>
           <p className="category-description text-base md:text-lg text-secondary-foreground/80 mb-2 max-w-xl mx-auto">
-            By using the search bar or our curated categories.
+            Browse curated categories or search for anything.
           </p>
           <p className="text-lm text-primary/60 animate-pulse">Click to expand</p>
         </div>

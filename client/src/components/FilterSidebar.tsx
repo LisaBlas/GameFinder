@@ -46,10 +46,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
             <span className="text-4xl font-bold text-primary">2.</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-wide mb-1">
-            Refine Your Search
+            Add Some Filters
           </h2>
           <p className="category-description text-base md:text-lg text-secondary-foreground/80 mb-2 max-w-xl mx-auto">
-            Choose up to 5 filters to narrow down your game results.
+            (Optional) Focus your results by showing only what fits
           </p>
           <p className="text-lm text-primary/60 animate-pulse">Click to expand</p>
         </div>
