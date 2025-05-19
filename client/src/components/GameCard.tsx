@@ -47,7 +47,7 @@ const encodeGameTitle = (title: string): string => {
 const KinguinIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
   <img
     src={KinguinIconImg}
-    alt="Kinguin"
+    alt="Kinguin-Store-Icon"
     {...props}
     className={`w-5 h-5 object-contain ${props.className || ''}`}
   />
@@ -56,7 +56,7 @@ const KinguinIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
 const GamersGateIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
   <img
     src={GamersGateIconImg}
-    alt="GamersGate"
+    alt="GamersGate-Store-Icon"
     {...props}
     className={`w-5 h-5 object-contain ${props.className || ''}`}
   />
@@ -65,7 +65,7 @@ const GamersGateIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
 const EnebaIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
   <img
     src={EnebaIconImg}
-    alt="Eneba"
+    alt="Eneba-Store-Icon"
     {...props}
     className={`w-5 h-5 object-contain ${props.className || ''}`}
   />
@@ -74,7 +74,7 @@ const EnebaIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
 const G2AIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
   <img
     src={G2AIconImg}
-    alt="G2A"
+    alt="G2A-Store-Icon"
     {...props}
     className={`w-5 h-5 object-contain ${props.className || ''}`}
   />
@@ -83,7 +83,7 @@ const G2AIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
 const InstantGamingIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
   <img
     src={InstantGamingIconImg}
-    alt="Instant Gaming"
+    alt="Instant-Gaming-Store-Icon"
     {...props}
     className={`w-5 h-5 object-contain ${props.className || ''}`}
   />
@@ -281,7 +281,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
       <div className={`relative bg-slate-900 transition-all duration-300 ${isExpanded ? 'h-0' : 'h-[300px]'}`}>
         <img 
           src={imageUrl}
-          alt={`${game.name} cover`} 
+          alt={`${game.name}-game-cover-image`} 
           className="w-full h-full object-cover"
         />
         {rating && (
