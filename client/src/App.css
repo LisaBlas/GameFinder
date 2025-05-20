@@ -958,6 +958,23 @@ svg.filter-caret.expanded {
 }
 
 /* Hero Button Light Streak Animation */
+.hero-section{
+  padding-top: 12rem;
+  padding-bottom: 4rem;
+}
+
+/* Animation for fade-in effect */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+
+/* Hero Button Light Streak Animation */
 .hero-button {
   position: relative;
   overflow: hidden;

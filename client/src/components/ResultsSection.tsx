@@ -20,4 +20,4 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ setActiveSection, resul
   );
 };
 
-export default ResultsSection; 
+export default ResultsSection;
