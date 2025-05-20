@@ -7,8 +7,9 @@ import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import keywordCategories from "../assets/keyword-categories.json";
 import { Gamepad2, Globe, Paintbrush, Search, X, ArrowLeft, ChevronDown } from "lucide-react";
 import SearchButton from "./SearchButton";
-import Tooltip from "./Tooltip";
 import KeywordSearch from './KeywordSearch';
+import { HelpTooltip } from './HelpTooltip';
+import Tooltip from "./Tooltip";
 
 interface KeywordItem {
   id: number;
@@ -183,7 +184,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
           hover:bg-muted/80 items-center justify-center text-center py-10 cursor-pointer 
           animate-shadow-pulse
           border-2 border-primary/40
-          min-h-[180px] transition-all duration-500
+          min-h-[180px] transition-all duration-500 relative
           ${!expanded ? 'lg:mt-auto lg:mb-auto' : ''}
         `}
         onClick={() => {
@@ -194,9 +195,14 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
             block: 'start'
           });
         }}
-        style={{ userSelect: 'none' }}
+        style={{ userSelect: 'none', position: 'relative' }}
       >
-        <div className="flex flex-col items-center gap-2">
+        <HelpTooltip
+          title="Keyword Tips"
+          content="Select or search for an ultra-specific keyword to find games that include it. Check our curated selection to get inspired, and then use the search bar to find what you're looking for."
+          isExpanded={expanded}
+        />
+        <div className="flex flex-col items-center gap-2 w-full">
           <div className="flex items-center justify-center mb-2">
             <span className="text-4xl font-bold text-primary">1.</span>
           </div>
@@ -215,7 +221,12 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
   return (
     <div className="keyword-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 lg:h-[calc(100vh-200px)] overflow-y-auto">
       {/* Title bar shows differently based on current view */}
-      <div className="w-full bg-primary/10 border-b border-primary/20 py-3">
+      <div className="w-full bg-primary/10 border-b border-primary/20 py-3 relative">
+        <HelpTooltip
+          title="Keyword Tips"
+          content="Select or search for an ultra-specific keyword to find games that include it. Check our curated selection to get inspired, and then use the search bar to find what you're looking for."
+          isExpanded={true}
+        />
         <div className="flex items-center justify-center gap-3 relative">
           <button 
             className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"

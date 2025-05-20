@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 
 interface TooltipProps {
-  content: string;
+  content: React.ReactNode;
   children: React.ReactNode;
+  isMobile?: boolean;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
+const Tooltip: React.FC<TooltipProps> = ({ content, children, isMobile = false }) => {
   const [visible, setVisible] = useState(false);
 
   return (

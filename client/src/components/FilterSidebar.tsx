@@ -4,6 +4,7 @@ import { Filter } from './Filter';
 import filterData from '../lib/filters';
 import { SlidersHorizontal, Search, X, ArrowLeft } from 'lucide-react';
 import { useFilters } from '../context/FilterContext';
+import { HelpTooltip } from './HelpTooltip';
 
 interface FilterSidebarProps {
   expanded: boolean;
@@ -28,7 +29,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
           hover:bg-muted/80 items-center justify-center text-center py-10 cursor-pointer
           animate-[shadow-pulse_2s_ease-in-out_infinite]
           border-2 border-primary/40 animate-[border-pulse_2s_ease-in-out_infinite]
-          min-h-[180px] transition-all duration-500
+          min-h-[180px] transition-all duration-500 relative
           ${!expanded ? 'lg:mt-auto lg:mb-auto' : ''}
         `}
         onClick={() => {
@@ -39,9 +40,14 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
             block: 'start'
           });
         }}
-        style={{ userSelect: 'none' }}
+        style={{ userSelect: 'none', position: 'relative' }}
       >
-        <div className="flex flex-col items-center gap-2">
+        <HelpTooltip
+          title="Filter Tips"
+          content="Careful not to use too many filters, as this may limit your results. Use this section to hide irrelevant games."
+          isExpanded={expanded}
+        />
+        <div className="flex flex-col items-center gap-2 w-full">
           <div className="flex items-center justify-center mb-2">
             <span className="text-4xl font-bold text-primary">2.</span>
           </div>
@@ -59,7 +65,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
 
   return (
     <div className="filter-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 h-[calc(100vh-200px)] lg:h-[calc(100vh-200px)]">
-      <div className="w-full bg-primary/10 border-b border-primary/40 py-3">
+      <div className="w-full bg-primary/10 border-b border-primary/40 py-3 relative">
+        <HelpTooltip
+          title="Filter Tips"
+          content="Careful not to use too many filters, as this may limit your results. Use this section to hide irrelevant games."
+          isExpanded={true}
+        />
         <div className="flex items-center justify-center gap-3 relative">
           <button 
             className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
