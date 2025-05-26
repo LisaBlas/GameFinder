@@ -50,7 +50,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef 
               className="bg-background flex items-center gap-2 px-4 py-2 text-sm font-medium text-white border border-border hover:bg-red-500 rounded-lg transition-colors"
             >
               <X className="w-4 h-4" />
-              Clear All
+              Clear Filters
             </button>
 
             <button
