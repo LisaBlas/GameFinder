@@ -2,11 +2,13 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { IGDBService } from "./services/igdbService";
+import { KeywordTrackingService } from "./services/keywordTrackingService";
 import keywordsRouter from "./routes/keywords";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Initialize IGDB service
+  // Initialize services
   const igdbService = new IGDBService();
+  const keywordTrackingService = new KeywordTrackingService();
 
   // Mount the keywords router
   app.use('/api/keywords', keywordsRouter);
@@ -35,6 +37,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!filters || Object.keys(filters).length === 0) {
         return res.status(400).json({ message: 'No filters provided' });
+      }
+      
+      // Track keyword usage if keywords are in the filters
+      // Use a Set to keep track of keyword IDs we've already processed to avoid double-counting
+      const processedKeywordIds = new Set<number>();
+      
+      // Function to safely track a keyword only once
+      const trackKeywordOnce = (keywordId: number) => {
+        if (!processedKeywordIds.has(keywordId)) {
+          console.log(`[routes] Tracking keyword ID: ${keywordId}`);
+          keywordTrackingService.trackKeywordUsage(Number(keywordId)); // Back to normal tracking with timeout
+          processedKeywordIds.add(keywordId);
+        } else {
+          console.log(`[routes] Skipping already tracked keyword ID: ${keywordId}`);
+        }
+      };
+      
+      // Check for both 'keywords' and 'Keywords' (case-sensitive)
+      const keywordsArray = filters.keywords || filters.Keywords;
+      
+      if (keywordsArray) {
+        console.log('[routes] Processing keywords array:', keywordsArray);
+        if (Array.isArray(keywordsArray)) {
+          // If it's an array of keyword IDs or objects
+          keywordsArray.forEach((keyword: any) => {
+            const keywordId = typeof keyword === 'object' ? keyword.id : keyword;
+            trackKeywordOnce(Number(keywordId));
+          });
+        } else if (typeof keywordsArray === 'object') {
+          // If it's a single keyword object
+          trackKeywordOnce(Number(keywordsArray.id));
+        } else {
+          // If it's a single keyword ID
+          trackKeywordOnce(Number(keywordsArray));
+        }
+      }
+      
+      // Also check for keywords in any category that might contain keyword objects
+      Object.entries(filters).forEach(([category, filterItems]) => {
+        // Skip the dedicated keywords arrays we already processed
+        if (category === 'keywords' || category === 'Keywords') return;
+        
+        if (Array.isArray(filterItems)) {
+          filterItems.forEach((item: any) => {
+            // Check if this item has a category that indicates it's a keyword
+            if (typeof item === 'object' && 
+                (item.category === 'keywords' || item.category === 'Keywords')) {
+              console.log(`[routes] Found keyword in category ${category}:`, item);
+              trackKeywordOnce(Number(item.id));
+            }
+          });
+        }
+      });
+      
+      // Force save all tracked keywords at once
+      if (processedKeywordIds.size > 0) {
+        console.log(`[routes] Forcing save of ${processedKeywordIds.size} tracked keywords`);
+        keywordTrackingService.forceSave();
       }
 
       console.log('[routes] Processing search:', {
@@ -133,6 +193,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         details: error.response?.data || 'No additional details available'
       });
     }
+  });
+
+  // Setup graceful shutdown to save any pending keyword updates
+  process.on('SIGINT', () => {
+    console.log('[routes] SIGINT received, saving keyword tracking data before shutdown');
+    keywordTrackingService.forceSave();
+    process.exit(0);
+  });
+  
+  process.on('SIGTERM', () => {
+    console.log('[routes] SIGTERM received, saving keyword tracking data before shutdown');
+    keywordTrackingService.forceSave();
+    process.exit(0);
   });
 
   const httpServer = createServer(app);
