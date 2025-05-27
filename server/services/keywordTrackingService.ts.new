@@ -9,7 +9,8 @@ interface Keyword {
 }
 
 export class KeywordTrackingService {
-  private keywordsPath: string;
+  private srcKeywordsPath: string;
+  private distKeywordsPath: string;
   private keywords: Keyword[] = [];
   private pendingUpdates: Set<number> = new Set();
   private saveTimeout: NodeJS.Timeout | null = null;
@@ -21,26 +22,44 @@ export class KeywordTrackingService {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     
-    // Set path to the dist version of the file (the one used by the application)
-    this.keywordsPath = path.join(process.cwd(), 'dist/assets/all_keywords.json');
+    // Set paths for both source and dist versions of the file
+    this.srcKeywordsPath = path.join(process.cwd(), 'client/src/assets/all_keywords.json');
+    this.distKeywordsPath = path.join(process.cwd(), 'dist/assets/all_keywords.json');
     
-    console.log(`[KeywordTrackingService] Keywords file: ${this.keywordsPath}`);
+    console.log(`[KeywordTrackingService] Source keywords file: ${this.srcKeywordsPath}`);
+    console.log(`[KeywordTrackingService] Dist keywords file: ${this.distKeywordsPath}`);
     
-    // Check if the file exists
-    if (!fs.existsSync(this.keywordsPath)) {
-      console.error(`[KeywordTrackingService] ERROR: Keywords file not found at ${this.keywordsPath}`);
+    // Check if the files exist
+    if (!fs.existsSync(this.srcKeywordsPath)) {
+      console.error(`[KeywordTrackingService] ERROR: Source keywords file not found at ${this.srcKeywordsPath}`);
     } else {
-      console.log(`[KeywordTrackingService] Keywords file found at ${this.keywordsPath}`);
+      console.log(`[KeywordTrackingService] Source keywords file found at ${this.srcKeywordsPath}`);
     }
     
-    // Delete backup file if it exists
-    const backupPath = `${this.keywordsPath}.backup`;
-    if (fs.existsSync(backupPath)) {
+    if (!fs.existsSync(this.distKeywordsPath)) {
+      console.error(`[KeywordTrackingService] ERROR: Dist keywords file not found at ${this.distKeywordsPath}`);
+    } else {
+      console.log(`[KeywordTrackingService] Dist keywords file found at ${this.distKeywordsPath}`);
+    }
+    
+    // Delete backup files if they exist
+    const srcBackupPath = `${this.srcKeywordsPath}.backup`;
+    if (fs.existsSync(srcBackupPath)) {
       try {
-        fs.unlinkSync(backupPath);
-        console.log(`[KeywordTrackingService] Deleted backup file at ${backupPath}`);
+        fs.unlinkSync(srcBackupPath);
+        console.log(`[KeywordTrackingService] Deleted source backup file at ${srcBackupPath}`);
       } catch (error: any) {
-        console.error(`[KeywordTrackingService] Error deleting backup file:`, error);
+        console.error(`[KeywordTrackingService] Error deleting source backup file:`, error);
+      }
+    }
+    
+    const distBackupPath = `${this.distKeywordsPath}.backup`;
+    if (fs.existsSync(distBackupPath)) {
+      try {
+        fs.unlinkSync(distBackupPath);
+        console.log(`[KeywordTrackingService] Deleted dist backup file at ${distBackupPath}`);
+      } catch (error: any) {
+        console.error(`[KeywordTrackingService] Error deleting dist backup file:`, error);
       }
     }
     
@@ -49,22 +68,29 @@ export class KeywordTrackingService {
   
   private loadKeywords(): void {
     try {
-      if (fs.existsSync(this.keywordsPath)) {
-        const data = fs.readFileSync(this.keywordsPath, 'utf-8');
+      // Try to load from dist first, as that's the one being used by the application
+      if (fs.existsSync(this.distKeywordsPath)) {
+        const data = fs.readFileSync(this.distKeywordsPath, 'utf-8');
         this.keywords = JSON.parse(data);
-        console.log(`[KeywordTrackingService] Loaded ${this.keywords.length} keywords from file`);
-        
-        // Initialize count property if it doesn't exist
-        this.keywords = this.keywords.map(keyword => ({
-          ...keyword,
-          count: keyword.count || 0
-        }));
-        
-        console.log(`[KeywordTrackingService] Loaded ${this.keywords.length} keywords with counts initialized`);
+        console.log(`[KeywordTrackingService] Loaded ${this.keywords.length} keywords from dist file`);
+      } else if (fs.existsSync(this.srcKeywordsPath)) {
+        // Fall back to src file if dist doesn't exist
+        const data = fs.readFileSync(this.srcKeywordsPath, 'utf-8');
+        this.keywords = JSON.parse(data);
+        console.log(`[KeywordTrackingService] Loaded ${this.keywords.length} keywords from src file`);
       } else {
-        console.error(`[KeywordTrackingService] Keywords file does not exist at ${this.keywordsPath}`);
+        console.error('[KeywordTrackingService] Neither dist nor src keywords file exists');
         this.keywords = [];
+        return;
       }
+      
+      // Initialize count property if it doesn't exist
+      this.keywords = this.keywords.map(keyword => ({
+        ...keyword,
+        count: keyword.count || 0
+      }));
+      
+      console.log(`[KeywordTrackingService] Loaded ${this.keywords.length} keywords with counts initialized`);
     } catch (error: any) {
       console.error('[KeywordTrackingService] Error loading keywords:', error);
       this.keywords = [];
@@ -146,8 +172,9 @@ export class KeywordTrackingService {
     try {
       console.log(`[KeywordTrackingService] Saving keywords with ${this.pendingUpdates.size} pending updates`);
       
-      // Save to the keywords file
-      this.saveToFile(this.keywordsPath);
+      // Save to both src and dist files
+      this.saveToFile(this.srcKeywordsPath);
+      this.saveToFile(this.distKeywordsPath);
       
     } catch (error: any) {
       console.error('[KeywordTrackingService] Error in saveKeywords:', error);
@@ -189,9 +216,8 @@ export class KeywordTrackingService {
         if (updatedKeyword) {
           const currentKeyword = currentKeywords.find((k: Keyword) => k.id === keywordId);
           if (currentKeyword) {
-            // Use the exact count from our in-memory keywords array
             currentKeyword.count = updatedKeyword.count;
-            console.log(`[KeywordTrackingService] Updated keyword ${updatedKeyword.name} count to ${currentKeyword.count}`);
+            console.log(`[KeywordTrackingService] Updated keyword ${updatedKeyword.name} count to ${updatedKeyword.count}`);
           }
         }
       });
