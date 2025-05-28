@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FaLinkedin } from 'react-icons/fa';
+import { FaGithub } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
+import { FaGlobe } from 'react-icons/fa6';
 
 const Navbar: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -28,12 +29,20 @@ const Navbar: React.FC = () => {
         </span>
         <div className="flex-1 flex justify-end gap-4">
           <a
-            href="https://linkedin.com/in/blas-alviz"
+            href="https://lisablas.github.io/BleepBloop/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white/70 hover:text-primary transition-colors"
           >
-            <FaLinkedin size={20} />
+            <FaGlobe size={20} />
+          </a>
+          <a
+            href="https://github.com/LisaBlas/GameFinder"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/70 hover:text-primary transition-colors"
+          >
+            <FaGithub size={20} />
           </a>
           <a
             href="https://x.com/BerliozGordon"
