@@ -8,6 +8,18 @@ import InstantGamingIconImg from '../assets/icons/instantGaming.png';
 import KinguinIconImg from '../assets/icons/kinguin.png';
 import GamersGateIconImg from '../assets/icons/gamersGate.png';
 
+const trackExternalClick = (storeName: string, storeType: 'official' | 'affiliate', gameTitle: string) => {
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'click', {
+      event_category: 'External_Link',
+      event_label: `${storeType}_${storeName}`,
+      custom_parameter_1: 'external_redirect',
+      game_title: gameTitle,
+      store_type: storeType
+    });
+  }
+};
+
 interface Game {
   id: number;
   name: string;
@@ -139,6 +151,9 @@ const useKinguinRedirect = (gameTitle: string) => {
   const handleKinguinClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+     // Track the Kinguin click
+     trackExternalClick('Kinguin', 'affiliate', gameTitle);
     
     // Create a reference to the game title for iframe communication
     const encodedTitle = encodeGameTitle(gameTitle);
@@ -267,9 +282,13 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
   // Get affiliate links
   const affiliateLinks = getAffiliateLinks(game.name);
 
-  const handleLinkClick = (e: React.MouseEvent, url: string) => {
+  const handleLinkClick = (e: React.MouseEvent, url: string, storeName: string, storeType: 'official' | 'affiliate' = 'official') => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Track the click
+    trackExternalClick(storeName, storeType, game.name);
+
     window.open(url, '_blank');
   };
 
@@ -338,6 +357,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
                         title="Official Website"
                         onClick={(e) => {
                           e.stopPropagation();
+                          trackExternalClick('Official Website', 'official', game.name);
                         }}
                       >
                         <FaGlobe className="w-5 h-5" />
@@ -362,6 +382,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
                 }).map((store) => {
                   const icon = getStoreIcon(store.category, store.url);
                   if (icon) {
+                    const storeName = getStoreName(store.category, store.url);
                     return (
                       <a
                         key={store.id}
@@ -372,6 +393,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
                         title={getStoreName(store.category, store.url)}
                         onClick={(e) => {
                           e.stopPropagation();
+                          trackExternalClick(storeName, 'official', game.name);
                         }}
                       >
                         {React.cloneElement(icon, { className: "w-5 h-5" })}
@@ -402,7 +424,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
                 
                 {/* GamersGate */}
                 <button
-                  onClick={(e) => handleLinkClick(e, affiliateLinks.gamersgate.url)}
+                  onClick={(e) => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate')}
                   className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
                   title={affiliateLinks.gamersgate.name}
                 >
@@ -414,7 +436,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
                 
                 {/* Eneba */}
                 <button
-                  onClick={(e) => handleLinkClick(e, affiliateLinks.eneba.url)}
+                  onClick={(e) => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate')}
                   className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
                   title={affiliateLinks.eneba.name}
                 >
@@ -426,7 +448,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
                 
                 {/* G2A */}
                 <button
-                  onClick={(e) => handleLinkClick(e, affiliateLinks.g2a.url)}
+                  onClick={(e) => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate')}
                   className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
                   title={affiliateLinks.g2a.name}
                 >
@@ -438,7 +460,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
                 
                 {/* Instant Gaming */}
                 <button
-                  onClick={(e) => handleLinkClick(e, affiliateLinks.instantGaming.url)}
+                  onClick={(e) => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate')}
                   className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
                   title={affiliateLinks.instantGaming.name}
                 >
