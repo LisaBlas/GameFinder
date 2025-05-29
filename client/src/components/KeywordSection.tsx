@@ -19,7 +19,7 @@ interface KeywordItem {
   game_count?: number;
 }
 
-type MainCategory = "Game Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
+type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
 
 interface CategoryCard {
   id: MainCategory;
@@ -68,8 +68,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
   // Define the three main category cards
   const mainCategories: CategoryCard[] = [
     {
-      id: "Game Mechanics & Systems",
-      title: "Game Mechanics & Systems",
+      id: "Mechanics & Systems",
+      title: "Mechanics & Systems",
       description: "Gameplay elements, progression systems, and interactive mechanics",
       icon: <Gamepad2 className="h-12 w-12" />,
       color: "bg-card hover:bg-card/80",
@@ -106,7 +106,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
   const getSubcategoryEmoji = (subCategory: string): string => {
     // Match subcategories to appropriate emojis
     const emojiMap: Record<string, string> = {
-      // Game Mechanics & Systems subcategories
+      // Mechanics & Systems subcategories
       "Combat Systems": "⚔️",
       "Combat Environments": "🌋",
       "Combat Styles": "🎯",

@@ -229,91 +229,91 @@
   "Movement": [
     {
       "name": "Gravity Control",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 4939
     },
     {
       "name": "Walk-Heavy",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 1493
     },
     {
       "name": "Wall jump",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 2155
     },
     {
       "name": "Teleportation",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 1986
     },
     {
       "name": "Parkour",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 390
     },
     {
       "name": "On Rails",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 1478
     },
     {
       "name": "Vertical Scrolling",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 4967
     },
     {
       "name": "Grapple",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 4903
     },
     {
       "name": "2D Platformer",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 3014
     },
     {
       "name": "Grid-Based",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 1923
     },
     {
       "name": "Sprint Mechanic",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 4711
     },
     {
       "name": "Swimming",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 2324
     },
     {
       "name": "Climbing",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 2280
     },
     {
       "name": "3D Platformer",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 2231
     },
     {
       "name": "Gliding",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Movement",
       "id": 6145
     }
@@ -321,91 +321,91 @@
   "Structure": [
     {
       "name": "Multiple Endings",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 1313
     },
     {
       "name": "Exploration",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 72
     },
     {
       "name": "Quest Hub",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 9510
     },
     {
       "name": "Linear",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 6137
     },
     {
       "name": "Metroidvania",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 477
     },
     {
       "name": "Roguelite",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 17292
     },
     {
       "name": "Roguelike",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 416
     },
     {
       "name": "Text Adventure",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 4260
     },
     {
       "name": "Tower Defense",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 77
     },
     {
       "name": "Mission-Based",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 4384
     },
     {
       "name": "Episodic",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 901
     },
     {
       "name": "Dungeon Crawler",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 2228
     },
     {
       "name": "Character Select Screen",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 4286
     },
     {
       "name": "Procedural Generation",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 577
     },
     {
       "name": "Random Ecounters",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Structure",
       "id": 6642
     }
@@ -425,7 +425,7 @@
     },
     {
       "name": "Run and Gun",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Shooters",
       "id": 660
     },
@@ -455,7 +455,7 @@
     },
     {
       "name": "Retro Arcade",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Shooters",
       "id": 37923
     },
@@ -467,19 +467,19 @@
     },
     {
       "name": "Danmaku",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Shooters",
       "id": 39248
     },
     {
       "name": "Auto-Aim",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Shooters",
       "id": 4885
     },
     {
       "name": "Bullet Time",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Shooters",
       "id": 1309
     }
@@ -487,103 +487,103 @@
   "Combat Systems": [
     {
       "name": "Turn-Based",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 2399
     },
     {
       "name": "Real-Time",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 4918
     },
     {
       "name": "Cover System",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 5451
     },
     {
       "name": "Real-Time Pause",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 6057
     },
     {
       "name": "Souls-like",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 17326
     },
     {
       "name": "Auto-Battler",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 40897
     },
     {
       "name": "Bullet Hell",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 911
     },
     {
       "name": "Twin Stick",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 17371 
     },
     {
       "name": "Battle Arena",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 114
     },
     {
       "name": "Vehicle Combat",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 25
     },
     {
       "name": "Bullet Time",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 1309
     },
     {
       "name": "Parry",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 5019
     },
     {
       "name": "Counter",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 7345
     },
     {
       "name": "Character Swap",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 7558
     },
     {
       "name": "Crowd Control",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 9200
     },
     {
       "name": "Battle Arena",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 23082
     },    
     {
       "name": "Environmental Kills",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Systems",
       "id": 6457
     }
@@ -591,91 +591,91 @@
   "Challenges": [
     {
       "name": "Survival Mode",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 5304
     },
     {
       "name": "Difficult",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 905
     },
     {
       "name": "Casual",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 101
     },
     {
       "name": "Die & Retry",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 24126
     },
     {
       "name": "Minigames",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 274
     },
     {
       "name": "Micro",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 1162
     },
     {
       "name": "Permadeath",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 578
     },
     {
       "name": "Moral Decisions",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 4850
     },
     {
       "name": "Jump Scares",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 5176
     },
     {
       "name": "Multi-Phase Boss",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 5105
     },
     {
       "name": "Time Trials",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 6765
     },
     {
       "name": "Escort Mission",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 4776
     },
     {
       "name": "Resource Management",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 606
     },
     {
       "name": "Inventory Management",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 2489
     },
     {
       "name": "Quick Time Events",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Challenges",
       "id": 5989
     }
@@ -921,13 +921,13 @@
     },
     {
       "name": "JRPG",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "RPGs",
       "id": 521
     },
     {
       "name": "Dialogue Trees",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "RPGs",
       "id": 1523
     },
@@ -971,55 +971,55 @@
   "Progression": [
     {
       "name": "Skill Tree",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 5792
     },
     {
       "name": "Stat Tracking",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 4984
     },
     {
       "name": "Leveling Up",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 4284
     },
     {
       "name": "Upgrades",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 1566
     },
     {
       "name": "Loot",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 4399
     },
     {
       "name": "Grinding",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 236
     },
     {
       "name": "Crafting",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 510
     },
     {
       "name": "Collecting",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 247
     },
     {
       "name": "Tech Trees",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Progression",
       "id": 6019
     }
@@ -1301,7 +1301,7 @@
     },
     {
       "name": "Verticality",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Environmental Features",
       "id": 7665
     },
@@ -1449,7 +1449,7 @@
     },
     {
       "name": "Mahjong",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Puzzles",
       "id": 1011
     },
@@ -2163,55 +2163,55 @@
   "Economy Value": [
     {
       "name": "Loot",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 4399
     },
     {
       "name": "Black Market",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 4884
     },
     {
       "name": "Grinding",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 236
     },
     {
       "name": "Factions",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 4250
     },
     {
       "name": "Microtransactions",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 4400
     },
     {
       "name": "NFT",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 26834
     },
     {
       "name": "Blockchain",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 25341
     },
     {
       "name": "Souls As Currency",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 9533
     },
     {
       "name": "Gacha",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Economy Value",
       "id": 7545
     }
@@ -2219,73 +2219,73 @@
   "Controls": [
     {
       "name": "Twin Sticks",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 5311
     },
     {
       "name": "Hotkeys",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 5671
     },
     {
       "name": "Typing",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 38116
     },
     {
       "name": "Auto-Aim",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 4885
     },
     {
       "name": "Dance Mat",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 12853
     },
     {
       "name": "Balance Board",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 10699
     },
     {
       "name": "Idle Gameplay",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 17003
     },
     {
       "name": "Custom UI",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 12502
     },
     {
       "name": "Multitouch",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 100
     },
     {
       "name": "Fixed Camera Angles",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 10149
     },
     {
       "name": "Controller Support",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 16877
     },
     {
       "name": "Fully Customisable",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Controls",
       "id": 7476
     }
@@ -2293,55 +2293,55 @@
   "Simulation": [
     {
       "name": "Farming",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 18437
     },
     {
       "name": "Life",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 43
     },
     {
       "name": "Dating",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 358
     },
     {
       "name": "City Builder",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 3533
     },
     {
       "name": "Truck",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 1156
     },
     {
       "name": "Restaurant",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 38859
     },
     {
       "name": "Politics",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 25409
     },
     {
       "name": "Real Time",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 993
     },
     {
       "name": "Sports Manager",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Simulation",
       "id": 44173
     }
@@ -2545,109 +2545,109 @@
   "Combat Styles": [
     {
       "name": "Siege Warfare",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 9733
     },
     {
       "name": "Dual Wielding",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 6716
     },
     {
       "name": "Cybernetics",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 106
     },
     {
       "name": "Traps",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 1345
     },
     {
       "name": "Duels",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 4860
     },
     {
       "name": "Assassin",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 22
     },
     {
       "name": "Pets",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 816
     },
     {
       "name": "Spell Casting",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 5124
     },
     {
       "name": "Berserkers",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 7561
     },
     {
       "name": "Sword Fighting",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 18537
     },
     {
       "name": "Horse Archery",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 9604
     },
     {
       "name": "Summons",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 497
     },
     {
       "name": "Sniping",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 4730
     },
     {
       "name": "Naval Warfare",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 8146
     },
     {
       "name": "Space Battles",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 18424
     },
     {
       "name": "Jungle Warfare",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 10433
     },
     {
       "name": "Swarming Enemies",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 7568
     },   
     {
       "name": "Stealth Takedown",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Combat Styles",
       "id": 5999
     }
@@ -2655,112 +2655,112 @@
   "Strategy": [
     {
       "name": "Macro",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 10739
     },
     {
       "name": "Micro",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 1162
     },
     {
       "name": "Static Defense",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 13038
     },
     {
       "name": "Diplomacy",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 1143
     },
     {
       "name": "Automation",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 12950
     },
     {
       "name": "Base Defense",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 2793
     },
     {
       "name": "Tech Trees",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 6019
     },
     {
       "name": "No Pause",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 10045
     },
     {
       "name": "Morale",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 4851
     },
     {
       "name": "Resource Gathering",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 4767
     },
     {
       "name": "Resource Management",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 606
     },
     {
       "name": "Time Management",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "Strategy",
       "id": 3430
     }
   ],
-  "Game Mechanics & Systems": [
+  "Mechanics & Systems": [
     {
       "name": "burnout",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
+      "sub-category": "Mechanics & Systems",
       "id": 401
     },
     {
       "name": "heal over time",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
+      "sub-category": "Mechanics & Systems",
       "id": 7394
     },
     {
       "name": "forced slow walking",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
+      "sub-category": "Mechanics & Systems",
       "id": 8854
     },
     {
       "name": "point of no return",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
+      "sub-category": "Mechanics & Systems",
       "id": 7643
     },
     {
       "name": "rotation",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
+      "sub-category": "Mechanics & Systems",
       "id": 42221
     },
     {
       "name": "hearts",
-      "category": "Game Mechanics & Systems",
-      "sub-category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
+      "sub-category": "Mechanics & Systems",
       "id": 42085
     }
   ],
@@ -2773,7 +2773,7 @@
     },
     {
       "name": "impulse",
-      "category": "Game Mechanics & Systems",
+      "category": "Mechanics & Systems",
       "sub-category": "unknown",
       "id": 11586
     }
