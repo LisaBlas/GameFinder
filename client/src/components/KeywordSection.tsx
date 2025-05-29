@@ -279,7 +279,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
       </div>
 
       {/* Search Bar - now appears in ALL views */}
-      <div className="w-full max-w-[500px] mx-auto px-4 mt-6 mb-4">
+      <div className="w-full max-w-[500px] mx-auto px-4 mt-6 mb-0">
         <KeywordSearch 
           inputRef={searchInputRef} 
           onKeywordSelect={() => {
@@ -304,11 +304,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
       <div className="w-full max-w-[500px] mx-auto flex flex-col gap-4">
         {!selectedMainCategory ? (
           <>
-            <div className="p-6 gap-4 max-w-xl mx-auto">
+            <div className="pt-0 p-6 gap-4 max-w-xl mx-auto">
               {mainCategories.map((cat, index) => (
                 <div 
                   key={cat.id}
-                  className={`cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${
+                  className={`mb-4 cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${
                     selectedMainCategory && selectedMainCategory !== cat.id ? 'opacity-0 h-0 md:h-0 p-0 m-0 border-0 cursor-default' : 'category-enter'
                   } ${!selectedMainCategory ? 'main-category-container' : ''} ${
                     index === 2 ? 'col-span-2 md:col-span-1 md:col-start-2' : ''
@@ -329,8 +329,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
         ) : (
           <>
             {!activeSubcategory ? (
-              <div className="mb-6 category-enter max-w-xl mx-auto">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4 filter-grid-enter">
+              <div className="mt-4 mb-6 category-enter max-w-xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-2 filter-grid-enter">
                   {getSubcategories(selectedMainCategory)
                     .map((subCategoryName) => {
                       const keywords = getKeywordsForSubcategory(subCategoryName);

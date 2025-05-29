@@ -603,8 +603,8 @@ h3{
 /* Main category transition */
 .main-category-container {
   transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 15px;
+  margin-bottom: 0px;
 }
 
 .main-category-enter {
