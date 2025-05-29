@@ -304,7 +304,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
       <div className="w-full max-w-[500px] mx-auto flex flex-col gap-4">
         {!selectedMainCategory ? (
           <>
-            <div className="gap-4 max-w-xl mx-auto">
+            <div className="p-6 gap-4 max-w-xl mx-auto">
               {mainCategories.map((cat, index) => (
                 <div 
                   key={cat.id}
@@ -315,12 +315,12 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
                   }`}
                   onClick={() => setSelectedMainCategory(cat.id)}
                 >
-                  <div className={`p-6 flex flex-col items-center ${cat.color} border border-border ${cat.hoverColor} group transition-all duration-300 relative hover:shadow-[0_0_15px_rgba(124,58,237,0.15)]`}>
-                    <div className="text-4xl mb-3 text-primary group-hover:text-primary/80 transition-colors">
+                  <div className={`p-6 flex flex-col items-center ${cat.color} border ${cat.hoverColor} group transition-all duration-300 relative hover:bg-primary`}>
+                    <div className="text-4xl mb-3 text-primary group-hover:text-white transition-colors">
                       {cat.icon}
                     </div>
-                    <h4 className="font-semibold text-xl mb-2 text-foreground group-hover:text-primary transition-colors">{cat.title}</h4>
-                    <p className="text-sm text-muted-foreground group-hover:text-foreground text-center transition-colors">{cat.description}</p>
+                    <h4 className="font-semibold text-xl mb-2 text-foreground group-hover:text-white transition-colors">{cat.title}</h4>
+                    <p className="text-sm text-muted-foreground group-hover:text-white text-center transition-colors">{cat.description}</p>
                   </div>
                 </div>
               ))}
