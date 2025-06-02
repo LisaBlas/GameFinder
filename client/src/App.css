@@ -296,6 +296,20 @@
   transition: background-color 0.2s ease;
 }
 
+/* Special styling for keyword filter pills */
+.selected-filter-pill.keyword {
+  background-color: #f5a614;
+  color: #1D2230;
+  box-shadow: 0 2px 8px rgba(245, 166, 10, 0.45);
+}
+.selected-filter-pill.keyword svg {
+  color: #1D2230;
+}
+
+.selected-filter-pill.keyword:hover {
+  background-color: #d48c0f;
+}
+
 .selected-filter-pill:hover {
   background-color: #50378b;
 }
@@ -445,7 +459,7 @@ h3{
   box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
 }
 
-/* Filter card game-inspired styles */
+
 .filter-card {
   transition: all 0.2s ease-in-out;
   position: relative;
@@ -471,6 +485,16 @@ h3{
 
 .filter-card:hover::before {
   opacity: 1;
+}
+
+.filter-card .filter-pill:hover{
+  border: 1px solid #f5a614;
+  box-shadow: 0 2px 8px rgba(245, 166, 20, 0.349);
+}
+.filter-card .filter-pill.selected{
+  background-color: #f5a614;
+  border: 1px solid #f5a614;
+  color: #1D2230;
 }
 
 /* Animation keyframes */
@@ -836,7 +860,6 @@ svg.filter-caret.expanded {
 
 
 .keyword-section::before {
-  content: '';
   position: absolute;
   top: 0;
   left: 0;

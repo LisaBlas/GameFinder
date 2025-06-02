@@ -181,7 +181,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
       <div
         className={`
           keyword-section px-4 w-full bg-transparent rounded-lg overflow-hidden flex flex-col 
-          hover:bg-muted/80 items-center justify-center text-center py-10 cursor-pointer 
+          hover:bg-transparent hover:border-[#f5a614]/90 items-center justify-center text-center py-10 cursor-pointer 
           animate-shadow-pulse
           border-2 border-primary/40
           min-h-[180px] transition-all duration-500 relative

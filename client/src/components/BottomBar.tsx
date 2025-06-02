@@ -35,7 +35,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef 
           {/* Selected Filters */}
           <div className={`backdrop-blur-sm inline-flex rounded-lg p-4 transition-all duration-300 pointer-events-auto ${
             selectedFilters.length > 0 
-              ? 'border-2 border-primary shadow-[0_0_10px_rgba(124,58,237,0.5)]' 
+              ? 'border-2 border-[#f5a614]/90 shadow-[0_0_10px_rgba(245,166,10,0.3)]' 
               : 'border border-border'
           }`}>
             <div className="selected-tags-wrapper">
@@ -50,7 +50,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef 
               className="bg-background flex items-center gap-2 px-4 py-2 text-sm font-medium text-white border border-border hover:bg-red-500 rounded-lg transition-colors"
             >
               <X className="w-4 h-4" />
-              Clear Filters
+              Clear
             </button>
 
             <button
