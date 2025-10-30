@@ -26,9 +26,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
       <div
         className={`
           filter-section px-4 w-full bg-transparent rounded-lg overflow-hidden flex flex-col 
-          hover:bg-muted/80 items-center justify-center text-center py-10 cursor-pointer
+          hover:items-center hover:border-primary/90 justify-center text-center py-10 cursor-pointer
           animate-[shadow-pulse_2s_ease-in-out_infinite]
-          border-2 border-primary/40 animate-[border-pulse_2s_ease-in-out_infinite]
+          border-2 border-primary/20 animate-[border-pulse_2s_ease-in-out_infinite]
           min-h-[180px] transition-all duration-500 relative
           ${!expanded ? 'lg:mt-auto lg:mb-auto' : ''}
         `}
@@ -64,7 +64,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
   }
 
   return (
-    <div className="filter-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 h-[calc(100vh-200px)] lg:h-[calc(100vh-200px)]">
+    <div className="filter-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 h-auto">
       <div className="w-full bg-primary/10 border-b border-primary/40 py-3 relative">
         <HelpTooltip
           title="Filter Tips"

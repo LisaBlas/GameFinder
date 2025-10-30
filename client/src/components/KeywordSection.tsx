@@ -219,7 +219,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
   }
 
   return (
-    <div className="keyword-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 lg:h-[calc(100vh-200px)] overflow-y-auto">
+    <div className="keyword-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 h-auto">
       {/* Title bar shows differently based on current view */}
       <div className="w-full bg-primary/10 border-b border-primary/20 py-3 relative">
         <HelpTooltip
@@ -315,7 +315,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
                   }`}
                   onClick={() => setSelectedMainCategory(cat.id)}
                 >
-                  <div className={`p-6 flex flex-col items-center ${cat.color} border ${cat.hoverColor} group transition-all duration-300 relative hover:bg-primary`}>
+                  <div className={`p-6 flex flex-col items-center ${cat.color} ${cat.hoverColor} group transition-all duration-300 relative hover:bg-primary`}>
                     <div className="text-4xl mb-3 text-primary group-hover:text-white transition-colors">
                       {cat.icon}
                     </div>
@@ -368,7 +368,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
                     
                     return (
                       <div key={`subcategory-content-${subCategoryName}`} className="mb-8">
-                        <div className="bg-card/50 border border-border rounded-lg p-4 mb-4 subcategory-content-enter">
+                        <div className="bg-card border-border rounded-lg p-4 mb-4 subcategory-content-enter">
                           <p className="text-sm text-muted-foreground mb-4">{description}</p>
                           
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 filter-grid-enter">
