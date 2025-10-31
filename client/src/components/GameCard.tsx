@@ -33,6 +33,7 @@ interface Game {
   first_release_date?: number;
   genres?: { id: number; name: string }[];
   themes?: { id: number; name: string }[];
+  keywords?: { id: number; name: string }[];
   platforms?: { id: number; name: string }[];
   game_modes?: { id: number; name: string }[];
   websites?: Array<{
@@ -253,6 +254,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
   const { handleKinguinClick } = useKinguinRedirect(game.name);
   const [isAfterExpandAnimation, setIsAfterExpandAnimation] = useState(false);
   const topSectionRef = useRef<HTMLDivElement | null>(null);
+  const [showPricePopup, setShowPricePopup] = useState(false);
 
   // Check localStorage on mount to see if this card has been clicked before
   useEffect(() => {
@@ -358,14 +360,14 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
 
   return (
     <div 
-      className={`rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition-all duration-300 flex flex-col cursor-pointer ${isExpanded ? 'expanded h-auto' : 'h-[300px]'} ${hasBeenClicked ? 'clicked' : ''}`}
+      className={`rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition-all duration-300 flex flex-col cursor-pointer aspect-[3/4] ${isExpanded ? 'expanded' : ''} ${hasBeenClicked ? 'clicked' : ''}`}
       onClick={handleClick}
     >
-      <div ref={topSectionRef} className={`relative transition-opacity duration-300 ${isExpanded ? 'opacity-0 h-0 pointer-events-none' : 'opacity-100 h-[300px]'}`}>
+      <div ref={topSectionRef} className={`relative transition-opacity duration-300 ${isExpanded ? 'opacity-0 h-0 pointer-events-none' : 'opacity-100 h-full'}`}>
         <img 
           src={imageUrl}
           alt={`${game.name}-game-cover-image`} 
-          className="w-full h-full object-fill"
+          className="w-full h-full object-contain"
         />
         {rating && (
           <div className="absolute top-2 right-2 text-white text-xs font-medium px-2 py-1 rounded-md">
@@ -433,11 +435,16 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
         )}
       </div>
       
-      <div className={`p-4 flex-1 flex flex-col transition-all duration-300 ${isExpanded ? 'pt-4' : ''}`}>
+      <div className={`p-4 flex-1 flex flex-col transition-all duration-300 ${isExpanded ? 'pt-4 overflow-y-auto' : ''}`}>
         
 
         {isExpanded && isAfterExpandAnimation && (
           <>
+            <h3 className="text-lg font-medium text-white mb-1">{game.name}</h3>
+        
+            <div className="text-xs text-slate-400 mb-3">
+              {releaseYear}
+            </div>
             {/* Video section */}
             <div className="mb-3">
               {isVideoLoading && (
@@ -459,14 +466,148 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
               )}
             </div>
 
-            <h3 className="text-lg font-medium text-white mb-1">{game.name}</h3>
-        
-            <div className="text-xs text-slate-400 mb-3">
-              {releaseYear}
-            </div>
+            {/* Tags section */}
+            {(game.genres || game.themes || game.keywords) && (
+              <div className="mb-4">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    ...(game.genres || []).slice(0, 2).map(tag => ({ ...tag, type: 'genre' })),
+                    ...(game.themes || []).slice(0, 2).map(tag => ({ ...tag, type: 'theme' })),
+                    ...(game.keywords || []).map(tag => ({ ...tag, type: 'keyword' }))
+                  ]
+                    .slice(0, 10)
+                    .map((tag) => {
+                      const isKeyword = tag.type === 'keyword';
+                      const isPurple = tag.type === 'genre' || tag.type === 'theme';
+                      const displayName = isKeyword 
+                        ? tag.name.charAt(0).toUpperCase() + tag.name.slice(1)
+                        : tag.name;
+                      
+                      return (
+                        <span
+                          key={`${tag.type}-${tag.id}-${tag.name}`}
+                          className={`px-2 py-1 text-xs rounded-md ${
+                            isPurple 
+                              ? 'bg-purple-900/10 text-purple-200' 
+                              : 'bg-amber-900/10 text-amber-200'
+                          }`}
+                        >
+                          {displayName}
+                        </span>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+
+            {/* Spacer to push button to bottom */}
+            <div className="flex-1"></div>
+
+            {/* Check prices button - sticky at bottom */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowPricePopup(true);
+              }}
+              className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-amber-500/50 mt-auto"
+            >
+              Check Prices
+            </button>
+
           </>
         )}
       </div>
+
+      {/* Price popup modal */}
+      {showPricePopup && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowPricePopup(false);
+          }}
+        >
+          <div
+            className="bg-slate-800/80 rounded-lg p-6 max-w-md w-full border border-slate-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-medium text-white">Purchase Options</h3>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowPricePopup(false);
+                }}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            <h3 className="text-md font-medium text-white mb-4">{game.name}</h3>
+            <div className="grid grid-cols-5 gap-3">
+              {/* Kinguin */}
+              <button
+                onClick={handleKinguinClick}
+                className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-md transition-all duration-200 flex items-center justify-center group relative"
+                title={affiliateLinks.kinguin.name}
+              >
+                <affiliateLinks.kinguin.icon />
+                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                  {affiliateLinks.kinguin.name}
+                </span>
+              </button>
+              
+              {/* GamersGate */}
+              <button
+                onClick={(e) => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate')}
+                className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-md transition-all duration-200 flex items-center justify-center group relative"
+                title={affiliateLinks.gamersgate.name}
+              >
+                <affiliateLinks.gamersgate.icon />
+                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                  {affiliateLinks.gamersgate.name}
+                </span>
+              </button>
+              
+              {/* Eneba */}
+              <button
+                onClick={(e) => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate')}
+                className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-md transition-all duration-200 flex items-center justify-center group relative"
+                title={affiliateLinks.eneba.name}
+              >
+                <affiliateLinks.eneba.icon />
+                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                  {affiliateLinks.eneba.name}
+                </span>
+              </button>
+              
+              {/* G2A */}
+              <button
+                onClick={(e) => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate')}
+                className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-md transition-all duration-200 flex items-center justify-center group relative"
+                title={affiliateLinks.g2a.name}
+              >
+                <affiliateLinks.g2a.icon />
+                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                  {affiliateLinks.g2a.name}
+                </span>
+              </button>
+              
+              {/* Instant Gaming */}
+              <button
+                onClick={(e) => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate')}
+                className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-md transition-all duration-200 flex items-center justify-center group relative"
+                title={affiliateLinks.instantGaming.name}
+              >
+                <affiliateLinks.instantGaming.icon />
+                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                  {affiliateLinks.instantGaming.name}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>
         {`

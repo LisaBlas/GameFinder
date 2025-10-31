@@ -183,7 +183,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
           keyword-section px-4 w-full bg-transparent rounded-lg overflow-hidden flex flex-col 
           hover:bg-transparent hover:border-[#f5a614]/90 items-center justify-center text-center py-10 cursor-pointer 
           animate-shadow-pulse
-          border-2 border-primary/40
+          border-2 border-[#f5a614]/30
           min-h-[180px] transition-all duration-500 relative
           ${!expanded ? 'lg:mt-auto lg:mb-auto' : ''}
         `}
@@ -204,15 +204,15 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
         />
         <div className="flex flex-col items-center gap-2 w-full">
           <div className="flex items-center justify-center mb-2">
-            <span className="text-4xl font-bold text-primary">1.</span>
+            <span className="text-4xl font-bold text-[#f5a614]/70">1.</span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-wide mb-1">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#f5a614]/70 tracking-wide mb-1">
             Start With a Tag
           </h2>
           <p className="category-description text-base md:text-lg text-secondary-foreground/80 mb-2 max-w-xl mx-auto">
             Browse curated categories or search for anything.
           </p>
-          <p className="text-lm text-primary/60 animate-pulse">Click to expand</p>
+          <p className="text-lm text-[#f5a614]/70 animate-pulse">Click to expand</p>
         </div>
       </div>
     );
