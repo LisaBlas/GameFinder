@@ -273,6 +273,18 @@ export class IGDBService {
   }
 
   /**
+   * Fetch game videos from IGDB for a specific game
+   */
+  async getGameVideos(gameId: number) {
+    const query = `
+      fields game, name, video_id, checksum;
+      where game = ${gameId};
+      limit 10;
+    `;
+    return await this.makeRequest('game_videos', query);
+  }
+
+  /**
    * Fetch platforms from IGDB
    */
   async getPlatforms() {

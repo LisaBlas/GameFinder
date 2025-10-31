@@ -76,6 +76,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Game videos endpoint
+  console.log('[routes] Registering GET /api/games/:id/videos');
+  app.get('/api/games/:id/videos', async (req, res) => {
+    try {
+      console.log('[routes] Incoming request for videos:', req.params.id);
+      const id = Number(req.params.id);
+      if (Number.isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid game id' });
+      }
+      const videos = await igdbService.getGameVideos(id);
+      res.json(videos);
+    } catch (error: any) {
+      console.error('[routes] Error fetching game videos:', error?.message);
+      res.status(500).json({ message: 'Failed to fetch game videos', error: error?.message });
+    }
+  });
+
   // Filter categories endpoint (if needed for dynamic filters)
   app.get('/api/filters', async (req, res) => {
     try {

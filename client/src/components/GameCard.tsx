@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+// Global analytics variable (if present)
+declare const gtag: any;
 import { SiSteam, SiEpicgames, SiGogdotcom, SiHumblebundle, SiItchdotio, SiAppstore, SiGoogleplay, SiNintendo, SiPlaystation } from 'react-icons/si';
 import { FaGamepad, FaShoppingCart, FaGlobe, FaXbox } from 'react-icons/fa';
 // Import icon images with different names to avoid conflicts
@@ -48,6 +50,8 @@ interface Game {
 
 interface GameCardProps {
   game: Game;
+  expanded?: boolean; // controlled expanded state (optional)
+  onToggle?: (expanded: boolean) => void; // notify parent to toggle
 }
 
 // Helper function to encode game title for URLs
@@ -238,10 +242,17 @@ const useKinguinRedirect = (gameTitle: string) => {
   return { handleKinguinClick, hasVisitedKinguin };
 };
 
-const GameCard: React.FC<GameCardProps> = ({ game }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
+  const isControlled = typeof expanded === 'boolean';
+  const [uncontrolledExpanded, setUncontrolledExpanded] = useState(false);
+  const isExpanded = isControlled ? (expanded as boolean) : uncontrolledExpanded;
   const [hasBeenClicked, setHasBeenClicked] = useState(false);
+  const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
+  const [isAfterExpandAnimation, setIsAfterExpandAnimation] = useState(false);
+  const topSectionRef = useRef<HTMLDivElement | null>(null);
 
   // Check localStorage on mount to see if this card has been clicked before
   useEffect(() => {
@@ -261,7 +272,11 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
       }
       setHasBeenClicked(true);
     }
-    setIsExpanded(!isExpanded);
+    if (isControlled) {
+      onToggle && onToggle(!isExpanded);
+    } else {
+      setUncontrolledExpanded(!isExpanded);
+    }
   };
 
   // Format the image URL to get a thumbnail size
@@ -292,53 +307,104 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
     window.open(url, '_blank');
   };
 
+  // Lazy-load videos the first time the card is expanded
+  useEffect(() => {
+    const fetchVideos = async () => {
+      if (!isExpanded || !isAfterExpandAnimation || hasLoadedVideos) return;
+      try {
+        setIsVideoLoading(true);
+        const resp = await fetch(`/api/games/${game.id}/videos`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        const parsed = Array.isArray(data) ? data : [];
+        setVideos(parsed.filter((v: any) => typeof v?.video_id === 'string' && v.video_id.length > 0));
+      } catch (e) {
+        console.error('Failed to load videos for game', game.id, e);
+      } finally {
+        setHasLoadedVideos(true);
+        setIsVideoLoading(false);
+      }
+    };
+    fetchVideos();
+  }, [isExpanded, isAfterExpandAnimation, hasLoadedVideos, game.id]);
+
+  // Wait for the slide animation to complete before showing expanded content
+  useEffect(() => {
+    if (!isExpanded) {
+      setIsAfterExpandAnimation(false);
+      return;
+    }
+
+    const node = topSectionRef.current;
+    if (!node) {
+      const timer = setTimeout(() => setIsAfterExpandAnimation(true), 350);
+      return () => clearTimeout(timer);
+    }
+
+    const onTransitionEnd = (e: TransitionEvent) => {
+      if (e.propertyName === 'height' || e.propertyName === 'max-height' || e.propertyName === 'all') {
+        setIsAfterExpandAnimation(true);
+      }
+    };
+
+    node.addEventListener('transitionend', onTransitionEnd as any);
+    // Fallback safety timer in case transitionend doesn't fire
+    const fallbackTimer = setTimeout(() => setIsAfterExpandAnimation(true), 500);
+    return () => {
+      node.removeEventListener('transitionend', onTransitionEnd as any);
+      clearTimeout(fallbackTimer);
+    };
+  }, [isExpanded]);
+
   return (
     <div 
-      className={`game-card bg-slate-800 rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition-all duration-300 flex flex-col h-full cursor-pointer ${isExpanded ? 'expanded' : ''} ${hasBeenClicked ? 'clicked' : ''}`}
+      className={`rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition-all duration-300 flex flex-col h-full cursor-pointer ${isExpanded ? 'expanded' : ''} ${hasBeenClicked ? 'clicked' : ''}`}
       onClick={handleClick}
     >
-      <div className={`relative bg-slate-900 transition-all duration-300 ${isExpanded ? 'h-0' : 'h-[300px]'}`}>
+      <div ref={topSectionRef} className={`relative transition-all duration-300 ${isExpanded ? 'h-0' : 'h-[300px]'}`}>
         <img 
           src={imageUrl}
           alt={`${game.name}-game-cover-image`} 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-fill"
         />
         {rating && (
-          <div className="absolute top-2 right-2 bg-slate-900/80 text-white text-xs font-medium px-2 py-1 rounded-md">
+          <div className="absolute top-2 right-2 text-white text-xs font-medium px-2 py-1 rounded-md">
             {rating.toFixed(1)} ⭐
           </div>
         )}
       </div>
       
       <div className={`p-4 flex-1 flex flex-col transition-all duration-300 ${isExpanded ? 'pt-4' : ''}`}>
-        <h3 className="text-lg font-medium text-white mb-1">{game.name}</h3>
         
-        <div className="text-xs text-slate-400 mb-3">
-          {releaseYear}
-        </div>
-        
-        {game.summary && (
-          <div className="mb-3">
-            <p className={`text-sm text-slate-300 transition-all duration-300 ${
-              isExpanded 
-                ? 'line-clamp-none max-h-[200px] overflow-y-auto pr-2 custom-scrollbar' 
-                : 'line-clamp-3'
-            }`}>
-              {game.summary}
-            </p>
-          </div>
-        )}
-        
-        {!isExpanded && game.platforms && (
-          <div className="text-xs text-slate-400 mt-auto">
-            <span className="text-slate-300"> 
-              {game.platforms.map(p => p.name).join(', ')}
-            </span>
-          </div>
-        )}
 
-        {isExpanded && (
+        {isExpanded && isAfterExpandAnimation && (
           <>
+            {/* Video section */}
+            <div className="mb-3">
+              {isVideoLoading && (
+                <div className="w-full h-48 border border-slate-700 rounded-md animate-pulse" />
+              )}
+              {!isVideoLoading && videos.length > 0 && (
+                <div className="w-full aspect-video bg-black rounded-md overflow-hidden">
+                  <iframe
+                    title={videos[0]?.name || `${game.name} video`}
+                    src={`https://www.youtube.com/embed/${videos[0].video_id}?rel=0`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              )}
+              {!isVideoLoading && hasLoadedVideos && videos.length === 0 && (
+                <div className="w-full h-10 text-xs text-slate-400 flex items-center">No video available</div>
+              )}
+            </div>
+
+            <h3 className="text-lg font-medium text-white mb-1">{game.name}</h3>
+        
+            <div className="text-xs text-slate-400 mb-3">
+              {releaseYear}
+            </div>
             <div className="mt-auto">
               <div className="text-center text-sm text-slate-400 mb-2">Official Stores</div>
               <div className="h-px bg-slate-700 mb-3"></div>

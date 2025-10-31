@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFilters } from '../context/FilterContext';
 import GameCard from './GameCard';
 import EmptyState from './EmptyState';
 import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 const SearchResults: React.FC = () => {
   const { gameResults, isLoading, error, sortBy, setSortBy, selectedFilters, hasMore } = useFilters();
+  // layout: "grid" preserves the current multi-card layout; "list" forces 1 card per row across breakpoints
+  const [layout, setLayout] = useState<'grid' | 'list'>('grid');
+  const hasInitializedLayout = useRef(false);
+  const isDesktop = useMediaQuery('(min-width: 1024px)'); // aligns with Tailwind lg breakpoint
+  const [expandedGameId, setExpandedGameId] = useState<number | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
   // Update hasSearched when a search is performed
@@ -15,6 +21,14 @@ const SearchResults: React.FC = () => {
       setHasSearched(true);
     }
   }, [isLoading]);
+
+  // Initialize default layout based on screen size, once after mount
+  useEffect(() => {
+    if (hasInitializedLayout.current) return;
+    // Default: phones -> grid (current layout); desktops -> list (1 card per row)
+    setLayout(isDesktop ? 'list' : 'grid');
+    hasInitializedLayout.current = true;
+  }, [isDesktop]);
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
@@ -31,11 +45,24 @@ const SearchResults: React.FC = () => {
     }
     
     if (gameResults.length > 0) {
+      const gridClasses =
+        layout === 'grid'
+          // Keep existing responsive behavior for the current layout
+          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+          // Force 1 card per row at all sizes for the alternative layout
+          : 'grid grid-cols-1 gap-6';
       return (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className={gridClasses}>
             {gameResults.map(game => (
-              <GameCard key={`game-${game.id}`} game={game} />
+              <GameCard
+                key={`game-${game.id}`}
+                game={game}
+                expanded={expandedGameId === game.id}
+                onToggle={(next) => {
+                  setExpandedGameId(prev => (next ? game.id : prev === game.id ? null : prev));
+                }}
+              />
             ))}
           </div>
           
@@ -57,6 +84,34 @@ const SearchResults: React.FC = () => {
           </h2>
           
           <div className="flex items-center gap-4">
+            {/* Layout toggle */}
+            <div className="inline-flex items-center rounded-lg border border-slate-600 p-1 bg-slate-700">
+              <button
+                type="button"
+                onClick={() => setLayout('grid')}
+                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  layout === 'grid'
+                    ? 'bg-primary-600 text-white'
+                    : 'text-slate-200 hover:bg-slate-600'
+                }`}
+                aria-pressed={layout === 'grid'}
+              >
+                Grid
+              </button>
+              <button
+                type="button"
+                onClick={() => setLayout('list')}
+                className={`ml-1 px-3 py-1.5 text-sm rounded-md transition-colors ${
+                  layout === 'list'
+                    ? 'bg-primary-600 text-white'
+                    : 'text-slate-200 hover:bg-slate-600'
+                }`}
+                aria-pressed={layout === 'list'}
+              >
+                List
+              </button>
+            </div>
+
             <div className="flex items-center gap-2 text-sm text-slate-400">
               <span>Sort by:</span>
               <select 
