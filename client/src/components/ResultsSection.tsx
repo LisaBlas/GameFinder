@@ -13,7 +13,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ setActiveSection, resul
       ref={resultsSectionRef}
       className="game-results w-full py-8 flex flex-col items-center justify-start text-center transition-all relative"
     >
-      <div className="w-full flex flex-col px-4 pb-24">
+      <div className="w-full flex flex-col pb-24">
         <SearchResults />
       </div>
     </div>

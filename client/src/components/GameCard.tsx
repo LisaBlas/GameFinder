@@ -328,7 +328,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
     fetchVideos();
   }, [isExpanded, isAfterExpandAnimation, hasLoadedVideos, game.id]);
 
-  // Wait for the slide animation to complete before showing expanded content
+  // Wait for the fade animation to complete before showing expanded content
   useEffect(() => {
     if (!isExpanded) {
       setIsAfterExpandAnimation(false);
@@ -337,19 +337,19 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
 
     const node = topSectionRef.current;
     if (!node) {
-      const timer = setTimeout(() => setIsAfterExpandAnimation(true), 350);
+      const timer = setTimeout(() => setIsAfterExpandAnimation(true), 300);
       return () => clearTimeout(timer);
     }
 
     const onTransitionEnd = (e: TransitionEvent) => {
-      if (e.propertyName === 'height' || e.propertyName === 'max-height' || e.propertyName === 'all') {
+      if (e.propertyName === 'opacity' || e.propertyName === 'all') {
         setIsAfterExpandAnimation(true);
       }
     };
 
     node.addEventListener('transitionend', onTransitionEnd as any);
     // Fallback safety timer in case transitionend doesn't fire
-    const fallbackTimer = setTimeout(() => setIsAfterExpandAnimation(true), 500);
+    const fallbackTimer = setTimeout(() => setIsAfterExpandAnimation(true), 350);
     return () => {
       node.removeEventListener('transitionend', onTransitionEnd as any);
       clearTimeout(fallbackTimer);
@@ -358,10 +358,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
 
   return (
     <div 
-      className={`rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition-all duration-300 flex flex-col h-full cursor-pointer ${isExpanded ? 'expanded' : ''} ${hasBeenClicked ? 'clicked' : ''}`}
+      className={`rounded-lg overflow-hidden border border-slate-700 hover:border-slate-500 transition-all duration-300 flex flex-col cursor-pointer ${isExpanded ? 'expanded h-auto' : 'h-[300px]'} ${hasBeenClicked ? 'clicked' : ''}`}
       onClick={handleClick}
     >
-      <div ref={topSectionRef} className={`relative transition-all duration-300 ${isExpanded ? 'h-0' : 'h-[300px]'}`}>
+      <div ref={topSectionRef} className={`relative transition-opacity duration-300 ${isExpanded ? 'opacity-0 h-0 pointer-events-none' : 'opacity-100 h-[300px]'}`}>
         <img 
           src={imageUrl}
           alt={`${game.name}-game-cover-image`} 
@@ -370,6 +370,65 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
         {rating && (
           <div className="absolute top-2 right-2 text-white text-xs font-medium px-2 py-1 rounded-md">
             {rating.toFixed(1)} ⭐
+          </div>
+        )}
+        
+        {/* Official Stores overlay on cover image */}
+        {!isExpanded && (
+          <div className="absolute bottom-2 right-2 flex gap-1 p-2 rounded-md">
+            {/* Official Website */}
+            {game.websites?.map((website) => {
+              if (website.category === 1 && !website.url.includes('youtube.com')) {
+                return (
+                  <a
+                    key={website.id}
+                    href={website.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-black/70 w-8 h-8 hover:bg-slate-700 text-white rounded transition-all duration-200 flex items-center justify-center"
+                    title="Official Website"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      trackExternalClick('Official Website', 'official', game.name);
+                    }}
+                  >
+                    <FaGlobe className="w-4 h-4" />
+                  </a>
+                );
+              }
+              return null;
+            })}
+
+            {/* Store Links */}
+            {game.external_games?.filter((store, index, self) => {
+              if (!store.url) return false;
+              if (store.url.includes('youtube.com') || 
+                  store.url.includes('youtube.gaming') || 
+                  store.url.includes('amazon.com')) return false;
+              return index === self.findIndex(s => s.category === store.category);
+            }).map((store) => {
+              const icon = getStoreIcon(store.category, store.url);
+              if (icon) {
+                const storeName = getStoreName(store.category, store.url);
+                return (
+                  <a
+                    key={store.id}
+                    href={store.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-black/70 w-10 h-10 hover:bg-slate-700 text-white rounded transition-all duration-200 flex items-center justify-center"
+                    title={storeName}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      trackExternalClick(storeName, 'official', game.name);
+                    }}
+                  >
+                    {React.cloneElement(icon, { className: "w-6 h-6" })}
+                  </a>
+                );
+              }
+              return null;
+            })}
           </div>
         )}
       </div>
@@ -404,138 +463,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle }) => {
         
             <div className="text-xs text-slate-400 mb-3">
               {releaseYear}
-            </div>
-            <div className="mt-auto">
-              <div className="text-center text-sm text-slate-400 mb-2">Official Stores</div>
-              <div className="h-px bg-slate-700 mb-3"></div>
-              <div className="store-buttons grid grid-cols-5 gap-2">
-                {/* Official Website */}
-                {game.websites?.map((website) => {
-                  if (website.category === 1 && !website.url.includes('youtube.com')) {
-                    return (
-                      <a
-                        key={website.id}
-                        href={website.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="aspect-square hover:bg-slate-900 text-white rounded-[4px] transition-all duration-200 hover:border hover:border-primary hover:shadow-[0_0_20px_6px_rgba(168,85,247,0.8)]
- flex items-center justify-center"
-                        title="Official Website"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          trackExternalClick('Official Website', 'official', game.name);
-                        }}
-                      >
-                        <FaGlobe className="w-5 h-5" />
-                      </a>
-                    );
-                  }
-                  return null;
-                })}
-
-                {/* Store Links */}
-                {game.external_games?.filter((store, index, self) => {
-                  // Filter out entries without URLs
-                  if (!store.url) return false;
-                  
-                  // Filter out YouTube and Amazon links
-                  if (store.url.includes('youtube.com') || 
-                      store.url.includes('youtube.gaming') || 
-                      store.url.includes('amazon.com')) return false;
-                  
-                  // Remove duplicates by keeping only the first occurrence of each category
-                  return index === self.findIndex(s => s.category === store.category);
-                }).map((store) => {
-                  const icon = getStoreIcon(store.category, store.url);
-                  if (icon) {
-                    const storeName = getStoreName(store.category, store.url);
-                    return (
-                      <a
-                        key={store.id}
-                        href={store.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="aspect-square hover:bg-slate-900 text-white rounded-[4px] transition-all duration-200 hover:border hover:border-primary hover:shadow-[0_0_10px_rgba(124,58,237,0.5)] flex items-center justify-center"
-                        title={getStoreName(store.category, store.url)}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          trackExternalClick(storeName, 'official', game.name);
-                        }}
-                      >
-                        {React.cloneElement(icon, { className: "w-5 h-5" })}
-                      </a>
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            </div>
-            
-            {/* New Affiliate Links Section with Golden Highlight */}
-            <div className="mt-2">
-              <div className="text-center text-sm font-medium mb-2 text-amber-400">Discounted Stores</div>
-              <div className="h-px bg-amber-500/30 mb-3"></div>
-              <div className="affiliate-buttons grid grid-cols-5 gap-2">
-                {/* Kinguin - Special handling for cookie */}
-                <button
-                  onClick={handleKinguinClick}
-                  className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
-                  title={affiliateLinks.kinguin.name}
-                >
-                  <affiliateLinks.kinguin.icon />
-                  <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {affiliateLinks.kinguin.name}
-                  </span>
-                </button>
-                
-                {/* GamersGate */}
-                <button
-                  onClick={(e) => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate')}
-                  className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
-                  title={affiliateLinks.gamersgate.name}
-                >
-                  <affiliateLinks.gamersgate.icon />
-                  <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {affiliateLinks.gamersgate.name}
-                  </span>
-                </button>
-                
-                {/* Eneba */}
-                <button
-                  onClick={(e) => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate')}
-                  className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
-                  title={affiliateLinks.eneba.name}
-                >
-                  <affiliateLinks.eneba.icon />
-                  <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {affiliateLinks.eneba.name}
-                  </span>
-                </button>
-                
-                {/* G2A */}
-                <button
-                  onClick={(e) => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate')}
-                  className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
-                  title={affiliateLinks.g2a.name}
-                >
-                  <affiliateLinks.g2a.icon />
-                  <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {affiliateLinks.g2a.name}
-                  </span>
-                </button>
-                
-                {/* Instant Gaming */}
-                <button
-                  onClick={(e) => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate')}
-                  className="aspect-square bg-slate-700 hover:bg-slate-600 text-white rounded-[4px] transition-all duration-200 flex items-center justify-center group relative"
-                  title={affiliateLinks.instantGaming.name}
-                >
-                  <affiliateLinks.instantGaming.icon />
-                  <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                    {affiliateLinks.instantGaming.name}
-                  </span>
-                </button>
-              </div>
             </div>
           </>
         )}
