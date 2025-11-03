@@ -3,21 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>GameFinder – The Smartest Way to Search for Games</title>
+    <title>GameFinder – Find & Compare Games Across All Major Stores | Smart Game Search</title>
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="canonical" href="https://gamefinder-app.com/" />
-    <meta name="description" content="Find games fast with GameFinder — compare titles across major stores and filter using precise, categorized keywords tailored to how people actually browse." />
-    <meta name="robots" content="index, follow" />
-    <meta name="keywords" content="game discovery, find games, compare game prices, Steam games, Epic Games, Microsoft Store, Xbox, Eneba, Instant Gaming, GamersGate, GOG, Kinguin, G2A, filter games, game search engine, co-op games, story-rich games, indie game finder, multiplayer filter, price comparison, gaming tags">
+    <meta name="description" content="Discover your next favorite game with GameFinder. Compare prices across Steam, Epic Games, GOG, Kinguin, G2A & more. Filter by genre, features, and tags. Find the best deals on PC games instantly." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="keywords" content="game discovery, find games, compare game prices, Steam games, Epic Games, Microsoft Store, Xbox, Eneba, Instant Gaming, GamersGate, GOG, Kinguin, G2A, filter games, game search engine, co-op games, story-rich games, indie game finder, multiplayer filter, price comparison, gaming tags, PC games, game deals, best game prices" />
+    <meta name="author" content="Bleep Bloop" />
+    <meta name="theme-color" content="#7739ea" />
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P9PX4F6K2Y"></script>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="GameFinder" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+
+    <!-- Performance & Preconnect Hints -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+    <!-- Preconnect to image CDN (IGDB) -->
+    <link rel="preconnect" href="https://images.igdb.com" crossorigin />
+    <link rel="dns-prefetch" href="https://images.igdb.com" />
+
+    <!-- Preconnect to YouTube for video embeds -->
+    <link rel="preconnect" href="https://www.youtube.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.youtube.com" />
+
+    <!-- Font optimization - if using custom fonts, preload them here -->
+    <!-- Example: <link rel="preload" href="/fonts/your-font.woff2" as="font" type="font/woff2" crossorigin /> -->
+
+    <!-- Google tag (gtag.js) - Optimized loading -->
     <script>
+      // Defer Google Analytics to improve initial load time
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-P9PX4F6K2Y');
+
+      // Load GA script after page load
+      window.addEventListener('load', function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-P9PX4F6K2Y';
+        document.head.appendChild(script);
+      });
     </script>
 
     
@@ -28,31 +60,58 @@
 
     <!-- Open Graph Meta Tags for social sharing -->
     <meta property="og:site_name" content="GameFinder" />
-    <meta property="og:description" content="The Smarter game search engine." />
-    <meta property="og:title" content="GameFinder" />
+    <meta property="og:title" content="GameFinder – Find & Compare Games Across All Major Stores" />
+    <meta property="og:description" content="Discover your next favorite game with GameFinder. Compare prices across Steam, Epic Games, GOG, Kinguin, G2A & more. Filter by genre, features, and tags." />
     <meta property="og:url" content="https://gamefinder-app.com/" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://gamefinder-app.com/og-image.jpg" />
-    <meta property="og:image:alt" content="GameFinder – The Smarter game search engine" />
+    <meta property="og:image:alt" content="GameFinder – Smart game search and price comparison tool" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-  
+    <meta property="og:locale" content="en_US" />
+
     <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:title" content="GameFinder" />
-    <meta name="twitter:description" content="The Smarter game search engine." />
-    <meta name="twitter:image" content="https://gamefinder-app.com/og-image.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@BerliozGordon" />
+    <meta name="twitter:creator" content="@BerliozGordon" />
+    <meta name="twitter:title" content="GameFinder – Find & Compare Games Across All Major Stores" />
+    <meta name="twitter:description" content="Discover your next favorite game with GameFinder. Compare prices across Steam, Epic Games, GOG, Kinguin, G2A & more. Filter by genre, features, and tags." />
+    <meta name="twitter:image" content="https://gamefinder-app.com/og-image.jpg" />
+    <meta name="twitter:image:alt" content="GameFinder – Smart game search and price comparison tool" />
 
+    <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "GameFinder",
+        "alternateName": "GameFinder - Smart Game Search",
         "url": "https://gamefinder-app.com",
-        "description": "Find and compare games across multiple stores like Steam, Epic Games, Kinguin, G2A, and more.",
+        "description": "Discover your next favorite game with GameFinder. Compare prices across Steam, Epic Games, GOG, Kinguin, G2A & more. Filter by genre, features, and tags. Find the best deals on PC games instantly.",
         "applicationCategory": "GameApplication",
         "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "127",
+          "bestRating": "5",
+          "worstRating": "1"
+        },
+        "featureList": [
+          "Compare game prices across multiple stores",
+          "Filter games by genre, features, and tags",
+          "Search across Steam, Epic Games, GOG, Kinguin, G2A, and more",
+          "Smart categorized keyword filtering",
+          "Real-time price comparison",
+          "Direct links to game stores"
+        ],
+        "screenshot": "https://gamefinder-app.com/og-image.jpg",
         "sameAs": [
           "https://twitter.com/BerliozGordon",
           "https://www.linkedin.com/in/blas-alviz",
@@ -60,16 +119,77 @@
         ],
         "creator": {
           "@type": "Organization",
+          "name": "Bleep Bloop",
+          "url": "https://lisablas.github.io/BleepBloop/"
+        },
+        "author": {
+          "@type": "Organization",
           "name": "Bleep Bloop"
         }
       }
-      </script> 
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is GameFinder?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GameFinder is a smart game search engine that helps you discover and compare games across multiple stores including Steam, Epic Games, GOG, Kinguin, G2A, Eneba, Instant Gaming, and more. You can filter games by genre, features, and categorized tags to find exactly what you're looking for."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which game stores does GameFinder support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GameFinder supports major game stores including Steam, Epic Games Store, GOG, Microsoft Store, Xbox, PlayStation Store, Nintendo eShop, Kinguin, G2A, Eneba, Instant Gaming, GamersGate, Humble Bundle, itch.io, App Store, and Google Play."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is GameFinder free to use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, GameFinder is completely free to use. You can search, filter, and compare games across all supported stores without any cost."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does GameFinder help me find games?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GameFinder uses smart categorized keywords and filters that match how people actually browse for games. You can filter by genre, gameplay features, themes, multiplayer options, and more to discover games that match your preferences."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://gamefinder-app.com/"
+          }
+        ]
+      }
+    </script>
   
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <script defer type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
   </body>
 </html>

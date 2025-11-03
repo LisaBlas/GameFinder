@@ -424,10 +424,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle, onPopupOp
       onClick={handleClick}
     >
       <div ref={topSectionRef} className={`relative transition-opacity duration-300 ${isExpanded ? 'opacity-0 h-0 pointer-events-none' : 'opacity-100 h-full'}`}>
-        <img 
+        <img
           src={imageUrl}
-          alt={`${game.name}-game-cover-image`} 
+          alt={`${game.name}-game-cover-image`}
           className="w-full h-full object-contain"
+          loading="lazy"
+          decoding="async"
         />
         {rating && (
           <div className="absolute top-2 right-2 text-white text-xs font-medium px-2 py-1 rounded-md">
