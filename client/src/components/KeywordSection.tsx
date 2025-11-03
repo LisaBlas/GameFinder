@@ -34,9 +34,10 @@ interface KeywordSectionProps {
   expanded: boolean;
   setActiveSection: (section: 'keywords' | 'filters' | 'none') => void;
   filterSectionRef: React.RefObject<HTMLDivElement>;
+  heroRef: React.RefObject<HTMLDivElement>;
 }
 
-export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setActiveSection, filterSectionRef }) => {
+export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setActiveSection, filterSectionRef, heroRef }) => {
   const [hasAnimated, setHasAnimated] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   
@@ -45,19 +46,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
     const timer = setTimeout(() => {
       setHasAnimated(true);
     }, 1000); // Match this with the animation duration
-    
+
     return () => clearTimeout(timer);
   }, []);
-
-  // Focus search input when section expands
-  useEffect(() => {
-    if (expanded && searchInputRef.current) {
-      // Small delay to ensure the section is fully expanded
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 100);
-    }
-  }, [expanded]);
 
   // Category for filter context
   const category = 'Keywords';
@@ -189,11 +180,18 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
         `}
         onClick={() => {
           setActiveSection('keywords');
-          // Scroll to section on both mobile and desktop
-          filterSectionRef.current?.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          });
+          // Scroll to section on mobile, hero on desktop
+          if (window.innerWidth < 1024) { // lg breakpoint
+            filterSectionRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          } else {
+            heroRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
         }}
         style={{ userSelect: 'none', position: 'relative' }}
       >
@@ -204,13 +202,13 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
         />
         <div className="flex flex-col items-center gap-2 w-full">
           <div className="flex items-center justify-center mb-2">
-            <span className="text-4xl font-bold text-[#f5a614]/70">1.</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search h-8 w-8 text-[#f5a614]"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
           </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-[#f5a614]/70 tracking-wide mb-1">
-            Start With a Tag
+            Find One Keyword
           </h2>
           <p className="category-description text-base md:text-lg text-secondary-foreground/80 mb-2 max-w-xl mx-auto">
-            Browse curated categories or search for anything.
+            Browse curated categories or use the search bar.
           </p>
           <p className="text-lm text-[#f5a614]/70 animate-pulse">Click to expand</p>
         </div>

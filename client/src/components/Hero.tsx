@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import { Info, Search, Filter, Gamepad, ChevronDown } from 'lucide-react';
 
-const Hero: React.FC = () => {
+const Hero = forwardRef<HTMLDivElement>((props, ref) => {
   const [howItWorksExpanded, setHowItWorksExpanded] = useState(false);
-  
+
   const toggleHowItWorks = () => {
     setHowItWorksExpanded(prev => !prev);
   };
@@ -18,16 +18,16 @@ const Hero: React.FC = () => {
       <h2 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4 leading-[1.8]">
       Get Smarter Game Recommendations <br /> Based on What Actually Matters.
       </h2>
-      
-      <div className="mt-10 flex justify-center">
-        <button 
+
+      <div ref={ref} className="mt-10 flex justify-center">
+        <button
           onClick={toggleHowItWorks}
           className="flex items-center gap-2 text-sm bg-card/40 hover:bg-card/60 border border-border px-4 py-2 rounded-full transition-all duration-200"
         >
           <Info className="h-4 w-4 text-primary" />
           <span>How it works</span>
-          <ChevronDown 
-            className={`h-4 w-4 transition-transform duration-200 ${howItWorksExpanded ? 'rotate-180' : ''}`} 
+          <ChevronDown
+            className={`h-4 w-4 transition-transform duration-200 ${howItWorksExpanded ? 'rotate-180' : ''}`}
           />
         </button>
       </div>
@@ -55,6 +55,8 @@ const Hero: React.FC = () => {
       )}
     </div>
   );
-};
+});
+
+Hero.displayName = 'Hero';
 
 export default Hero;

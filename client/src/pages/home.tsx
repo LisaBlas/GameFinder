@@ -16,6 +16,7 @@ const HomeContent: React.FC = () => {
   const keywordSectionRef = useRef<HTMLDivElement>(null);
   const filterSectionRef = useRef<HTMLDivElement>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
 
   // Changed initial state to null instead of 'keywords'
   const [activeSection, setActiveSection] = useState<'keywords' | 'filters' | 'results' | 'none' | null>(null);
@@ -39,23 +40,25 @@ const HomeContent: React.FC = () => {
       
       <main className="w-full min-h-[150vh]">
         <div className="container mx-auto px-4 lg:py-8">
-          <Hero />
+          <Hero ref={heroRef} />
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left side - Keyword Section */}
             <div className="w-full lg:w-1/2">
-              <KeywordSection 
-                expanded={activeSection === 'keywords'} 
+              <KeywordSection
+                expanded={activeSection === 'keywords'}
                 setActiveSection={setActiveSection}
                 filterSectionRef={filterSectionRef}
+                heroRef={heroRef}
               />
             </div>
 
             {/* Right side - Filter Section */}
             <div className="w-full lg:w-1/2" ref={filterSectionRef}>
-              <FilterSidebar 
-                expanded={activeSection === 'filters'} 
+              <FilterSidebar
+                expanded={activeSection === 'filters'}
                 setActiveSection={setActiveSection}
                 filterSectionRef={filterSectionRef}
+                heroRef={heroRef}
               />
             </div>
           </div>

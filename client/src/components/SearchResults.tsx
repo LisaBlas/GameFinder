@@ -9,6 +9,7 @@ const SearchResults: React.FC = () => {
   const { gameResults, isLoading, error, sortBy, setSortBy, selectedFilters, hasMore } = useFilters();
   const [expandedGameId, setExpandedGameId] = useState<number | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [popupOpenGameId, setPopupOpenGameId] = useState<number | null>(null);
 
   // Update hasSearched when a search is performed
   useEffect(() => {
@@ -42,11 +43,19 @@ const SearchResults: React.FC = () => {
                 expanded={expandedGameId === game.id}
                 onToggle={(next) => {
                   setExpandedGameId(prev => (next ? game.id : prev === game.id ? null : prev));
+                  // Close popup when collapsing or expanding a different card
+                  if (!next || game.id !== popupOpenGameId) {
+                    setPopupOpenGameId(null);
+                  }
+                }}
+                onPopupOpen={() => {
+                  // Close any other open popup and set this one as open
+                  setPopupOpenGameId(game.id);
                 }}
               />
             ))}
           </div>
-          
+
           <LoadMoreButton />
         </>
       );

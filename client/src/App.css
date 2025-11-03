@@ -695,10 +695,10 @@ h3{
 }
 
 .game-card {
-  background: hsl(var(--card));
+  background: none;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid hsl(var(--border));
+  border: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   max-height: 550px;
@@ -708,6 +708,12 @@ h3{
 .game-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 2px solid #993df5;
+}
+
+.game-card.expanded {
+  border: 2px solid rgb(217, 119, 6);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 1.0);
 }
 
 /* First game card overlay */
@@ -715,7 +721,7 @@ h3{
   content: "TAP TO EXPAND";
   position: absolute;
   inset: 0;
-  background: rgba(27, 15, 15, 0.3);
+  background: #1b0f0f36;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -735,7 +741,7 @@ h3{
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(169, 167, 218, 0.2);
+  background: none;
   z-index: 10;
   opacity: 0;
   animation: pulseOverlayGradient 3s ease-in-out infinite;

@@ -12,13 +12,22 @@ interface Game {
   external_games?: Array<{
     id: number;
     name: string;
-    category: number;
+    external_game_source: number;
     url: string;
   }>;
   websites?: Array<{
     id: number;
     url: string;
     category: number;
+  }>;
+  involved_companies?: Array<{
+    id: number;
+    company: {
+      id: number;
+      name: string;
+    };
+    developer: boolean;
+    publisher: boolean;
   }>;
 }
 
@@ -212,7 +221,7 @@ export class IGDBService {
 
       // Build the query
       const query = `
-        fields name, summary, first_release_date, cover.url, platforms.name, genres.name, themes.name, game_modes.name, keywords.name, rating, websites.url, websites.category, external_games.url, external_games.category;
+        fields name, summary, first_release_date, cover.url, platforms.name, genres.name, themes.name, game_modes.name, keywords.name, rating, websites.url, websites.category, external_games.id, external_games.name, external_games.external_game_source, external_games.url, involved_companies.*, involved_companies.company.*;
         where ${whereClause};
         ${sortClause}
         limit 50;
@@ -383,20 +392,29 @@ export class IGDBService {
 
   /**
    * Get human-readable store category name
+   * Based on official IGDB external_games category enum
    */
   private getStoreCategoryName(category: number): string {
     const categories: { [key: number]: string } = {
       1: 'Steam',
-      2: 'GOG',
-      3: 'Epic Games',
-      4: 'App Store',
-      5: 'Google Play',
-      6: 'Nintendo eShop',
-      7: 'Xbox Store',
-      8: 'PlayStation Store',
-      9: 'itch.io',
-      10: 'Humble Bundle',
-      11: 'Microsoft Store'
+      5: 'GOG',
+      10: 'YouTube',
+      11: 'Microsoft Store',
+      13: 'Apple App Store',
+      15: 'Android/Google Play',
+      20: 'Amazon ASIN',
+      22: 'Amazon Luna',
+      23: 'Amazon ADG',
+      26: 'Epic Games Store',
+      28: 'Oculus',
+      29: 'Utomik',
+      30: 'itch.io',
+      31: 'Xbox Marketplace',
+      32: 'Kartridge',
+      36: 'PlayStation Store US',
+      37: 'Focus Entertainment',
+      54: 'Xbox Game Pass Ultimate Cloud',
+      55: 'GameJolt'
     };
     return categories[category] || `Store ${category}`;
   }

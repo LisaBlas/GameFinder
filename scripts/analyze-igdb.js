@@ -51,19 +51,27 @@ async function makeRequest(endpoint, body) {
   return response.data;
 }
 
-// Store category mapping
+// Store category mapping - Based on official IGDB external_games category enum
 const storeCategories = {
   1: 'Steam',
-  2: 'GOG',
-  3: 'Epic Games Store',
-  4: 'App Store',
-  5: 'Google Play',
-  6: 'Nintendo eShop',
-  7: 'Xbox Store',
-  8: 'PlayStation Store',
-  9: 'itch.io',
-  10: 'Humble Bundle',
-  11: 'Microsoft Store'
+  5: 'GOG',
+  10: 'YouTube',
+  11: 'Microsoft Store',
+  13: 'Apple App Store',
+  15: 'Android/Google Play',
+  20: 'Amazon ASIN',
+  22: 'Amazon Luna',
+  23: 'Amazon ADG',
+  26: 'Epic Games Store',
+  28: 'Oculus',
+  29: 'Utomik',
+  30: 'itch.io',
+  31: 'Xbox Marketplace',
+  32: 'Kartridge',
+  36: 'PlayStation Store US',
+  37: 'Focus Entertainment',
+  54: 'Xbox Game Pass Ultimate Cloud',
+  55: 'GameJolt'
 };
 
 async function analyzeStoresAndWebsites() {

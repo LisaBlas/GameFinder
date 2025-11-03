@@ -10,9 +10,10 @@ interface FilterSidebarProps {
   expanded: boolean;
   setActiveSection: (section: 'keywords' | 'filters' | 'none') => void;
   filterSectionRef: React.RefObject<HTMLDivElement>;
+  heroRef: React.RefObject<HTMLDivElement>;
 }
 
-const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSection, filterSectionRef }) => {
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSection, filterSectionRef, heroRef }) => {
   const { searchGames, selectedFilters, isLoading, clearAllFilters, setCategoryExpanded } = useFilters();
 
   useEffect(() => {
@@ -34,11 +35,18 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
         `}
         onClick={() => {
           setActiveSection('filters');
-          // Scroll to filter section on both mobile and desktop
-          filterSectionRef.current?.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          });
+          // Scroll to filter section on mobile, hero on desktop
+          if (window.innerWidth < 1024) { // lg breakpoint
+            filterSectionRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          } else {
+            heroRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
         }}
         style={{ userSelect: 'none', position: 'relative' }}
       >
@@ -49,7 +57,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
         />
         <div className="flex flex-col items-center gap-2 w-full">
           <div className="flex items-center justify-center mb-2">
-            <span className="text-4xl font-bold text-primary">2.</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-filter h-8 w-8 text-primary">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
           </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-wide mb-1">
             Add Some Filters
