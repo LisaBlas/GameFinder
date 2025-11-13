@@ -18,6 +18,26 @@ app.use(compression({
   level: 6, // Compression level (0-9, 6 is default and good balance)
 }));
 
+// Redirect www to non-www
+app.use((req, res, next) => {
+  if (req.hostname.startsWith('www.')) {
+    const newHost = req.hostname.replace('www.', '');
+    return res.redirect(301, `https://${newHost}${req.originalUrl}`);
+  }
+  next();
+});
+
+// Serve robots.txt with proper caching headers
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  // Cache for 1 day
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.send(`User-agent: *
+Allow: /
+
+Sitemap: https://gamefinder-app.com/sitemap.xml`);
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
