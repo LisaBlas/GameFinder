@@ -24,7 +24,7 @@ const Navbar: React.FC = () => {
     >
       <div className="container mx-auto h-full flex items-center justify-between px-4">
         <div className="flex-1"></div>
-        <span className="text-xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+        <span aria-label="GameFinder home" className="text-xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
           GameFinder
         </span>
         <div className="flex-1 flex justify-end gap-4">
