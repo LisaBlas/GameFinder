@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import FilterSidebar from '../components/FilterSidebar';
 import ResultsSection from '../components/ResultsSection';
 import { KeywordSection } from '../components/KeywordSection';
 import { FilterProvider } from '../context/FilterContext';
@@ -18,16 +17,9 @@ const HomeContent: React.FC = () => {
   const resultsSectionRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
-  // Changed initial state to null instead of 'keywords'
-  const [activeSection, setActiveSection] = useState<'keywords' | 'filters' | 'results' | 'none' | null>(null);
-  const [hasExpandedSection, setHasExpandedSection] = useState(false);
-
-  // Update hasExpandedSection whenever activeSection changes
-  React.useEffect(() => {
-    if (activeSection === 'keywords' || activeSection === 'filters') {
-      setHasExpandedSection(true);
-    }
-  }, [activeSection]);
+  // Keyword section is always visible now, so bottom bar should always show
+  const [activeSection, setActiveSection] = useState<'keywords' | 'results' | 'none' | null>('keywords');
+  const hasExpandedSection = true; // Always true since keyword section is always visible
 
   const resetSections = () => {
     setActiveSection(null);
@@ -41,31 +33,20 @@ const HomeContent: React.FC = () => {
       <main className="w-full min-h-[150vh]">
         <div className="container mx-auto px-4 lg:py-8">
           <Hero ref={heroRef} />
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left side - Keyword Section */}
-            <div className="w-full lg:w-1/2">
-              <KeywordSection
-                expanded={activeSection === 'keywords'}
-                setActiveSection={setActiveSection}
-                filterSectionRef={filterSectionRef}
-                heroRef={heroRef}
-              />
-            </div>
 
-            {/* Right side - Filter Section */}
-            <div className="w-full lg:w-1/2" ref={filterSectionRef}>
-              <FilterSidebar
-                expanded={activeSection === 'filters'}
-                setActiveSection={setActiveSection}
-                filterSectionRef={filterSectionRef}
-                heroRef={heroRef}
-              />
-            </div>
+          {/* Full width - Keyword Section only */}
+          <div className="w-full">
+            <KeywordSection
+              expanded={true}
+              setActiveSection={setActiveSection}
+              filterSectionRef={resultsSectionRef}
+              heroRef={heroRef}
+            />
           </div>
 
-          {/* Results Section */}
+          {/* Results Section with integrated filters */}
           <div className="mt-8" ref={resultsSectionRef}>
-            <ResultsSection 
+            <ResultsSection
               setActiveSection={setActiveSection}
               resultsSectionRef={resultsSectionRef}
             />

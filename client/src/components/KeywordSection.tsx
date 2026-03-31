@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FilterCategory } from "./FilterCategory";
+import React, { useState, useRef } from "react";
 import { Filter } from "./Filter";
-import { SelectedFilters } from "./SelectedFilters";
-import { useFilters } from "../context/FilterContext";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import keywordCategories from "../assets/keyword-categories.json";
-import { Gamepad2, Globe, Paintbrush, Search, X, ArrowLeft, ChevronDown } from "lucide-react";
-import SearchButton from "./SearchButton";
+import { Gamepad2, Globe, Paintbrush, ArrowLeft } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
-import { HelpTooltip } from './HelpTooltip';
 import Tooltip from "./Tooltip";
 
 interface KeywordItem {
@@ -32,29 +27,18 @@ interface CategoryCard {
 
 interface KeywordSectionProps {
   expanded: boolean;
-  setActiveSection: (section: 'keywords' | 'filters' | 'none') => void;
+  setActiveSection: (section: 'keywords' | 'results' | 'none') => void;
   filterSectionRef: React.RefObject<HTMLDivElement>;
   heroRef: React.RefObject<HTMLDivElement>;
 }
 
-export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setActiveSection, filterSectionRef, heroRef }) => {
-  const [hasAnimated, setHasAnimated] = useState(false);
+export const KeywordSection: React.FC<KeywordSectionProps> = ({ filterSectionRef }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
-  
-  useEffect(() => {
-    // Set hasAnimated to true after the initial animation
-    const timer = setTimeout(() => {
-      setHasAnimated(true);
-    }, 1000); // Match this with the animation duration
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Category for filter context
   const category = 'Keywords';
   const [selectedMainCategory, setSelectedMainCategory] = useState<MainCategory | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
-  const { searchGames, selectedFilters, isLoading, clearAllFilters } = useFilters();
 
   // Define the three main category cards
   const mainCategories: CategoryCard[] = [
@@ -143,254 +127,178 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ expanded, setAct
     return (topKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
   };
 
-  const handleSearch = () => {
-    if (selectedFilters.length > 0) {
-      searchGames();
-    }
-  };
-
   // Add handler for keyword selection
   const handleKeywordClick = () => {
-    // Add a class to trigger collapse animation
-    const section = document.querySelector('.keyword-section');
-    if (section) {
-      section.classList.add('collapsing');
+    // Scroll to results section
+    if (window.innerWidth < 1024) { // lg breakpoint
+      filterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-    
-    // Wait for collapse animation to complete before switching sections
-    setTimeout(() => {
-      setActiveSection('filters');
-      // Scroll to filter section on mobile
-      if (window.innerWidth < 1024) { // lg breakpoint
-        filterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 500); // Match this with the CSS animation duration
   };
 
-  if (!expanded) {
-    return (
-      <div
-        className={`
-          keyword-section px-4 w-full bg-transparent rounded-lg overflow-hidden flex flex-col 
-          hover:bg-transparent hover:border-[#f5a614]/90 items-center justify-center text-center py-10 cursor-pointer 
-          animate-shadow-pulse
-          border-2 border-[#f5a614]/30
-          min-h-[180px] transition-all duration-500 relative
-          ${!expanded ? 'lg:mt-auto lg:mb-auto' : ''}
-        `}
-        onClick={() => {
-          setActiveSection('keywords');
-          // Scroll to section on mobile, hero on desktop
-          if (window.innerWidth < 1024) { // lg breakpoint
-            filterSectionRef.current?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          } else {
-            heroRef.current?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        }}
-        style={{ userSelect: 'none', position: 'relative' }}
-      >
-        <HelpTooltip
-          title="Keyword Tips"
-          content="Select or search for an ultra-specific keyword to find games that include it. Check our curated selection to get inspired, and then use the search bar to find what you're looking for."
-          isExpanded={expanded}
-        />
-        <div className="flex flex-col items-center gap-2 w-full">
-          <div className="flex items-center justify-center mb-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search h-8 w-8 text-[#f5a614]"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-[#f5a614]/70 tracking-wide mb-1">
-            Find One Keyword
-          </h2>
-          <p className="category-description text-base md:text-lg text-secondary-foreground/80 mb-2 max-w-xl mx-auto">
-            Browse curated categories or use the search bar.
-          </p>
-          <p className="text-lm text-[#f5a614]/70 animate-pulse">Click to expand</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="keyword-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 h-auto">
-      {/* Title bar shows differently based on current view */}
-      <div className="w-full bg-primary/10 border-b border-primary/20 py-3 relative">
-        <HelpTooltip
-          title="Keyword Tips"
-          content="Select or search for an ultra-specific keyword to find games that include it. Check our curated selection to get inspired, and then use the search bar to find what you're looking for."
-          isExpanded={true}
-        />
-        <div className="flex items-center justify-center gap-3 relative">
-          <button 
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
-            onClick={() => {
-              if (activeSubcategory) {
-                setActiveSubcategory(null);
-              } else if (selectedMainCategory) {
-                setSelectedMainCategory(null);
-              } else {
-                // Add a class to trigger collapse animation
-                const section = document.querySelector('.keyword-section');
-                if (section) {
-                  section.classList.add('collapsing');
-                }
-                
-                // Wait for collapse animation to complete before collapsing
-                setTimeout(() => {
-                  setActiveSection('none');
-                }, 500); // Match this with the CSS animation duration
-              }
-            }}
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
-          </button>
-          
-          {activeSubcategory ? (
-            <h3 className="font-medium text-primary text-center text-xl flex items-center justify-center gap-2">
-              <span className="inline-flex items-center justify-center w-6 h-6 text-2xl">
-                {getSubcategoryEmoji(activeSubcategory)}
-              </span>
-              {activeSubcategory}
-            </h3>
-          ) : selectedMainCategory ? (
-            <h3 className="font-medium text-primary text-center text-xl flex items-center justify-center gap-2">
-              <span className="inline-flex items-center justify-center w-6 h-6">
-                {mainCategories.find(cat => cat.id === selectedMainCategory)?.icon}
-              </span>
-              {selectedMainCategory}
-            </h3>
-          ) : (
-            <>
-              <span className="text-2xl font-bold text-primary">1.</span>
-              <h2 className="text-xl font-extrabold text-primary tracking-wide">
-                Select A Keyword
-              </h2>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Search Bar - now appears in ALL views */}
-      <div className="w-full max-w-[500px] mx-auto px-4 mt-6 mb-0">
-        <KeywordSearch 
-          inputRef={searchInputRef} 
-          onKeywordSelect={() => {
-            // Add a class to trigger collapse animation
-            const section = document.querySelector('.keyword-section');
-            if (section) {
-              section.classList.add('collapsing');
-            }
-            
-            // Wait for collapse animation to complete before switching sections
-            setTimeout(() => {
-              setActiveSection('filters');
-              // Scroll to filter section on mobile
+    <div className="keyword-section w-full bg-card rounded-lg overflow-hidden transition-all duration-500 h-auto">
+      {/* Search Bar - always at top */}
+      <div className="w-full px-6 py-4 bg-primary/5 border-b border-primary/20">
+        <div className="max-w-2xl mx-auto">
+          <KeywordSearch
+            inputRef={searchInputRef}
+            onKeywordSelect={() => {
+              // Scroll to results section on mobile
               if (window.innerWidth < 1024) { // lg breakpoint
                 filterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
               }
-            }, 500); // Match this with the CSS animation duration
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
 
-      <div className="w-full max-w-[500px] mx-auto flex flex-col gap-4">
-        {!selectedMainCategory ? (
-          <>
-            <div className="pt-0 p-6 gap-4 max-w-xl mx-auto">
-              {mainCategories.map((cat, index) => (
-                <div 
+      {/* Main content area - two column layout on desktop */}
+      <div className="flex flex-col lg:flex-row">
+        {/* Left sidebar - Navigation breadcrumb (desktop only) */}
+        {(selectedMainCategory || activeSubcategory) && (
+          <div className="hidden lg:block w-64 border-r border-border p-4 bg-primary/5">
+            <div className="space-y-2">
+              {/* Show selected category */}
+              {selectedMainCategory && (
+                <div
+                  className="p-3 rounded-lg bg-primary/10 border border-primary/30 cursor-pointer hover:bg-primary/20 transition-colors"
+                  onClick={() => {
+                    setActiveSubcategory(null);
+                    setSelectedMainCategory(null);
+                  }}
+                >
+                  <div className="flex items-center gap-2 text-primary">
+                    <span className="text-xl">
+                      {mainCategories.find(cat => cat.id === selectedMainCategory)?.icon}
+                    </span>
+                    <span className="font-medium text-sm">{selectedMainCategory}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Show selected subcategory */}
+              {activeSubcategory && (
+                <div className="ml-4">
+                  <div
+                    className="p-3 rounded-lg bg-primary/20 border border-primary/50 cursor-pointer hover:bg-primary/30 transition-colors"
+                    onClick={() => setActiveSubcategory(null)}
+                  >
+                    <div className="flex items-center gap-2 text-primary">
+                      <span className="text-lg">{getSubcategoryEmoji(activeSubcategory)}</span>
+                      <span className="font-medium text-sm">{activeSubcategory}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Right content area */}
+        <div className="flex-1 p-6">
+          {!selectedMainCategory ? (
+            // Initial state - show all categories
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              {mainCategories.map((cat) => (
+                <div
                   key={cat.id}
-                  className={`mb-4 cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${
-                    selectedMainCategory && selectedMainCategory !== cat.id ? 'opacity-0 h-0 md:h-0 p-0 m-0 border-0 cursor-default' : 'category-enter'
-                  } ${!selectedMainCategory ? 'main-category-container' : ''} ${
-                    index === 2 ? 'col-span-2 md:col-span-1 md:col-start-2' : ''
-                  }`}
+                  className="cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
                   onClick={() => setSelectedMainCategory(cat.id)}
                 >
-                  <div className={`p-6 flex flex-col items-center ${cat.color} ${cat.hoverColor} group transition-all duration-300 relative hover:bg-primary`}>
+                  <div className={`p-6 flex flex-col items-center ${cat.color} ${cat.hoverColor} group transition-all duration-300 hover:bg-primary`}>
                     <div className="text-4xl mb-3 text-primary group-hover:text-white transition-colors">
                       {cat.icon}
                     </div>
-                    <h4 className="font-semibold text-xl mb-2 text-foreground group-hover:text-white transition-colors">{cat.title}</h4>
+                    <h4 className="font-semibold text-xl mb-2 text-foreground group-hover:text-white transition-colors text-center">{cat.title}</h4>
                     <p className="text-sm text-muted-foreground group-hover:text-white text-center transition-colors">{cat.description}</p>
                   </div>
                 </div>
               ))}
             </div>
-          </>
-        ) : (
-          <>
-            {!activeSubcategory ? (
-              <div className="mt-4 mb-6 category-enter max-w-xl mx-auto">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-2 filter-grid-enter">
-                  {getSubcategories(selectedMainCategory)
-                    .map((subCategoryName) => {
-                      const keywords = getKeywordsForSubcategory(subCategoryName);
-                      if (!Array.isArray(keywords) || keywords.length === 0) return null;
-                      
-                      const emoji = getSubcategoryEmoji(subCategoryName);
-                      const description =
-                      keywordCategories[selectedMainCategory as MainCategory]?.[subCategoryName]?.description || "No description available.";
-                      
-                      return (
-                        <Tooltip key={`tooltip-${subCategoryName}`} content={description}>
-                          <div 
-                            key={`subcategory-${subCategoryName}`}
-                            className="subcategory-card flex flex-col items-center rounded-lg p-3 text-sm font-medium cursor-pointer transition-all duration-200 bg-card w-full min-w-[120px] max-w-[160px] mx-auto hover:bg-accent/50"
-                            onClick={() => {
-                              setActiveSubcategory(subCategoryName);
-                            }}
-                          >
-                            <span className="emoji text-2xl mb-2">{emoji}</span>
-                            <span className="text-center w-full line-clamp-2">{subCategoryName}</span>
-                          </div>
-                        </Tooltip>
-                      );
-                    })}
-                </div>
+          ) : !activeSubcategory ? (
+            // Category selected - show subcategories
+            <>
+              {/* Mobile breadcrumb */}
+              <div className="lg:hidden mb-4">
+                <button
+                  onClick={() => setSelectedMainCategory(null)}
+                  className="flex items-center gap-2 text-primary hover:text-primary/80 text-sm"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>{selectedMainCategory}</span>
+                </button>
               </div>
-            ) : (
-              <div className="keyword-filters max-w-xl mx-auto">
+
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-4xl">
+                {getSubcategories(selectedMainCategory).map((subCategoryName) => {
+                  const keywords = getKeywordsForSubcategory(subCategoryName);
+                  if (!Array.isArray(keywords) || keywords.length === 0) return null;
+
+                  const emoji = getSubcategoryEmoji(subCategoryName);
+                  const description =
+                    keywordCategories[selectedMainCategory as MainCategory]?.[subCategoryName]?.description || "No description available.";
+
+                  return (
+                    <Tooltip key={`tooltip-${subCategoryName}`} content={description}>
+                      <div
+                        key={`subcategory-${subCategoryName}`}
+                        className="flex flex-col items-center rounded-lg p-4 text-sm font-medium cursor-pointer transition-all duration-200 bg-card hover:bg-primary/10 border border-border hover:border-primary/50"
+                        onClick={() => setActiveSubcategory(subCategoryName)}
+                      >
+                        <span className="text-3xl mb-2">{emoji}</span>
+                        <span className="text-center w-full line-clamp-2">{subCategoryName}</span>
+                      </div>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            // Subcategory selected - show keywords
+            <>
+              {/* Mobile breadcrumb */}
+              <div className="lg:hidden mb-4">
+                <button
+                  onClick={() => setActiveSubcategory(null)}
+                  className="flex items-center gap-2 text-primary hover:text-primary/80 text-sm"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>{activeSubcategory}</span>
+                </button>
+              </div>
+
+              <div className="max-w-4xl">
                 {getSubcategories(selectedMainCategory)
                   .filter(subCategoryName => subCategoryName === activeSubcategory)
                   .map((subCategoryName) => {
                     const keywords = getKeywordsForSubcategory(subCategoryName);
                     if (!Array.isArray(keywords) || keywords.length === 0) return null;
                     const description = keywordCategories[selectedMainCategory as MainCategory]?.[subCategoryName]?.description || "No description available.";
-                    
+
                     return (
-                      <div key={`subcategory-content-${subCategoryName}`} className="mb-8">
-                        <div className="bg-card border-border rounded-lg p-4 mb-4 subcategory-content-enter">
-                          <p className="text-sm text-muted-foreground mb-4">{description}</p>
-                          
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 filter-grid-enter">
-                            {keywords.map((keyword: KeywordItem) => (
-                              <div key={`keyword-${keyword.id}`} className="filter-card">
-                                <Filter
-                                  key={keyword.id}
-                                  label={keyword.name}
-                                  id={keyword.id}
-                                  category={category}
-                                  onClick={handleKeywordClick}
-                                />
-                              </div>
-                            ))}
-                          </div>
+                      <div key={`subcategory-content-${subCategoryName}`}>
+                        <p className="text-sm text-muted-foreground mb-4">{description}</p>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                          {keywords.map((keyword: KeywordItem) => (
+                            <div key={`keyword-${keyword.id}`}>
+                              <Filter
+                                key={keyword.id}
+                                label={keyword.name}
+                                id={keyword.id}
+                                category={category}
+                                onClick={handleKeywordClick}
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
                     );
-                  })
-                }
+                  })}
               </div>
-            )}
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

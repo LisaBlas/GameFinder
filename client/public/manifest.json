@@ -1,7 +1,7 @@
 {
   "name": "GameFinder - Smart Game Search",
   "short_name": "GameFinder",
-  "description": "Discover your next favorite game. Compare prices across Steam, Epic Games, GOG, Kinguin, G2A & more.",
+  "description": "Discover your next favorite game with ultra specific keywords",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1d29",

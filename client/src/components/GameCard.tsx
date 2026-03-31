@@ -420,23 +420,24 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle, onPopupOp
 
   return (
     <div
-      className={`game-card rounded-lg overflow-hidden transition-all duration-300 flex flex-col cursor-pointer aspect-[3/4] relative ${isExpanded ? 'expanded' : ''} ${hasBeenClicked ? 'clicked' : ''}`}
+      className={`game-card rounded-lg overflow-hidden transition-all duration-300 cursor-pointer relative ${isExpanded ? 'expanded flex flex-col' : 'flex flex-row min-h-[200px]'} ${hasBeenClicked ? 'clicked' : ''}`}
       onClick={handleClick}
     >
-      <div ref={topSectionRef} className={`relative transition-opacity duration-300 ${isExpanded ? 'opacity-0 h-0 pointer-events-none' : 'opacity-100 h-full'}`}>
+      {/* Collapsed state: Image on left */}
+      <div ref={topSectionRef} className={`relative transition-opacity duration-300 ${isExpanded ? 'opacity-0 h-0 w-0 pointer-events-none' : 'opacity-100 w-2/5 flex-shrink-0'}`}>
         <img
           src={imageUrl}
           alt={`${game.name}-game-cover-image`}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
           loading="lazy"
           decoding="async"
         />
         {rating && (
-          <div className="absolute top-2 right-2 text-white text-xs font-medium px-2 py-1 rounded-md">
+          <div className="absolute top-2 left-2 bg-black/70 text-white text-xs font-medium px-2 py-1 rounded-md">
             {rating.toFixed(1)} ⭐
           </div>
         )}
-        
+
         {/* Official Stores overlay on cover image */}
         {!isExpanded && (
           <div className="absolute bottom-2 right-2 flex gap-1 p-2 rounded-md">
@@ -513,9 +514,74 @@ const GameCard: React.FC<GameCardProps> = ({ game, expanded, onToggle, onPopupOp
           </div>
         )}
       </div>
-      
-      <div className={`p-4 flex-1 flex flex-col transition-all duration-300 ${isExpanded ? 'pt-4 overflow-y-auto custom-scrollbar' : ''}`}>
-        
+
+      <div className={`p-4 flex-1 flex flex-col transition-all duration-300 ${isExpanded ? 'pt-4 overflow-y-auto custom-scrollbar' : 'justify-between'}`}>
+        {/* Collapsed state: Content on right */}
+        {!isExpanded && (
+          <>
+            <div>
+              <h3 className="text-base font-semibold text-white mb-1 line-clamp-2">{game.name}</h3>
+              <div className="text-xs text-slate-400 mb-2">
+                {releaseYear}
+                {developerName && (
+                  <>
+                    {' • '}
+                    <span className="text-slate-300">{developerName}</span>
+                  </>
+                )}
+              </div>
+
+              {/* Keywords preview */}
+              {game.keywords && game.keywords.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {game.keywords.slice(0, 3).map((keyword) => (
+                    <span
+                      key={`keyword-preview-${keyword.id}`}
+                      className="px-2 py-0.5 text-xs rounded-md bg-amber-900/20 text-amber-200"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTagClick(keyword, 'Keywords', e);
+                      }}
+                    >
+                      {keyword.name.charAt(0).toUpperCase() + keyword.name.slice(1)}
+                    </span>
+                  ))}
+                  {game.keywords.length > 3 && (
+                    <span className="px-2 py-0.5 text-xs rounded-md bg-slate-700/50 text-slate-300">
+                      +{game.keywords.length - 3}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClick();
+                }}
+                className="flex-1 py-2 px-3 bg-slate-700/50 hover:bg-slate-600 text-white text-sm rounded-md transition-all duration-200 flex items-center justify-center gap-1"
+              >
+                <span>View Details</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClick();
+                  setTimeout(() => {
+                    setShowPricePopup(true);
+                    onPopupOpen?.();
+                  }, 100);
+                }}
+                className="flex-1 py-2 px-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-sm font-medium rounded-md transition-all duration-200"
+              >
+                Buy Now
+              </button>
+            </div>
+          </>
+        )}
 
         {isExpanded && isAfterExpandAnimation && (
           <>

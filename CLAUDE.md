@@ -45,6 +45,8 @@ All filter/keyword/result state flows from there.
 - Purple (`#8b5cf6`) is the primary accent — keep brand consistent
 - Keywords are curated with intent — do not reorder or auto-generate them
 - Do not add unnecessary dependencies
+- **No price fetching** — we don't have infrastructure to fetch real-time prices from affiliate sites
+- **Single keyword selection only** — IGDB API limitation (multi-select requires 2 calls + comparison, too slow)
 
 ## Competitive Context
 Main competitors: WhatOPlay, Boredgame.lol, GamesFinder.gg

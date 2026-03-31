@@ -8,12 +8,13 @@ import { HelpTooltip } from './HelpTooltip';
 
 interface FilterSidebarProps {
   expanded: boolean;
-  setActiveSection: (section: 'keywords' | 'filters' | 'none') => void;
+  setActiveSection?: (section: 'keywords' | 'filters' | 'none') => void;
   filterSectionRef: React.RefObject<HTMLDivElement>;
   heroRef: React.RefObject<HTMLDivElement>;
+  inResultsSection?: boolean; // Flag to indicate if this is in the results section
 }
 
-const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSection, filterSectionRef, heroRef }) => {
+const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSection, filterSectionRef, heroRef, inResultsSection = false }) => {
   const { searchGames, selectedFilters, isLoading, clearAllFilters, setCategoryExpanded } = useFilters();
 
   useEffect(() => {
@@ -22,11 +23,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
     }
   }, [expanded, setCategoryExpanded]);
 
-  if (!expanded) {
+  // Don't show collapsed state in results section
+  if (!expanded && !inResultsSection) {
     return (
       <div
         className={`
-          filter-section px-4 w-full bg-transparent rounded-lg overflow-hidden flex flex-col 
+          filter-section px-4 w-full bg-transparent rounded-lg overflow-hidden flex flex-col
           hover:items-center hover:border-primary/90 justify-center text-center py-10 cursor-pointer
           animate-[shadow-pulse_2s_ease-in-out_infinite]
           border-2 border-primary/20 animate-[border-pulse_2s_ease-in-out_infinite]
@@ -34,7 +36,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
           ${!expanded ? 'lg:mt-auto lg:mb-auto' : ''}
         `}
         onClick={() => {
-          setActiveSection('filters');
+          setActiveSection?.('filters');
           // Scroll to filter section on mobile, hero on desktop
           if (window.innerWidth < 1024) { // lg breakpoint
             filterSectionRef.current?.scrollIntoView({
@@ -82,25 +84,27 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
           isExpanded={true}
         />
         <div className="flex items-center justify-center gap-3 relative">
-          <button 
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
-            onClick={() => {
-              const section = document.querySelector('.filter-section');
-              if (section) {
-                section.classList.add('collapsing');
-              }
-              
-              setTimeout(() => {
-                setActiveSection('none');
-              }, 500);
-            }}
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
-          </button>
-          <span className="text-2xl font-bold text-primary">2.</span>
+          {!inResultsSection && (
+            <button
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
+              onClick={() => {
+                const section = document.querySelector('.filter-section');
+                if (section) {
+                  section.classList.add('collapsing');
+                }
+
+                setTimeout(() => {
+                  setActiveSection?.('none');
+                }, 500);
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </button>
+          )}
+          {!inResultsSection && <span className="text-2xl font-bold text-primary">2.</span>}
           <h2 className="text-xl font-extrabold text-primary tracking-wide">
-            Refine Your Search
+            {inResultsSection ? 'Refine Results' : 'Refine Your Search'}
           </h2>
         </div>
       </div>
