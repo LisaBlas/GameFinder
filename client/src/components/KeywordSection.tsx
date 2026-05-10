@@ -127,13 +127,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ filterSectionRef
     return (topKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
   };
 
-  // Add handler for keyword selection
-  const handleKeywordClick = () => {
-    // Scroll to results section
-    if (window.innerWidth < 1024) { // lg breakpoint
-      filterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  // No-op: scroll is handled by BottomBar Search after all keywords are selected
+  const handleKeywordClick = () => {};
 
   return (
     <div className="keyword-section w-full bg-card rounded-lg overflow-hidden transition-all duration-500 h-auto">
@@ -142,12 +137,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ filterSectionRef
         <div className="max-w-2xl mx-auto">
           <KeywordSearch
             inputRef={searchInputRef}
-            onKeywordSelect={() => {
-              // Scroll to results section on mobile
-              if (window.innerWidth < 1024) { // lg breakpoint
-                filterSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
+            onKeywordSelect={() => {}}
           />
         </div>
       </div>

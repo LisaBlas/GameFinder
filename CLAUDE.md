@@ -46,7 +46,7 @@ All filter/keyword/result state flows from there.
 - Keywords are curated with intent — do not reorder or auto-generate them
 - Do not add unnecessary dependencies
 - **No price fetching** — we don't have infrastructure to fetch real-time prices from affiliate sites
-- **Single keyword selection only** — IGDB API limitation (multi-select requires 2 calls + comparison, too slow)
+- **Single keyword selection only** — UX/product choice, not an API limitation. IGDB supports `where keywords = [id1, id2]` natively (AND filter, single call). Multi-keyword is feasible — see Design Goals.
 
 ## Competitive Context
 Main competitors: WhatOPlay, Boredgame.lol, GamesFinder.gg

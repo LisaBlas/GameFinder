@@ -91,7 +91,14 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         // Add the new platform filter
         return [...nonPlatformFilters, filter];
       }
-      
+
+      // For Keywords, allow multiple selections up to 3
+      if (filter.category === 'Keywords') {
+        const existingKeywords = prevFilters.filter(f => f.category === 'Keywords');
+        if (existingKeywords.length >= 3) return prevFilters;
+        return [...prevFilters, filter];
+      }
+
       // For other categories, maintain the existing logic
       // Check if any filter in the same category already exists
       const existingFilterIndex = prevFilters.findIndex(
