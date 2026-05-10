@@ -20,15 +20,25 @@ npm run db:seed      # seed database
 ```
 
 ## Architecture
-Single page layout:
+Split workspace layout (`pages/home.tsx`):
 ```
-Navbar
-AnimatedBackground
-Hero (headline + "how it works" toggle)
-  KeywordSection (left) | FilterSidebar (right)
-ResultsSection (game cards grid)
-BottomBar (sticky, appears after first interaction)
+Navbar (fixed, z-50)
+Mobile tab bar: Build | Results          ← local UI state only, lg:hidden
+┌─────────────────────┬──────────────────┐
+│ Build panel (lg:40%) │ Results (lg:60%) │
+│  KeywordSection      │  Sticky header   │
+│                     │  SearchResults   │
+└─────────────────────┴──────────────────┘
+ActionBar (shrink-0 flex child, not fixed): Clear | Search
 ```
+
+- Desktop: always two panels side by side
+- Mobile: tabs switch between Build and Results; Search auto-switches to Results tab
+- Results controls live in a sticky results header: result count, horizontal `FilterBar`, and sort select
+- `FilterSidebar` is no longer part of the active split layout
+- `SelectedFilters` (tag pills) live in the bottom action bar when filters are selected
+- `BottomBar` is now a simple docked action bar (no fixed positioning, no tag display)
+- `Hero` section removed from the layout
 
 State lives in `FilterContext` (`client/src/context/FilterContext.tsx`).
 All filter/keyword/result state flows from there.
@@ -46,7 +56,7 @@ All filter/keyword/result state flows from there.
 - Keywords are curated with intent — do not reorder or auto-generate them
 - Do not add unnecessary dependencies
 - **No price fetching** — we don't have infrastructure to fetch real-time prices from affiliate sites
-- **Single keyword selection only** — UX/product choice, not an API limitation. IGDB supports `where keywords = [id1, id2]` natively (AND filter, single call). Multi-keyword is feasible — see Design Goals.
+- **Max 3 keywords** — enforced in `FilterContext.addFilter()`. IGDB supports multi-keyword natively (AND filter, single call).
 
 ## Competitive Context
 Main competitors: WhatOPlay, Boredgame.lol, GamesFinder.gg

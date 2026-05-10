@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FilterCategory } from './FilterCategory';
 import { Filter } from './Filter';
 import filterData from '../lib/filters';
-import { SlidersHorizontal, Search, X, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useFilters } from '../context/FilterContext';
 import { HelpTooltip } from './HelpTooltip';
 
@@ -15,7 +15,7 @@ interface FilterSidebarProps {
 }
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSection, filterSectionRef, heroRef, inResultsSection = false }) => {
-  const { searchGames, selectedFilters, isLoading, clearAllFilters, setCategoryExpanded } = useFilters();
+  const { setCategoryExpanded } = useFilters();
 
   useEffect(() => {
     if (expanded) {
@@ -76,40 +76,37 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ expanded, setActiveSectio
   }
 
   return (
-    <div className="filter-section w-full bg-card rounded-lg overflow-hidden flex flex-col items-center justify-start text-center transition-all duration-500 h-auto">
-      <div className="w-full bg-primary/10 border-b border-primary/40 py-3 relative">
+    <div className="filter-section w-full flex flex-col items-center justify-start transition-all duration-500 h-auto">
+      <div className="w-full px-6 pt-5 pb-2 flex items-center gap-2 relative">
+        {!inResultsSection && (
+          <button
+            className="text-sm text-muted-foreground hover:text-foreground flex items-center mr-1"
+            onClick={() => {
+              const section = document.querySelector('.filter-section');
+              if (section) {
+                section.classList.add('collapsing');
+              }
+              setTimeout(() => {
+                setActiveSection?.('none');
+              }, 500);
+            }}
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back
+          </button>
+        )}
+        <span className="font-semibold text-xs tracking-widest uppercase text-muted-foreground">
+          {inResultsSection ? 'Refine Results' : 'Refine Your Search'}
+        </span>
+        <div className="flex-1 h-px bg-border" />
         <HelpTooltip
           title="Filter Tips"
           content="Careful not to use too many filters, as this may limit your results. Use this section to hide irrelevant games."
           isExpanded={true}
         />
-        <div className="flex items-center justify-center gap-3 relative">
-          {!inResultsSection && (
-            <button
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-primary hover:text-primary/80 flex items-center"
-              onClick={() => {
-                const section = document.querySelector('.filter-section');
-                if (section) {
-                  section.classList.add('collapsing');
-                }
-
-                setTimeout(() => {
-                  setActiveSection?.('none');
-                }, 500);
-              }}
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
-            </button>
-          )}
-          {!inResultsSection && <span className="text-2xl font-bold text-primary">2.</span>}
-          <h2 className="text-xl font-extrabold text-primary tracking-wide">
-            {inResultsSection ? 'Refine Results' : 'Refine Your Search'}
-          </h2>
-        </div>
       </div>
 
-      <div className="w-full max-w-[500px] mx-auto flex flex-col px-4 pb-24 mt-6 overflow-y-auto">
+      <div className="w-full max-w-[500px] mx-auto flex flex-col px-4 pb-6 mt-2 overflow-y-auto">
         <FilterCategory title="platforms">
           <div className="flex flex-wrap gap-2">
             {filterData.platforms.map(platform => (

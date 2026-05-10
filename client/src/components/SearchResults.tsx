@@ -4,10 +4,11 @@ import GameCard from './GameCard';
 import EmptyState from './EmptyState';
 import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
+import FilterBar from './FilterBar';
 import { FaInfoCircle } from 'react-icons/fa';
 
 const SearchResults: React.FC = () => {
-  const { gameResults, isLoading, error, sortBy, setSortBy, selectedFilters, hasMore } = useFilters();
+  const { gameResults, isLoading, error, sortBy, setSortBy, hasMore } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
 
@@ -63,22 +64,30 @@ const SearchResults: React.FC = () => {
     <section className="flex-1 w-full mx-auto">
       {/* Only show results header if we have results or have searched */}
       {hasSearched && (
-        <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <h2 className="text-2xl font-heading font-semibold text-white">
-            {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
-          </h2>
-          
-          <div className="flex items-center gap-2 text-sm text-slate-400">
-            <span>Sort by:</span>
-            <select 
-              className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              value={sortBy}
-              onChange={handleSortChange}
-            >
-              <option value="rating">Rating</option>
-              <option value="release">Release Date</option>
-              <option value="name">Name</option>
-            </select>
+        <div className="results-sticky-header">
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+            <h2 className="shrink-0 text-2xl font-heading font-semibold text-white">
+              {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
+            </h2>
+
+            <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-end">
+              <FilterBar />
+
+              <div className="results-sort-control">
+                <span>Sort</span>
+                <select
+                  className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  value={sortBy}
+                  onChange={handleSortChange}
+                  aria-label="Sort results"
+                >
+                  <option value="relevance">Relevance</option>
+                  <option value="rating">Rating</option>
+                  <option value="release">Release Date</option>
+                  <option value="name">Name</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       )}
