@@ -696,18 +696,10 @@ h3{
 
 .game-card {
   background: none;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   border: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
-}
-
-.game-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border: 2px solid #993df5;
 }
 
 .game-image {

@@ -4,10 +4,12 @@ import GameCard from './GameCard';
 import EmptyState from './EmptyState';
 import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
+import { FaInfoCircle } from 'react-icons/fa';
 
 const SearchResults: React.FC = () => {
   const { gameResults, isLoading, error, sortBy, setSortBy, selectedFilters, hasMore } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
+  const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
 
   // Update hasSearched when a search is performed
   useEffect(() => {
@@ -33,11 +35,18 @@ const SearchResults: React.FC = () => {
     if (gameResults.length > 0) {
       return (
         <>
+          <div className="mb-4 flex items-start gap-2 rounded-lg border border-slate-700/40 bg-slate-900/70 px-3 py-2 text-xs text-slate-400">
+            <FaInfoCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-slate-500" />
+            <span>We only list reputable sellers. Prices may vary; check seller ratings before purchase.</span>
+          </div>
+
           <div className="flex flex-col gap-4">
             {gameResults.map(game => (
               <GameCard
                 key={`game-${game.id}`}
                 game={game}
+                isSelected={selectedGameId === game.id}
+                onSelect={() => setSelectedGameId(current => current === game.id ? null : game.id)}
               />
             ))}
           </div>
