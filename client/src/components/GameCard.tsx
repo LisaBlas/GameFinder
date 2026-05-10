@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // Global analytics variable (if present)
 declare const gtag: any;
 import { SiAppstore, SiEpicgames, SiGogdotcom, SiGoogleplay, SiItchdotio, SiPlaystation, SiSteam } from 'react-icons/si';
@@ -182,8 +182,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
+  const [mediaHeight, setMediaHeight] = useState<number | null>(null);
+  const mediaRef = useRef<HTMLDivElement | null>(null);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
-  const { addFilter, isFilterSelected } = useFilters();
+  const { addFilter, isFilterSelected, selectedFilters } = useFilters();
 
   const imageUrl = game.cover?.url
     ? game.cover.url.replace('/t_thumb/', '/t_cover_big/')
@@ -224,6 +226,29 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
     fetchVideos();
   }, [game.id, hasLoadedVideos, isSelected]);
 
+  useEffect(() => {
+    if (!isSelected || !mediaRef.current) {
+      setMediaHeight(null);
+      return;
+    }
+
+    const mediaEl = mediaRef.current;
+    const updateMediaHeight = () => {
+      setMediaHeight(mediaEl.getBoundingClientRect().height);
+    };
+
+    updateMediaHeight();
+
+    const resizeObserver = new ResizeObserver(updateMediaHeight);
+    resizeObserver.observe(mediaEl);
+    window.addEventListener('resize', updateMediaHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateMediaHeight);
+    };
+  }, [isSelected]);
+
   const handleTagClick = (tag: { id: number; name: string }, category: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isFilterSelected(tag.id, category)) {
@@ -243,17 +268,29 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
     window.open(url, '_blank');
   };
 
-  const previewTags = [
-    ...(game.genres || []).slice(0, 2).map(t => ({ ...t, type: 'genre', category: 'genres' })),
-    ...(game.themes || []).slice(0, 2).map(t => ({ ...t, type: 'theme', category: 'themes' })),
-    ...(game.keywords || []).slice(0, 3).map(t => ({ ...t, type: 'keyword', category: 'Keywords' })),
-  ];
+  const selectedTagKeys = new Set(selectedFilters.map(f => `${f.category}-${f.id}`));
 
-  const expandedTags = [
-    ...(game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' })),
-    ...(game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' })),
-    ...(game.keywords || []).map(t => ({ ...t, type: 'keyword', category: 'Keywords' })),
-  ];
+  const selectedKeywords = (game.keywords || [])
+    .filter(t => selectedTagKeys.has(`Keywords-${t.id}`))
+    .map(t => ({ ...t, type: 'keyword', category: 'Keywords' }));
+
+  const previewTags = [
+    ...selectedKeywords,
+    ...[
+      ...(game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' })),
+      ...(game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' })),
+    ].sort((a, b) => {
+      const aSelected = selectedTagKeys.has(`${a.category}-${a.id}`) ? 1 : 0;
+      const bSelected = selectedTagKeys.has(`${b.category}-${b.id}`) ? 1 : 0;
+      return bSelected - aSelected;
+    }),
+  ].slice(0, 5);
+
+  const expandedTags = (game.keywords || []).map(t => ({ ...t, type: 'keyword', category: 'Keywords' })).sort((a, b) => {
+    const aSelected = selectedTagKeys.has(`Keywords-${a.id}`) ? 1 : 0;
+    const bSelected = selectedTagKeys.has(`Keywords-${b.id}`) ? 1 : 0;
+    return bSelected - aSelected;
+  });
 
   const filteredStores = (game.external_games || []).filter((store, index, self) => {
     if (!store.url) return false;
@@ -448,7 +485,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
               {isSelected && (
                 <div className="grid gap-4 pt-1">
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)]">
-                    <div className="aspect-video overflow-hidden rounded-lg bg-black">
+                    <div ref={mediaRef} className="aspect-video overflow-hidden rounded-lg bg-black">
                       {isVideoLoading && (
                         <div className="w-full h-full bg-slate-800 animate-pulse" />
                       )}
@@ -485,9 +522,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
                       )}
                     </div>
 
-                    <div className="rounded-lg border border-slate-700/40 bg-slate-950/45 p-4">
+                    <div
+                      className="flex min-h-0 flex-col rounded-lg border border-slate-700/40 bg-slate-950/45 p-4"
+                      style={mediaHeight ? { height: `${mediaHeight}px` } : undefined}
+                    >
                       <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Keywords and tags</h4>
-                      <div className="mt-3 max-h-[320px] overflow-y-auto pr-1">
+                      <div className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1">
                         {expandedTags.length > 0 ? (
                           <div className="flex flex-wrap gap-1.5">
                             {expandedTags.map(renderTagButton)}
