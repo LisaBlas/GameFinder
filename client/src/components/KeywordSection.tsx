@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Filter } from "./Filter";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
+import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
 import keywordCategories from "../assets/keyword-categories.json";
 import {
   ArrowLeft, Cog, Globe, Palette,
@@ -8,7 +9,7 @@ import {
   Coins, Sparkles, Wand2, LayoutGrid, Target, Trophy, Dices, Brain,
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
   Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
-  X, Search,
+  X, Search, ChevronDown, RotateCcw,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
@@ -49,6 +50,14 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory>("Mechanics & Systems");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+  const EXTENDED_PAGE_SIZE = 20;
+  const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
+  const [animBatchStart, setAnimBatchStart] = useState(0);
+
+  useEffect(() => {
+    setRevealedExtended([]);
+    setAnimBatchStart(0);
+  }, [activeSubcategory]);
 
   const selectMainCategory = (cat: MainCategory) => {
     setActiveMainCategory(cat);
@@ -113,6 +122,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   const getKeywordsForSubcategory = (subCategoryName: string): KeywordItem[] => {
     return (topKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
+  };
+
+  const getExtendedKeywordsForSubcategory = (subCategoryName: string): KeywordItem[] => {
+    return (extendedKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
   };
 
   const getSubcategoryParent = (subCategoryName: string): MainCategory | undefined =>
@@ -217,18 +230,46 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
           {renderCategorySelector()}
 
           {activeSubcategory ? (
-          /* Keywords view — mirrors category card structure */
+          /* Keywords view */
           (() => {
-            const keywords = getKeywordsForSubcategory(activeSubcategory);
+            const topKeywords = getKeywordsForSubcategory(activeSubcategory);
+            const extendedKeywords = getExtendedKeywordsForSubcategory(activeSubcategory);
+            const usedIds = new Set(revealedExtended.map(k => k.id));
+            const unseenExtended = extendedKeywords.filter(k => !usedIds.has(k.id));
+            const displayedKeywords = [...topKeywords, ...revealedExtended];
+            const totalKeywords = topKeywords.length + extendedKeywords.length;
+            const isModified = revealedExtended.length > 0;
+
             const mainCat = getSubcategoryParent(activeSubcategory);
             const description = mainCat
               ? (keywordCategories[mainCat] as unknown as Record<string, { description: string }>)[activeSubcategory]?.description
               : "No description available.";
+
+            const handleShowMore = () => {
+              const next = unseenExtended.slice(0, EXTENDED_PAGE_SIZE);
+              setAnimBatchStart(displayedKeywords.length);
+              setRevealedExtended(prev => [...prev, ...next]);
+            };
+
+            const handleRestore = () => {
+              setRevealedExtended([]);
+              setAnimBatchStart(0);
+            };
+
+            const moreAvailable = unseenExtended.length;
+
             return (
               <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-background/40">
-                  {/* Subcategory header — same structure as category card header */}
-                  <div className="flex items-start gap-4 border-b border-border bg-card p-5">
-                    <div className="shrink-0 mt-0.5 p-2.5 rounded-lg bg-primary/10">
+                  {/* Subcategory header */}
+                  <div className="flex items-center gap-4 border-b border-border bg-card p-5">
+                    <button
+                      onClick={() => setActiveSubcategory(null)}
+                      aria-label={`Back to ${getCategoryShortLabel(mainCat ?? activeMainCategory)}`}
+                      className="shrink-0 flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background/50 text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <div className="shrink-0 p-2.5 rounded-lg bg-primary/10">
                       {getSubcategoryIcon(activeSubcategory, "w-6 h-6 text-primary")}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -237,26 +278,44 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           {activeSubcategory}
                         </span>
                         <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">
-                          {keywords.length} keywords
+                          {displayedKeywords.length}{extendedKeywords.length > 0 ? ` of ${totalKeywords}` : ""} keywords
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
                     </div>
-                    <button
-                      onClick={() => setActiveSubcategory(null)}
-                      className="shrink-0 flex items-center gap-2 rounded-lg border border-border bg-background/50 px-3 py-2 text-sm font-medium text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      <span>Back to {getCategoryShortLabel(mainCat ?? activeMainCategory)}</span>
-                    </button>
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <Tooltip content={isModified ? "Restore initial list" : "Nothing to restore"}>
+                        <button
+                          onClick={handleRestore}
+                          disabled={!isModified}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background/50 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip content={moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more keywords"}>
+                        <button
+                          onClick={handleShowMore}
+                          disabled={moreAvailable === 0}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background/50 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+                      </Tooltip>
+                    </div>
                   </div>
-                  {/* Keywords — same contained area style */}
+                  {/* Keywords */}
                   <div className="flex-1 overflow-y-auto px-4 py-4">
                     <div className="keyword-inline-list">
-                      {keywords.map((keyword: KeywordItem) => (
-                        <div key={keyword.id} className="keyword-inline-item">
+                      {displayedKeywords.map((keyword: KeywordItem, i) => (
+                        <div
+                          key={keyword.id}
+                          className="keyword-inline-item"
+                          style={{ animationDelay: `${Math.min(Math.max(i - animBatchStart, 0) * 25, 400)}ms` }}
+                        >
                           <Filter
-                            label={keyword.name}
+                            label={keyword.name.replace(/\b\w/g, c => c.toUpperCase())}
                             id={keyword.id}
                             category={category}
                             onClick={() => {}}
