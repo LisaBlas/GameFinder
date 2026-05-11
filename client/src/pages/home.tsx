@@ -86,7 +86,7 @@ const HomeContent: React.FC = () => {
       </div>
 
       {/* Action bar — mobile only; desktop version lives inside the left panel */}
-      <div className="lg:hidden">
+      <div className="lg:hidden shrink-0">
         <BottomBar
           resetSections={() => {}}
           resultsSectionRef={resultsSectionRef}

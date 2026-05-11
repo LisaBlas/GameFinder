@@ -385,9 +385,9 @@
 
 .desktop-action-button-search-disabled {
   cursor: not-allowed;
-  border-color: rgba(100, 116, 139, 0.45);
-  background: rgba(100, 116, 139, 0.28);
-  color: rgba(226, 232, 240, 0.55);
+  border-color: rgba(245, 166, 20, 0.35);
+  background: rgba(245, 166, 20, 0.12);
+  color: rgba(245, 166, 20, 0.6);
   box-shadow: none;
 }
 
@@ -819,9 +819,9 @@
 
 .mobile-action-button-search-disabled {
   cursor: not-allowed;
-  border-color: rgba(100, 116, 139, 0.45);
-  background: rgba(100, 116, 139, 0.28);
-  color: rgba(226, 232, 240, 0.55);
+  border-color: rgba(245, 166, 20, 0.35);
+  background: rgba(245, 166, 20, 0.12);
+  color: rgba(245, 166, 20, 0.6);
   box-shadow: none;
 }
 
