@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Search } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Search, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFilters } from '../context/FilterContext';
 import { SelectedFilters } from './SelectedFilters';
 
@@ -12,9 +12,26 @@ interface BottomBarProps {
 const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef, onSearchSuccess }) => {
   const { clearAllFilters, searchGames, selectedFilters, isLoading } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
+  const [isExpanded, setIsExpanded] = useState(false);
+  const prevCountRef = useRef(selectedFilters.length);
+
+  useEffect(() => {
+    const prevCount = prevCountRef.current;
+    const currCount = selectedFilters.length;
+
+    if (currCount > 0 && prevCount === 0) {
+      setIsExpanded(true);
+    }
+    if (currCount === 0) {
+      setIsExpanded(false);
+    }
+
+    prevCountRef.current = currCount;
+  }, [selectedFilters.length]);
 
   const handleSearch = async () => {
     if (!hasSearchableFilters) return;
+    setIsExpanded(false);
     onSearchSuccess?.();
     await searchGames();
     resultsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -26,52 +43,85 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
     resetSections();
   };
 
+  const hasFilters = selectedFilters.length > 0;
+
+  const translateClass = !hasFilters
+    ? 'translate-y-full'
+    : isExpanded
+    ? 'translate-y-0'
+    : 'translate-y-[calc(100%-2.75rem)]';
+
   return (
     <div
-      className={`mobile-action-bar shrink-0 border-t transition-all duration-300 bg-background/90 backdrop-blur-sm ${
-        selectedFilters.length > 0
-          ? 'border-[#f5a614]/50 shadow-[0_-4px_20px_rgba(245,166,10,0.15)]'
-          : 'border-border'
-      }`}
+      className={`fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/95 backdrop-blur-sm
+        transition-transform duration-300 ease-in-out
+        ${translateClass}
+        ${hasFilters
+          ? 'border-t border-[#f5a614]/50 shadow-[0_-4px_20px_rgba(245,166,10,0.15)]'
+          : 'border-t border-border'
+        }
+      `}
     >
-      <div className="mobile-action-selection">
-        <SelectedFilters variant="lanes" />
-      </div>
+      {/* Handle bar */}
+      <button
+        onClick={() => hasFilters && setIsExpanded(prev => !prev)}
+        className="relative w-full h-11 flex items-center justify-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+        aria-label={isExpanded ? 'Collapse action bar' : 'Expand action bar'}
+      >
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-border/80" />
+        {isExpanded ? (
+          <ChevronDown className="w-4 h-4 mt-1" />
+        ) : (
+          <>
+            <span className="text-xs font-semibold mt-1 text-[#f5a614]/80">
+              {selectedFilters.length} selected
+            </span>
+            <ChevronUp className="w-4 h-4 mt-1 text-[#f5a614]/80" />
+          </>
+        )}
+      </button>
 
-      <div className="mobile-action-buttons">
-        <button
-          onClick={handleClearAll}
-          disabled={selectedFilters.length === 0}
-          className="mobile-action-button mobile-action-button-clear"
-        >
-          <X className="w-4 h-4" />
-          Clear
-        </button>
+      {/* Drawer content */}
+      <div className="mobile-action-bar" style={{ paddingTop: 0 }}>
+        <div className="mobile-action-selection">
+          <SelectedFilters variant="lanes" />
+        </div>
 
-        <button
-          onClick={handleSearch}
-          disabled={!hasSearchableFilters || isLoading}
-          className={`hero-button mobile-action-button mobile-action-button-search ${
-            hasSearchableFilters
-              ? 'mobile-action-button-search-active'
-              : 'mobile-action-button-search-disabled'
-          }`}
-        >
-          {isLoading ? (
-            <>
-              <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              Searching...
-            </>
-          ) : (
-            <>
-              <Search className="w-4 h-4" />
-              Search
-            </>
-          )}
-        </button>
+        <div className="mobile-action-buttons">
+          <button
+            onClick={handleClearAll}
+            disabled={selectedFilters.length === 0}
+            className="mobile-action-button mobile-action-button-clear"
+          >
+            <X className="w-4 h-4" />
+            Clear
+          </button>
+
+          <button
+            onClick={handleSearch}
+            disabled={!hasSearchableFilters || isLoading}
+            className={`hero-button mobile-action-button mobile-action-button-search ${
+              hasSearchableFilters
+                ? 'mobile-action-button-search-active'
+                : 'mobile-action-button-search-disabled'
+            }`}
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Searching...
+              </>
+            ) : (
+              <>
+                <Search className="w-4 h-4" />
+                Search
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

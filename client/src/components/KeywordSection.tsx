@@ -150,7 +150,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               flex-col items-center justify-center gap-1 px-2 py-3 text-center
               lg:flex-row lg:items-center lg:gap-2 lg:px-3 lg:text-left
               ${isActive
-                ? "border-primary/70 bg-primary/15 text-foreground shadow-[0_0_22px_rgba(139,92,246,0.12)]"
+                ? "border-primary/70 bg-primary/15 text-foreground shadow-[0_0_22px_rgba(16,185,129,0.12)]"
                 : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-foreground"
               }`}
           >
@@ -171,7 +171,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   return (
     <div className="keyword-section w-full h-full flex flex-col transition-all duration-500">
       {/* Desktop-only: title + tagline sticky header */}
-      <div className="hidden lg:flex flex-col justify-center sticky top-0 z-30 min-h-[4.75rem] border-b border-border bg-[rgba(14,18,30,0.94)] backdrop-blur-[14px] shadow-[0_12px_28px_rgba(0,0,0,0.24)] w-full px-6">
+      <div className="hidden lg:flex flex-col justify-center sticky top-0 z-30 min-h-[4.75rem] border-b border-border bg-[rgba(5,16,12,0.94)] backdrop-blur-[14px] shadow-[0_12px_28px_rgba(0,0,0,0.24)] w-full px-6">
         <div className="flex items-baseline gap-3">
           <h1 className="shrink-0 text-2xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
             Gamefinder

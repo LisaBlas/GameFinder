@@ -85,14 +85,12 @@ const HomeContent: React.FC = () => {
         </div>
       </div>
 
-      {/* Action bar — mobile only; desktop version lives inside the left panel */}
-      <div className="lg:hidden shrink-0">
-        <BottomBar
-          resetSections={() => {}}
-          resultsSectionRef={resultsSectionRef}
-          onSearchSuccess={() => setActiveTab('results')}
-        />
-      </div>
+      {/* Action bar — fixed bottom drawer on mobile; desktop version lives inside the left panel */}
+      <BottomBar
+        resetSections={() => {}}
+        resultsSectionRef={resultsSectionRef}
+        onSearchSuccess={() => setActiveTab('results')}
+      />
     </div>
   );
 };

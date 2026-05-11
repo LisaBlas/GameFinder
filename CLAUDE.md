@@ -8,7 +8,7 @@ Repo: https://github.com/LisaBlas/GameFinder
 ## Stack
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui (Radix), Framer Motion, wouter
 - **Backend:** Express + Drizzle ORM + Neon (Postgres)
-- **Styling:** Dark theme, purple primary (`#8b5cf6`), CSS vars + Tailwind tokens in `tailwind.config.ts`
+- **Styling:** Dark forest theme, emerald primary (`#10b981`), green-tinted `slate` scale + CSS vars/Tailwind tokens in `tailwind.config.ts`
 
 ## Key Commands
 ```bash
@@ -18,6 +18,8 @@ npm run start        # production
 npm run db:push      # push schema to Neon
 npm run db:seed      # seed database
 ```
+
+Windows gotcha: `npm run build` currently completes the Vite client build and esbuild server bundle, then fails at the final Unix `cp -r client/src/assets dist/` step. Use Git Bash/WSL for the full build or replace that copy step with a cross-platform command before relying on it locally.
 
 ## Architecture
 Split workspace layout (`pages/home.tsx`):
@@ -52,7 +54,7 @@ All filter/keyword/result state flows from there.
 ## Design Constraints
 - Mobile-first but desktop matters (search traffic comes from both)
 - Dark theme only — do not add light mode toggle
-- Purple (`#8b5cf6`) is the primary accent — keep brand consistent
+- Deep forest is the main neutral color system; emerald (`#10b981`) is the primary accent — keep brand consistent
 - Keywords are curated with intent — do not reorder or auto-generate them
 - Do not add unnecessary dependencies
 - **No price fetching** — we don't have infrastructure to fetch real-time prices from affiliate sites

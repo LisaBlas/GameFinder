@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 // Global analytics variable (if present)
 declare const gtag: any;
 import { SiAppstore, SiEpicgames, SiGogdotcom, SiGoogleplay, SiItchdotio, SiPlaystation, SiSteam } from 'react-icons/si';
-import { FaChevronDown, FaExternalLinkAlt, FaGamepad, FaGlobe, FaPlay, FaXbox } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGamepad, FaGlobe, FaPlay, FaXbox } from 'react-icons/fa';
 import { useFilters } from '../context/FilterContext';
 import EnebaIconImg from '../assets/icons/eneba.png';
 import G2AIconImg from '../assets/icons/g2a.png';
@@ -62,6 +62,7 @@ interface GameCardProps {
   game: Game;
   isSelected: boolean;
   onSelect: () => void;
+  fullscreen?: boolean;
 }
 
 const encodeGameTitle = (title: string): string => {
@@ -178,11 +179,12 @@ const useKinguinRedirect = (gameTitle: string) => {
   return { handleKinguinClick };
 };
 
-const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false }) => {
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
   const [mediaHeight, setMediaHeight] = useState<number | null>(null);
+  const [synopsisExpanded, setSynopsisExpanded] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
   const { addFilter, removeFilter, isFilterSelected, selectedFilters, keywordMode } = useFilters();
@@ -382,7 +384,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
 
   const renderTagButton = (tag: { id: number; name: string; type: string; category: string }) => {
     const isKeyword = tag.type === 'keyword';
-    const isPurple = tag.type === 'genre' || tag.type === 'theme';
+    const isEmerald = tag.type === 'genre' || tag.type === 'theme';
     const displayName = isKeyword
       ? tag.name.charAt(0).toUpperCase() + tag.name.slice(1)
       : tag.name;
@@ -408,10 +410,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
         key={`${tag.type}-${tag.id}-${tag.name}`}
         onClick={(e) => handleTagClick(tag, tag.category, e)}
         className={`inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${
-          isPurple
+          isEmerald
             ? isSelectedTag
-              ? 'bg-purple-500/30 text-purple-100 ring-2 ring-purple-400/50'
-              : 'bg-purple-900/20 text-purple-200 hover:bg-purple-800/30'
+              ? 'bg-emerald-500/30 text-emerald-100 ring-2 ring-emerald-400/50'
+              : 'bg-emerald-900/20 text-emerald-200 hover:bg-emerald-800/30'
             : keywordClass
         }`}
         title={isExcluded ? `Click to remove "${displayName}" exclusion` : keywordMode === 'exclude' ? `Click to exclude "${displayName}"` : `Click to add "${displayName}" to filters`}
@@ -423,15 +425,17 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
 
   return (
     <div className="relative group">
-      <div
-        className={`absolute inset-0 -z-10 scale-[1.08] transition-opacity duration-700 blur-2xl ${isSelected ? 'opacity-45' : 'opacity-20 group-hover:opacity-35'}`}
-        aria-hidden="true"
-      >
-        <img src={imageUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
-      </div>
+      {!fullscreen && (
+        <div
+          className={`absolute inset-0 -z-10 scale-[1.08] transition-opacity duration-700 blur-2xl ${isSelected ? 'opacity-45' : 'opacity-20 group-hover:opacity-35'}`}
+          aria-hidden="true"
+        >
+          <img src={imageUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+        </div>
+      )}
 
       <article
-        className={`game-card bg-slate-900/95 border transition-all duration-300 cursor-pointer ring-1 ring-inset ${
+        className={`game-card border transition-all duration-300 cursor-pointer ring-1 ring-inset ${fullscreen ? 'bg-slate-900' : 'bg-slate-900/95'} ${
           isSelected
             ? 'border-amber-400/45 ring-amber-300/20 shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
             : 'border-slate-600/35 ring-white/[0.045] shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:border-amber-300/35 hover:bg-slate-900 hover:ring-amber-200/12 hover:shadow-[0_0_0_1px_rgba(251,191,36,0.10),0_18px_55px_rgba(0,0,0,0.32)]'
@@ -473,8 +477,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
 
           <div className="flex-1 min-w-0 p-4 md:p-5">
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                <div className="min-w-0">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
                   <h3 className="text-xl font-bold text-white leading-tight">{game.name}</h3>
                   <div className="text-xs text-slate-400 mt-1">
                     {developerName && <span className="text-slate-300">{developerName}</span>}
@@ -483,18 +487,16 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {rating && (
-                    <div className="hidden sm:flex h-9 items-center rounded-lg bg-slate-800/80 px-3 text-sm font-semibold text-amber-200">
-                      {rating.toFixed(1)}
-                    </div>
-                  )}
-                </div>
-              </div>
+                {!isSelected && (
+                  <FaChevronRight className="mt-1 h-5 w-5 flex-shrink-0 text-amber-300/70 md:hidden" />
+                )}
 
-              <p className={`text-sm leading-relaxed text-slate-300 ${isSelected ? '' : 'line-clamp-2'}`}>
-                {synopsis}
-              </p>
+                {rating && (
+                  <div className="hidden sm:flex h-9 items-center rounded-lg bg-slate-800/80 px-3 text-sm font-semibold text-amber-200 flex-shrink-0">
+                    {rating.toFixed(1)}
+                  </div>
+                )}
+              </div>
 
               {previewTags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
@@ -502,12 +504,29 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
                 </div>
               )}
 
-              {!isSelected && (
-                <div className="flex items-center justify-between rounded-lg border border-slate-700/40 bg-slate-950/45 px-3 py-2 text-xs font-semibold text-slate-300 md:hidden">
-                  <span>Tap card for trailer, stores, and details</span>
-                  <FaChevronDown className="h-3 w-3 -rotate-90 text-amber-300" />
-                </div>
+              <div className="relative">
+                <p className={`text-sm leading-relaxed text-slate-300 ${isSelected && !synopsisExpanded ? 'line-clamp-3' : !isSelected ? 'line-clamp-2' : ''}`}>
+                  {synopsis}
+                </p>
+                {isSelected && !synopsisExpanded && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(true); }}
+                    className="absolute bottom-0 right-0 pl-8 text-xs text-emerald-400 hover:text-emerald-300"
+                    style={{ background: 'linear-gradient(to right, transparent, #0b211b 40%)' }}
+                  >
+                    Read more
+                  </button>
+                )}
+              </div>
+              {isSelected && synopsisExpanded && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(false); }}
+                  className="text-xs text-emerald-400 hover:text-emerald-300"
+                >
+                  Read less
+                </button>
               )}
+
 
               {isSelected && (
                 <div className="grid gap-4 pt-1">

@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(to bottom, #030407, #0a0b14);
+  background: linear-gradient(to bottom, #020705, #06130f);
   overflow: hidden;
   z-index: -1;
 }
@@ -22,9 +22,9 @@
 }
 
 /* Particle variants */
-.particle.purple {
-  background: rgba(147, 51, 234, 0.9);
-  box-shadow: 0 0 4px rgba(147, 51, 234, 0.4);
+.particle.emerald {
+  background: rgba(16, 185, 129, 0.9);
+  box-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
 }
 
 .particle.large {
@@ -36,8 +36,8 @@
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
 
-.particle.purple.shiny {
-  box-shadow: 0 0 8px rgba(147, 51, 234, 0.8);
+.particle.emerald.shiny {
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
 }
 
 /* Different drift patterns */

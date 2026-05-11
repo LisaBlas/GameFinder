@@ -150,7 +150,7 @@ Complete redesign of GameFinder's user flow to reduce steps to conversion from *
 
 ✅ **No price fetching** - Infrastructure not available
 ✅ **Single keyword selection** - IGDB API limitation
-✅ **Dark theme only** - Purple primary maintained
+✅ **Dark theme only** - Deep forest / emerald primary maintained
 ✅ **Curated keywords** - Order preserved
 
 ---

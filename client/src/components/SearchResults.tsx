@@ -5,7 +5,8 @@ import EmptyState from './EmptyState';
 import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
 import FilterBar from './FilterBar';
-import { FaInfoCircle } from 'react-icons/fa';
+import MobileFilterSheet from './MobileFilterSheet';
+import { FaInfoCircle, FaTimes } from 'react-icons/fa';
 
 const SearchResults: React.FC = () => {
   const { gameResults, isLoading, error, sortBy, setSortBy, hasMore } = useFilters();
@@ -18,6 +19,17 @@ const SearchResults: React.FC = () => {
       setHasSearched(true);
     }
   }, [isLoading]);
+
+  const selectedGame = gameResults.find(g => g.id === selectedGameId) ?? null;
+
+  useEffect(() => {
+    if (selectedGameId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedGameId]);
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
@@ -61,18 +73,41 @@ const SearchResults: React.FC = () => {
   };
 
   return (
+    <>
+    {selectedGame && (
+      <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-slate-950 lg:hidden">
+        <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-800 bg-slate-950/95 px-4 py-3 backdrop-blur">
+          <button
+            onClick={() => setSelectedGameId(null)}
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white"
+            aria-label="Close"
+          >
+            <FaTimes className="h-4 w-4" />
+          </button>
+          <h2 className="truncate text-sm font-semibold text-white">{selectedGame.name}</h2>
+        </div>
+        <div className="p-3">
+          <GameCard
+            game={selectedGame}
+            isSelected={true}
+            fullscreen={true}
+            onSelect={() => setSelectedGameId(null)}
+          />
+        </div>
+      </div>
+    )}
     <section className="flex-1 w-full mx-auto">
       <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'}`}>
-        <div className="flex min-h-full flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-          <h2 className="shrink-0 text-2xl font-heading font-semibold text-white">
+        <div className="flex w-full items-center justify-end lg:justify-between gap-3">
+          <h2 className="hidden lg:block shrink-0 text-2xl font-heading font-semibold text-white">
             {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
           </h2>
 
-          <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-end">
-            <FilterBar />
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="lg:hidden"><MobileFilterSheet /></span>
+            <span className="hidden lg:contents"><FilterBar /></span>
 
             <div className="results-sort-control">
-              <span>Sort</span>
               <select
                 className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 value={sortBy}
@@ -97,6 +132,7 @@ const SearchResults: React.FC = () => {
       
       {renderContent()}
     </section>
+    </>
   );
 };
 

@@ -26,8 +26,8 @@ const AnimatedBackground: React.FC = () => {
       particle.style.animationName = animations[Math.floor(Math.random() * animations.length)];
       
       // Randomly assign variants
-      if (Math.random() < 0.3) { // 30% chance of being purple
-        particle.classList.add('purple');
+      if (Math.random() < 0.3) { // 30% chance of being emerald
+        particle.classList.add('emerald');
       }
       
       if (Math.random() < 0.2) { // 20% chance of being large
