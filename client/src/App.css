@@ -370,17 +370,17 @@
 
 .desktop-action-button-search {
   min-width: 7.25rem;
-  border: 1px solid rgba(139, 92, 246, 0.55);
+  border: 1px solid rgba(245, 166, 20, 0.55);
   color: #ffffff;
 }
 
 .desktop-action-button-search-active {
-  background: #7c3aed;
-  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.28);
+  background: #d97706;
+  box-shadow: 0 8px 22px rgba(245, 166, 20, 0.28);
 }
 
 .desktop-action-button-search-active:hover {
-  background: #8b5cf6;
+  background: #f5a614;
 }
 
 .desktop-action-button-search-disabled {
@@ -808,13 +808,17 @@
 }
 
 .mobile-action-button-search {
-  border: 1px solid rgba(139, 92, 246, 0.55);
+  border: 1px solid rgba(245, 166, 20, 0.55);
   color: #ffffff;
 }
 
 .mobile-action-button-search-active {
-  background: #7c3aed;
-  box-shadow: 0 8px 22px rgba(124, 58, 237, 0.24);
+  background: #d97706;
+  box-shadow: 0 8px 22px rgba(245, 166, 20, 0.24);
+}
+
+.mobile-action-button-search-active:hover {
+  background: #f5a614;
 }
 
 .mobile-action-button-search-disabled {
