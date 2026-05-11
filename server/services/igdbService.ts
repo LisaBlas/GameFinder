@@ -144,7 +144,7 @@ export class IGDBService {
   /**
    * Search games based on provided filters
    */
-  async searchGames(filters: any, sortOption: string = 'relevance', page: number = 1, excludeIds: number[] = []) {
+  async searchGames(filters: any, sortOption: string = 'relevance', page: number = 1, excludeIds: number[] = [], excludeKeywords: number[] = []) {
     try {
       console.log('[igdbService] Starting search:', { 
         page, 
@@ -198,8 +198,11 @@ export class IGDBService {
         });
       }
 
+      // Note: IGDB's != on array fields does not mean "not contains", so keyword
+      // exclusion is enforced via post-filtering below instead.
+
       // Convert filter conditions to where clause
-      let whereClause = filterConditions.length > 0 
+      let whereClause = filterConditions.length > 0
         ? filterConditions.join(' & ') + excludeClause
         : 'id != null' + excludeClause;
 
@@ -245,8 +248,15 @@ export class IGDBService {
         }
       }
 
+      // Post-filter: remove games that have any excluded keyword
+      const filteredGames = excludeKeywords.length > 0
+        ? games.filter((game: Game) =>
+            !game.keywords?.some(kw => excludeKeywords.includes(kw.id))
+          )
+        : games;
+
       // Process and return the results
-      const processedGames = games.map((game: Game) => {
+      const processedGames = filteredGames.map((game: Game) => {
         const matchedFilterIds: number[] = [];
         
         Object.entries(filters).forEach(([category, values]) => {

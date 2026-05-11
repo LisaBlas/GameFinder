@@ -43,6 +43,7 @@ export const Filter: React.FC<FilterProps> = ({
     addFilter, 
     removeFilter, 
     isFilterSelected,
+    keywordMode,
     setFilterExpanded,
     isFilterExpanded,
     setCategoryExpanded
@@ -53,6 +54,10 @@ export const Filter: React.FC<FilterProps> = ({
 
   // Check if this specific filter is selected using the full composite identity
   const isSelected = isFilterSelected(id, category, endpoint);
+  const selectedFilter = selectedFilters.find(
+    filter => filter.id === id && filter.category === category && filter.endpoint === endpoint
+  );
+  const selectedKeywordMode = selectedFilter?.mode || "include";
 
   // Check if any direct children of this filter are selected
   const hasSelectedChildren = kids && kids.some(kid => 
@@ -73,13 +78,17 @@ export const Filter: React.FC<FilterProps> = ({
     let filterWasSelected = false;
     // Toggle filter selection
     if (id && id !== 'null') {
-      if (!isSelected) {
+      const shouldSwitchKeywordMode =
+        category === "Keywords" && isSelected && selectedKeywordMode !== keywordMode;
+
+      if (!isSelected || shouldSwitchKeywordMode) {
         // For parent filters with isParentOnly flag, just toggle expansion without adding to filters
         if (!isParentOnly) {
           addFilter({
             id,
             name: label,
             category,
+            mode: category === "Keywords" ? keywordMode : undefined,
             slug,
             endpoint,
             compositeId,
@@ -124,7 +133,7 @@ export const Filter: React.FC<FilterProps> = ({
   return (
     <>
       <div
-        className={`filter-pill${isSelected ? " selected animate-blink" : ""}${isKid ? " kid" : ""}${(hasChildren || isParentOnly) ? " parent" : ""}${expanded ? " expanded" : ""}`}
+        className={`filter-pill${isSelected ? " selected animate-blink" : ""}${category === "Keywords" && isSelected ? ` keyword-${selectedKeywordMode}` : ""}${category === "Keywords" ? ` ${keywordMode}-hover-mode` : ""}${isKid ? " kid" : ""}${(hasChildren || isParentOnly) ? " parent" : ""}${expanded ? " expanded" : ""}`}
         onClick={handleClick}
         data-composite-id={compositeId}
       >

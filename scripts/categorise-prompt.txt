@@ -1,0 +1,3693 @@
+You are categorising video game keywords for a game discovery app.
+
+Available subcategories:
+Time Periods, Sports, Movement, Structure, Shooters, Combat Systems, Challenges, Art Styles, Visual Themes, RPGs, Progression, Locations, Atmosphere, Environmental Features, Historical Events, Puzzles, Entertainment Franchises, Cultural Elements, Vehicles & Transportation, Setting Conditions, Internet Culture, Economy Value, Controls, Simulation, Narrative Tone, Sound Design, Combat Styles, Strategy
+
+Rules:
+- Respond with exactly one line per keyword: ID|subcategory
+- Use "skip" for: proper nouns (game titles, character names, company names, event names like "e3 2012"), platform-specific terms, or anything too specific to help a player discover a game by theme or mechanic.
+- Every keyword must have a response line, in the same order as the input.
+
+Keywords (format: ID|name|game count):
+66|simulated reality
+39692|xavix port
+37807|angle
+37816|vt09
+1937|otome
+37872|vt03
+37873|vt02
+37943|bloons
+3918|ogres
+44869|pang
+1280|reviewed by avgn
+7379|goose
+38015|graphite lab
+37815|vtxx
+39292|launching game
+37871|zuma clone
+1888|controversial
+12105|best performance: winner - 2017 (the game awards)
+12225|region locked
+43999|nintendo 64 transfer pak
+669|frog
+6105|psn play
+38682|brick game
+8853|roman numerals
+47258|lsdjam 2020
+1181|fairy
+47259|lsdjam 2024
+37811|lost descendants
+2069|pizza
+170|time travel
+37946|tenno
+37821|vt3xx
+37929|suvivorslike
+3087|one-man army
+42237|grail
+37928|ibm
+40203|habblet
+4804|tag teaming
+249|pikachu
+9544|milkshake
+1849|business simulation
+2165|yoshi
+7115|united states army
+7335|anarchism
+42126|janitor
+5450|digital rights management
+37934|shinobi
+37949|china exclusive
+39712|cloud strife
+10626|hunters
+10516|jester
+39709|cloud gaming
+37881|game for cat
+12377|.45 defender
+6385|fan service
+5669|youtube integration
+30472|nintendo vs. system
+41913|pop station
+13119|e3 1999
+47493|nokia 3310 jam 6
+46528|diecast
+7112|dream sequence
+3701|monopoly
+13574|tokyo game show 2008
+37838|ayane
+6055|beetle
+38693|game jaaj 6
+37857|will
+4241|students
+35195|vtech vreader
+39715|hot dog
+6732|zombie protagonist
+4261|pre-release public testing
+38288|old mobile games
+39714|cloud computing
+4170|monkey
+38692|game jaaj 3
+7458|battle.net
+4475|eyetoy support
+37837|kasumi
+23115|crowdfunding - modian
+38161|337
+4615|profanity
+3116|tag
+1567|japan
+38697|monster train
+38165|prelude
+37840|nhl rom hack
+11214|yoga
+13941|interactive achievement awards 2009
+925|bruce lee
+45451|c128 enhanced
+7355|anti-villain
+8356|clefable
+14574|symbology
+1512|playstation 2
+7530|phoenix
+5560|multiplayer scoreboard
+2620|google cardboard
+5963|plot twist
+45850|amiga ocs
+37961|hotline-miami
+5633|xbox one backwards compatibility
+2730|3v3
+5671|hotkey
+46122|game off 2024
+46462|unity3d
+37841|unofficial update
+38710|mice
+40223|fan translation - french
+42066|sushi
+6214|day one patch
+38355|3539
+4477|cameo appearance
+7739|seadra
+12462|e3 2010
+13465|e3 1995
+24576|energetic heroine
+6048|one-handed gameplay
+4192|robot dog
+38197|knowledge
+43658|randnet
+37852|reverse engineering
+7742|rhyhorn
+37853|mit license
+43785|prototype
+37855|bocchi the rock
+39740|elon musk
+23130|j2me
+4933|wii nunchuk support on wii u
+12311|spike video game awards 2011
+38935|cidades habitaveis
+38936|gmtk game jam 2019
+41380|sharp mz-700
+7417|indie royale
+23428|promotional tie in
+38712|greed
+5844|western games based on japanese ips
+8849|nobilitease
+37851|decompilation
+9853|professional gaming
+38934|geleiabilidade
+38205|sponsored by a magazine
+31253|foddian
+7152|crow
+25311|crowdfunding - indiegogo
+39746|troll hack
+11281|tragic villain
+37861|steam deck
+37858|wisps
+11680|phantom
+40233|atarisoft
+11704|journey
+10167|framing
+16891|definitive edition
+4960|octopus
+2048|disability
+6188|club nintendo
+46124|megahits
+45008|bag
+13967|reideen
+15070|game developers choice awards 2001
+13110|e3 2004
+5175|female antagonist
+38208|18780
+37865|drag
+37866|chi bi
+13121|e3 1997
+37867|gb-studio
+38726|codes
+1935|dog
+32424|games released for unsupported platforms
+5460|game developers choice awards 2016
+10740|gamecube
+11479|summer of arcade 2012
+11549|games for windows - live
+9076|sega naomi
+38081|pengo
+1447|dos
+44876|trijam
+13036|tokyo game show 2009
+42240|couch gaming
+4580|wasd movement
+38290|undertale mod
+1431|wildlife
+38739|ctrl alt jam
+47494|nokia 3310 jam 7
+42209|muscle
+40259|aftermarket release
+5466|terrorists
+41583|siblings
+39843|spooktober
+40874|autism
+35996|cancelled sega genesis port
+13047|neutral
+38096|toad
+13209|spike video game awards 2009
+23868|ludum dare 42
+575|robots
+44877|trijam 215
+47264|scpsf
+4931|wii u pro controller support
+9071|steelbook
+37110|satellaview write-protected memory pack
+38098|polytope
+1322|mutants
+39372|marbles
+5485|rebels
+41476|language
+6505|full game unlock
+525|lord of the rings
+953|mythology
+38976|vn cup
+14|super hero
+15076|the game awards 2014
+96|orcs
+39118|nonbinary
+23233|crowdfunding - fig
+8247|released between christmas and new year's day
+1094|dupe
+5481|communism
+847|eroge
+736|abandonware
+4142|licensed game
+858|amiga
+1096|nordic mythology
+3222|trolls
+9052|sega naomi 2
+38107|domestic violence
+6235|agents
+38416|amare
+5596|jellyfish
+3548|guest character
+1590|kinetic novel
+2807|memes
+1834|camera
+889|gangs
+2056|pop culture
+2147|otaku
+37598|artist hero
+5686|elementals
+6860|firefighter
+41120|missiles
+8981|disfigurement
+38115|english not supported
+40283|holostars
+5357|galactic civil war
+7286|musicians
+22873|kickstarter unsuccessful
+5327|pax east 2014
+43343|raccoon
+3892|hitman
+5416|christian themes
+10502|bafta games award
+5574|tokyo game show 2013
+4761|snail
+6782|virtual joystick
+4974|male antagonist
+8983|tragic hero
+42004|pc only
+44879|gmtk game jam 2024
+38771|e3 2018
+17118|memories
+1392|dungeon management
+41386|symbian
+41466|suika
+41755|poop
+3934|spider-man
+7104|nazi zombies
+4559|go
+5514|addiction
+3322|society management
+5575|playstation now
+588|androids
+9840|blockbuster exclusive release
+9223|lost in translation
+4240|playstation mobile
+6248|animal cruelty
+39006|the game awards - best action game - winner
+12707|ad-chievements
+39008|the game awards - best action-adventure game - winner
+11512|pawapurokun
+44753|regional censorship
+12710|promo vhs
+39009|the game awards - best art direction - nominee
+39011|the game awards - best audio design - nominee
+39017|the game awards - best esports game - nominee
+12042|contest-driven development
+44888|ai-generated marketing
+4275|steam workshop
+3001|crowdfunding
+5397|cross culture language skills
+38435|crowdfunding - catarse
+41523|snake colors
+6846|journalist
+41139|crowdfunding - ci-en
+46130|remix it jam 2023
+5604|starfish
+2002|economy
+39010|the game awards - best art direction - winner
+39023|the game awards - most anticipated game - nominee
+845|werewolf
+39012|the game awards - best audio design - winner
+39013|the game awards - best chinese game - nominee
+39014|the game awards - best chinese game - winner
+39015|the game awards - best debut indie game - nominee
+39018|the game awards - best esports game - winner
+39019|the game awards - best family game - nominee
+39020|the game awards - best family game - winner
+39021|the game awards - best fighting game - nominee
+39022|the game awards - best fighting game - winner
+39024|the game awards - best game direction - nominee
+39025|the game awards - best game direction - winner
+39027|the game awards - best handheld game - winner
+1065|dragon
+158|psychological exploration
+39211|3723
+7096|satanism
+39031|the game awards - best mobile game - winner
+39032|the game awards - best multiplayer game - nominee
+39033|the game awards - best multiplayer game - winner
+39034|the game awards - best narrative - nominee
+39035|the game awards - best narrative - winner
+39036|the game awards - best ongoing game - nominee
+39037|the game awards - best ongoing game - winner
+39038|the game awards - best performance - nominee
+39039|the game awards - best performance - winner
+39040|the game awards - best roleplaying game - nominee
+39041|the game awards - best roleplaying game - winner
+39043|the game awards - best strategy game - winner
+27304|abuse
+7351|sociopathy
+39028|the game awards - best independent game - nominee
+24606|never re-released
+39044|the game awards - best vr game - winner
+39045|the game awards - games for impact - winner
+39427|120fps
+5720|igf awards
+4932|wii remote support on wii u
+18989|tribute
+5211|fuel management
+8237|chameleon
+428|mercenaries
+5189|musical peripherals
+5195|asymmetric co-op
+5210|liberation
+4938|lego bricks
+9452|masochism
+5317|gamescom 2014
+4455|hedgehog
+4469|alliance
+39030|the game awards - best mobile game - nominee
+39042|the game awards - best strategy game - nominee
+1143|diplomacy
+7163|demon hunter
+6232|collector's edition
+39046|the game awards - game of the year - winner
+39047|the game awards - best vr game - nominee
+14076|the game awards - best music or sound design - nominee
+46629|mini jam
+9568|toy soldier
+39048|the game awards - games for impact - nominee
+2004|unofficial
+902|rabbit
+39049|the game awards - game of the year - nominee
+39050|the game awards - world premiere
+14056|best fighting game: nominee - 2016 (the game awards)
+1898|easter egg
+8362|parasect
+41555|fandub - brazilian portuguese
+41556|father and son relationship
+12709|novaworld
+2827|school life
+3097|dlc content
+43185|clap clap
+46207|touch generations
+98|monsters
+12708|backwards compatibility
+732|ufo
+87|dinosaurs
+4813|based on - brand
+1892|vocaloid
+46630|mini jam 52 - summit
+44892|global game jam 2023
+1538|based on - book
+10176|fisherman
+39447|wine
+4541|original soundtrack release
+12824|new xbox experience
+1607|base management
+5294|stock exchange
+5480|atheism
+4492|non-humanoid protagonist
+3533|city builder
+41025|ibm 7090
+1629|narration
+46541|sega club
+46631|mini jam 54 - memories
+6096|rivalry
+5744|day one dlc
+17085|ludum dare 41
+7100|nazi occultism
+5150|wilhelm scream
+2743|betting
+40887|al unser jr
+47456|indie games
+5|zombies
+41559|adult content
+39071|quick play 2022
+5152|removed from eshop
+5164|self-referential humor
+5170|parrot
+13109|e3 2005
+4679|all-girl fighting roster
+24|space combat
+41384|sharp zaurus
+14101|nintendo super system
+39464|ludum dare 53
+39267|scrabble
+5307|political thriller
+5328|playstation tv support
+5399|shinto
+12448|game feast 2010
+14114|color cartridges
+39471|super famicom box
+45223|jeff the killer
+42663|monster
+666|shogi
+4686|polar bear
+1756|snake
+39885|lps
+46632|gbjam 8
+39283|sourcemod
+4271|professional wrestler
+175|demon
+47695|z1br
+4007|power glove
+33125|keychain electronic game
+11025|games advertising games
+4618|pregnancy
+606|resource management
+38847|thermodynamics
+9328|dark past
+44897|grimoire
+2493|steam greenlight
+8589|solgaleo
+10540|stall
+10094|tiger shark
+38519|warship fury
+17602|gems
+12365|ea gun club
+6383|cross-dressing
+6471|women in refrigerators syndrome
+8780|crude renditions of real people
+1868|enhanced version
+3899|multiplayer dlc
+5014|toy compatibility
+11030|direct continuation
+2032|ghost hunter
+1033|action-adventure
+6036|voice chat
+1068|skeleton
+11107|license hell
+789|doctor
+38526|forbidden love
+11629|video mode
+37941|squarepantis
+5498|presidential protagonist
+13928|fate
+1625|native americans
+9269|pax south 2015
+4247|pig
+46137|primals
+7589|pax australia 2013
+4692|leopard
+4398|breaking the fourth wall
+38856|decoration
+5278|commentary
+4349|broken english
+39495|language learning - japanese
+7569|archeology
+4693|panther
+8748|buffalo bills
+976|gardening
+13068|pax 2009
+5200|gamescom 2016
+4224|e3 2017
+4231|zebra
+11447|box art - half of face displayed
+47693|fmtc
+47694|h1z1
+11643|cheetah
+10435|renderware
+13118|e3 2001
+8932|lunatic
+45873|cowgirls
+33313|touhou fangame
+38876|mannequins
+14003|humiliation
+7688|prince
+1113|mature
+14022|source port
+13120|e3 1998
+1677|local multiplayer
+30008|friday night funkin mod
+38545|utility
+8269|female wrestler
+13491|e3 1996
+3823|expansion pass
+13341|prommercial
+391|movie games
+10564|rumble cartridge
+4404|goblins
+14506|d20
+38589|language learning - german
+3803|magical girl
+4019|vhs
+2183|student project
+7007|pinball machine
+2098|lucha libre
+5531|vampire hunter
+4726|playstation plus
+4836|robot protagonist
+19259|board
+38894|john tiller wds
+7229|game developers choice awards 2014
+5938|dimension travel
+39524|capcom five
+44900|ludum dare 56
+38547|taiwan exclusive
+1675|revenge
+4725|young protagonist
+11750|interactive achievement awards 2012
+8844|tomboy
+47696|kotk
+4292|gorilla
+10476|no longer banned
+6500|health warnings
+511|breeding
+3730|hero
+11768|tokyo game show 2011
+26044|april fools
+2097|reboot
+43190|upcoming
+6233|frankenstein's monster
+7243|wiggler
+9254|goths
+2125|love story
+1061|giant monsters
+6129|sideways wii remote gameplay
+39942|lore rich
+1256|family curse
+591|self-discovery
+4290|scatological humor
+5690|banshee
+10546|danger zone
+42780|something about
+38900|commons
+18950|agent 47
+4373|plumber
+1381|princess
+2392|online multiplayer
+36830|windows pre-installed games
+19872|spy game
+2415|bats
+4550|emulation
+38555|you play as the villain
+47454|yandere simulator
+42729|clothing
+38897|mascot platformer
+9973|off-camera death
+42115|clones
+214|politics
+41988|exports
+6859|giant squid
+39960|masashi tashiro
+962|female protagonist
+39959|tokoro george
+5288|yeti
+42116|traffic
+7475|elevator ambush
+4664|pax east indie showcase
+15359|mûmakil
+3559|lemmings
+9755|demonic protagonist
+2871|fig funded
+2957|chef
+43003|v-cast
+2052|singing
+7161|barbarians
+5255|unreliable narrator
+15609|austrian grand prix
+44036|java
+4890|xbox live
+11069|platoon
+16875|based on - board game
+5731|clone
+10756|animal weaponry
+4917|pocketstation support
+41989|international trade
+43921|airsoft
+5814|onlive
+818|virtual pet
+4282|60 fps on consoles
+27308|boomer shooter
+5379|pax prime 2015
+1405|shareware
+8581|fletchinder
+1946|store management
+20203|wrestling game
+23124|obscure
+42086|sokoban-like
+23097|bunny
+42730|design
+15311|sega vco object
+7314|cockroach
+5333|head tracking
+19385|ps2 classic
+4511|google play game services
+4768|playstation experience 2016
+10774|plagiarism
+23947|famicom accessory: konami qtai adapter
+1325|advergame
+5358|violent plants
+11469|acronym titles
+38776|flash
+841|goat
+47697|anarea
+16|ghosts
+42317|butterfly
+39992|fan translation - russian
+44037|space ships
+45880|debate
+211|vampire
+13595|securom
+4235|spider
+42778|based on - fan media
+39989|adapted to - literature
+38607|booty
+668|marvel
+39990|fan translation - spanish
+39991|fan translation - italian
+39993|fan translation - korean
+13083|e3 2007
+912|backgammon
+1369|digital pet
+46551|hercule poirot
+17403|tamagotchi
+34406|third eye
+5782|tie-in
+39567|fortune telling
+10596|web integration
+38605|spanky
+817|pet raising
+1879|elephant
+1910|yokai
+2933|fan remake
+2958|shared screen
+1013|connect four
+10739|macromanagement
+25787|2000s
+5998|evil organization
+5687|franchise reboot
+7620|moat
+4759|minotaurs
+983|playstation move
+6066|poverty
+42316|sami
+6391|new protagonist in sequel
+39575|ayrton senna
+9605|cold open
+7642|story recap
+45033|freemium
+757|karaoke
+38780|ludum dare 52
+9848|rotating joystick control
+13913|secret service
+4942|release upgrade
+40002|mcdonald's
+14132|lynx
+47503|formula 1
+10006|monomyth
+2646|donkey kong
+9550|wii zapper compatibility
+9768|surgery in game
+1880|doctor who
+1162|micromanagement
+9781|old-fashioned english
+25792|monster tamer
+41960|maga man x
+1435|nintendo
+262|amazon
+44906|acknex a5
+23157|virtual reality experience
+3988|death match
+2277|actor
+6325|book adaptation
+2659|yaoi
+5656|facebook games
+4665|delinquency
+13336|stalker
+4361|qr codes
+11390|changing dimensions
+8445|weezing
+4522|virtual console
+39598|women gamejam
+8669|no wrong choice
+2760|family friendly
+8908|moose
+911|bullet hell
+7041|in-game advertising
+15134|game developers choice awards 2005
+11149|level by doing
+4153|xenomorph
+2229|amiibo
+7241|hammer bros.
+6241|tokyo game show 2014
+40051|bandiagara
+38834|playstation suite
+16999|dogs
+6117|teenager
+4560|fan translation
+2564|youkai
+1571|hotel management
+4262|hanafuda card games
+12282|double agent
+4310|based on - comics
+10325|roadie running
+5343|e3 2015
+11533|femme fatale
+9588|collection marathon
+39597|peklo
+4842|nintendo network
+4869|downloadable content
+1881|amnesia
+40049|obama
+14059|best role playing game: nominee - 2016 (the game awards)
+3137|mafia
+2209|zelda
+724|penguin
+571|rats
+18690|goddess
+105|knights
+39609|kraken
+38646|dolphins
+10856|pom-pom
+6813|working for the enemy
+6285|x-wing
+331|genetic experiment
+570|cats
+2111|giant insects
+2219|bear
+5329|coming of age
+6878|animal petting
+147|wizards
+3159|ps1
+6201|local and online players together
+2227|llama
+5142|historical figures in fictional settings
+1535|film
+2949|hip-hop
+3313|owl
+5341|smartglass support
+18316|tiger
+4353|human
+12517|platinum
+42007|pomeranian
+393|managerial
+4532|bull
+6778|whale
+7097|censored version
+2242|good vs evil
+6616|gesture-based controls
+2018|bomberman clone
+2199|silent protagonist
+4263|super-ness
+9283|heroic sacrifice
+10408|metafiction
+1397|frogger clone
+2823|link
+2922|super mario bros.
+5593|anti-hero
+2071|sequel
+6339|inverted controls
+5539|split screen event
+38665|storybook
+1069|demons
+2666|fairytale
+2607|twitch plays
+4731|tyrannosaurus rex
+2762|islam
+1716|wolf
+1060|kaiju
+6849|lumberjack
+3236|taoism
+2184|talking animals
+4232|rhinoceros
+4351|demon invasion
+3234|yakuza
+2251|agriculture
+5418|christianity
+1439|narrative-driven
+6502|matchmaking
+5541|non-linear storytelling
+6462|psychopathy
+1603|bootleg
+7649|second person perspective
+3661|digimon
+41881|rabbits
+9933|exploring yourself
+5437|konami code
+832|christmas
+926|deer
+5422|bread
+4368|mouse
+518|insects
+2574|squirrel
+4844|alligator
+2055|youtube
+5143|nintendo wi-fi connection
+2973|movies
+5959|multiplayer lan
+9976|diary pages
+3749|mental health
+4176|animal protagonists
+18162|snowbarding
+6539|kidnapping
+25826|deck-building
+1963|slavic folklore
+6001|corporation
+5023|animal companions
+8025|krookodile
+2094|autobiography
+1617|homebrew
+1645|minecraft
+5494|scientist
+5653|removed from steam
+6518|summer of arcade 2013
+5564|british accent
+5190|bundled with peripherals
+6681|gnome
+2876|lara croft
+5340|canceled games
+5359|crab
+4514|full motion video
+5417|e3 2013
+8974|god complex
+332|dragons
+4520|ea app
+1583|civilizations
+7603|foreshadowing
+1928|capitalism
+6077|drop-in drop-out
+5214|movie reference
+7026|bots
+23018|nightmares
+1634|couch co-op
+23678|cyberpunk rpg
+17217|stickman
+13138|chunky cheese pizza monsters
+8103|totodile
+19632|anthology
+10211|record breakers
+153|animals
+6324|book tie-in
+7154|missing relative
+4372|psone classics
+4403|pop culture reference
+10348|kill quest
+4371|animal antagonist
+10492|gunship
+8518|octillery
+11696|rhino
+39839|playable character - waluigi
+10881|direct control of units
+994|management
+7590|bad parents
+5287|rock music
+1012|battleship
+42037|taxi
+7048|escaping imprisonment
+40|spy
+4341|cow
+1320|undead
+1450|quake
+13508|roaming the countryside
+7605|movement penalty
+6614|scorpion
+10618|collective conciousness
+4622|descendants of other characters
+23696|chessboard gameplay
+5783|games on demand
+816|pets
+6020|alternate reality
+3034|devil
+9045|breaking through windows
+22764|non-violent
+740|girls
+25845|end of the world
+42787|survival shooter
+9877|mp7
+1103|farming
+989|hamster
+2115|mad scientist
+43129|historical events
+4267|clowns
+5316|pax prime 2014
+639|versus
+735|street racing
+2962|alien invasion
+4464|bandicoot
+2471|gladiators
+44051|lizards
+23755|indonesia
+839|dolphin
+2072|clicker
+221|murder
+44050|russian mythology
+1757|worm
+22|assassin
+10342|title changed after release
+1769|raptor
+23793|the legend of zelda
+2759|turtle
+1140|hidden object
+37882|aladdin
+1189|boardgame adaptation
+18922|silly
+45892|snowmobile racing
+982|brawler
+5262|steam play
+8281|sports cars
+1180|witches
+3289|mosquito
+1263|pixelated
+7480|playing dead
+23722|ludum dare 38
+23778|in-app purchases
+1953|fox
+22328|mind quiz
+23338|old mobile game
+1833|alter ego
+7397|optional objective
+9446|social democracy
+4515|samsung gear vr support
+4531|turkey
+11782|pax prime 2011
+23803|railway building
+4843|saving the world
+41848|gameking
+1900|private detective
+13115|e3 2003
+42227|stained glass
+5254|d.i.c.e. awards 2017
+8205|bartender
+7665|verticality
+23830|ludum dare 43
+23816|weekly subscription
+12953|e3 2009
+12015|website integration
+23817|monthly subscription
+23825|picross
+47296|dungeons
+4357|xbox one x enhanced
+5313|ps3 & vita cross-play
+9441|big head mode
+4472|unlicensed game
+41786|a christmas carol
+6669|iron maiden
+7185|innocent people die
+218|interactive fiction
+6315|dedicated servers
+23796|crash bandicoot
+4236|centipede
+42280|yahtzee
+23320|solo developer
+358|dating
+2453|bundle
+522|ps1 inspired
+758|cooking
+23804|ludum dare 44
+23809|thor
+16843|pac-man clone
+2921|copyright infringement
+2066|dwarves
+6088|villain turned good
+6094|spiky-haired protagonist
+2238|minecraft inspired
+7596|astral projection
+592|elves
+2233|motion controls
+10667|brutality
+23258|club penguin
+43696|popcorn
+9738|vampirism
+2033|social issues
+17747|afterlife
+6828|propaganda
+39201|online coop
+2027|japanese mythology
+42229|satellite
+2239|cthulhu
+41343|aleck 64
+351|italian mafia
+7419|close quarters combat
+844|shmup
+9256|corruption
+23845|game within a game
+23306|free demo
+3586|sexual content
+11631|vmu support
+7651|player as protagonist
+11848|warp zone
+23853|klondike
+23856|lgbtq+
+1142|ludum dare
+47391|black flag
+47461|plants
+47301|mamatoto
+8691|hostile territory
+47392|warship
+9711|religious themes
+10622|aberrant a.i. behaviour
+5204|guardians of the galaxy
+726|runner
+4223|oculus touch support
+43697|merge game
+23946|tokyo game show 2019
+1148|simulation
+23933|male protagonist
+23930|gamescom 2019
+47462|paper mario fangame
+3678|1v1
+41991|ljn video art
+42230|database
+9331|j-pop
+9184|micro games
+7576|behind the waterfall
+5584|wii classic controller support
+9733|siege warfare
+9313|missile launcher
+694|memory loss
+9510|quest hub
+6787|sega ringedge 2
+23893|virtual worlds
+2951|gods
+5051|wigglytuff
+38063|axel in harlem
+13076|e3 2008
+3142|idol
+40177|mario party
+19205|rhythm game
+3228|pilot
+33645|16-bit to 8-bit port
+24045|ludum dare 45
+7597|simon says
+6134|game console
+23959|life and death
+5909|dolby digital
+23957|map movement
+23971|partially voiced
+14023|dial-up wide area network game operation
+6169|d.i.c.e. awards 2014
+4998|betrayal
+1666|vaporware
+24039|zombie shooter
+42119|numbers
+13292|localized soundtrack
+42231|videos
+42936|staircase
+6857|basilisks
+2347|mermaid
+23983|wario
+5673|shape-shifting
+25869|balloon fight
+41894|mathematics
+12904|san marino grand prix
+17912|indie developer
+23976|partial nudity
+23984|apple arcade
+23995|monk
+3|aliens
+24033|based on - cartoons
+24051|comicbook style
+18167|goofy
+44053|fastpace
+19522|curse
+1014|blackjack
+8170|tailing mission
+8792|god mode
+7028|adapted to - tv show
+26048|realtime 3d
+24114|police simulator
+8099|flower picking
+24118|church
+8149|sea monster
+12154|zombie virus
+5734|nurse
+1333|online
+43798|jupiter ace
+8959|strafe-jumping
+39349|fan translation - vietnamese
+8411|chansey
+43301|cynical
+1546|suicidal
+9739|selective invincibility
+801|hasbro
+7430|cartography
+6469|fake tv show
+9540|armadillo
+7551|game cartridge
+9777|soul steal
+798|pachinko
+809|nba
+4877|titular antagonist
+9893|ps2 classics
+910|air dasher
+4|pirates
+9051|sega model 3
+11067|rogue protagonist
+24085|western rpg
+1089|rebellion
+24100|creepypasta
+10178|animal sidekick
+8196|slip cover packaging
+6210|cannibalism
+42226|monster raising
+45897|yearly subscription
+416|roguelike
+47303|dachshund
+42074|coffee
+24189|unlockable gallery
+24126|die and retry
+3686|villain protagonist
+4683|panda
+10792|divine punishment
+10814|tomb raiding
+1896|internet celebrity
+24168|political
+42059|chimpanzee
+17073|furry
+23111|diving
+24174|musical themes
+44788|wingsuit
+24211|scenario selection
+24215|many choices
+12231|wheelman
+17177|sokoban
+7315|nameless protagonist
+24220|free update
+24224|single ending
+5323|mercenary
+42283|no combat
+648|zoo
+759|baking
+2672|giraffe
+10326|one button combat
+10449|nintendo 64
+623|horse
+1673|mickey mouse
+11827|lost soul
+12837|phylactery
+10842|4k
+46640|kenney jam
+2024|philosophy
+24124|fangame
+4150|steam cloud
+41162|based on - podcast
+24166|survival management
+24167|looter
+24221|low sexual content
+5025|games with gold
+24236|branching plot
+24222|modern day tokyo
+19049|attraction
+6587|companion app
+10799|tarantula
+25890|shadow the hedgehog
+12734|game developers choice awards 2010
+2978|puppet
+25891|game collection
+24243|passage of time
+9156|sneaking mission
+1080|spanish culture
+14129|hard mode exclusives
+45|train simulator
+24231|ambient sounds
+24270|orphan protagonist
+12424|tokyo game show 2010
+24235|adult protagonist
+28408|streamer game
+9921|power leveling
+24262|early branching plot
+24266|bdsm
+24287|fictional world
+12349|elevator music
+6368|overweight character
+2387|superhero
+13505|rogue cop
+595|voxel
+10750|amphibian humanoid
+770|chicken
+9935|gibberish
+21052|fitness game
+1159|trading
+1209|party-based combat
+24223|musician protagonist
+24233|modern day japan
+24248|enforced playing order
+24260|unlockable choices
+6225|monarchy
+23036|town building
+13586|lifetime subscription
+7075|sibling rivalry
+215|detective
+6623|in-game e-mail
+42232|country music
+43259|rollerblading
+4345|bink video
+14164|unknown species
+13082|gamescom 2009
+24356|high sexual content
+47395|furniture
+24366|alternate dimensions
+2206|indiana jones
+2777|batman
+24359|modern day
+18417|analog
+4530|lion
+12866|xbox live aware
+2246|virtual life
+7107|italian accent
+24297|genre shift
+3311|yuri
+17320|rick and morty
+24306|japanese idols
+24351|nukige
+24335|dungeon fighter
+24336|online game
+24352|fanfiction
+24375|humble original
+24377|colorblind friendly
+410|lego
+23844|hand-animated
+40895|historical fiction
+5987|team deathmatch
+10099|pikmin
+13129|particle cannon
+14178|scumm
+6189|meme origin
+42250|power-ups
+44792|sumo
+24403|multi-selection choices
+47396|ps2 microphone
+47466|cyborg detective
+24421|psychological problems
+6636|swordsman
+4961|adultery
+44057|fortnite parody
+15132|spike video game awards 2004
+42251|library
+6296|griefing
+1299|time limit
+1293|achievements
+4336|famous quotes
+11275|boomer
+24414|open ending
+1285|laserdisc
+8341|rattata
+5587|villain
+24397|multiple route mystery
+24423|pre-order bonus
+24427|cartoon cinematics
+24449|super deformed cg's
+24475|nameable protagonist
+1534|hercules
+1540|idol simulation
+44058|wesker
+11772|fire emblem
+8848|missable achievements
+18884|twitch
+25899|cream the rabbit
+4915|castaway
+4934|new nintendo 3ds enhanced
+6964|maple syrup
+12087|the game awards 2017
+7108|private military company
+42121|buy and sell
+11146|d.i.c.e. awards 2013
+1186|multiple protagonists
+672|arcade compilation
+47307|pioneers of new world
+28788|nintendo 64 peripheral: video capture cassette
+47397|dr mario clone
+23116|blockchain
+4710|buddhism
+17686|netflix
+2123|religious
+16715|mixed reality
+4256|developed by one person
+11208|avatar awards
+47699|teeny
+41739|athletes
+4269|nintendo power
+4276|dualshock 4 support for pc
+43262|slugs
+24524|linear plot
+2824|harem
+9831|wormhole
+34418|extra mode
+43344|environmentalism
+24542|e3 2019
+26848|minor league baseball
+19851|roots
+43481|puzzles
+9866|built-in game
+19490|slender man
+2498|cult
+24520|music recollection
+12545|excluded on-disc content
+10552|1-to-1 motion control
+24560|voiced narration
+10565|dsi camera support
+24567|fast mini-games
+24570|sprite viewer
+24583|genius heroine
+25908|super metroid rom hack
+2156|black protagonist
+3182|heroes
+16199|spirits
+2211|star fox
+619|game creator
+1560|gangster
+1010|reversi
+13133|rallying point
+2667|folklore
+1996|donkey kong clone
+24688|spectacle fighter
+24693|mouse only
+8696|tiger i
+46561|point and click
+6844|hippopotamus
+2795|based on novel
+1853|financial
+13034|generation shift
+11926|motion-sensor bomb
+8132|ape
+115|god game
+328|ants
+12162|cars with no drivers
+5408|video game characters that play video games
+343|adult
+1577|korea
+16800|kirby
+2806|warriors
+24685|cozy
+42782|motherboard
+23128|donald duck
+23156|vr experience
+4523|launch titles
+45354|general-midi audio
+24692|mystery dungeon
+717|cartoon network
+18851|drpg
+8855|tunguska event
+17865|meta
+9899|weightlessness
+12903|xbox live vision
+25916|dark ambient
+1988|motion sensor
+1989|tech demo
+6|rail shooter
+23137|rescue mission
+11623|retailer exclusive
+46562|global game jam 2025
+1346|illuminati
+24741|ludum dare 31
+45356|wolfenstein
+562|soldier
+1659|resident evil
+24742|ludum dare 29
+3792|king
+4821|non-game software
+8678|insect infestation
+25900|gba-to-gc link cable
+3112|playstation talents
+3166|pong
+283|story driven
+15193|nintendo 3ds ambassador program
+17689|dual wield
+5306|gamescom 2013
+1420|rare
+9852|barcode battler enhanced
+5468|banned
+24756|ludum dare 30
+24758|ludum dare 28
+4799|steam turn notifications
+24743|ludum dare 32
+4314|crocodile
+5476|commerce
+1494|steam trading cards
+24748|public domain
+24759|ludum dare 22
+24762|ludum dare 26
+24766|homestar runner
+24777|dramatic love triangle
+4805|comic book character
+6200|gamescom 2015
+2240|custom controller
+46563|air combat
+608|persian mythology
+4610|red vs blue
+11027|real-world contest
+9650|rangers
+8310|taiko drum
+603|ascii
+9651|geomancer
+7741|rhydon
+24801|classic sonic
+9652|barbarian protagonist
+5984|ouija board
+284|organized crime
+427|police
+490|tolkien
+24799|sonic rom hack
+546|pvp
+8687|suppressive fire
+7693|birthday acknowledgement
+4717|off-tv play
+5727|mii support
+24760|ludum dare 24
+24778|ludum dare 19
+38789|machado de assis
+24797|sonic
+5803|vore
+24813|modification
+24814|metal sonic
+821|mmorts
+41853|pc-8000
+952|goblin
+37955|crazy
+8993|ghostly manifestation
+9005|redemption
+7116|arrival by crash landing
+3143|maid
+41164|robbers
+8251|motion tracker
+45906|net yaroze
+46566|amiga ecs
+1127|classic
+1654|super smash bros
+10068|last game released on a console
+9890|tactician
+24930|lesbian
+3900|free dlc
+8960|source mod
+24948|pax east 2020
+42076|cafe
+25058|frogger
+25261|haunted
+25279|shockwave
+25026|pax south 2020
+25275|timed choices
+25312|pico-8
+25341|blockchain game
+25318|social simulation
+46644|dinojam
+1655|esports
+12741|grip mechanic
+24969|ludum dare 36
+25212|creator
+25273|middle ages europe
+24875|conversation
+24881|ludum dare 40
+24938|dark comedy
+25140|othello
+6152|competitive co-op
+25210|gacha
+25264|broadcast
+25265|japan only
+25274|suspense
+25317|virtual pet simulation
+2792|terraria
+5802|no dialogue
+5817|indievania
+47700|tiny
+24895|accessibility options
+24919|meditative
+9952|gamescom 2011
+24955|zeus
+24957|trading card game
+24965|queer
+24972|photorealistic
+25048|ludum dare 35
+42122|turret
+25173|eldritch horror
+25221|social deduction
+25315|luigi
+44800|sleepwalking
+42289|masonry
+24077|slasher
+25611|track display
+42290|smithing
+1302|chosen one
+25491|brasil game show
+25496|philosophical
+25525|jazz
+25527|meaningful choices
+46565|amiga hd install
+25558|offline mmorpg
+1624|demo
+25647|puyo puyo
+25650|yume nikki
+45048|ecosystem
+42812|keyboard game
+46564|jet fighter
+5311|twin stick control
+3317|flappy bird clone
+8308|sequel by a different developer
+46055|arena fighter
+2327|konami
+43263|twin-peaks
+5315|e3 2014
+25426|coding
+25549|zelda classic
+46643|gbjam 12
+42288|carpentry
+7303|pax east 2013
+5345|same name reboot
+47701|bionic
+25357|superman
+29411|open world survival craft
+25522|mario fangame
+25548|zelda fangame
+305|unreleased
+8311|cliffhanger
+12342|adapted to - theater
+25392|2d fighting
+25436|undertale
+25480|online ranking
+25492|soccer manager
+25555|body horror
+23588|playstation china hero project
+25594|character mod
+25000|incremental game
+43204|tavern
+1315|short
+9989|novint falcon support
+1312|writing
+16998|folktale
+44930|money
+9318|health from romance
+1329|special forces
+25337|robotnik
+7353|vigilante
+9366|landmark button
+46645|dinojam4
+42082|paper plane
+9330|eco-terrorism
+4355|windows store
+1317|apocalypse
+4329|cat
+10329|southern american themes
+10336|isolation
+23339|nokia
+9341|hostile a.i.
+4344|controller recommendation
+5348|kinect support
+7348|secret identity
+4352|mind control
+23353|collect insects
+27356|text adventures with illustrations
+5360|apple game center
+41860|beer
+368|thief
+17371|twin stick
+996|space shooter
+2014|dungeons & dragons
+43153|text parser
+1|modern warfare
+379|tycoon
+7380|medical herb
+17378|narrative adventure
+44065|thanksgiving
+14380|spike video game awards 2007
+5398|evo championship series
+9394|rotating platforms
+7437|ghoul
+19452|logic puzzle
+25456|one piece
+15524|unresolved stories
+9348|hud video messages
+37863|gba bootlegs
+6013|wii u gamepad microphone use
+2427|builder
+43709|undercover
+38887|food
+26088|wad
+24457|third-person narrative
+2447|touchscreen controlled
+42292|leatherworking
+6369|bpjm indexed
+5455|squad
+11459|witch hunter
+24904|korean rpg
+25344|password save
+4356|xbox play anywhere
+9357|negotiation
+3367|touhou 10 mountain of faith
+7386|tokyo game show 2012
+9386|graphics overhaul
+5400|order and chaos
+5438|two players on one controller
+4441|sumo wrestler
+26087|megawad
+42285|empire
+4158|xbox live indie games
+7647|wwe championship
+43710|gplv2
+4435|playstation minis
+46647|gmtk game jam 2023
+4483|games for girls
+7554|soul reaper
+28784|nintendo 64 peripheral: keyboard
+5525|sega channel
+6530|virtual shop
+42132|rubik's cube
+8240|really unfortunate game name
+44156|turn-based multiplayer
+24420|psychological trauma
+472|prequel
+1503|custom soundtrack
+6494|button mashing
+2510|final fantasy
+5471|law
+11474|multi-monitor support
+13477|pax 2008
+24478|unlockable side stories
+23498|picture-based logic-puzzle
+13521|nocturnality
+523|harry potter
+9524|motion plus required
+7524|super scaler
+9530|objective-based team gameplay
+24543|the game awards 2019
+13547|nintendo ds expansion slot
+23548|short game
+41|secret agent
+1165|leveling
+5447|canonical death
+487|viking mythology
+7627|sealing your own fate
+9059|sega meganet
+18635|transhumanism
+12969|interactive achievement awards 2000
+14072|the game awards - best studio or game direction - winner
+15046|spike video game awards 2006
+43805|minigolf
+47313|venezuela
+14079|the game awards - best music or sound design - winner
+3146|#nintendo entertainment system
+14092|the game awards - best sports or racing game - nominee
+43766|thomas the tank
+46650|indiepocalypse
+25963|turn-based rpg
+43578|toast
+25964|nonbinary protagonist
+7424|body builder
+11567|multiplayer via serial cable
+7570|developer commentary
+9064|pickpocketing anatomy
+1075|crossover
+12083|the game awards - best score or music - nominee
+24084|angels
+4090|astronaut
+14093|the game awards - best sports or racing game - winner
+25097|narrating others' thoughts
+9637|gender exclusive equipment
+1638|conspiracy
+43|life simulation
+25050|colony simulator
+14063|the game awards - best studio or game direction - nominee
+6075|banter during gameplay
+9088|porcupine
+14089|the game awards - best mobile or handheld game - winner
+1097|cyborg
+1188|bromance
+17122|mexican culture
+140|serial killer
+5629|miiverse integration
+25146|hexagon tiles
+698|mummy
+5960|numerical title
+3113|made in spain
+42136|security
+11141|saving the president
+5151|internet culture reference
+8164|hearing impairment
+5188|peripherals
+45268|rpg maker horror game jam
+9630|keyboard and mouse support for consoles
+6155|boomerang bros.
+40276|crowdfunding - nuuvem
+9641|platform fighting
+12970|oddly-shaped cartridge
+46649|20 second game jam 2022
+23359|obstacle course
+46648|20 second game jam
+1152|button
+4964|optional touch control
+4965|circle pad pro support
+968|animal protagonist
+25972|spongebob
+11975|initial install
+15078|the game awards 2015
+6084|not-so-bad guys
+88|australian
+2106|classic monsters
+7106|chinese accent
+16108|agent
+1115|animal-based
+8137|predator
+3141|bullying
+13156|voices in the wii remote
+8157|playstation home tie-in
+10162|galactic empire
+23162|mental illness
+25166|asexual
+46222|game
+9192|surgeon's stethoscope
+39625|axolotl
+1219|espionage
+47316|clutter
+30239|party-based rpg
+4210|split-screen multiplayer
+19649|bug
+46059|imprisoned
+21280|billiards game
+8221|real time game clock
+7374|tower offense
+11789|promotional drink tie-in
+1247|multiplayer online battle arena
+30625|ps1 style
+46060|prision
+42788|ludum dare 55
+25266|water sports
+8299|orphan
+15558|game developers choice awards 2003
+43579|eating
+13211|wii remote speaker phone simulation
+15255|interactive achievement awards 1998
+42291|tailoring
+10592|bomb defusal mode
+25975|dick grayson
+10165|soul edge
+17175|circuit board
+8179|game developers choice awards 2013
+10184|russian roulette
+1187|alternative puzzle solutions
+11210|achievement hitching
+8222|global game jam
+9258|steam pre-purchase rewards
+45142|sidescroller
+4297|protagonist's name in the title
+11894|eb games expo australia
+43806|stop motion
+24362|magic school
+14608|spike video game awards 2008
+11501|game developers choice awards 2012
+1615|drinking game
+2340|social network
+9676|legendary pokémon
+5703|tentacles
+12713|imperial japanese army
+4609|humble bundle
+12730|summer of arcade 2010
+18712|sword fight
+4699|4 player co-op
+5790|valve anti-cheat
+24090|airport management
+12388|game developers choice awards 2011
+14514|summer of arcade 2008
+44939|25d
+2724|hacker
+4536|racial stereotypes
+17560|award-winning
+9594|saturday morning cartoon
+19627|revolution
+4681|retail games with steam activation
+16696|rom hack
+24697|dating simulation
+45058|nonlinear
+6711|crime fighting
+12733|interactive achievement awards 2010
+10746|global defense initiative
+41809|generator
+41964|latin america
+23296|choice matters
+46224|action roguelite
+8768|onomatopoeia in title
+23834|retro graphics
+4785|distaff counterpart
+11815|play-to-play
+25658|ludum dare 46
+842|shooting gallery
+11895|budget title
+9092|raiding
+18722|vita,
+11753|amazon game connect
+9737|passive ability
+10741|external character creation
+9750|conga line party
+11756|game boy printer support
+11765|multi-tier combat
+11769|region locked multiplayer
+9772|removed from gog.com
+24780|ludum dare 21
+9780|undead pirates
+2786|american
+24786|ludum dare 27
+10793|movie tie in
+6802|my nintendo
+9805|united states air force
+41811|gatcha
+16826|4k ultra hd
+16832|xbox live cross-platform multiplayer
+11958|summer of arcade 2011
+42090|chillhop
+44072|summer ces 1988
+41744|tangram
+895|racing simulator
+41891|super battle polycars
+8907|enforced speeding laws
+9929|removed from xbla
+44122|pulp fiction
+46281|bishop
+4886|player vs player
+9900|level scaling
+46651|indiepocalypse issue 37
+39275|military simulator
+4883|e3 2016
+16886|settlement building
+2908|donald trump
+4922|based on - internet phenomena
+9927|dead multiplayer
+4930|two screen multiplayer
+9931|western published japanese games
+14936|game developers choice awards 2007
+29960|cranky kong
+1029|extra terrestrial
+18032|sengoku period
+13033|interactive achievement awards 2008
+42089|convention
+6199|d.i.c.e. awards 2015
+26630|partial conversion
+26632|based on - idol group
+26347|super powers
+26135|esport
+26651|environmental hazards
+26552|nsfw_patch
+26667|text-based adventure
+26681|based on - reality show
+26696|xuan-yuan sword
+46578|serious game
+9932|pepsi
+26867|chat interaction
+26191|nintendo switch online
+26218|interactive
+26705|roguelike platform
+26735|rougelite
+26757|zine
+26192|hatsune miku
+26231|bts
+26199|tokyo game show 2020
+26268|among us
+26305|mild nudity
+26332|traditional roguelike
+1286|based on - movie
+26334|guessing
+26811|gamescom 2018
+26861|reimagined
+10031|planet destruction
+43302|pineapple
+26306|sexual themes
+26319|jigsaw puzzle
+26433|crude humor
+26473|machine learning
+26522|ludum dare 47
+26526|tech
+45931|hidden secrets
+26576|nsfw_dlc
+26577|sfw
+26581|poem
+26587|auto runner
+26798|tcg
+26812|i spy
+26815|creativity friendly
+26834|nft
+26126|dynamic narrative
+26203|car battle
+26204|the simpsons
+26208|proof of concept
+26211|ray tracing
+23244|vaporwave
+27066|crowdfunding - patreon
+27216|fanmade
+27048|rumble pak
+42296|dolls
+4168|genie
+27691|minigame
+26965|multiple playable characters
+26952|ludum dare 39
+896|star wars
+26995|bonus episodes
+27020|comfy
+27088|diddy kong
+27056|maze crawler
+27627|007
+27629|wii virtual console
+27062|game boy aesthetic
+27076|wiki game
+45273|rodents
+27613|postmodernism
+27320|coloring book
+27517|mapping
+27527|flappy bird
+27637|standalone mod
+27530|angry birds
+27537|yoko taro
+39555|porsche
+44120|siren head
+27688|roguelike horror
+27117|unofficial port
+1865|macromedia flash
+7703|snorlax
+44945|pirate
+27825|yume nikki fangame
+46280|rook
+26248|collectathon
+44946|ship
+39148|denpa
+27526|earthbound
+26968|ludum dare 16
+8286|persistent enemy
+27310|super mario 64
+27374|existential crisis
+27472|videogame
+27484|family restaurant
+27515|no microtransactions
+26881|past japan
+26969|speedrun mode
+27015|zelda-like
+27049|lost prototype
+27054|you can pet the dog
+27055|metroid fangame
+27078|wiiware
+27086|rage game
+27211|multi-user-dungeon
+28299|animal crossing
+42110|cargo
+41562|nokia 3310 jam
+28611|heartwarming
+28733|asmr
+28615|nanoreno
+45275|adorable
+28668|dinosaur riding
+28628|fighting heroine
+28406|games to interact with your stream chat
+28284|endless waves
+28703|controller pak
+28648|girls love
+28651|gay protagonist
+28681|virtual youtuber
+28673|pandemic
+28669|dragon riding
+27947|irish mythology
+28780|super scope support
+27853|disney afternoon
+28728|silver the hedgehog
+28760|canon star wars
+27912|metaverse
+28783|nintendo 64 peripheral: smartmedia memory card
+28785|nintendo 64 peripheral: mouse
+27848|mobile port
+27964|creative writing
+27858|stick war
+27878|scrooge mcduck
+40891|text-mode graphics
+27901|play to earn
+27910|audio dialogue
+27963|collaboration
+28272|naval combat
+28706|controller pak required
+28024|haunted ps1
+27996|fan project
+28015|spain
+28290|play with friends
+28031|in-flight game
+28050|gothic romance
+28274|zombie apocalypse
+28422|ludum dare 48
+28319|my little pony
+28506|combat simulator
+28294|sexual violence
+28399|renpy
+23866|unlockable characters
+17326|soulslike
+28193|grid
+28868|official mod
+45274|mice game
+29106|game & watch: wide screen
+45061|asian protagonist
+45150|peppa pig fangame
+29119|game & watch: micro vs.
+29006|prototype found
+45149|angry birds clone
+28787|nintendo 64 peripheral: bio sensor
+28791|nintendo 64 peripheral: tsuricon 64
+44124|automapping
+28818|prototype only
+28852|nsfw option exists
+29033|bossfight
+28977|brazilian folklore
+28882|super famicom slotted cartridge
+28888|simon belmont
+18906|offline
+28966|satellaview demo/trial release
+28975|brazilian culture
+28980|made in brazil
+28990|aladdin deck enhancer compatible
+29005|completed but unreleased game
+29063|documentary
+28998|peta
+29003|regional port
+29011|nintendo power service
+29034|replayability
+29055|interior design
+29012|super famicom nintendo power service
+29081|silvio santos
+29102|game & watch: multi screen
+28786|nintendo 64 peripheral: modem
+42091|valhalla
+29103|game & watch: panorama
+29104|game & watch: silver
+29105|game & watch: gold
+29110|game & watch: color screen
+29118|game & watch: new wide screen
+29137|game & watch: panorama screen
+29138|game & watch: super color
+29141|game & watch: tabletop
+6170|miiverse stamps
+44159|microbiology
+28869|satellaview view-limited games
+225|investigation
+29241|sufami turbo
+29413|lunar landing
+29472|super sonic
+30018|improvement mod
+29624|super mario bros. 3
+29479|green hill zone
+29768|fan translation - polish
+164|ninja
+29629|playable character - toad
+29630|playable character - princess peach
+29638|mega man clone
+30277|jurassic park
+29428|princess peach
+29603|cancelled 32x game
+29482|dr. mario
+29491|the legend of zelda: ocarina of time
+9525|screen overlay
+29526|google doodle
+29552|assassination
+29554|markiplier
+29590|skating
+29670|tetris clone
+29644|physical release
+29666|software
+29667|vtuber
+29669|hololive
+44075|matador
+29716|aim trainer
+29726|rom
+29747|ghost hunting
+29745|fan translation - english
+29749|shanzai
+29770|fan translation - brazilian portuguese
+29771|fan translation - esperanto
+4791|faceless protagonist
+44819|blitz-varient
+44161|disappearence
+30333|hardware compatible mod
+30337|nuclear
+29342|mario kart 64
+29379|17th century
+29469|enhancement mod
+29816|released in a bundle
+3898|spiritual successor
+29987|bitcoin
+30013|improvement hack
+1172|german mythology
+253|samurai
+43303|prank
+46580|ai-generated concepts
+41747|engineering
+31144|nes launch titles - north america
+30748|asia only
+44126|monster collector
+30750|handheld electronic game
+31143|box art - pixel art
+30641|lost media
+30995|cancelled expansion
+30679|cancelled sega cd port
+31059|hungarian folktale
+30703|fan translation - portuguese
+41892|graphs
+46156|gzdoom
+30917|contest
+30990|arpg
+30947|brazilian celebrity
+30952|vr only
+31023|covid-19
+31035|xbox live arcade
+30999|cancelled game boy color port
+31000|medical
+31036|undertale fangame
+31034|boys love
+31089|colony builder
+31093|zeebo
+31077|satellaview week-based broadcast
+30739|dsiware
+31094|zeebo exclusive games
+31100|game boy color nintendo power service
+31124|regional differences
+46225|horde survival
+31146|nes and famicom peripheral - zapper
+31163|cancelled nes / famicom port
+31292|sound novel
+11167|gamingator
+31177|fan translation - latin
+31191|animatronics
+31234|expedition
+31248|all-boys school
+31259|victorian age
+31293|intergenerational
+42298|fish
+30367|nintendo 3ds virtual console
+44160|loyalty
+30490|wii u virtual console
+41938|barcelona
+31172|intentionally awkward controls
+31228|satellaview time-limited games
+32059|wordle clone
+42093|windows simulator
+31624|italian game
+32709|based on - memes
+32653|official demake
+31666|games that were never announced
+32770|community content
+31671|nftesport
+32490|yoshi as a playable character
+31700|ludum dare 34
+31704|made in japan
+31426|ludum dare 49
+32479|king boo
+7526|namco system 22
+32463|e3 2021
+31828|wario as a villain
+32469|multiple routes
+31502|twitch integration
+44077|sega channel exclusive
+31542|liminal space
+32607|nintendo 64 decompilation project
+31724|ludum dare 37
+32745|flash game
+32734|ludum dare 50
+32735|map pack
+44129|tile-based first-person crpg
+31822|mario as a villain
+31824|nft gaming
+44162|geopolitics
+31906|brazilian politics
+46066|taylor swift
+32157|kemono
+32041|world exploration
+31899|japanese folklore
+31947|gamefi
+23970|adjustable difficulty
+31976|all ages version
+32020|vladimir putin
+32058|wordle
+43149|babysitting
+32187|nintendo direct - 2022-02-09
+32164|vpet
+32182|poetry
+32245|lucid dreaming
+32366|capoeira
+31404|ethereum
+31430|analog horror
+32432|coleco tabletop
+41536|absurd
+32538|islands
+32911|playdate season 1
+9628|class change
+42062|ice cream
+9710|pedophilia
+13031|revenge meter
+33713|macromedia shockwave
+33499|games for unreleased hardware
+33744|netflix games
+33719|backrooms
+33082|game based on tv show
+34130|community developed
+33579|cancelled n-gage games
+33572|2d art
+33311|edo era
+16793|historical adventure
+33605|randomizer mod
+44128|green screen monitor
+32820|korean game
+33859|cancelled arcade games
+32921|ezweb
+32941|promotional
+32937|apple arcade only
+34019|customize
+33126|electronic wristwatch game
+32980|super mario kart
+32985|femboy
+33986|rejet
+33990|dancer
+34087|twitch extension
+34056|the backrooms
+43722|genghis khan
+33314|abandoned hospital
+33498|sega vr
+33394|sonic hacking contest 2021
+33193|wristwatch electronic game
+33198|tiger hand arcade
+33218|fandisc
+33975|yuri game jam 2020
+33322|castlevania fangame
+33393|sonic hacking contest 2020
+33420|cancelled xbox games
+33435|technology
+32922|yahoo keitai
+42094|computer
+8172|renovation
+34251|majstr
+34050|pre-installed game
+33192|tiger large screen
+34632|asymmetrical
+34375|solo mode
+35522|mega man rom hack
+35997|cancelled sega genesis games
+42048|bayou
+34660|catarse funded
+35756|gmtk game jam
+34315|real world fitness
+35685|vfd display
+43151|bl
+35999|lisa fangame
+35253|deltarune
+34661|half-human
+35557|super mario 64 ds
+11478|remote play
+9529|greatest hits
+34588|plant
+35602|based on - real events
+34775|doujin game
+45151|spongebob fangame
+34918|wagon
+35893|cancelled playstation games
+34751|mini game
+35767|japan exclusive
+34878|treasure hunter
+34820|nintendo direct -2022
+26869|santa claus
+34931|reference to other games
+35303|rokuro head
+34946|accessibility
+35929|historical china
+36016|nintendo switch eshop
+36041|xbox achievements
+35064|yuri game jam
+36070|xbox smart delivery
+35084|phonics
+34318|magician
+34369|news
+35371|protagonist gender choice
+413|parody
+34461|multiverse
+35985|based on - real people
+6461|flashback
+35235|mini console
+35514|digital-only release
+46279|pawn
+36484|mr beast
+37124|multiplayer only
+42252|lithuania
+10172|taste of power
+5296|japanese games based on western ips
+36782|leapfrog didj
+37488|playdate catalog
+37276|cancelled nintendo 64dd games
+36607|yuri game jam 2022
+36792|mobigo
+36345|cancelled gamecube games
+37448|cancelled cd-i games
+37471|panasonic jungle
+36495|gmtk game jam 2022
+37501|cancelled xbox 360 games
+35529|cancelled physical release
+36541|cancelled ique games
+36978|cancelled gamecom games
+36544|lost cartridge jam 2022
+37599|co-worker heroine
+36968|birdo
+36630|suicide mouse
+36686|mii as playable character
+36844|google play games built-in games
+36793|game wave
+35794|cancelled dreamcast games
+42095|vegetables
+36941|cancelled sega cd games
+34033|fan translation - chinese
+37007|dlc for several editions
+42020|rollerskates
+37123|cancelled browser games
+36393|lost cartridge jam 2021
+37282|insert songs
+37292|2048 clone
+36130|auto chess
+37362|nintendo gateway system
+36377|ai generated
+29409|ms-dos
+37493|cancelled playstation 3 games
+37089|mascot horror
+37418|n-gage service
+36136|plugin
+36538|my little pony fangame
+36805|cross-platform
+42049|california
+37247|ludum dare 51
+37254|warships
+26129|hacking simulator
+45945|wuxia
+23530|party customization
+42152|napoleon
+14088|the game awards - best mobile or handheld game - nominee
+41944|inazuma eleven
+43725|digital distribution only
+37617|forge compatible
+11628|played without touching a controller
+37616|fabric compatible
+5699|predecessor included
+37741|nintendo 64 exclusive
+42175|music videos
+32173|late localization
+47408|kendo
+4796|playstation experience 2015
+41104|hotdogs
+6064|power of friendship
+43276|season spring
+42189|stress meter
+23653|urban legends
+23666|asymmetrical survival horror
+24240|relationship problems
+17188|painting
+40387|self-harm
+40394|1899
+7400|terminal illness
+37417|n-gage 2 0
+41452|jeopardy
+46282|management game
+37749|game boy advance exclusive
+42184|inventor
+41316|google maps
+41334|bombs
+40374|ukrianian
+25479|pokemon clone
+37692|disguise as npc
+42299|knytt
+2439|hunter
+451|augmented reality
+4718|cross buy
+37721|cancelled nintendo 64 games
+1102|religion
+42137|robot companion
+4227|celebrity tie-in
+31258|faith
+40090|playable character - shantae
+41690|climate
+47327|dream diary jam 5
+42156|festival
+43724|nintendo 3ds eshop
+4654|scooby-snacks
+29699|mario as a playable character
+11152|steam trading
+25974|catwoman
+42021|black hole
+1228|bird
+4452|licensed soundtrack
+15629|scratch and sniff
+40474|ai-generated voices
+42157|vibrant
+42193|snakes
+7174|exorcism
+12189|pax east 2011
+38202|advance wars
+5300|pack-in game
+41648|gradius
+42183|mirror puzzles
+14365|spike video game awards 2003
+18400|jurassic
+43363|watercraft
+41468|pakistan exclusive
+40429|sega game toshokan
+41338|power pad
+29423|unofficial remake
+40995|kyle petty
+6034|camera control
+37530|dtxmania
+5667|discontinued mmo
+4719|game titles that are also questions
+40391|trle - tomb raider level editor
+42701|coverdisk
+40926|archive
+11400|p wing
+7410|text dialogue
+40427|ludum dare 54
+27510|auto battler
+4510|touch controls
+41851|pv-1000
+38103|toontown
+12103|the game awards - best score or music - winner
+41127|talking dog
+42154|car collecting
+41190|aol
+17228|60fps
+42096|chess puzzle
+11104|cumulative team respawn limit
+42023|captain
+40478|object head
+1091|celtic mythology
+41276|modpack
+42194|rat people
+425|crpg
+41226|shin megami tensei fangame
+27481|found footage
+15303|spike video game awards 2005
+3630|sheep
+42185|dwarf
+1707|time machine
+40897|autobattler
+1035|total conversion
+41036|fan translation - thai
+41469|burger
+26519|looter shooter
+26521|crypto
+11524|forensics
+1656|live action
+9531|megaphone
+5905|pre-order exclusive
+41896|doppelganger
+42178|cryptid
+31360|fnaf fangame
+41694|research
+34367|puzzle bobble
+2402|dragon ball
+9453|skull for a head
+19453|nonograms
+38511|unofficial demake
+46656|castle game jam
+9722|tiered exploration
+41779|extraction horror
+40996|phantom system
+42158|colorado
+19521|japanese rpg
+41780|housing
+40587|illuvium
+41652|utopian future
+25657|super mario world
+44956|protect
+42159|winter
+35812|taishou era
+42186|evil wizard
+41377|nabu
+40588|ascendant
+40590|communist
+14631|game developers choice awards 2009
+42052|powerpoint
+46657|castle game jam 2016
+41651|camper van
+46658|brackeys game jam
+33402|heardle
+42141|laboratory
+41653|grow
+9455|blamed for real life murders
+33191|tiger double wide screen
+42201|hamburgers
+41227|game pass
+42054|office equipment
+40229|capybara
+34657|ludum dare 13
+488|guitar playing
+42097|social media
+44288|summer
+31533|nintendo switch online - expansion pack
+41376|sky games
+46162|plague
+1669|crime
+38723|creature collector
+42053|office
+42056|scanner
+41129|agpl 3
+42177|monster girls
+2426|story rich
+42363|llamarp
+39906|bullet grazing
+4406|love triangle
+6419|compact disc
+27419|roguelike deckbuilder
+41505|ti-84 plus ce
+41459|weapons
+40575|vt168
+42088|seapunk
+42198|fruit characters
+40930|alice in wonderland
+40616|luminaria
+40613|daredevil
+40614|stunts
+46079|hanukkah
+1635|local co-op
+8670|cryokinesis
+46164|greek
+6039|dynamic split-screen
+4412|rat
+42098|claw machine
+40612|stuntman
+41040|fan translation - welsh
+41039|fan translation - romanian
+46163|athens
+41041|fan translation - hungarian
+42051|bouncing
+41643|language arts
+41194|curling
+42160|snowstorm
+42181|almanac
+42163|loops
+41170|bodycam
+9395|reversed controls
+43216|school simulator
+23466|fruits
+29191|chillout
+42143|robot dinosaur
+35977|gamekey ready
+2093|transgender
+42179|crt filter
+42125|fever dream
+15232|interactive achievement awards 2002
+15725|queens
+26428|taxes
+2488|giants
+41603|chile
+42161|blizzard
+41292|drug abuse
+34402|touhou fuujinroku
+41435|bingo
+23458|egyptian mythology
+14569|wii console message board interaction
+40602|nintendo 64 expansion pak required
+44166|based on - drama cd
+42024|microphone
+41447|sam coupe
+10447|faceless antagonist
+32803|anime-based playable characters
+40707|low fantasy
+24803|daily quests
+4659|centaurs
+40674|saint seiya
+2675|alternative universe
+40690|manguebeat
+40694|monstergirl
+4407|skeletons
+42025|chinese zodiac
+41291|heterosexism
+41043|fan translation - ancient greek
+41047|fan translation - dutch
+41048|fan translation - norwegian
+41049|fan translation - hebrew
+41055|fan translation - scottish
+44831|channel surfing
+41293|mental instability
+4340|corrupt government
+41229|crowdfunding - makuake
+3430|time management
+7460|game developers choice awards 2015
+11570|udraw gametablet support
+44832|late night tv
+10460|team killing
+44135|photogrammetry
+42026|lunar new year
+37041|cancelled 3ds games
+4981|videotape
+4396|damsel in distress
+2403|3ds
+5414|developer cameo
+7403|pax prime 2012
+33403|club penguin private server
+7414|zoom platform
+5448|indiedb
+41460|armed bugs
+24874|digb
+26906|retroachievements
+32906|korea only
+41004|shaquille o'neal
+41042|fan translation - greek
+42134|combo multiplier
+44959|song
+45071|isekai
+40737|pixeljunk
+9638|music-generated content
+41713|playtable
+40736|beach
+4134|digital distribution
+7215|context sensitive
+41580|igo
+41622|1d
+40735|linear
+41133|tic tac toe
+44136|gameshow
+40744|interconnected-world
+46659|brackeys game jam 2020-1
+41781|action roguelike
+41056|fan translation - japanese
+41045|fan translation - arabic
+41046|fan translation - irish
+41050|fan translation - finnish
+41051|fan translation - catalan
+41052|fan translation - german
+41053|fan translation - swedish
+41054|fan translation - persian
+42055|tuba
+41382|fm-77
+403|shark
+415|turn-based
+27179|pixel art game
+30468|lcd display
+41579|robin hood
+41449|coins
+44084|rugby league imperial board
+40763|yuri game jam 2023
+16985|based on - web novel
+9342|nuclear fallout
+41381|sharp mz-1500
+5425|arcade cabinet
+41705|gamecube controller support on wii u
+40731|disney
+42022|alaska
+41044|fan translation - indonesian
+27094|nsfw version exists
+43217|penguins
+40783|gnu general public license
+41658|unofficial expansion
+40787|ai
+25068|pvpve
+41623|education
+9661|comic relief
+42100|drill
+47334|geese
+40780|copyleft
+40788|sketch comedy
+9404|retroactive achievements
+40781|wtfpl
+41782|transport
+43580|sliding
+40786|cleaning
+5820|reptilian humanoid
+41946|boulder dash clone
+40799|2020s
+6874|shiba inu
+25686|monster movies
+41712|korean baseball organization
+42180|farm
+42187|kitchen appliances
+9415|groundhog day scenario
+4437|playstation move support
+44083|international rugby league
+41581|chinese mythology
+40779|gplv3
+42799|trade and economics
+42101|digging
+41134|anagrams
+4135|xbox controller support for pc
+42195|singing bosses
+42202|formerly on apple arcade
+42197|cupcakes
+42196|donuts
+42199|waterslides
+42200|rap songs
+1208|overworld
+8218|physical copy protection
+40904|easter
+42174|comet
+23232|japanese culture
+22907|experimental game
+42164|thunderstorm
+30398|chaotic
+36404|cancelled atari lynx games
+46660|tk game jam
+41584|webcomic
+25641|k-pop
+14661|impossible 100% completion
+41008|1bit
+43737|war game
+41624|fm-synth music
+41646|based on - card game
+41660|beasts
+41831|tibet
+4438|motion control
+40860|journey to the west
+7022|moth
+34876|bullet heaven
+41159|arabian mythology
+45463|xband online compatible
+42165|melancholy
+41700|ranged combat
+40732|duck tales
+42166|piano
+25409|political simulation
+7416|creature compendium
+2425|crowdfunding - kickstarter
+4221|game critics awards
+42171|druids
+42172|celtic
+42173|lighthouse
+42182|rome
+42188|day of the dead
+5194|wii remote infrared pointer gameplay
+3812|godzilla
+41312|unoffical demake
+7109|hippies
+42204|classical music
+41423|biology
+12449|international version
+38821|stylish action
+41972|factory
+34429|stage selection
+4486|werewolves
+31571|ludum dare 33
+41582|aromantic
+42040|robot
+41115|krampus
+42203|theme songs
+3208|vampires
+42235|camelot
+45158|old school retro 1981
+23235|riddles
+25688|collecting card game - ccg
+5730|controversy
+11733|playstation eye support
+42779|super mario bros z
+7396|restoration
+43326|proximity voice chat
+524|fast paced
+43348|action platformer
+43384|acerola jam 0
+43405|university
+538|8-bit style
+43410|tom hanks
+7545|gacha system
+43369|magical realism
+40550|snake clone
+23560|escape room
+41564|playchoice-10
+46661|tk game jam 2018
+20276|flight simulation
+38289|e-sports
+44138|2d flyer
+10318|achievements for starting the game
+37879|polygon blockchain
+879|counter-terrorists
+42879|flight yoke support
+7343|disc streaming
+34908|warrior
+10919|online multiplayer achievements
+37926|heavy from team fortress 2
+42373|watercolor
+32374|never released outside of bundles
+42376|fire emblem fangame
+43157|shogun
+43878|tinyrogue
+1430|slice of life
+43892|prevention
+2500|tragedy
+10533|crossword puzzles
+4534|native american
+42383|light gun
+42386|mole
+18396|workout
+42411|monkey bars
+42412|inca
+42413|infinite runner
+43349|cute 'em up
+1539|satire
+42418|funeral home
+2481|dragon ball z
+42989|roomba
+42385|sewer
+42416|drums
+42417|guitar
+28609|youtuber
+43370|lynchian
+9596|hero turned evil
+43385|urbex
+37600|religious school
+1626|football manager
+43393|united kingdom
+43394|serbia
+5638|development hell
+17672|chernobyl
+38266|muppets
+39277|wireframe graphics
+41290|homophobia
+44085|jack the ripper
+1305|child protagonist
+5305|pax prime 2013
+46709|mechs
+42381|64 bits
+45159|multiplayer
+19396|calming
+42968|french
+5491|smuggling
+37521|retro styled
+27582|always online
+599|browser-based
+42762|amstrad gx4000
+42847|endless
+42957|naval engineering
+38236|based on - web show
+42984|vulgar
+43015|workers
+43016|socialism
+24626|dress-up
+42440|smartphone game
+42441|social game
+42450|graffiti
+42454|fire truck
+42455|1500s
+42459|st-v
+42467|word search
+43054|oceania
+17481|tokyo
+3554|short story
+2107|space adventure
+39434|prohibition era
+42442|ace attorney fangame
+43781|global game jam 2022
+42453|ambulance
+6746|time paradox
+43350|2d rpg
+42763|sanrio
+267|king arthur
+42804|nintendo selects
+8267|entering world in a painting
+18880|game based on movie based on game
+11278|on disc dlc
+44197|multiple-choice interactive fiction
+8305|seasons
+47414|dual mouse controls
+1375|freeware
+42906|faeries
+43426|kitsune
+46086|time
+24396|built-in encyclopedia
+4926|stormtrooper
+47595|playdate season 2
+47615|marble popper
+42983|bikini
+43225|rollercoaster
+47647|microsite
+45589|steam timeline
+43508|dating sim
+42428|replay value
+45653|multimedia cd-rom
+42434|language learning - english
+33141|animated cutscenes
+44841|unicycle
+38700|mushroom
+44086|richard scarry
+42485|cosplay
+15268|interactive achievement awards 2004
+17268|narrative
+25489|tilt control
+45296|abandoned house
+9511|railroad simulation
+42517|crustacean
+42519|anomaly
+42766|disney fangame
+26532|suggestive themes
+18268|action combat
+42521|cannon
+43371|style
+43377|relaxin
+43387|isaac asimov
+28802|twitch chat
+43396|jets
+42805|player's choice
+9838|stealth camouflage
+28883|satellaview slotted cartridge data
+7292|one-button control
+12306|spike video game awards 2010
+42919|quetzalcoatl
+25362|pokemon fangame
+2385|free-to-play
+47415|joycon2 mouse controlled
+43861|isometric
+44196|graphical interactive fiction
+9928|unattainable achievements
+23936|3rd party accessories required
+24446|all-girls school
+47566|sword play
+13951|playstation underground
+43484|pengo clone
+173|reality tv
+42487|childish
+42471|historical reconstruction
+42503|gecko
+42516|crayfish
+23542|nintendo switch online exclusive
+43559|bad taste
+604|open-source
+5657|gamersgate
+42732|character skin
+44842|fisher-price ixl learning system
+43160|jumping
+43230|car racing
+43231|building block
+43232|toybox
+4239|platform exclusive
+42549|spelling
+2555|mario
+10269|nomads
+42571|cabal
+42572|sorting
+47416|elimination mode
+43333|problem solving
+42281|reuprise
+43360|easy platinum
+42551|ditherpunk
+4294|game title announcer
+41306|desert island
+10791|brain training
+43397|ai-generated coding
+43421|possum
+15306|interactive achievement awards 2003
+382|16-bit
+42860|word war i
+5885|gamescom 2012
+11386|one year war
+42577|homestuck
+42579|lineart
+47471|community driven
+43510|konami net dx
+42580|bass fishing
+42581|health
+43511|vodafone
+9399|dynamic difficulty
+47543|isc license
+42918|aztecs
+42924|nike
+42925|shoes
+23931|wholesome
+43018|hypnosis
+8399|drowzee
+47649|fake website
+1438|murder mystery
+43895|dice game
+11517|street sports
+2543|playstation network
+42546|titans
+42561|shmp
+43019|divination
+43020|zen
+42109|real world
+44843|leapfrog iquest
+43050|rap music
+43332|critical thinking
+43359|trophy hunter
+43233|world history
+34609|level up
+42610|one thousand and one nights
+43372|motherhood
+43235|mesoamerica
+42631|rapunzel
+42622|ainu
+44970|safari
+42625|hokkaido
+42627|the lion king
+42628|the jungle book
+43812|namco system 21
+43813|namco system 1
+15271|game developers choice awards 2004
+42629|based on - folk tale
+42630|cinderella
+42282|no enemies
+43476|elderly
+42632|based on - fairy tale
+42633|snow white
+42634|the frog prince
+32294|monster hunter
+42635|based on - fable
+43512|adult version of children's media
+42636|the three little pigs
+43527|chill
+9311|rail shooting segment
+2648|based on - manga
+9742|monsters that look suspiciously like genitalia
+8834|tokyo game show 2016
+45081|automobile
+44168|icelandic folklore
+47348|seattle
+40366|fmv
+7387|adapted to - anime
+47514|fnarb
+44167|cozy horror
+43001|open street maps
+29145|all-female cast
+7440|dark elves
+42464|command-based
+42637|beauty and the beast
+11312|no blood
+44844|social studies
+43285|wargame
+44971|bunny girl
+42638|sleeping beauty
+43814|discord
+43361|healthcare
+38272|tank game
+42639|peter pan
+47349|san francisco
+42640|the little mermaid
+42641|little red riding hood
+42678|romance of the three kingdoms
+38862|chaos
+42862|io game
+42870|extraction shooter
+42902|dragon quest
+13295|xbox 360 backwards compatibility
+33295|pc-98
+8295|reincarnation
+43408|cheeky
+28176|nicktoons
+43423|tanuki
+9329|secret past
+367|norse mythology
+43853|mappy
+43234|egyptians
+42410|bancho
+47515|valentines
+47569|idle gameplay
+43466|acorn
+43488|pun title
+47668|tram simulation
+47703|epic games
+47702|horror house
+47732|sandbox rpg
+43521|python
+43564|controller required
+11470|european grand prix
+9471|supply and demand
+5475|presidential candidate
+43936|gravity falls fangame
+43943|mark twain
+47350|indie mmorpg
+44146|overcooked
+30887|i-mode
+30911|watara supervision
+30272|cancelled pc port
+46091|lowres
+46174|neo-twiny jam
+4370|super game boy enhancement
+46176|the never-ending game jam
+46175|yandere game jam 2022
+46177|otome jam 2023
+32422|supertux
+43898|gp32
+43899|gp2x
+46178|josei jam 2023
+47474|ludum dare 57
+45539|rca studio ii
+7521|northrop–mcdonnell douglas yf-23
+43945|title in a different language - latin
+43951|arena flyer
+43950|finngame
+43957|session-based
+43956|vehicle crew
+43962|versatile
+43967|school drama
+37921|dreamcore
+47597|cave exploration
+43983|among us clone
+43989|jiangshi
+42603|immigration
+43997|springboks
+43996|all blacks
+43998|wallabies
+44204|megurine ruka
+47650|nepal
+47669|trolleybus simulation
+47704|digitized
+23954|no sexual content
+4957|crowd funded
+47706|golfoxing
+47705|bolf
+37972|cancelled gizmondo games
+44220|brutalism
+45791|super cd-rom 2
+43581|bubbles
+44845|mail
+1887|racism
+40890|women
+2180|cross-platform multiplayer
+244|crime solving
+43589|hang gliding
+46600|fate grand order
+43594|walrus
+46294|epoch game pocket computer
+45434|online pvp
+43599|action-rpg
+43598|heartslike
+47420|dentist
+46405|adapted to - comics
+47519|racing star
+46826|simulated operating system
+43608|self-deprecating humor
+47670|winter racing
+43613|epic adventure
+47707|bionicle
+47733|ensoniq soundscape support
+47734|gravis ultrasound support
+43620|hummingbird
+45813|victor surge
+43631|mizuki production
+6284|tokyo game show 2015
+4298|developer voice acting
+43833|telletubbies
+11394|gamecube controller support on wii
+394|mascot
+43865|thumby
+43900|gp2x wiz
+18452|secret society
+7488|optional censorship
+43942|high fantasy
+43946|wii u eshop
+43949|cave-flyer
+43960|alien
+43961|military unit design
+43984|family fun fitness control mat
+46092|palestinian
+45387|raising simulation
+46180|anime girls
+45515|cosy
+46717|gmc jam
+47421|fast forward
+44203|kagamine rin
+44208|ai-generated text
+28953|shigesato itoi
+46801|kollect
+28965|satellaview-compatible game
+47518|come on baby
+34285|custom tracks
+26299|battletech
+5318|d.i.c.e. awards 2016
+15373|interactive achievement awards 2001
+43860|fandub - english
+46408|boat
+43879|tiny rogue
+47599|hentai tales
+47655|match game
+45726|pokemon mod
+47672|epic
+47708|poco
+45793|soundblaster support
+45814|supermarket simulator
+43944|huckleberry finn
+43947|lottery
+43952|reverse horror
+47735|nanika
+43964|text-based
+7593|trilogy
+43995|rugby union
+42982|softcore
+44229|vehicle design
+39988|adapted to - manga
+42245|free
+47022|operation
+47051|cave
+47074|rpg game
+47152|deltarune mod
+47189|star wars unlimited
+47232|mixcity arena
+47233|mixcity
+47248|cannabis
+47354|fencing
+12991|xbox live arcade game integration
+44851|ludum dare 15
+46718|gmc jam 3
+46777|electronics design
+44244|superpower
+29004|unreleased games with an aftermarket release
+39005|the game awards - best action game - nominee
+39007|the game awards - best action-adventure game - nominee
+46778|bigmode game jam 2025
+46803|akmacdondon
+46805|endless maze
+46804|akmac industires
+46800|kollectomaniac
+45572|super sentai
+39026|the game awards - best handheld game - nominee
+45573|tokusatsu
+39029|the game awards - best independent game - winner
+44255|electronic pet
+44256|lowrezjam 2021
+46829|growing
+44258|lowrezjam 2014
+45594|business simulator
+35|greek mythology
+47520|percipio
+45596|casual game
+41037|fan translation - tagalog
+41038|fan translation - galician
+44265|flight stick
+44264|sit-down cabinet
+44266|pong clone
+44267|movement shooter
+44268|roaring 20s
+44269|art deco
+25043|ancient civilization
+15045|interactive achievement awards 2007
+7051|waking up captured
+2054|pewdiepie
+14057|best fighting game: winner - 2016 (the game awards)
+47654|merging game
+47671|healing
+47709|oh tennis
+47355|violin
+47423|smod
+47478|scene creator
+46719|beetles
+47522|drag race
+47549|iceberg
+46802|akmac
+47624|r4yn
+47652|adventure game
+45574|hardware store
+47674|glow
+47673|glow journey
+47711|alexgordon
+45750|yuri game jam 2024
+45794|n64 controller supported
+45815|spanish civil war
+46470|cga - composite mode
+47023|corgi
+47153|gamemaker
+47174|transgender protagonist
+47173|transfem protagonist
+47249|weed
+40064|character action
+12067|interactive achievement awards 2011
+31076|satellaview soundlink support
+37078|cancelled atari 2600 games
+47356|paraguay
+47521|drag queen
+47551|dead rails
+46387|battleships
+47576|upgrades
+46857|asocial
+47602|out of darkness
+46439|cloud saves
+46438|gog preservation program
+47625|rayngame
+45635|colour
+47623|rayn
+46897|dungeons dragons
+47653|puzzle game
+47675|stocks
+46955|relaxed
+46974|audio chat
+47677|stonks
+46991|recompilation
+47007|hate game
+47676|chess-like
+47710|alawar
+47080|coca cola kid
+47098|velanaadventures
+47099|gaiden
+47138|sets
+47139|2015
+44279|cooking simulation
+44278|drive thru
+44280|drive thruogh
+44281|logic
+44283|signalling
+44284|ship building
+44286|robot combat
+44289|swimsuits
+46300|shakespeare
+45550|popashot
+47550|deadrails
+46753|brain
+47603|kid blocks
+45699|first person horror
+46782|vaitoruks
+47656|freeflow
+47678|shades
+46858|action rts
+46879|catzdevstudio
+47679|infiltration
+46898|pacman
+47714|office overwork
+47712|anomaly game
+47713|anomalygame
+47057|conducting
+47079|coca cola
+47097|velana
+47125|pop shooter
+47140|agents ultra
+47176|snowbound
+44290|souls
+17092|immersive
+46097|ballet
+44294|sorcerer
+42102|chainsaw
+44295|color-blind friendly
+47481|chris crawford
+47524|daw
+12109|best debut indie game: nominee - 2017 (the game awards)
+44301|roundnet
+44302|lowrezjam 2016
+47604|potrick snap
+44307|sea
+47657|storytale
+45668|television
+46859|0h game jam
+44312|simpsons fangame
+47680|oppai oppai orbs
+44314|tarzan
+47715|location based
+45776|tales casino escape
+46976|olympics
+46993|flamingo
+44332|motherlike
+12153|best sports/racing game: winner - 2017 (the game awards)
+44341|skill system
+47081|abyss
+47126|fifa
+47157|3dfx glide
+47177|great journey
+47214|comedy extermination
+47216|over-the-top cleaning
+47201|bug hunting
+47198|insect extermination
+47203|insect invasion
+47197|cleaning simulation
+47215|whacky bugs
+47211|nightmare infestation
+47207|power washing bugs
+47196|bug cleaners
+47208|industrial cleaning
+47206|bug blaster
+44339|dynamic events
+47360|jagcode ii contest 2008
+17160|increasing difficulty
+44342|based on - commercial ads
+44344|cockatils
+44345|mixology
+45186|dream diary jam
+47482|cozy adventure
+44343|bartending
+2173|team-based
+47526|kovaak
+47525|easyaim
+47580|rage
+47605|patrick star
+47658|candles
+47684|magic tech
+44358|sqij fangame
+44359|arcade homebrew
+12183|best chinese game: winner - 2017 (the game awards)
+47683|sci-fi fantasy
+47681|retro arcade
+47716|water gun
+46899|shop life
+45798|fungal infection
+44373|axe
+44374|gambling simulation
+47082|multiple currencies
+47101|cellphone
+47158|flappy jam
+47178|championis
+47202|extermination squad
+5215|game developers choice awards 2017
+44384|gmtk game jam 2020
+47219|spine-chilling
+47218|lighthearted chaos
+44387|smbx episode
+47220|dread-inducing
+44663|fly
+47221|unsettling encounters
+47200|bug shooter
+47210|creepy crawlers
+47213|funny bug cleaner
+47205|fps bug shooter
+47209|horror bugs
+47212|bug survival
+47204|survival cleaning
+47199|pest control
+47217|whacky fun
+44388|lowrezjam
+45975|mario kart
+44390|trle net's hall of fame 2002
+44391|trle net's hall of fame
+44392|trle net's hall of fame 2022
+44394|adventure jam 2019
+44393|adventure jam
+44397|fixed shooter
+15242|interactive achievement awards 1999
+44400|smw central's hall of fame
+47484|morse code
+44403|collecting items
+44404|momentum
+46357|gold master series
+47483|codebreaking
+47527|skill based game
+44408|smw central's hall of fame - class of 2018
+44409|smw central's hall of fame - class of 2023
+44410|pachislot
+44411|kitchen
+44412|trle net's hall of fame 2003
+44413|trle net's hall of fame 2010
+44414|trle net's hall of fame 2008
+44415|trle net's hall of fame 2006
+46443|the thrill of the fight
+44418|gbjam 7
+44419|gbjam
+45609|watermelon
+46835|gbjam 2
+46861|7dfps
+47659|pudgy penguins
+47682|boss fights
+44428|bitsy
+44429|one button game
+45702|dream diary jam 8
+44431|gbjam 4
+44433|enchant jam 1
+44432|enchant jam
+47717|guillotine
+47718|buzz saw
+46959|hentaiverse
+46960|e-hentai
+45779|railway dispatcher
+46978|delinquents
+47719|reaction time
+45821|side story
+47128|mobite
+47179|anvil
+44437|washington dc
+47485|n sane trilogy
+45525|ftl
+45526|eve online
+44444|ojom
+44983|croquet
+44451|juice jam i
+44450|juice jam
+44453|rodeo
+44452|professional bull riding - pbr
+46304|mt-32 support
+45188|3dtv support
+46356|interactive documentary
+44458|gbjam 1
+46862|7dfps 2013
+47630|based on - toy
+44460|draughts
+44462|resistjam
+47685|mombo
+44464|adventure jam 2017
+44465|adventure jam 2016
+44467|familiar game jam 5
+44466|familiar game jam
+45780|color puzzle
+47720|divine
+47721|infracta
+45823|crash magazine
+44473|gbjam 3
+46447|mind game
+44483|mini ludum dare 50
+44482|mini ludum dare
+44485|cyberpunk jam 2014
+44484|cyberpunk jam
+47103|planting
+47222|college basketball
+45326|otter
+46615|bakumatsu
+44493|smw central questionable hackjam
+44494|smw central questionable hackjam 1
+44495|smw central hackjam
+44496|smw central hackjam 1
+46616|shinsengumi
+47431|puzzle-rpg
+47588|dark sun
+44505|nonejam
+44506|nonejam 7
+46305|pug
+44508|acid
+46763|my first game jam
+45704|supermarket
+47631|toys to life
+47661|pumpkin
+47686|rp
+46884|lgbtq
+46905|gmc jam 17
+47687|modding
+47722|lost futue
+44527|novella
+44529|cycling
+44530|virtual training
+44534|drag racing
+47043|automobile sim
+47062|criminal
+47085|7drl
+44539|purple
+44540|spiders
+47105|masyanya
+47107|press
+47108|yellow pres
+47109|masyanya under the yellow press
+47223|parking
+47365|games about video games
+47434|pc mod
+47433|sonic adventure
+44864|ghost
+45494|youtube playables
+46764|beat em up
+47437|fan made
+47432|sonic generations
+47435|level recreation
+44565|akira
+46819|java edition
+47589|skirmish
+46864|barney
+46906|investing
+45679|supenatural
+45709|multi-dimensional
+46946|diorama
+46964|meaningless choices
+47662|god's league
+45712|dream diary jam 6
+45737|art gallery
+47688|ugc
+47723|humiliation dungeon survivors
+47044|dualsense support for pc
+44584|spelunking
+47069|yuri's revenge mod
+45824|activity center
+47068|yuri's revenge
+47063|cnc
+47064|command and conquer
+47065|cnc mod
+47067|red alert 2
+44592|desert
+47066|command and conquer mod
+44594|flies
+47106|yellow
+47104|masyanya yellow press
+47147|site planting
+47164|frontlines
+47224|wowie jam
+46618|night vision
+44610|tobacco
+44611|smoking
+44612|ai-generated translations
+46103|five nights at freddys
+47436|sonic the hedgehog
+46257|ai-generated video
+47438|family
+45617|machine-translation
+45616|translation error
+45648|hiphop
+47440|greenhouse
+45711|dream diary jam 3
+47441|toddler game
+46820|mojang
+44865|life
+47439|gardening sim
+47442|kids game
+44629|steam families
+47532|cheerleader
+45784|metal slug
+47591|miniature card game - mcg
+47590|miniature
+44638|hybrid art style
+46523|ttrpg
+46891|adventures
+47663|bible game
+47689|the defiant
+46947|brain-teaser
+47726|sambzock
+46983|boeboeks
+44653|ai girlfriend
+47724|chipflake
+47725|samb
+47727|chip
+47045|alcohol
+47070|the legend of the vampire
+47728|cat platformer
+47110|phasmophobia
+47148|xianxia
+47165|riichi
+47225|wowie jam 3
+47244|lanigera
+46619|season fall
+44866|kanji
+46737|kingsroad
+46735|game of thrones
+46736|game of throne kingsroad
+47443|watering
+46792|competitive multiplayer
+46821|moai
+47490|peasant
+45561|silent hill
+45713|dream diary jam 7
+45760|spooktober jam
+47664|celeste
+47690|medal game
+47729|chansaw the children
+46948|topdown shooter
+46966|evil
+46984|kakadori
+47088|unicorn
+47089|delivery
+46452|dreamhack dallas jam 2019
+47136|army
+47187|webgame
+47228|gamemaking frenzy barfcade
+47227|gamemaking frenzy
+47226|barfjam
+47368|quest
+46794|story-driven campaign
+46822|steve blanding
+44678|starting fires
+47594|action sandbox mmo
+46949|joseimuke
+47613|minerva
+44687|bicycle
+47665|ludo
+47691|abandoned early access
+47730|indie-game
+45684|murder on the orient express
+45683|identity v
+45685|character-driven
+46967|reverse harem
+46989|trawling
+44711|ocram ratte
+44712|apfel
+44710|sinesperia
+44709|apfel project
+44713|baldur's gate
+44719|character classes
+47369|bolivia
+46118|third-person
+46621|unfolding
+46260|dead space
+45565|2010s
+46795|life simulator
+44868|top-down
+47614|mine
+47667|tokyo ghoul
+47692|100girlfriend
+47731|hybrid
+47073|shop life simulator
+47188|html5 game

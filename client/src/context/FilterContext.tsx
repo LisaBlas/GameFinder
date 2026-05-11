@@ -6,6 +6,7 @@ export interface Filter {
   id: string | number;
   name: string;
   category: string;
+  mode?: "include" | "exclude";
   slug?: string;
   endpoint?: string;
   compositeId?: string;
@@ -20,6 +21,8 @@ interface FilterContextType {
   addFilter: (filter: Filter) => void;
   removeFilter: (id: string | number, category: string, endpoint?: string) => void;
   isFilterSelected: (id: string | number, category: string, endpoint?: string) => boolean;
+  keywordMode: "include" | "exclude";
+  setKeywordMode: (mode: "include" | "exclude") => void;
   clearAllFilters: () => void;
   expandedFilters: Record<string, boolean>;
   setFilterExpanded: (filterId: string, isExpanded: boolean) => void;
@@ -53,6 +56,7 @@ export const useFilters = () => {
 export const FilterProvider = ({ children }: { children: ReactNode }) => {
   // State for selected filters
   const [selectedFilters, setSelectedFilters] = useState<Filter[]>([]);
+  const [keywordMode, setKeywordMode] = useState<"include" | "exclude">("include");
   
   // State for expanded filters
   const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>({});
@@ -94,9 +98,20 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
 
       // For Keywords, allow multiple selections up to 3
       if (filter.category === 'Keywords') {
-        const existingKeywords = prevFilters.filter(f => f.category === 'Keywords');
-        if (existingKeywords.length >= 3) return prevFilters;
-        return [...prevFilters, filter];
+        const existingKeywordIndex = prevFilters.findIndex(
+          f => f.category === 'Keywords' && f.id === filter.id
+        );
+
+        if (existingKeywordIndex !== -1) {
+          const newFilters = [...prevFilters];
+          newFilters[existingKeywordIndex] = {
+            ...filter,
+            mode: filter.mode || "include"
+          };
+          return newFilters;
+        }
+
+        return [...prevFilters, { ...filter, mode: filter.mode || "include" }];
       }
 
       // For other categories, maintain the existing logic
@@ -207,7 +222,9 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   // API interaction functions
   const searchGames = useCallback(async () => {
     console.log('[FilterContext] Starting search with filters:', selectedFilters);
-    if (selectedFilters.length === 0) {
+    const searchableFilters = selectedFilters.filter(filter => filter.mode !== "exclude");
+
+    if (searchableFilters.length === 0) {
       console.log('[FilterContext] No filters selected, aborting search');
       return;
     }
@@ -223,7 +240,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       // Group filters by category for the API
-      const groupedFilters = selectedFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
+      const groupedFilters = searchableFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
         if (filter.isParentOnly) return acc;
         if (!acc[filter.category]) {
           acc[filter.category] = [];
@@ -231,18 +248,23 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         acc[filter.category].push(filter);
         return acc;
       }, {});
-      
+
+      const excludeKeywordIds = selectedFilters
+        .filter(f => f.category === 'Keywords' && f.mode === 'exclude')
+        .map(f => Number(f.id));
+
       const response = await axios.post('/api/games/search', {
         filters: groupedFilters,
         sort: sortBy,
-        page: 1
+        page: 1,
+        excludeKeywords: excludeKeywordIds
       });
       
       const processedResults = response.data.map((game: any) => {
         const matched: Filter[] = [];
         const missing: Filter[] = [];
         
-        selectedFilters
+        searchableFilters
           .filter(filter => !filter.isParentOnly)
           .forEach(filter => {
             const matchId = game._matchedFilters?.includes(Number(filter.id));
@@ -306,22 +328,29 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     
     try {
+      const searchableFilters = selectedFilters.filter(filter => filter.mode !== "exclude");
+
       // Group filters by category for the API
-      const groupedFilters = selectedFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
+      const groupedFilters = searchableFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
         if (!acc[filter.category]) {
           acc[filter.category] = [];
         }
         acc[filter.category].push(filter);
         return acc;
       }, {});
-      
+
+      const excludeKeywordIds = selectedFilters
+        .filter(f => f.category === 'Keywords' && f.mode === 'exclude')
+        .map(f => Number(f.id));
+
       const excludeIds = gameResults.map(game => game.id);
-      
+
       const request = axios.post('/api/games/search', {
         filters: groupedFilters,
         sort: sortBy,
         page: nextPage,
-        excludeIds
+        excludeIds,
+        excludeKeywords: excludeKeywordIds
       });
       
       setPendingRequests(prev => ({
@@ -340,7 +369,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         const matched: Filter[] = [];
         const missing: Filter[] = [];
         
-        selectedFilters
+        searchableFilters
           .filter(filter => !filter.isParentOnly)
           .forEach(filter => {
             const matchId = game._matchedFilters?.includes(Number(filter.id));
@@ -450,6 +479,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     addFilter,
     removeFilter,
     isFilterSelected,
+    keywordMode,
+    setKeywordMode,
     clearAllFilters,
     expandedFilters,
     setFilterExpanded,

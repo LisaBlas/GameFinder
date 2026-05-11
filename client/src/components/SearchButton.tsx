@@ -4,9 +4,10 @@ import { Search } from 'lucide-react';
 
 const SearchButton: React.FC = () => {
   const { searchGames, selectedFilters, isLoading } = useFilters();
+  const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
 
   const handleSearch = () => {
-    if (selectedFilters.length > 0) {
+    if (hasSearchableFilters) {
       searchGames();
     }
   };
@@ -16,7 +17,7 @@ const SearchButton: React.FC = () => {
       <button 
         className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
         onClick={handleSearch}
-        disabled={selectedFilters.length === 0 || isLoading}
+        disabled={!hasSearchableFilters || isLoading}
       >
         {isLoading ? (
           <>

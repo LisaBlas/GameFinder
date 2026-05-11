@@ -3,7 +3,7 @@ import { Filter } from "./Filter";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import keywordCategories from "../assets/keyword-categories.json";
 import {
-  ChevronDown, ChevronRight, ArrowLeft, Cog, Globe, Palette,
+  ArrowLeft, Cog, Globe, Palette,
   Sword, Mountain, Crosshair, Zap, Layers, TrendingUp, Flame, Gamepad2,
   Coins, Sparkles, Wand2, LayoutGrid, Target, Trophy, Dices, Brain,
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
@@ -36,6 +36,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const category = 'Keywords';
   const { clearAllFilters, searchGames, selectedFilters, isLoading } = useFilters();
+  const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
 
   const handleDesktopSearch = async () => {
     await searchGames();
@@ -46,16 +47,12 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<MainCategory>>(new Set());
+  const [activeMainCategory, setActiveMainCategory] = useState<MainCategory>("Mechanics & Systems");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
 
-  const toggleCategory = (cat: MainCategory) => {
-    setCollapsedCategories(prev => {
-      const next = new Set(prev);
-      if (next.has(cat)) next.delete(cat);
-      else next.add(cat);
-      return next;
-    });
+  const selectMainCategory = (cat: MainCategory) => {
+    setActiveMainCategory(cat);
+    setActiveSubcategory(null);
   };
 
   const getCategoryIcon = (mainCat: MainCategory) => {
@@ -121,11 +118,50 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const getSubcategoryParent = (subCategoryName: string): MainCategory | undefined =>
     mainCategoryOrder.find(cat => getSubcategories(cat).includes(subCategoryName));
 
+  const getCategoryShortLabel = (mainCat: MainCategory) => {
+    if (mainCat === "Mechanics & Systems") return "Mechanics";
+    if (mainCat === "Setting & World") return "World";
+    return "Style";
+  };
+
+  const renderCategorySelector = () => (
+    <div className="grid grid-cols-3 gap-2">
+      {mainCategoryOrder.map((mainCat) => {
+        const totalKeywords = getTotalKeywordCount(mainCat);
+        const isActive = activeMainCategory === mainCat;
+
+        return (
+          <button
+            key={mainCat}
+            onClick={() => selectMainCategory(mainCat)}
+            className={`group flex min-w-0 items-center gap-2 rounded-lg border px-3 py-3 text-left transition-all duration-200 ${
+              isActive
+                ? "border-primary/70 bg-primary/15 text-foreground shadow-[0_0_22px_rgba(139,92,246,0.12)]"
+                : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-foreground"
+            }`}
+          >
+            <span className={`shrink-0 rounded-md p-1.5 ${isActive ? "bg-primary/15" : "bg-background/50 group-hover:bg-primary/10"}`}>
+              {getCategoryIcon(mainCat)}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold">
+                {getCategoryShortLabel(mainCat)}
+              </span>
+              <span className="block text-xs text-muted-foreground">
+                {totalKeywords} groups
+              </span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <div className="keyword-section w-full transition-all duration-500 h-auto">
+    <div className="keyword-section w-full h-full flex flex-col transition-all duration-500">
       {/* Search bar row with title */}
-      <div className="w-full px-6 py-4 border-b border-border">
-        <div className="flex items-center gap-4">
+      <div className="workspace-sticky-header w-full px-6 border-b border-border">
+        <div className="flex min-h-full items-center gap-4">
           <h1 className="shrink-0 text-2xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
             Gamefinder
           </h1>
@@ -136,25 +172,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       </div>
 
       {/* Desktop query builder bar */}
-      <div className="hidden lg:flex items-center gap-3 px-6 py-3 border-b border-border">
-        <div className="flex-1 min-w-0">
-          {selectedFilters.length > 0 && <SelectedFilters />}
+      <div className="desktop-action-bar hidden lg:grid border-b border-border">
+        <div className="user-selection">
+          <SelectedFilters variant="lanes" />
         </div>
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="desktop-action-buttons">
           <button
             onClick={handleDesktopClear}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white border border-border bg-background hover:bg-red-500 rounded-lg transition-colors"
+            className="desktop-action-button desktop-action-button-clear"
           >
             <X className="w-4 h-4" />
             Clear
           </button>
           <button
             onClick={handleDesktopSearch}
-            disabled={selectedFilters.length === 0 || isLoading}
-            className={`hero-button flex items-center gap-2 px-6 py-2 text-sm font-medium text-white rounded-lg transition-all duration-300 ${
-              selectedFilters.length > 0
-                ? 'bg-primary hover:bg-primary/90'
-                : 'bg-primary/50 cursor-not-allowed'
+            disabled={!hasSearchableFilters || isLoading}
+            className={`hero-button desktop-action-button desktop-action-button-search ${
+              hasSearchableFilters
+                ? 'desktop-action-button-search-active'
+                : 'desktop-action-button-search-disabled'
             }`}
           >
             {isLoading ? (
@@ -176,8 +212,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       </div>
 
       {/* Main content */}
-      <div className="p-6">
-        {activeSubcategory ? (
+      <div className="flex-1 min-h-0 p-6">
+        <div className="flex h-full min-h-0 flex-col gap-5">
+          {renderCategorySelector()}
+
+          {activeSubcategory ? (
           /* Keywords view — mirrors category card structure */
           (() => {
             const keywords = getKeywordsForSubcategory(activeSubcategory);
@@ -186,17 +225,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               ? (keywordCategories[mainCat] as unknown as Record<string, { description: string }>)[activeSubcategory]?.description
               : "No description available.";
             return (
-              <div>
-                <button
-                  onClick={() => setActiveSubcategory(null)}
-                  className="flex items-center gap-2 text-primary hover:text-primary/80 text-sm mb-4"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Back to categories</span>
-                </button>
-                <div className="rounded-xl border border-border overflow-hidden">
+              <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-background/40">
                   {/* Subcategory header — same structure as category card header */}
-                  <div className="flex items-start gap-4 p-5 bg-card">
+                  <div className="flex items-start gap-4 border-b border-border bg-card p-5">
                     <div className="shrink-0 mt-0.5 p-2.5 rounded-lg bg-primary/10">
                       {getSubcategoryIcon(activeSubcategory, "w-6 h-6 text-primary")}
                     </div>
@@ -211,48 +242,50 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       </div>
                       <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
                     </div>
+                    <button
+                      onClick={() => setActiveSubcategory(null)}
+                      className="shrink-0 flex items-center gap-2 rounded-lg border border-border bg-background/50 px-3 py-2 text-sm font-medium text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span>Back to {getCategoryShortLabel(mainCat ?? activeMainCategory)}</span>
+                    </button>
                   </div>
                   {/* Keywords — same contained area style */}
-                  <div className="border-t border-border bg-background/60 px-4 py-4">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <div className="flex-1 overflow-y-auto px-4 py-4">
+                    <div className="keyword-inline-list">
                       {keywords.map((keyword: KeywordItem) => (
-                        <Filter
-                          key={keyword.id}
-                          label={keyword.name}
-                          id={keyword.id}
-                          category={category}
-                          onClick={() => {}}
-                        />
+                        <div key={keyword.id} className="keyword-inline-item">
+                          <Filter
+                            label={keyword.name}
+                            id={keyword.id}
+                            category={category}
+                            onClick={() => {}}
+                          />
+                        </div>
                       ))}
                     </div>
                   </div>
-                </div>
               </div>
             );
           })()
         ) : (
           /* All categories — full-width vertical cards */
-          <div className="space-y-4">
-            {mainCategoryOrder.map((mainCat) => {
-              const isCollapsed = collapsedCategories.has(mainCat);
-              const subcategories = getSubcategories(mainCat);
-              const totalKeywords = getTotalKeywordCount(mainCat);
-              const descriptor = (keywordCategories[mainCat] as unknown as { description: string }).description;
+          <>
+            {(() => {
+              const subcategories = getSubcategories(activeMainCategory);
+              const descriptor = (keywordCategories[activeMainCategory] as unknown as { description: string }).description;
+              const totalKeywords = getTotalKeywordCount(activeMainCategory);
 
               return (
-                <div key={mainCat} className="rounded-xl border border-border overflow-hidden">
-                  {/* Category header */}
-                  <button
-                    onClick={() => toggleCategory(mainCat)}
-                    className="w-full flex items-start gap-4 p-5 text-left group bg-card hover:bg-primary/5 transition-colors"
-                  >
+                <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-background/40">
+                  <div className="flex items-start gap-4 border-b border-border bg-card p-5">
                     <div className="shrink-0 mt-0.5 p-2.5 rounded-lg bg-primary/10">
-                      {getCategoryIcon(mainCat)}
+                      {getCategoryIcon(activeMainCategory)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                          {mainCat}
+                        <span className="text-xl font-bold text-foreground">
+                          {activeMainCategory}
                         </span>
                         <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">
                           {totalKeywords}
@@ -262,42 +295,37 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         {descriptor}
                       </p>
                     </div>
-                    <div className="shrink-0 mt-1">
-                      {isCollapsed
-                        ? <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                        : <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                      }
-                    </div>
-                  </button>
+                  </div>
 
-                  {/* Subcategory container */}
-                  {!isCollapsed && (
-                    <div className="border-t border-border bg-background/60 px-4 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        {subcategories.map((subCategoryName) => {
-                          const keywords = getKeywordsForSubcategory(subCategoryName);
-                          if (!Array.isArray(keywords) || keywords.length === 0) return null;
-                          const description = (keywordCategories[mainCat] as unknown as Record<string, { description: string }>)[subCategoryName]?.description || "";
-                          return (
-                            <Tooltip key={subCategoryName} content={description}>
-                              <div
-                                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium cursor-pointer transition-all duration-200 bg-card hover:bg-primary/10 border border-border hover:border-primary/50 whitespace-nowrap"
-                                onClick={() => setActiveSubcategory(subCategoryName)}
-                              >
-                                {getSubcategoryIcon(subCategoryName)}
-                                <span>{subCategoryName}</span>
-                              </div>
-                            </Tooltip>
-                          );
-                        })}
-                      </div>
+                  <div className="flex-1 overflow-y-auto px-4 py-4">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {subcategories.map((subCategoryName) => {
+                        const keywords = getKeywordsForSubcategory(subCategoryName);
+                        if (!Array.isArray(keywords) || keywords.length === 0) return null;
+                        const description = (keywordCategories[activeMainCategory] as unknown as Record<string, { description: string }>)[subCategoryName]?.description || "";
+                        return (
+                          <Tooltip key={subCategoryName} content={description}>
+                            <div
+                              className="flex min-h-[3.25rem] items-center gap-3 rounded-lg px-3.5 py-3 text-sm font-medium cursor-pointer transition-all duration-200 bg-card hover:bg-primary/10 border border-border hover:border-primary/50"
+                              onClick={() => setActiveSubcategory(subCategoryName)}
+                            >
+                              {getSubcategoryIcon(subCategoryName, "w-4 h-4 shrink-0 text-primary")}
+                              <span className="min-w-0 flex-1 leading-snug">{subCategoryName}</span>
+                              <span className="shrink-0 text-xs font-semibold text-muted-foreground">
+                                {keywords.length}
+                              </span>
+                            </div>
+                          </Tooltip>
+                        );
+                      })}
                     </div>
-                  )}
+                  </div>
                 </div>
               );
-            })}
-          </div>
+            })()}
+          </>
         )}
+        </div>
       </div>
     </div>
   );

@@ -58,6 +58,18 @@ All filter/keyword/result state flows from there.
 - **No price fetching** — we don't have infrastructure to fetch real-time prices from affiliate sites
 - **Max 3 keywords** — enforced in `FilterContext.addFilter()`. IGDB supports multi-keyword natively (AND filter, single call).
 
+## Keyword Exclude Feature
+Each keyword pill can be toggled include/exclude via the Include/Exclude toggle in the header or the +/- button on the pill in `SelectedFilters`.
+
+How it works end-to-end:
+- `keywordMode` in `FilterContext` drives which mode new keywords are added with
+- Each `Filter` in `selectedFilters` carries `mode: "include" | "exclude"` when `category === "Keywords"`
+- On search, `searchableFilters` strips out exclude-mode keywords (they don't become IGDB include conditions)
+- Excluded keyword IDs are collected separately and sent as `excludeKeywords: number[]` to `/api/games/search`
+- `igdbService.searchGames` receives them and **post-filters** the results — any game whose `keywords` array contains an excluded ID is removed before returning
+
+**IGDB gotcha:** `keywords != (id)` does NOT mean "does not contain id" in Apicalypse — it means "the array is not equal to (id)", which is almost always true and does nothing useful. Exclusion must be done in application code after fetching.
+
 ## Competitive Context
 Main competitors: WhatOPlay, Boredgame.lol, GamesFinder.gg
 Differentiator: "based on what actually matters" — curated keywords + smart filtering, not database dumps
@@ -66,6 +78,9 @@ Mood/vibe angle is underserved and aligns with our keyword approach
 ## Workflow (from Slack)
 Mention `@bot projects/GameFinder <task>` in Slack to start a session here.
 After changes, commit and push to `main`. Render auto-deploys from main.
+
+## Verification Preference
+- Do not take screenshots to check visual work unless explicitly requested by the user.
 
 ## Git
 - Branch: work on `main` or feature branches

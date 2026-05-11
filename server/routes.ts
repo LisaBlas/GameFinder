@@ -26,11 +26,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         excludeCount: req.body.excludeIds?.length
       });
       
-      const { 
-        filters, 
-        sort = 'relevance', 
-        page = 1, 
-        excludeIds = [] 
+      const {
+        filters,
+        sort = 'relevance',
+        page = 1,
+        excludeIds = [],
+        excludeKeywords = []
       } = req.body;
       
       if (!filters || Object.keys(filters).length === 0) {
@@ -44,7 +45,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Get games from IGDB API based on filters
-      const games = await igdbService.searchGames(filters, sort, page, excludeIds);
+      const games = await igdbService.searchGames(filters, sort, page, excludeIds, excludeKeywords);
       
       console.log('[routes] Search completed:', {
         resultCount: games.length,

@@ -185,7 +185,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
   const [mediaHeight, setMediaHeight] = useState<number | null>(null);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
-  const { addFilter, isFilterSelected, selectedFilters } = useFilters();
+  const { addFilter, removeFilter, isFilterSelected, selectedFilters, keywordMode } = useFilters();
 
   const imageUrl = game.cover?.url
     ? game.cover.url.replace('/t_thumb/', '/t_cover_big/')
@@ -251,7 +251,21 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
 
   const handleTagClick = (tag: { id: number; name: string }, category: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isFilterSelected(tag.id, category)) {
+    if (category === 'Keywords') {
+      const existingFilter = selectedFilters.find(f => f.id === tag.id && f.category === category);
+      const alreadySelectedWithSameMode = existingFilter && existingFilter.mode === keywordMode;
+      if (alreadySelectedWithSameMode) {
+        removeFilter(tag.id, category, undefined);
+      } else {
+        addFilter({
+          id: tag.id,
+          name: tag.name,
+          category,
+          mode: keywordMode,
+          compositeId: `${category}-${tag.id}-${tag.name}`.toLowerCase().replace(/\s+/g, '-')
+        });
+      }
+    } else if (!isFilterSelected(tag.id, category)) {
       addFilter({
         id: tag.id,
         name: tag.name,
@@ -373,6 +387,21 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
       ? tag.name.charAt(0).toUpperCase() + tag.name.slice(1)
       : tag.name;
     const isSelectedTag = isFilterSelected(tag.id, tag.category);
+    const existingFilter = isKeyword ? selectedFilters.find(f => f.id === tag.id && f.category === tag.category) : null;
+    const isExcluded = isKeyword && existingFilter?.mode === 'exclude';
+
+    let keywordClass: string;
+    if (isExcluded) {
+      keywordClass = 'bg-red-900/20 text-red-200 ring-2 ring-red-400/50 hover:bg-red-500/20';
+    } else if (isSelectedTag) {
+      keywordClass = keywordMode === 'exclude'
+        ? 'bg-amber-500/30 text-amber-100 ring-2 ring-amber-400/50 hover:bg-red-500/20 hover:ring-red-400/50'
+        : 'bg-amber-500/30 text-amber-100 ring-2 ring-amber-400/50';
+    } else {
+      keywordClass = keywordMode === 'exclude'
+        ? 'bg-amber-900/20 text-amber-200 hover:bg-red-500/20 hover:ring-1 hover:ring-red-400/60'
+        : 'bg-amber-900/20 text-amber-200 hover:bg-amber-800/30';
+    }
 
     return (
       <button
@@ -383,11 +412,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
             ? isSelectedTag
               ? 'bg-purple-500/30 text-purple-100 ring-2 ring-purple-400/50'
               : 'bg-purple-900/20 text-purple-200 hover:bg-purple-800/30'
-            : isSelectedTag
-              ? 'bg-amber-500/30 text-amber-100 ring-2 ring-amber-400/50'
-              : 'bg-amber-900/20 text-amber-200 hover:bg-amber-800/30'
+            : keywordClass
         }`}
-        title={`Click to add "${displayName}" to filters`}
+        title={isExcluded ? `Click to remove "${displayName}" exclusion` : keywordMode === 'exclude' ? `Click to exclude "${displayName}"` : `Click to add "${displayName}" to filters`}
       >
         {displayName}
       </button>
@@ -421,7 +448,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect }) => {
         }}
       >
         <div className="flex flex-col md:flex-row">
-          <div className="relative w-full h-56 md:w-40 lg:w-44 md:h-auto md:min-h-[230px] self-stretch flex-shrink-0 overflow-hidden bg-slate-950">
+          <div className={`relative w-full h-56 md:w-40 lg:w-44 md:h-auto md:min-h-[230px] self-stretch flex-shrink-0 overflow-hidden bg-slate-950 ${isSelected ? 'hidden' : ''}`}>
             <img
               src={imageUrl}
               alt={`${game.name} cover`}

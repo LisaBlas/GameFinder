@@ -62,35 +62,32 @@ const SearchResults: React.FC = () => {
 
   return (
     <section className="flex-1 w-full mx-auto">
-      {/* Only show results header if we have results or have searched */}
-      {hasSearched && (
-        <div className="results-sticky-header">
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            <h2 className="shrink-0 text-2xl font-heading font-semibold text-white">
-              {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
-            </h2>
+      <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'}`}>
+        <div className="flex min-h-full flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+          <h2 className="shrink-0 text-2xl font-heading font-semibold text-white">
+            {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
+          </h2>
 
-            <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-end">
-              <FilterBar />
+          <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-end">
+            <FilterBar />
 
-              <div className="results-sort-control">
-                <span>Sort</span>
-                <select
-                  className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  value={sortBy}
-                  onChange={handleSortChange}
-                  aria-label="Sort results"
-                >
-                  <option value="relevance">Relevance</option>
-                  <option value="rating">Rating</option>
-                  <option value="release">Release Date</option>
-                  <option value="name">Name</option>
-                </select>
-              </div>
+            <div className="results-sort-control">
+              <span>Sort</span>
+              <select
+                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                value={sortBy}
+                onChange={handleSortChange}
+                aria-label="Sort results"
+              >
+                <option value="relevance">Relevance</option>
+                <option value="rating">Rating</option>
+                <option value="release">Release Date</option>
+                <option value="name">Name</option>
+              </select>
             </div>
           </div>
         </div>
-      )}
+      </div>
       
       {error && (
         <div className="mb-6 p-4 bg-red-900/20 border border-red-900/50 rounded-lg text-red-200">
