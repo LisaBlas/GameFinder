@@ -280,8 +280,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       </div>
                       <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
                     </div>
-                    {/* Action buttons sitting on the header/keyword border */}
-                    <div className="absolute bottom-0 right-4 translate-y-1/2 z-10 flex items-center gap-1.5 bg-card px-1">
+                    {/* Action buttons: inline on mobile, straddling the border on desktop */}
+                    <div className="shrink-0 flex items-center gap-1.5 lg:absolute lg:bottom-0 lg:right-4 lg:translate-y-1/2 lg:z-10 lg:bg-card lg:px-1">
                       <Tooltip content={isModified ? "Restore initial list" : "Nothing to restore"}>
                         <button
                           onClick={handleRestore}
