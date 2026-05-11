@@ -140,28 +140,26 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const renderCategorySelector = () => (
     <div className="grid grid-cols-3 gap-2">
       {mainCategoryOrder.map((mainCat) => {
-        const totalKeywords = getTotalKeywordCount(mainCat);
         const isActive = activeMainCategory === mainCat;
 
         return (
           <button
             key={mainCat}
             onClick={() => selectMainCategory(mainCat)}
-            className={`group flex min-w-0 items-center gap-2 rounded-lg border px-3 py-3 text-left transition-all duration-200 ${
-              isActive
+            className={`group flex min-w-0 rounded-lg border transition-all duration-200
+              flex-col items-center justify-center gap-1 px-2 py-3 text-center
+              lg:flex-row lg:items-center lg:gap-2 lg:px-3 lg:text-left
+              ${isActive
                 ? "border-primary/70 bg-primary/15 text-foreground shadow-[0_0_22px_rgba(139,92,246,0.12)]"
                 : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-foreground"
-            }`}
+              }`}
           >
             <span className={`shrink-0 rounded-md p-1.5 ${isActive ? "bg-primary/15" : "bg-background/50 group-hover:bg-primary/10"}`}>
               {getCategoryIcon(mainCat)}
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-bold">
+            <span className="min-w-0 lg:flex-1">
+              <span className="block text-sm font-bold">
                 {getCategoryShortLabel(mainCat)}
-              </span>
-              <span className="block text-xs text-muted-foreground">
-                {totalKeywords} groups
               </span>
             </span>
           </button>
@@ -172,15 +170,13 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   return (
     <div className="keyword-section w-full h-full flex flex-col transition-all duration-500">
-      {/* Search bar row with title */}
-      <div className="workspace-sticky-header w-full px-6 border-b border-border">
-        <div className="flex min-h-full items-center gap-4">
+      {/* Desktop-only: title + tagline sticky header */}
+      <div className="hidden lg:flex flex-col justify-center sticky top-0 z-30 min-h-[4.75rem] border-b border-border bg-[rgba(14,18,30,0.94)] backdrop-blur-[14px] shadow-[0_12px_28px_rgba(0,0,0,0.24)] w-full px-6">
+        <div className="flex items-baseline gap-3">
           <h1 className="shrink-0 text-2xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
             Gamefinder
           </h1>
-          <div className="flex-1">
-            <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
-          </div>
+          <span className="text-sm text-muted-foreground">Find your next favourite game</span>
         </div>
       </div>
 
@@ -227,6 +223,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       {/* Main content */}
       <div className="flex-1 min-h-0 p-6">
         <div className="flex h-full min-h-0 flex-col gap-5">
+          <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
           {renderCategorySelector()}
 
           {activeSubcategory ? (

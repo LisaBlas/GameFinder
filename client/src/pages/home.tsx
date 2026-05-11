@@ -14,6 +14,16 @@ const HomeContent: React.FC = () => {
     <div className="h-screen flex flex-col overflow-hidden">
       <AnimatedBackground />
 
+      {/* Mobile: GameFinder title + tagline above tabs */}
+      <div className="lg:hidden shrink-0 px-4 py-3 bg-background/80 backdrop-blur-sm">
+        <div className="flex items-baseline gap-2 flex-wrap">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+            Gamefinder
+          </h1>
+          <span className="text-xs text-muted-foreground">Find your next favourite game</span>
+        </div>
+      </div>
+
       {/* Mobile Tab Bar */}
       <div className="lg:hidden flex shrink-0 border-b border-border bg-background/80 backdrop-blur-sm">
         <button
