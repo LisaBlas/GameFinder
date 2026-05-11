@@ -258,7 +258,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             return (
               <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-background/40">
                   {/* Subcategory header */}
-                  <div className="flex items-center gap-4 border-b border-border bg-card p-5">
+                  <div className="relative flex items-center gap-4 border-b border-border bg-card p-5">
                     <button
                       onClick={() => setActiveSubcategory(null)}
                       aria-label={`Back to ${getCategoryShortLabel(mainCat ?? activeMainCategory)}`}
@@ -280,13 +280,13 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       </div>
                       <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
                     </div>
-                    {/* Action buttons */}
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    {/* Action buttons sitting on the header/keyword border */}
+                    <div className="absolute bottom-0 right-4 translate-y-1/2 z-10 flex items-center gap-1.5 bg-card px-1">
                       <Tooltip content={isModified ? "Restore initial list" : "Nothing to restore"}>
                         <button
                           onClick={handleRestore}
                           disabled={!isModified}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background/50 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
                         >
                           <RotateCcw className="w-4 h-4" />
                         </button>
@@ -295,7 +295,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         <button
                           onClick={handleShowMore}
                           disabled={moreAvailable === 0}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background/50 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
                         >
                           <ChevronDown className="w-4 h-4" />
                         </button>
