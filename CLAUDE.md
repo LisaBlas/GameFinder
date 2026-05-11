@@ -21,6 +21,8 @@ npm run db:seed      # seed database
 
 Windows gotcha: `npm run build` currently completes the Vite client build and esbuild server bundle, then fails at the final Unix `cp -r client/src/assets dist/` step. Use Git Bash/WSL for the full build or replace that copy step with a cross-platform command before relying on it locally.
 
+Typecheck gotcha: `npm run check` runs root `tsc` against `client/src/**/*`, `db/**/*`, and `server/**/*`. It currently fails on pre-existing project-wide issues, including `client/src/components/GameCard_DiscountedStores_Backup.tsx` (archived JSX fragment with missing local symbols), `client/src/pages/api/keywords/search.ts` (Next.js API route in a Vite app without `next` installed), `server/storage.ts` (imports token/search schema exports that no longer exist), plus a few stale UI/server typing mismatches. Treat `tsc` failures as baseline debt unless a change touches those files; prefer targeted verification for the edited surface until the baseline is cleaned up.
+
 ## Architecture
 Split workspace layout (`pages/home.tsx`):
 ```

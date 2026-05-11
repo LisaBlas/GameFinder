@@ -302,6 +302,29 @@
   display: none;
 }
 
+@media (max-width: 1023px) {
+  .results-sticky-header {
+    overflow: hidden;
+    transition:
+      min-height 0.2s ease,
+      margin 0.2s ease,
+      padding 0.2s ease,
+      opacity 0.16s ease,
+      transform 0.2s ease;
+  }
+
+  .results-sticky-header-mobile-hidden {
+    min-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-bottom-color: transparent;
+    opacity: 0;
+    transform: translateY(-0.75rem);
+    pointer-events: none;
+  }
+}
+
 @media (min-width: 1024px) {
   .results-sticky-header-pristine {
     display: flex;

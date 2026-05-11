@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFilters } from '../context/FilterContext';
 import GameCard from './GameCard';
 import EmptyState from './EmptyState';
@@ -6,12 +6,14 @@ import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
 import FilterBar from './FilterBar';
 import MobileFilterSheet from './MobileFilterSheet';
-import { FaInfoCircle, FaTimes } from 'react-icons/fa';
+import { FaInfoCircle } from 'react-icons/fa';
 
 const SearchResults: React.FC = () => {
   const { gameResults, isLoading, error, sortBy, setSortBy, hasMore } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
+  const [hideMobileControls, setHideMobileControls] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   // Update hasSearched when a search is performed
   useEffect(() => {
@@ -29,6 +31,56 @@ const SearchResults: React.FC = () => {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
+  }, [selectedGameId]);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const getScrollParent = (element: HTMLElement): HTMLElement | Window => {
+      let parent = element.parentElement;
+      while (parent) {
+        const overflowY = window.getComputedStyle(parent).overflowY;
+        if (overflowY === 'auto' || overflowY === 'scroll') return parent;
+        parent = parent.parentElement;
+      }
+      return window;
+    };
+
+    const scrollParent = getScrollParent(section);
+    let lastScrollTop = scrollParent instanceof Window
+      ? scrollParent.scrollY
+      : scrollParent.scrollTop;
+
+    const handleScroll = () => {
+      if (!window.matchMedia('(max-width: 1023px)').matches || selectedGameId) {
+        setHideMobileControls(false);
+        return;
+      }
+
+      const currentScrollTop = scrollParent instanceof Window
+        ? scrollParent.scrollY
+        : scrollParent.scrollTop;
+      const delta = currentScrollTop - lastScrollTop;
+
+      if (currentScrollTop <= 12) {
+        setHideMobileControls(false);
+      } else if (delta > 8) {
+        setHideMobileControls(true);
+      } else if (delta < -8) {
+        setHideMobileControls(false);
+      }
+
+      lastScrollTop = Math.max(currentScrollTop, 0);
+    };
+
+    scrollParent.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+
+    return () => {
+      scrollParent.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, [selectedGameId]);
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -76,16 +128,6 @@ const SearchResults: React.FC = () => {
     <>
     {selectedGame && (
       <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-slate-950 lg:hidden">
-        <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-slate-800 bg-slate-950/95 px-4 py-3 backdrop-blur">
-          <button
-            onClick={() => setSelectedGameId(null)}
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white"
-            aria-label="Close"
-          >
-            <FaTimes className="h-4 w-4" />
-          </button>
-          <h2 className="truncate text-sm font-semibold text-white">{selectedGame.name}</h2>
-        </div>
         <div className="p-3">
           <GameCard
             game={selectedGame}
@@ -96,8 +138,8 @@ const SearchResults: React.FC = () => {
         </div>
       </div>
     )}
-    <section className="flex-1 w-full mx-auto">
-      <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'}`}>
+    <section ref={sectionRef} className="flex-1 w-full mx-auto">
+      <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'} ${hideMobileControls ? 'results-sticky-header-mobile-hidden' : ''}`}>
         <div className="flex w-full items-center justify-end lg:justify-between gap-3">
           <h2 className="hidden lg:block shrink-0 text-2xl font-heading font-semibold text-white">
             {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}

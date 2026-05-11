@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 // Global analytics variable (if present)
 declare const gtag: any;
 import { SiAppstore, SiEpicgames, SiGogdotcom, SiGoogleplay, SiItchdotio, SiPlaystation, SiSteam } from 'react-icons/si';
-import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGamepad, FaGlobe, FaPlay, FaXbox } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGamepad, FaGlobe, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
 import { useFilters } from '../context/FilterContext';
 import EnebaIconImg from '../assets/icons/eneba.png';
 import G2AIconImg from '../assets/icons/g2a.png';
@@ -67,6 +67,16 @@ interface GameCardProps {
 
 const encodeGameTitle = (title: string): string => {
   return encodeURIComponent(title.trim().toLowerCase());
+};
+
+const getStablePartnerOffset = (gameId: number, gameTitle: string, partnerCount: number): number => {
+  if (partnerCount <= 0) return 0;
+  const source = `${gameId}-${gameTitle}`;
+  let hash = 0;
+  for (let i = 0; i < source.length; i += 1) {
+    hash = ((hash << 5) - hash + source.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) % partnerCount;
 };
 
 const KinguinIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
@@ -184,7 +194,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
   const [mediaHeight, setMediaHeight] = useState<number | null>(null);
+  const [isMediaSyncedLayout, setIsMediaSyncedLayout] = useState(false);
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
+  const [partnerStoresExpanded, setPartnerStoresExpanded] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
   const { addFilter, removeFilter, isFilterSelected, selectedFilters, keywordMode } = useFilters();
@@ -227,6 +239,19 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     };
     fetchVideos();
   }, [game.id, hasLoadedVideos, isSelected]);
+
+  useEffect(() => {
+    const updateMediaSyncedLayout = () => {
+      setIsMediaSyncedLayout(window.matchMedia('(min-width: 1280px)').matches);
+    };
+
+    updateMediaSyncedLayout();
+    window.addEventListener('resize', updateMediaSyncedLayout);
+
+    return () => {
+      window.removeEventListener('resize', updateMediaSyncedLayout);
+    };
+  }, []);
 
   useEffect(() => {
     if (!isSelected || !mediaRef.current) {
@@ -322,27 +347,36 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   });
 
   const officialWebsites = (game.websites || []).filter(w => w.category === 1 && !w.url.includes('youtube.com'));
+  const renderableOfficialStores = filteredStores
+    .map((store) => ({
+      ...store,
+      icon: getStoreIcon(store.external_game_source),
+      storeName: getStoreName(store.external_game_source),
+    }))
+    .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null);
   const synopsis = game.summary || 'No synopsis available yet.';
-  const hasOfficialLinks = filteredStores.length + officialWebsites.length > 0;
-  const storeIconClass = "w-9 h-9 bg-slate-800/80 hover:bg-slate-700 text-white rounded-lg flex items-center justify-center transition-colors";
+  const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
+  const storeButtonClass = "inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border border-slate-700/60 bg-slate-900/70 px-3 py-2 text-sm font-semibold text-slate-100 transition-colors hover:border-emerald-400/45 hover:bg-emerald-400/10 hover:text-white";
+  const storeIconClass = "flex h-5 w-5 flex-shrink-0 items-center justify-center text-slate-300";
+  const partnerStoreIconClass = "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-slate-700/70 bg-slate-950/85 text-white transition-colors group-hover/alt:border-amber-300/45 group-hover/alt:bg-slate-900";
 
   const officialStoreLinks = (
     <>
-      {filteredStores.map((store) => {
-        const icon = getStoreIcon(store.external_game_source);
-        if (!icon) return null;
-        const storeName = getStoreName(store.external_game_source);
+      {renderableOfficialStores.map((store) => {
         return (
           <a
             key={store.id}
             href={store.url}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => { e.stopPropagation(); trackExternalClick(storeName, 'official', game.name); }}
-            className={storeIconClass}
-            title={storeName}
+            onClick={(e) => { e.stopPropagation(); trackExternalClick(store.storeName, 'official', game.name); }}
+            className={storeButtonClass}
+            title={store.storeName}
           >
-            {React.cloneElement(icon, { className: 'w-5 h-5' })}
+            <span className={storeIconClass}>
+              {React.cloneElement(store.icon, { className: 'w-5 h-5' })}
+            </span>
+            <span className="truncate">{store.storeName}</span>
           </a>
         );
       })}
@@ -351,35 +385,118 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           key={website.id}
           href={website.url}
           target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => { e.stopPropagation(); trackExternalClick('Official Website', 'official', game.name); }}
-          className={`${storeIconClass} hover:bg-blue-700/60`}
+        rel="noopener noreferrer"
+        onClick={(e) => { e.stopPropagation(); trackExternalClick('Official Website', 'official', game.name); }}
+          className={storeButtonClass}
           title="Official Website"
         >
-          <FaGlobe className="w-4 h-4" />
+          <span className={storeIconClass}>
+            <FaGlobe className="w-4 h-4" />
+          </span>
+          <span className="truncate">Official site</span>
         </a>
       ))}
     </>
   );
 
-  const resellerLinks = (
-    <>
-      <button onClick={handleKinguinClick} className={storeIconClass} title="Kinguin">
-        <KinguinIcon />
+  const partnerStores = [
+    {
+      key: 'gamersgate',
+      name: affiliateLinks.gamersgate.name,
+      label: 'Open GamersGate',
+      icon: <GamersGateIcon />,
+      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate')
+    },
+    {
+      key: 'instantGaming',
+      name: affiliateLinks.instantGaming.name,
+      label: 'Open Instant Gaming',
+      icon: <InstantGamingIcon />,
+      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate')
+    },
+    {
+      key: 'eneba',
+      name: affiliateLinks.eneba.name,
+      label: 'Open Eneba',
+      icon: <EnebaIcon />,
+      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate')
+    },
+    {
+      key: 'kinguin',
+      name: affiliateLinks.kinguin.name,
+      label: 'Open Kinguin',
+      icon: <KinguinIcon />,
+      onClick: handleKinguinClick
+    },
+    {
+      key: 'g2a',
+      name: affiliateLinks.g2a.name,
+      label: 'Open G2A',
+      icon: <G2AIcon />,
+      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate')
+    }
+  ];
+  const partnerStoreOffset = getStablePartnerOffset(game.id, game.name, partnerStores.length);
+  const rotatedPartnerStores = [
+    ...partnerStores.slice(partnerStoreOffset),
+    ...partnerStores.slice(0, partnerStoreOffset)
+  ];
+  const primaryPartnerStore = rotatedPartnerStores[0];
+  const secondaryPartnerStore = rotatedPartnerStores[1];
+  const alternatePartnerStores = rotatedPartnerStores.slice(1);
+
+  const partnerStoreLinks = (
+    <div className="grid gap-2.5">
+      <button
+        type="button"
+        onClick={primaryPartnerStore.onClick}
+        className="group/partner flex w-full items-center gap-3 rounded-lg border border-amber-300/35 bg-amber-300/10 px-3 py-3 text-left transition-colors hover:border-amber-200/60 hover:bg-amber-300/15"
+        title={primaryPartnerStore.name}
+      >
+        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-slate-950/80 text-white">
+          {primaryPartnerStore.icon}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[10px] font-semibold uppercase tracking-widest text-amber-200/80">Partner store</span>
+          <span className="mt-0.5 block truncate text-sm font-semibold text-white">{primaryPartnerStore.label}</span>
+        </span>
+        <FaExternalLinkAlt className="h-3 w-3 flex-shrink-0 text-amber-200/75 transition-transform group-hover/partner:translate-x-0.5" />
       </button>
-      <button onClick={(e) => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate')} className={storeIconClass} title="GamersGate">
-        <GamersGateIcon />
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setPartnerStoresExpanded((expanded) => !expanded);
+        }}
+        className="flex min-h-10 w-full items-center justify-between gap-3 rounded-lg border border-slate-800/70 bg-slate-900/45 px-3 py-2 text-left text-xs font-semibold text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800/70 hover:text-white"
+        aria-expanded={partnerStoresExpanded}
+      >
+        <span>{partnerStoresExpanded ? 'Hide partner stores' : `Compare ${alternatePartnerStores.length} more stores`}</span>
+        <FaChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform ${partnerStoresExpanded ? 'rotate-180' : ''}`} />
       </button>
-      <button onClick={(e) => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate')} className={storeIconClass} title="Eneba">
-        <EnebaIcon />
-      </button>
-      <button onClick={(e) => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate')} className={storeIconClass} title="G2A">
-        <G2AIcon />
-      </button>
-      <button onClick={(e) => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate')} className={storeIconClass} title="Instant Gaming">
-        <InstantGamingIcon />
-      </button>
-    </>
+
+      {partnerStoresExpanded && (
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {alternatePartnerStores.map((store) => (
+            <button
+              key={store.key}
+              type="button"
+              onClick={store.onClick}
+              className="group/alt flex min-w-0 items-center gap-2 rounded-lg border border-slate-700/60 bg-slate-900/70 px-2.5 py-2 text-left transition-colors hover:border-slate-500 hover:bg-slate-800"
+              title={store.name}
+            >
+              <span className={partnerStoreIconClass}>{store.icon}</span>
+              <span className="min-w-0 truncate text-xs font-semibold text-slate-200">{store.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <p className="text-xs leading-relaxed text-slate-500">
+        Some store links may be affiliate links and help support GameFinder at no extra cost.
+      </p>
+    </div>
   );
 
   const renderTagButton = (tag: { id: number; name: string; type: string; category: string }) => {
@@ -424,7 +541,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   };
 
   return (
-    <div className="relative group">
+    <div className={`relative group ${fullscreen ? 'pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''}`}>
       {!fullscreen && (
         <div
           className={`absolute inset-0 -z-10 scale-[1.08] transition-opacity duration-700 blur-2xl ${isSelected ? 'opacity-45' : 'opacity-20 group-hover:opacity-35'}`}
@@ -432,6 +549,20 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         >
           <img src={imageUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
         </div>
+      )}
+
+      {fullscreen && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+          className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/70 bg-slate-950/85 text-slate-300 shadow-lg backdrop-blur transition-colors hover:bg-slate-800 hover:text-white"
+          aria-label="Close game details"
+        >
+          <FaTimes className="h-4 w-4" />
+        </button>
       )}
 
       <article
@@ -527,7 +658,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </button>
               )}
 
-
               {isSelected && (
                 <div className="grid gap-4 pt-1">
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)]">
@@ -570,38 +700,42 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
                     <div
                       className="flex min-h-0 flex-col rounded-lg border border-slate-700/40 bg-slate-950/45 p-4"
-                      style={mediaHeight ? { height: `${mediaHeight}px` } : undefined}
+                      style={mediaHeight && isMediaSyncedLayout ? { height: `${mediaHeight}px` } : undefined}
                     >
-                      <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Keywords and tags</h4>
+                      <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Where to play</h4>
                       <div className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1">
-                        {expandedTags.length > 0 ? (
-                          <div className="flex flex-wrap gap-1.5">
-                            {expandedTags.map(renderTagButton)}
+                        <div className="grid gap-4">
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Official stores</span>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {hasOfficialLinks ? officialStoreLinks : (
+                                <span className="rounded-lg border border-slate-800/70 bg-slate-900/45 px-3 py-2 text-xs leading-relaxed text-slate-500">
+                                  No official links found. This game may be too old, delisted, or missing current store links.
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        ) : (
-                          <span className="text-xs text-slate-500">No tags found</span>
-                        )}
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Partner alternatives</span>
+                            <div className="mt-2">
+                              {partnerStoreLinks}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   <div className="rounded-lg border border-slate-700/40 bg-slate-950/45 p-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Quick actions</h4>
-                    <div className="mt-3 grid gap-4 md:grid-cols-2">
-                      <div>
-                        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Official</span>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {hasOfficialLinks ? officialStoreLinks : (
-                            <span className="text-xs text-slate-500">No official links found</span>
-                          )}
+                    <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Keywords and tags</h4>
+                    <div className="mt-3">
+                      {expandedTags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {expandedTags.map(renderTagButton)}
                         </div>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Resellers</span>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {resellerLinks}
-                        </div>
-                      </div>
+                      ) : (
+                        <span className="text-xs text-slate-500">No tags found</span>
+                      )}
                     </div>
                   </div>
                 </div>
