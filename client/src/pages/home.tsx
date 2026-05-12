@@ -25,7 +25,7 @@ const HomeContent: React.FC = () => {
       <div className="lg:hidden shrink-0 px-4 py-3 bg-background/80 backdrop-blur-sm border-b border-border/40">
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2 flex-wrap">
-            <h1 className="font-brand text-[1.05rem] font-normal tracking-[0.08em] bg-gradient-to-r from-emerald-300 via-primary to-emerald-100 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(16,185,129,0.35)]">
+            <h1 className="brand-wordmark font-brand text-[1.08rem] font-normal tracking-[0.075em]">
               GameFinder
             </h1>
             <span className="font-cinzel text-[0.55rem] tracking-[0.2em] uppercase text-muted-foreground/70">Find your next favourite game</span>

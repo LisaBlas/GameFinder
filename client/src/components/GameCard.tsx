@@ -328,11 +328,34 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     }),
   ].slice(0, 5);
 
-  const expandedTags = (game.keywords || []).map(t => ({ ...t, type: 'keyword', category: 'Keywords' })).sort((a, b) => {
-    const aSelected = selectedTagKeys.has(`Keywords-${a.id}`) ? 1 : 0;
-    const bSelected = selectedTagKeys.has(`Keywords-${b.id}`) ? 1 : 0;
-    return bSelected - aSelected;
-  });
+  const tagGroups = [
+    {
+      label: 'Platforms',
+      tags: (game.platforms || []).map(t => ({ ...t, type: 'platform', category: 'platforms' }))
+    },
+    {
+      label: 'Genres',
+      tags: (game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' }))
+    },
+    {
+      label: 'Themes',
+      tags: (game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' }))
+    },
+    {
+      label: 'Modes',
+      tags: (game.game_modes || []).map(t => ({ ...t, type: 'game_mode', category: 'Game Mode' }))
+    },
+    {
+      label: 'Keywords',
+      tags: (game.keywords || [])
+        .map(t => ({ ...t, type: 'keyword', category: 'Keywords' }))
+        .sort((a, b) => {
+          const aSelected = selectedTagKeys.has(`Keywords-${a.id}`) ? 1 : 0;
+          const bSelected = selectedTagKeys.has(`Keywords-${b.id}`) ? 1 : 0;
+          return bSelected - aSelected;
+        })
+    },
+  ].filter(group => group.tags.length > 0);
 
   const filteredStores = (game.external_games || []).filter((store, index, self) => {
     if (!store.url) return false;
@@ -502,34 +525,33 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
   const renderTagButton = (tag: { id: number; name: string; type: string; category: string }) => {
     const isKeyword = tag.type === 'keyword';
+    const isPlatform = tag.type === 'platform';
     const isEmerald = tag.type === 'genre' || tag.type === 'theme';
     const displayName = isKeyword
       ? tag.name.charAt(0).toUpperCase() + tag.name.slice(1)
       : tag.name;
     const isSelectedTag = isFilterSelected(tag.id, tag.category);
-    const existingFilter = isKeyword ? selectedFilters.find(f => f.id === tag.id && f.category === tag.category) : null;
-    const isExcluded = isKeyword && existingFilter?.mode === 'exclude';
+    const existingFilter = selectedFilters.find(f => f.id === tag.id && f.category === tag.category);
+    const isExcluded = existingFilter?.mode === 'exclude';
 
-    let keywordClass: string;
+    let tagClass: string;
     if (isExcluded) {
-      keywordClass = 'bg-red-900/25 text-red-300/90 ring-1 ring-red-500/30 hover:bg-red-900/35';
+      tagClass = 'bg-red-900/25 text-red-300/90 ring-1 ring-red-500/30 hover:bg-red-900/35';
     } else if (isSelectedTag) {
-      keywordClass = 'bg-amber-900/40 text-amber-300 ring-1 ring-amber-500/35';
+      tagClass = 'bg-amber-900/40 text-amber-300 ring-1 ring-amber-500/35';
+    } else if (isPlatform) {
+      tagClass = 'bg-slate-800/60 text-slate-300 hover:bg-slate-800/80 hover:text-sky-300/80';
+    } else if (isEmerald) {
+      tagClass = 'bg-slate-800/60 text-slate-400 hover:bg-slate-800/80 hover:text-emerald-300/80';
     } else {
-      keywordClass = 'bg-slate-800/60 text-slate-400 hover:bg-slate-800/80 hover:text-amber-200/80';
+      tagClass = 'bg-slate-800/60 text-slate-400 hover:bg-slate-800/80 hover:text-amber-200/80';
     }
 
     return (
       <button
         key={`${tag.type}-${tag.id}-${tag.name}`}
         onClick={(e) => handleTagClick(tag, tag.category, e)}
-        className={`inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${
-          isEmerald
-            ? isSelectedTag
-              ? 'bg-slate-700/55 text-emerald-400 ring-1 ring-emerald-500/30'
-              : 'bg-slate-800/60 text-slate-400 hover:bg-slate-800/80 hover:text-emerald-300/80'
-            : keywordClass
-        }`}
+        className={`inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${tagClass}`}
         title={isExcluded ? `Click to remove "${displayName}" exclusion` : `Click to add "${displayName}" to filters`}
       >
         {displayName}
@@ -623,7 +645,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </div>
               </div>
 
-              {previewTags.length > 0 && (
+              {!isSelected && previewTags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {previewTags.map(renderTagButton)}
                 </div>
@@ -721,11 +743,18 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   </div>
 
                   <div className="rounded-lg border border-slate-700/40 bg-slate-950/45 p-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Keywords and tags</h4>
+                    <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Tags & platforms</h4>
                     <div className="mt-3">
-                      {expandedTags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1.5">
-                          {expandedTags.map(renderTagButton)}
+                      {tagGroups.length > 0 ? (
+                        <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
+                          {tagGroups.map(group => (
+                            <div key={group.label} className="min-w-0">
+                              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">{group.label}</span>
+                              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                                {group.tags.map(renderTagButton)}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       ) : (
                         <span className="text-xs text-slate-500">No tags found</span>
