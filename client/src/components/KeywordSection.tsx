@@ -629,43 +629,43 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
         <div className="flex-1 overflow-y-auto">
-          <div className="grid gap-4">
-            <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
+          <div className="grid gap-3">
+            <div className="mobile-keyword-search-wrap">
+              <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
+            </div>
             {mainCategoryOrder.map((mainCat) => {
               const subcategories = getAvailableSubcategories(mainCat);
               const descriptor = (keywordCategories[mainCat] as unknown as { description: string }).description;
               const isOpen = activeMainCategory === mainCat;
+              const keywordTotal = subcategories.reduce(
+                (total, subCategoryName) => total + getKeywordsForSubcategory(subCategoryName).length,
+                0
+              );
               if (subcategories.length === 0) return null;
 
               return (
                 <section
                   key={mainCat}
-                  className={`rounded-xl border transition-colors ${
-                    isOpen
-                      ? "border-primary/35 bg-card/35 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
-                      : "border-border bg-card/25 p-3"
-                  }`}
+                  className={`mobile-category-shelf${isOpen ? " is-open" : ""}`}
                 >
                   <button
                     type="button"
                     onClick={() => selectMainCategory(mainCat)}
                     aria-expanded={isOpen}
-                    className={`flex w-full items-start gap-3 rounded-lg border border-transparent text-left transition-colors ${
-                      isOpen
-                        ? "px-0 pb-3 pt-0 text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
+                    className="mobile-category-trigger"
                   >
-                    <div className="shrink-0 mt-0.5 p-2 rounded-lg bg-primary/15">
+                    <div className="mobile-category-icon">
                       {getCategoryIcon(mainCat)}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-xl font-bold text-foreground">{mainCat}</span>
+                    <div className="mobile-category-copy">
+                      <div className="mobile-category-title-row">
+                        <span className="mobile-category-title">{mainCat}</span>
+                        <span className="mobile-category-count">{subcategories.length} groups</span>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1 leading-snug">{descriptor}</p>
+                      <p>{descriptor}</p>
+                      <span className="mobile-category-meta">{keywordTotal} curated keywords</span>
                     </div>
-                    <ChevronDown className={`mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180 text-primary" : ""}`} />
+                    <ChevronDown className="mobile-category-caret" />
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -678,29 +678,29 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="grid gap-3 border-t border-primary/25 pt-3">
+                        <div className="mobile-subcategory-list">
                           {subcategories.map((subCategoryName) => {
                             const keywords = getKeywordsForSubcategory(subCategoryName);
                             const description = getSubcategoryDescription(mainCat, subCategoryName);
 
                             return (
-                              <section key={subCategoryName} className="rounded-lg border border-border bg-card/70">
+                              <section key={subCategoryName} className="mobile-subcategory-row">
                                 <button
                                   type="button"
                                   onClick={() => drillIntoSubcategory(mainCat, subCategoryName)}
-                                  className="flex w-full items-center gap-3 px-3.5 py-3 text-left"
+                                  className="mobile-subcategory-button"
                                 >
-                                  <span className="shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
+                                  <span className="mobile-subcategory-icon">
                                     {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
                                   </span>
-                                  <span className="min-w-0 flex-1">
-                                    <span className="flex items-center gap-2">
-                                      <span className="font-bold text-foreground">{subCategoryName}</span>
-                                      <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywords.length}</span>
+                                  <span className="mobile-subcategory-copy">
+                                    <span className="mobile-subcategory-heading">
+                                      <span>{subCategoryName}</span>
+                                      <span>{keywords.length}</span>
                                     </span>
-                                    <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{description}</span>
+                                    <span className="mobile-subcategory-description">{description}</span>
                                   </span>
-                                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                  <ChevronRight className="mobile-subcategory-caret" />
                                 </button>
                               </section>
                             );
@@ -712,9 +712,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 </section>
               );
             })}
-            <section className="rounded-xl border border-primary/25 bg-card/35 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-              {renderKeywordSuggestion("mobile")}
-            </section>
+            {renderKeywordSuggestion("mobile")}
           </div>
         </div>
       </div>
