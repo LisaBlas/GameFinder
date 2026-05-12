@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 // Global analytics variable (if present)
 declare const gtag: any;
 import { SiAppstore, SiEpicgames, SiGogdotcom, SiGoogleplay, SiItchdotio, SiPlaystation, SiSteam } from 'react-icons/si';
-import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGamepad, FaGlobe, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGamepad, FaGlobe, FaHeart, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
 import { useFilters } from '../context/FilterContext';
+import { useSavedGames } from '../context/SavedGamesContext';
 import EnebaIconImg from '../assets/icons/eneba.png';
 import G2AIconImg from '../assets/icons/g2a.png';
 import InstantGamingIconImg from '../assets/icons/instantGaming.png';
@@ -199,7 +200,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [partnerStoresExpanded, setPartnerStoresExpanded] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
-  const { addFilter, removeFilter, isFilterSelected, selectedFilters, keywordMode } = useFilters();
+  const { addFilter, removeFilter, isFilterSelected, selectedFilters } = useFilters();
+  const { isSaved, toggleSaved } = useSavedGames();
 
   const imageUrl = game.cover?.url
     ? game.cover.url.replace('/t_thumb/', '/t_cover_big/')
@@ -280,15 +282,14 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     e.stopPropagation();
     if (category === 'Keywords') {
       const existingFilter = selectedFilters.find(f => f.id === tag.id && f.category === category);
-      const alreadySelectedWithSameMode = existingFilter && existingFilter.mode === keywordMode;
-      if (alreadySelectedWithSameMode) {
+      if (existingFilter) {
         removeFilter(tag.id, category, undefined);
       } else {
         addFilter({
           id: tag.id,
           name: tag.name,
           category,
-          mode: keywordMode,
+          mode: "include",
           compositeId: `${category}-${tag.id}-${tag.name}`.toLowerCase().replace(/\s+/g, '-')
         });
       }
@@ -513,13 +514,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     if (isExcluded) {
       keywordClass = 'bg-red-900/20 text-red-200 ring-2 ring-red-400/50 hover:bg-red-500/20';
     } else if (isSelectedTag) {
-      keywordClass = keywordMode === 'exclude'
-        ? 'bg-amber-500/30 text-amber-100 ring-2 ring-amber-400/50 hover:bg-red-500/20 hover:ring-red-400/50'
-        : 'bg-amber-500/30 text-amber-100 ring-2 ring-amber-400/50';
+      keywordClass = 'bg-amber-500/30 text-amber-100 ring-2 ring-amber-400/50';
     } else {
-      keywordClass = keywordMode === 'exclude'
-        ? 'bg-amber-900/20 text-amber-200 hover:bg-red-500/20 hover:ring-1 hover:ring-red-400/60'
-        : 'bg-amber-900/20 text-amber-200 hover:bg-amber-800/30';
+      keywordClass = 'bg-amber-900/20 text-amber-200 hover:bg-amber-800/30';
     }
 
     return (
@@ -533,7 +530,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
               : 'bg-emerald-900/20 text-emerald-200 hover:bg-emerald-800/30'
             : keywordClass
         }`}
-        title={isExcluded ? `Click to remove "${displayName}" exclusion` : keywordMode === 'exclude' ? `Click to exclude "${displayName}"` : `Click to add "${displayName}" to filters`}
+        title={isExcluded ? `Click to remove "${displayName}" exclusion` : `Click to add "${displayName}" to filters`}
       >
         {displayName}
       </button>
@@ -541,7 +538,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   };
 
   return (
-    <div className={`relative group ${fullscreen ? 'pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''}`}>
+    <div className={`relative group ${fullscreen ? 'pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'widescreen:col-span-2' : ''}`}>
       {!fullscreen && (
         <div
           className={`absolute inset-0 -z-10 scale-[1.08] transition-opacity duration-700 blur-2xl ${isSelected ? 'opacity-45' : 'opacity-20 group-hover:opacity-35'}`}
@@ -599,18 +596,20 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </div>
               </div>
             )}
-            {rating && (
-              <div className="absolute bottom-2 left-2 bg-black/75 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md">
-                {rating.toFixed(1)}
-              </div>
-            )}
           </div>
 
           <div className="flex-1 min-w-0 p-4 md:p-5">
             <div className="flex flex-col gap-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-xl font-bold text-white leading-tight">{game.name}</h3>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-xl font-bold text-white leading-tight">{game.name}</h3>
+                    {rating && (
+                      <span className="flex-shrink-0 text-xs font-semibold text-amber-200 bg-slate-800/80 px-2 py-0.5 rounded-md">
+                        {rating.toFixed(1)}
+                      </span>
+                    )}
+                  </div>
                   <div className="text-xs text-slate-400 mt-1">
                     {developerName && <span className="text-slate-300">{developerName}</span>}
                     {developerName && releaseYear && <span className="px-1.5 text-slate-600">/</span>}
@@ -618,15 +617,19 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   </div>
                 </div>
 
-                {!isSelected && (
-                  <FaChevronRight className="mt-1 h-5 w-5 flex-shrink-0 text-amber-300/70 md:hidden" />
-                )}
-
-                {rating && (
-                  <div className="hidden sm:flex h-9 items-center rounded-lg bg-slate-800/80 px-3 text-sm font-semibold text-amber-200 flex-shrink-0">
-                    {rating.toFixed(1)}
-                  </div>
-                )}
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {!isSelected && (
+                    <FaChevronRight className="mt-1 h-5 w-5 text-amber-300/70 md:hidden" />
+                  )}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); toggleSaved({ id: game.id, name: game.name, cover: game.cover, rating: game.rating, first_release_date: game.first_release_date }); }}
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-slate-800/70 ${isSaved(game.id) ? 'text-rose-400' : 'text-slate-500 hover:text-rose-400'}`}
+                    aria-label={isSaved(game.id) ? 'Remove from saved' : 'Save game'}
+                  >
+                    <FaHeart className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               {previewTags.length > 0 && (

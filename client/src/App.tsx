@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
 import { Toaster } from "./components/ui/toaster";
 import { FilterProvider } from "./context/FilterContext";
+import { SavedGamesProvider } from "./context/SavedGamesContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import './App.css';
 
@@ -37,12 +38,14 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <FilterProvider>
-          <Toaster />
-          <div className="app">
-            <Router />
-          </div>
-        </FilterProvider>
+        <SavedGamesProvider>
+          <FilterProvider>
+            <Toaster />
+            <div className="app">
+              <Router />
+            </div>
+          </FilterProvider>
+        </SavedGamesProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

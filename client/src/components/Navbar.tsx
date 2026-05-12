@@ -1,61 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { FaGithub } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
-import { FaGlobe } from 'react-icons/fa6';
+import React, { useState } from 'react';
+import { FaHeart } from 'react-icons/fa';
+import { useSavedGames } from '../context/SavedGamesContext';
+import SavedGamesPanel from './SavedGamesPanel';
 
 const Navbar: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // Show navbar only when at the very top (scroll position 0)
-      setIsVisible(window.scrollY === 0);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const { savedGames } = useSavedGames();
 
   return (
-    <div
-      className={`fixed top-0 left-0 right-0 h-16 bg-transparent backdrop-blur-sm z-50 transition-all duration-300 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'
-      }`}
-    >
-      <div className="container mx-auto h-full flex items-center justify-between px-4">
-        <div className="flex-1"></div>
-        <span aria-label="GameFinder home" className="text-xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
-          GameFinder
-        </span>
-        <div className="flex-1 flex justify-end gap-4">
-          <a
-            href="https://lisablas.github.io/BleepBloop/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/70 hover:text-primary transition-colors"
+    <>
+      <div className="hidden lg:flex flex-col justify-center sticky top-0 z-30 min-h-[4.75rem] border-b border-border bg-[rgba(5,16,12,0.94)] backdrop-blur-[14px] shadow-[0_12px_28px_rgba(0,0,0,0.24)] w-full px-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-3">
+            <h1 className="shrink-0 text-2xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+              Gamefinder
+            </h1>
+            <span className="text-sm text-muted-foreground">Find your next favourite game</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPanelOpen(true)}
+            className="relative text-white/70 hover:text-rose-400 transition-colors"
+            aria-label="Saved games"
           >
-            <FaGlobe size={20} />
-          </a>
-          <a
-            href="https://github.com/LisaBlas/GameFinder"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/70 hover:text-primary transition-colors"
-          >
-            <FaGithub size={20} />
-          </a>
-          <a
-            href="https://x.com/BerliozGordon"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/70 hover:text-primary transition-colors"
-          >
-            <FaXTwitter size={20} />
-          </a>
+            <FaHeart size={18} />
+            {savedGames.length > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white leading-none">
+                {savedGames.length > 9 ? '9+' : savedGames.length}
+              </span>
+            )}
+          </button>
         </div>
       </div>
-    </div>
+
+      <SavedGamesPanel open={panelOpen} onOpenChange={setPanelOpen} />
+    </>
   );
 };
 
-export default Navbar; 
+export default Navbar;

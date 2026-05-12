@@ -105,7 +105,7 @@ const SearchResults: React.FC = () => {
             <span>We only list reputable sellers. Prices may vary; check seller ratings before purchase.</span>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
             {gameResults.map(game => (
               <GameCard
                 key={`game-${game.id}`}

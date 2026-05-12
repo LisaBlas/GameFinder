@@ -5,6 +5,9 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   theme: {
     extend: {
+      screens: {
+        widescreen: "1400px",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

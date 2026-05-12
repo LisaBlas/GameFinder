@@ -1,46 +1,96 @@
 import React from "react";
 import { useFilters } from "../context/FilterContext";
 import { RiCloseLine } from "react-icons/ri";
-import { Minus, Plus } from "lucide-react";
+import { Ban, Plus } from "lucide-react";
 
 interface SelectedFiltersProps {
   variant?: "wrap" | "lanes";
 }
 
 export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wrap" }) => {
-  const { selectedFilters, removeFilter, addFilter, keywordMode, setKeywordMode } = useFilters();
+  const { selectedFilters, removeFilter, addFilter } = useFilters();
 
-  const renderPill = (filter: typeof selectedFilters[number]) => (
-    <div 
-      key={`${filter.category}-${filter.id}`} 
-      className={`selected-filter-pill${filter.category === "Keywords" ? ` keyword keyword-${filter.mode || "include"}` : ""}`}
+  const renderPill = (filter: typeof selectedFilters[number]) => {
+    const isKeyword = filter.category === "Keywords";
+
+    return (
+      <div
+        key={`${filter.category}-${filter.id}`}
+        className={`selected-filter-pill${isKeyword ? ` keyword keyword-${filter.mode || "include"}` : ""}`}
+        onClick={isKeyword ? () => removeFilter(filter.id, filter.category, filter.endpoint) : undefined}
+        role={isKeyword ? "button" : undefined}
+        tabIndex={isKeyword ? 0 : undefined}
+        onKeyDown={isKeyword ? (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            removeFilter(filter.id, filter.category, filter.endpoint);
+          }
+        } : undefined}
+        aria-label={isKeyword ? `Remove ${filter.name} filter` : undefined}
+      >
+        <span className="selected-filter-name">{filter.name}</span>
+        {isKeyword && (filter.mode || "include") === "include" && (
+          <button
+            type="button"
+            className="keyword-mode-chip-button"
+            onClick={(event) => {
+              event.stopPropagation();
+              addFilter({
+                ...filter,
+                mode: "exclude"
+              });
+            }}
+            aria-label={`Exclude ${filter.name}`}
+          >
+            <Ban className="w-3.5 h-3.5" />
+          </button>
+        )}
+        {!isKeyword && (
+          <button
+            type="button"
+            className="remove-tag"
+            onClick={() => removeFilter(filter.id, filter.category, filter.endpoint)}
+            aria-label={`Remove ${filter.name} filter`}
+          >
+            <RiCloseLine />
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  const renderLanePill = (filter: typeof selectedFilters[number]) => (
+    <div
+      key={`${filter.category}-${filter.id}`}
+      className={`selected-filter-pill keyword keyword-${filter.mode || "include"}`}
+      onClick={() => removeFilter(filter.id, filter.category, filter.endpoint)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          removeFilter(filter.id, filter.category, filter.endpoint);
+        }
+      }}
+      aria-label={`Remove ${filter.name} filter`}
     >
-      {filter.category === "Keywords" && (
+      <span className="selected-filter-name">{filter.name}</span>
+      {(filter.mode || "include") === "include" && (
         <button
           type="button"
           className="keyword-mode-chip-button"
-          onClick={() => addFilter({
-            ...filter,
-            mode: (filter.mode || "include") === "include" ? "exclude" : "include"
-          })}
-          aria-label={`${filter.name} is ${(filter.mode || "include") === "include" ? "included" : "excluded"}. Toggle mode.`}
+          onClick={(event) => {
+            event.stopPropagation();
+            addFilter({
+              ...filter,
+              mode: "exclude"
+            });
+          }}
+          aria-label={`Exclude ${filter.name}`}
         >
-          {(filter.mode || "include") === "include" ? (
-            <Plus className="w-3.5 h-3.5" />
-          ) : (
-            <Minus className="w-3.5 h-3.5" />
-          )}
+          <Ban className="w-3.5 h-3.5" />
         </button>
       )}
-      <span className="selected-filter-name">{filter.name}</span>
-      <button
-        type="button"
-        className="remove-tag"
-        onClick={() => removeFilter(filter.id, filter.category, filter.endpoint)}
-        aria-label={`Remove ${filter.name} filter`}
-      >
-        <RiCloseLine />
-      </button>
     </div>
   );
 
@@ -55,37 +105,25 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
     return (
       <div className="selected-filter-lanes">
         <div className="selected-filter-lane">
-          <button
-            type="button"
-            className={`selected-filter-lane-mode selected-filter-lane-mode-include${keywordMode === "include" ? " active" : ""}`}
-            onClick={() => setKeywordMode("include")}
-            aria-pressed={keywordMode === "include"}
-            aria-label="Add new keywords as included"
-          >
+          <div className="selected-filter-lane-mode selected-filter-lane-mode-include active">
             <Plus className="w-3.5 h-3.5" />
             INCLUDE
-          </button>
+          </div>
           <div className="selected-filter-lane-scroll">
             {includedFilters.length > 0
-              ? includedFilters.map(renderPill)
+              ? includedFilters.map(renderLanePill)
               : <span className="selected-filter-empty">No included keywords</span>
             }
           </div>
         </div>
         <div className="selected-filter-lane">
-          <button
-            type="button"
-            className={`selected-filter-lane-mode selected-filter-lane-mode-exclude${keywordMode === "exclude" ? " active" : ""}`}
-            onClick={() => setKeywordMode("exclude")}
-            aria-pressed={keywordMode === "exclude"}
-            aria-label="Add new keywords as excluded"
-          >
-            <Minus className="w-3.5 h-3.5" />
+          <div className="selected-filter-lane-mode selected-filter-lane-mode-exclude active">
+            <Ban className="w-3.5 h-3.5" />
             EXCLUDE
-          </button>
+          </div>
           <div className="selected-filter-lane-scroll">
             {excludedFilters.length > 0
-              ? excludedFilters.map(renderPill)
+              ? excludedFilters.map(renderLanePill)
               : <span className="selected-filter-empty">No excluded keywords</span>
             }
           </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { RxCaretDown } from "react-icons/rx";
+import { Ban } from "lucide-react";
 import { useFilters } from "../context/FilterContext";
 
 interface FilterProps {
@@ -43,7 +44,6 @@ export const Filter: React.FC<FilterProps> = ({
     addFilter, 
     removeFilter, 
     isFilterSelected,
-    keywordMode,
     setFilterExpanded,
     isFilterExpanded,
     setCategoryExpanded
@@ -78,17 +78,14 @@ export const Filter: React.FC<FilterProps> = ({
     let filterWasSelected = false;
     // Toggle filter selection
     if (id && id !== 'null') {
-      const shouldSwitchKeywordMode =
-        category === "Keywords" && isSelected && selectedKeywordMode !== keywordMode;
-
-      if (!isSelected || shouldSwitchKeywordMode) {
+      if (!isSelected) {
         // For parent filters with isParentOnly flag, just toggle expansion without adding to filters
         if (!isParentOnly) {
           addFilter({
             id,
             name: label,
             category,
-            mode: category === "Keywords" ? keywordMode : undefined,
+            mode: category === "Keywords" ? "include" : undefined,
             slug,
             endpoint,
             compositeId,
@@ -130,14 +127,43 @@ export const Filter: React.FC<FilterProps> = ({
     }
   };
 
+  const handleExcludeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    if (!isSelected || category !== "Keywords") return;
+
+    addFilter({
+      id,
+      name: label,
+      category,
+      mode: "exclude",
+      slug,
+      endpoint,
+      compositeId,
+      isParentOnly,
+      parentId,
+      isChild: !!parentId
+    });
+  };
+
   return (
     <>
       <div
-        className={`filter-pill${isSelected ? " selected animate-blink" : ""}${category === "Keywords" && isSelected ? ` keyword-${selectedKeywordMode}` : ""}${category === "Keywords" ? ` ${keywordMode}-hover-mode` : ""}${isKid ? " kid" : ""}${(hasChildren || isParentOnly) ? " parent" : ""}${expanded ? " expanded" : ""}`}
+        className={`filter-pill${isSelected ? " selected animate-blink" : ""}${category === "Keywords" && isSelected ? ` keyword-${selectedKeywordMode}` : ""}${isKid ? " kid" : ""}${(hasChildren || isParentOnly) ? " parent" : ""}${expanded ? " expanded" : ""}`}
         onClick={handleClick}
         data-composite-id={compositeId}
       >
         <span>{label}</span>
+        {category === "Keywords" && isSelected && selectedKeywordMode === "include" && (
+          <button
+            type="button"
+            className="keyword-exclude-button"
+            onClick={handleExcludeClick}
+            aria-label={`Exclude ${label}`}
+            title={`Exclude ${label}`}
+          >
+            <Ban className="h-3.5 w-3.5" />
+          </button>
+        )}
         {hasChildren && kids && kids.some(kid => kid.display !== false) && (
           <span className={`caret${expanded ? " expanded" : ""}`}>
             <RxCaretDown className="h-4 w-4" />

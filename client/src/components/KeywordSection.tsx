@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Filter } from "./Filter";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
 import keywordCategories from "../assets/keyword-categories.json";
 import {
-  ArrowLeft, Cog, Globe, Palette,
+  Cog, Globe, Palette,
   Sword, Mountain, Crosshair, Zap, Layers, TrendingUp, Flame, Gamepad2,
   Coins, Sparkles, Wand2, LayoutGrid, Target, Trophy, Dices, Brain,
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
@@ -15,6 +15,7 @@ import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters } from '../context/FilterContext';
+import Navbar from './Navbar';
 
 interface KeywordItem {
   id: number;
@@ -39,20 +40,13 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const { clearAllFilters, searchGames, selectedFilters, isLoading } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
 
-  const handleDesktopSearch = async () => {
-    await searchGames();
-  };
-
-  const handleDesktopClear = () => {
-    clearAllFilters();
-  };
-
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
-  const [activeMainCategory, setActiveMainCategory] = useState<MainCategory>("Mechanics & Systems");
+  const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>("Mechanics & Systems");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
-  const EXTENDED_PAGE_SIZE = 20;
   const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
   const [animBatchStart, setAnimBatchStart] = useState(0);
+  const EXTENDED_PAGE_SIZE = 20;
+  const MOBILE_PREVIEW_COUNT = 4;
 
   useEffect(() => {
     setRevealedExtended([]);
@@ -60,8 +54,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   }, [activeSubcategory]);
 
   const selectMainCategory = (cat: MainCategory) => {
-    setActiveMainCategory(cat);
+    setActiveMainCategory(current => current === cat ? null : cat);
     setActiveSubcategory(null);
+    setRevealedExtended([]);
+    setAnimBatchStart(0);
   };
 
   const getCategoryIcon = (mainCat: MainCategory) => {
@@ -69,12 +65,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     if (mainCat === "Setting & World") return <Globe className="w-6 h-6 text-primary" />;
     return <Palette className="w-6 h-6 text-primary" />;
   };
-
-  const getTotalKeywordCount = (mainCat: MainCategory): number =>
-    getSubcategories(mainCat).filter(subCat => {
-      const kws = getKeywordsForSubcategory(subCat);
-      return Array.isArray(kws) && kws.length > 0;
-    }).length;
 
   const subcategoryIconMap: Record<string, LucideIcon> = {
     "Combat Systems": Sword,
@@ -128,59 +118,345 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (extendedKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
   };
 
+  const getAvailableSubcategories = (mainCat: MainCategory): string[] =>
+    getSubcategories(mainCat).filter(subCat => getKeywordsForSubcategory(subCat).length > 0);
+
+  const getTotalKeywordCount = (mainCat: MainCategory): number =>
+    getAvailableSubcategories(mainCat).length;
+
+  const getSubcategoryDescription = (mainCat: MainCategory, subCategoryName: string): string =>
+    (keywordCategories[mainCat] as unknown as Record<string, { description: string }>)[subCategoryName]?.description || "";
+
   const getSubcategoryParent = (subCategoryName: string): MainCategory | undefined =>
     mainCategoryOrder.find(cat => getSubcategories(cat).includes(subCategoryName));
 
-  const getCategoryShortLabel = (mainCat: MainCategory) => {
-    if (mainCat === "Mechanics & Systems") return "Mechanics";
-    if (mainCat === "Setting & World") return "World";
-    return "Style";
+  const getKeywordPanelData = (subCategoryName: string) => {
+    const topKeywords = getKeywordsForSubcategory(subCategoryName);
+    const extendedKeywords = getExtendedKeywordsForSubcategory(subCategoryName);
+    const usedIds = new Set(revealedExtended.map(keyword => keyword.id));
+    const unseenExtended = extendedKeywords.filter(keyword => !usedIds.has(keyword.id));
+    const displayedKeywords = [...topKeywords, ...revealedExtended];
+    const mainCat = getSubcategoryParent(subCategoryName);
+
+    return {
+      topKeywords,
+      extendedKeywords,
+      unseenExtended,
+      displayedKeywords,
+      totalKeywords: topKeywords.length + extendedKeywords.length,
+      description: mainCat ? getSubcategoryDescription(mainCat, subCategoryName) : "",
+      isModified: revealedExtended.length > 0,
+      moreAvailable: unseenExtended.length,
+    };
   };
 
-  const renderCategorySelector = () => (
-    <div className="grid grid-cols-3 gap-2">
-      {mainCategoryOrder.map((mainCat) => {
-        const isActive = activeMainCategory === mainCat;
+  const revealMoreKeywords = (displayedCount: number, unseenExtended: KeywordItem[]) => {
+    setAnimBatchStart(displayedCount);
+    setRevealedExtended(prev => [...prev, ...unseenExtended.slice(0, EXTENDED_PAGE_SIZE)]);
+  };
 
-        return (
-          <button
-            key={mainCat}
-            onClick={() => selectMainCategory(mainCat)}
-            className={`group flex min-w-0 rounded-lg border transition-all duration-200
-              flex-col items-center justify-center gap-1 px-2 py-3 text-center
-              lg:flex-row lg:items-center lg:gap-2 lg:px-3 lg:text-left
-              ${isActive
-                ? "border-primary/70 bg-primary/15 text-foreground shadow-[0_0_22px_rgba(16,185,129,0.12)]"
-                : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-foreground"
-              }`}
-          >
-            <span className={`shrink-0 rounded-md p-1.5 ${isActive ? "bg-primary/15" : "bg-background/50 group-hover:bg-primary/10"}`}>
-              {getCategoryIcon(mainCat)}
-            </span>
-            <span className="min-w-0 lg:flex-1">
-              <span className="block text-sm font-bold">
-                {getCategoryShortLabel(mainCat)}
-              </span>
-            </span>
-          </button>
-        );
-      })}
+  const restoreInitialKeywords = () => {
+    setRevealedExtended([]);
+    setAnimBatchStart(0);
+  };
+
+  const renderKeywordPill = (keyword: KeywordItem, index: number, batchStart = 0) => (
+    <div
+      key={keyword.id}
+      className="keyword-inline-item"
+      style={{ animationDelay: `${Math.min(Math.max(index - batchStart, 0) * 25, 400)}ms` }}
+    >
+      <Filter
+        label={keyword.name.replace(/\b\w/g, c => c.toUpperCase())}
+        id={keyword.id}
+        category={category}
+        onClick={() => {}}
+      />
     </div>
   );
 
-  return (
-    <div className="keyword-section w-full h-full flex flex-col transition-all duration-500">
-      {/* Desktop-only: title + tagline sticky header */}
-      <div className="hidden lg:flex flex-col justify-center sticky top-0 z-30 min-h-[4.75rem] border-b border-border bg-[rgba(5,16,12,0.94)] backdrop-blur-[14px] shadow-[0_12px_28px_rgba(0,0,0,0.24)] w-full px-6">
-        <div className="flex items-baseline gap-3">
-          <h1 className="shrink-0 text-2xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
-            Gamefinder
-          </h1>
-          <span className="text-sm text-muted-foreground">Find your next favourite game</span>
+  const renderKeywordPanelActions = (subCategoryName: string, variant: "desktop" | "mobile") => {
+    const { unseenExtended, displayedKeywords, isModified, moreAvailable } = getKeywordPanelData(subCategoryName);
+    const buttonBase = variant === "desktop"
+      ? "flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
+      : "inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card px-3 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none";
+
+    return (
+      <div className={variant === "desktop" ? "shrink-0 flex items-center gap-1.5 lg:absolute lg:bottom-0 lg:right-4 lg:translate-y-1/2 lg:z-10 lg:bg-card lg:px-1" : "flex flex-wrap gap-2"}>
+        <Tooltip content={isModified ? "Restore initial list" : "Nothing to restore"}>
+          <button onClick={restoreInitialKeywords} disabled={!isModified} className={buttonBase}>
+            <RotateCcw className={variant === "desktop" ? "w-4 h-4" : "w-3.5 h-3.5"} />
+            {variant === "mobile" && "Restore"}
+          </button>
+        </Tooltip>
+        <Tooltip content={moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more keywords"}>
+          <button
+            onClick={() => revealMoreKeywords(displayedKeywords.length, unseenExtended)}
+            disabled={moreAvailable === 0}
+            className={buttonBase}
+          >
+            <ChevronDown className={variant === "desktop" ? "w-4 h-4" : "w-3.5 h-3.5"} />
+            {variant === "mobile" && (moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more")}
+          </button>
+        </Tooltip>
+      </div>
+    );
+  };
+
+  const renderKeywordPanel = (subCategoryName: string, variant: "desktop" | "mobile") => {
+    const { extendedKeywords, displayedKeywords, totalKeywords, description } = getKeywordPanelData(subCategoryName);
+
+    return (
+      <div className={variant === "desktop" ? "flex h-full min-h-0 flex-col" : "grid gap-3"}>
+        {variant === "desktop" && (
+          <div className="relative flex items-center gap-4 border-b border-border bg-card p-5">
+            <div className="shrink-0 p-2.5 rounded-lg bg-primary/10">
+              {getSubcategoryIcon(subCategoryName, "w-5 h-5 text-primary")}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-xl font-bold text-foreground">
+                  {subCategoryName}
+                </span>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">
+                  {displayedKeywords.length}{extendedKeywords.length > 0 ? ` of ${totalKeywords}` : ""} keywords
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
+            </div>
+            {renderKeywordPanelActions(subCategoryName, "desktop")}
+          </div>
+        )}
+
+        <div className={variant === "desktop" ? "flex-1 overflow-y-auto px-4 py-4" : "pt-1"}>
+          <div className="keyword-inline-list">
+            {displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
+          </div>
+        </div>
+
+        {variant === "mobile" && renderKeywordPanelActions(subCategoryName, "mobile")}
+      </div>
+    );
+  };
+
+  const renderDesktopExplorer = () => {
+    const openSubcategories = activeMainCategory ? getAvailableSubcategories(activeMainCategory) : [];
+    const selectedSubcategory = activeSubcategory && openSubcategories.includes(activeSubcategory)
+      ? activeSubcategory
+      : openSubcategories[0];
+
+    return (
+      <div className="hidden flex-1 min-h-0 overflow-hidden rounded-xl border border-border bg-background/40 lg:grid lg:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.55fr)]">
+        <div className="flex min-h-0 flex-col border-r border-border bg-card/45">
+          <div className="border-b border-border/70 p-2.5">
+            <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
+          </div>
+          <div className="flex-1 overflow-y-auto p-2.5">
+            <div className="grid gap-3">
+              {mainCategoryOrder.map((mainCat) => {
+                const subcategories = getAvailableSubcategories(mainCat);
+                const isOpen = activeMainCategory === mainCat;
+                if (subcategories.length === 0) return null;
+
+                return (
+                  <section key={mainCat} className="grid gap-2">
+                    <button
+                      type="button"
+                      onClick={() => selectMainCategory(mainCat)}
+                      aria-expanded={isOpen}
+                      className={`flex min-h-[2.5rem] w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors ${
+                        isOpen
+                          ? "border-primary/25 bg-card/80 text-foreground"
+                          : "border-transparent text-muted-foreground hover:bg-primary/5 hover:text-foreground"
+                      }`}
+                    >
+                      <span className="shrink-0 rounded-md bg-background/55 p-1.5 text-primary">
+                        {getCategoryIcon(mainCat)}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-sm font-bold">{mainCat}</span>
+                      <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                        {getTotalKeywordCount(mainCat)}
+                      </span>
+                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-180 text-primary" : ""}`} />
+                    </button>
+
+                    {isOpen && (
+                      <div className="grid gap-1 border-t border-border/70 pt-2">
+                        {subcategories.map((subCategoryName) => {
+                          const keywords = getKeywordsForSubcategory(subCategoryName);
+                          const isActive = selectedSubcategory === subCategoryName;
+                          const description = getSubcategoryDescription(mainCat, subCategoryName);
+
+                          return (
+                            <Tooltip key={subCategoryName} content={description}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActiveMainCategory(mainCat);
+                                  setActiveSubcategory(subCategoryName);
+                                }}
+                                className={`flex min-h-[2.65rem] w-full items-center gap-2.5 rounded-lg border px-3 py-2 text-left text-sm font-semibold transition-all duration-200 ${
+                                  isActive
+                                    ? "border-primary/60 bg-primary/15 text-foreground shadow-[0_0_18px_rgba(16,185,129,0.10)]"
+                                    : "border-transparent bg-transparent text-muted-foreground hover:border-primary/35 hover:bg-primary/10 hover:text-foreground"
+                                }`}
+                              >
+                                {getSubcategoryIcon(subCategoryName, "w-4 h-4 shrink-0 text-primary")}
+                                <span className="min-w-0 flex-1 truncate">{subCategoryName}</span>
+                                <span className="shrink-0 text-xs text-muted-foreground">{keywords.length}</span>
+                              </button>
+                            </Tooltip>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </section>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="min-h-0 min-w-0">
+          {selectedSubcategory ? (
+            renderKeywordPanel(selectedSubcategory, "desktop")
+          ) : (
+            <div className="flex h-full min-h-[18rem] items-center justify-center px-6 text-center">
+              <div className="max-w-sm">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-card text-primary">
+                  <LayoutGrid className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 text-lg font-bold text-foreground">Choose a category</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Open Mechanics, World, or Style to browse their subcategories.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+    );
+  };
 
-      {/* Desktop query builder bar */}
+  const renderMobileShelves = () => {
+    return (
+      <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-background/40 lg:hidden">
+        <div className="flex-1 overflow-y-auto p-3">
+          <div className="grid gap-4">
+            <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
+            {mainCategoryOrder.map((mainCat) => {
+              const subcategories = getAvailableSubcategories(mainCat);
+              const descriptor = (keywordCategories[mainCat] as unknown as { description: string }).description;
+              const isOpen = activeMainCategory === mainCat;
+              if (subcategories.length === 0) return null;
+
+              return (
+                <section key={mainCat} className="grid gap-2">
+                  <button
+                    type="button"
+                    onClick={() => selectMainCategory(mainCat)}
+                    aria-expanded={isOpen}
+                    className={`flex items-start gap-3 rounded-lg border border-transparent px-1 py-2 text-left transition-colors ${
+                      isOpen
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
+                    }`}
+                  >
+                    <div className="shrink-0 mt-0.5 p-2 rounded-lg bg-primary/15">
+                      {getCategoryIcon(mainCat)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span className="text-xl font-bold text-foreground">{mainCat}</span>
+                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">{getTotalKeywordCount(mainCat)}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1 leading-snug">{descriptor}</p>
+                    </div>
+                    <ChevronDown className={`mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180 text-primary" : ""}`} />
+                  </button>
+
+                  {isOpen && (
+                    <div className="grid gap-3 border-t border-border/70 pt-3">
+                      {subcategories.map((subCategoryName) => {
+                        const keywords = getKeywordsForSubcategory(subCategoryName);
+                        const description = getSubcategoryDescription(mainCat, subCategoryName);
+                        const isExpanded = activeSubcategory === subCategoryName;
+                        const previewKeywords = keywords.slice(0, MOBILE_PREVIEW_COUNT);
+
+                        return (
+                          <section
+                            key={subCategoryName}
+                            className={`rounded-lg border bg-card/70 transition-colors ${isExpanded ? "border-primary/50" : "border-border"}`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveMainCategory(mainCat);
+                                setActiveSubcategory(isExpanded ? null : subCategoryName);
+                              }}
+                              className="flex w-full items-start gap-3 px-3.5 py-3 text-left"
+                              aria-expanded={isExpanded}
+                            >
+                              <span className="mt-0.5 shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
+                                {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="flex items-center gap-2">
+                                  <span className="font-bold text-foreground">{subCategoryName}</span>
+                                  <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywords.length}</span>
+                                </span>
+                                <span className="mt-1 block text-xs leading-snug text-muted-foreground">{description}</span>
+                              </span>
+                              <ChevronDown className={`mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                            </button>
+
+                            <div className="px-3.5 pb-3">
+                              {isExpanded ? (
+                                renderKeywordPanel(subCategoryName, "mobile")
+                              ) : (
+                                <div className="keyword-inline-list">
+                                  {previewKeywords.map((keyword, index) => renderKeywordPill(keyword, index))}
+                                  {keywords.length > previewKeywords.length && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setActiveMainCategory(mainCat);
+                                        setActiveSubcategory(subCategoryName);
+                                      }}
+                                      className="mb-2 inline-flex h-8 items-center rounded-full border border-border bg-background/70 px-3 text-xs font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
+                                    >
+                                      More
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </section>
+                        );
+                      })}
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const handleDesktopSearch = async () => {
+    await searchGames();
+  };
+
+  const handleDesktopClear = () => {
+    clearAllFilters();
+  };
+
+  return (
+    <div className="keyword-section w-full h-full flex flex-col transition-all duration-500">
+      <Navbar />
+
       <div className="desktop-action-bar hidden lg:grid border-b border-border">
         <div className="user-selection">
           <SelectedFilters variant="lanes" />
@@ -220,167 +496,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         </div>
       </div>
 
-      {/* Main content */}
       <div className="flex-1 min-h-0 p-6">
         <div className="flex h-full min-h-0 flex-col gap-5">
-          <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
-          {renderCategorySelector()}
-
-          {activeSubcategory ? (
-          /* Keywords view */
-          (() => {
-            const topKeywords = getKeywordsForSubcategory(activeSubcategory);
-            const extendedKeywords = getExtendedKeywordsForSubcategory(activeSubcategory);
-            const usedIds = new Set(revealedExtended.map(k => k.id));
-            const unseenExtended = extendedKeywords.filter(k => !usedIds.has(k.id));
-            const displayedKeywords = [...topKeywords, ...revealedExtended];
-            const totalKeywords = topKeywords.length + extendedKeywords.length;
-            const isModified = revealedExtended.length > 0;
-
-            const mainCat = getSubcategoryParent(activeSubcategory);
-            const description = mainCat
-              ? (keywordCategories[mainCat] as unknown as Record<string, { description: string }>)[activeSubcategory]?.description
-              : "No description available.";
-
-            const handleShowMore = () => {
-              const next = unseenExtended.slice(0, EXTENDED_PAGE_SIZE);
-              setAnimBatchStart(displayedKeywords.length);
-              setRevealedExtended(prev => [...prev, ...next]);
-            };
-
-            const handleRestore = () => {
-              setRevealedExtended([]);
-              setAnimBatchStart(0);
-            };
-
-            const moreAvailable = unseenExtended.length;
-
-            return (
-              <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-background/40">
-                  {/* Subcategory header */}
-                  <div className="relative flex items-center gap-4 border-b border-border bg-card p-5">
-                    <button
-                      onClick={() => setActiveSubcategory(null)}
-                      aria-label={`Back to ${getCategoryShortLabel(mainCat ?? activeMainCategory)}`}
-                      className="shrink-0 flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background/50 text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                    </button>
-                    <div className="shrink-0 p-2.5 rounded-lg bg-primary/10">
-                      {getSubcategoryIcon(activeSubcategory, "w-6 h-6 text-primary")}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-xl font-bold text-foreground">
-                          {activeSubcategory}
-                        </span>
-                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">
-                          {displayedKeywords.length}{extendedKeywords.length > 0 ? ` of ${totalKeywords}` : ""} keywords
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
-                    </div>
-                    {/* Action buttons: inline on mobile, straddling the border on desktop */}
-                    <div className="shrink-0 flex items-center gap-1.5 lg:absolute lg:bottom-0 lg:right-4 lg:translate-y-1/2 lg:z-10 lg:bg-card lg:px-1">
-                      <Tooltip content={isModified ? "Restore initial list" : "Nothing to restore"}>
-                        <button
-                          onClick={handleRestore}
-                          disabled={!isModified}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
-                        >
-                          <RotateCcw className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
-                      <Tooltip content={moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more keywords"}>
-                        <button
-                          onClick={handleShowMore}
-                          disabled={moreAvailable === 0}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
-                        >
-                          <ChevronDown className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
-                    </div>
-                  </div>
-                  {/* Keywords */}
-                  <div className="flex-1 overflow-y-auto px-4 py-4">
-                    <div className="keyword-inline-list">
-                      {displayedKeywords.map((keyword: KeywordItem, i) => (
-                        <div
-                          key={keyword.id}
-                          className="keyword-inline-item"
-                          style={{ animationDelay: `${Math.min(Math.max(i - animBatchStart, 0) * 25, 400)}ms` }}
-                        >
-                          <Filter
-                            label={keyword.name.replace(/\b\w/g, c => c.toUpperCase())}
-                            id={keyword.id}
-                            category={category}
-                            onClick={() => {}}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-              </div>
-            );
-          })()
-        ) : (
-          /* All categories — full-width vertical cards */
-          <>
-            {(() => {
-              const subcategories = getSubcategories(activeMainCategory);
-              const descriptor = (keywordCategories[activeMainCategory] as unknown as { description: string }).description;
-              const totalKeywords = getTotalKeywordCount(activeMainCategory);
-
-              return (
-                <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-background/40">
-                  <div className="flex items-start gap-4 border-b border-border bg-card p-5">
-                    <div className="shrink-0 mt-0.5 p-2.5 rounded-lg bg-primary/10">
-                      {getCategoryIcon(activeMainCategory)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-xl font-bold text-foreground">
-                          {activeMainCategory}
-                        </span>
-                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">
-                          {totalKeywords}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1 leading-snug">
-                        {descriptor}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto px-4 py-4">
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      {subcategories.map((subCategoryName) => {
-                        const keywords = getKeywordsForSubcategory(subCategoryName);
-                        if (!Array.isArray(keywords) || keywords.length === 0) return null;
-                        const description = (keywordCategories[activeMainCategory] as unknown as Record<string, { description: string }>)[subCategoryName]?.description || "";
-                        return (
-                          <Tooltip key={subCategoryName} content={description}>
-                            <div
-                              className="flex min-h-[3.25rem] items-center gap-3 rounded-lg px-3.5 py-3 text-sm font-medium cursor-pointer transition-all duration-200 bg-card hover:bg-primary/10 border border-border hover:border-primary/50"
-                              onClick={() => setActiveSubcategory(subCategoryName)}
-                            >
-                              {getSubcategoryIcon(subCategoryName, "w-4 h-4 shrink-0 text-primary")}
-                              <span className="min-w-0 flex-1 leading-snug">{subCategoryName}</span>
-                              <span className="shrink-0 text-xs font-semibold text-muted-foreground">
-                                {keywords.length}
-                              </span>
-                            </div>
-                          </Tooltip>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </>
-        )}
+          {renderDesktopExplorer()}
+          {renderMobileShelves()}
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchTimeout = useRef<NodeJS.Timeout>();
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const { addFilter, keywordMode } = useFilters();
+  const { addFilter } = useFilters();
 
   useEffect(() => {
     // Handle click outside
@@ -122,7 +122,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
       id: keyword.id,
       name: keyword.name,
       category: 'Keywords',
-      mode: keywordMode,
+      mode: "include",
       slug: keyword.name.toLowerCase().replace(/\s+/g, '-')
     });
     setSearchTerm('');
@@ -146,7 +146,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setShowSuggestions(true)}
-          placeholder={keywordMode === "exclude" ? "Search keywords to exclude..." : "Search for more..."}
+          placeholder="Search for more..."
           className="w-full px-4 py-3 pl-12 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
         />
         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
@@ -155,7 +155,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
       {/* Suggestions dropdown */}
       {showSuggestions && (searchTerm.trim() || isLoading) && (
         <div 
-          className="absolute z-10 w-full mt-2 bg-card border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto
+          className="absolute z-50 w-full mt-2 bg-popover text-popover-foreground border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto
             [&::-webkit-scrollbar]:w-2
             [&::-webkit-scrollbar-track]:bg-muted
             [&::-webkit-scrollbar-thumb]:bg-muted-foreground/50

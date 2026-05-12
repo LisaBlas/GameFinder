@@ -4,25 +4,48 @@ import { KeywordSection } from '../components/KeywordSection';
 import { FilterProvider, useFilters } from '../context/FilterContext';
 import BottomBar from '../components/BottomBar';
 import AnimatedBackground from '../components/AnimatedBackground';
+import SavedGamesPanel from '../components/SavedGamesPanel';
+import { FaGithub, FaHeart } from 'react-icons/fa';
+import { FaXTwitter, FaGlobe } from 'react-icons/fa6';
+import { useSavedGames } from '../context/SavedGamesContext';
 
 const HomeContent: React.FC = () => {
   const { gameResults } = useFilters();
+  const { savedGames } = useSavedGames();
   const [activeTab, setActiveTab] = useState<'build' | 'results'>('build');
+  const [panelOpen, setPanelOpen] = useState(false);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <AnimatedBackground />
 
-      {/* Mobile: GameFinder title + tagline above tabs */}
-      <div className="lg:hidden shrink-0 px-4 py-3 bg-background/80 backdrop-blur-sm">
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
-            Gamefinder
-          </h1>
-          <span className="text-xs text-muted-foreground">Find your next favourite game</span>
+      {/* App header — mobile only; desktop header lives inside the keyword section panel */}
+      <div className="lg:hidden shrink-0 px-4 py-3 bg-background/80 backdrop-blur-sm border-b border-border/40">
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+              Gamefinder
+            </h1>
+            <span className="text-xs text-muted-foreground">Find your next favourite game</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPanelOpen(true)}
+            className="relative text-white/70 hover:text-rose-400 transition-colors p-1"
+            aria-label="Saved games"
+          >
+            <FaHeart size={18} />
+            {savedGames.length > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white leading-none">
+                {savedGames.length > 9 ? '9+' : savedGames.length}
+              </span>
+            )}
+          </button>
         </div>
       </div>
+
+      <SavedGamesPanel open={panelOpen} onOpenChange={setPanelOpen} />
 
       {/* Mobile Tab Bar */}
       <div className="lg:hidden flex shrink-0 border-b border-border bg-background/80 backdrop-blur-sm">
@@ -69,6 +92,19 @@ const HomeContent: React.FC = () => {
               filterSectionRef={resultsSectionRef}
               heroRef={resultsSectionRef}
             />
+          </div>
+
+          {/* External links footer */}
+          <div className="shrink-0 flex items-center gap-4 px-4 py-3 border-t border-border/40">
+            <a href="https://lisablas.github.io/BleepBloop/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Website">
+              <FaGlobe size={16} />
+            </a>
+            <a href="https://github.com/LisaBlas/GameFinder" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="GitHub">
+              <FaGithub size={16} />
+            </a>
+            <a href="https://x.com/BerliozGordon" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="X / Twitter">
+              <FaXTwitter size={16} />
+            </a>
           </div>
         </div>
 

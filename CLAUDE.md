@@ -40,6 +40,7 @@ ActionBar (shrink-0 flex child, not fixed): Clear | Search
 - Mobile: tabs switch between Build and Results; Search auto-switches to Results tab
 - Results controls live in a sticky results header: result count, horizontal `FilterBar`, and sort select
 - `FilterSidebar` is no longer part of the active split layout
+- `KeywordSection` uses a single hierarchical category/subcategory rail + detail panel on desktop, and category-grouped expandable ingredient shelves on mobile
 - `SelectedFilters` (tag pills) live in the bottom action bar when filters are selected
 - `BottomBar` is now a simple docked action bar (no fixed positioning, no tag display)
 - `Hero` section removed from the layout
@@ -60,13 +61,12 @@ All filter/keyword/result state flows from there.
 - Keywords are curated with intent — do not reorder or auto-generate them
 - Do not add unnecessary dependencies
 - **No price fetching** — we don't have infrastructure to fetch real-time prices from affiliate sites
-- **Max 3 keywords** — enforced in `FilterContext.addFilter()`. IGDB supports multi-keyword natively (AND filter, single call).
 
 ## Keyword Exclude Feature
-Each keyword pill can be toggled include/exclude via the Include/Exclude toggle in the header or the +/- button on the pill in `SelectedFilters`.
+New keyword selections default to include. Once selected, keyword pills expose a small ban icon; clicking the ban icon marks that keyword as excluded, while clicking the keyword pill itself removes it from the selection. Do not use a separate remove/X icon for selected keyword pills.
 
 How it works end-to-end:
-- `keywordMode` in `FilterContext` drives which mode new keywords are added with
+- New keyword additions from curated pills, search suggestions, and game-card tags should use `mode: "include"`
 - Each `Filter` in `selectedFilters` carries `mode: "include" | "exclude"` when `category === "Keywords"`
 - On search, `searchableFilters` strips out exclude-mode keywords (they don't become IGDB include conditions)
 - Excluded keyword IDs are collected separately and sent as `excludeKeywords: number[]` to `/api/games/search`
