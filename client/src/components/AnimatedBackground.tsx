@@ -66,8 +66,18 @@ const AnimatedBackground: React.FC = () => {
     };
     scheduleGolden();
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        clearTimeout(timeoutId);
+      } else {
+        scheduleGolden(Math.random() * 4000 + 3000);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       clearTimeout(timeoutId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       container.innerHTML = '';
     };
   }, []);

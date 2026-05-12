@@ -7,6 +7,7 @@ import LoadMoreButton from './LoadMoreButton';
 import FilterBar from './FilterBar';
 import MobileFilterSheet from './MobileFilterSheet';
 import { FaInfoCircle } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SearchResults: React.FC = () => {
   const { gameResults, isLoading, error, sortBy, setSortBy, hasMore, seedGame } = useFilters();
@@ -111,13 +112,23 @@ const SearchResults: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
-            {gameResults.map(game => (
-              <GameCard
+            {gameResults.map((game, index) => (
+              <motion.div
                 key={`game-${game.id}`}
-                game={game}
-                isSelected={selectedGameId === game.id}
-                onSelect={() => setSelectedGameId(current => current === game.id ? null : game.id)}
-              />
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  delay: Math.min(index * 0.07, 0.45),
+                  ease: [0.4, 0, 0.2, 1],
+                }}
+              >
+                <GameCard
+                  game={game}
+                  isSelected={selectedGameId === game.id}
+                  onSelect={() => setSelectedGameId(current => current === game.id ? null : game.id)}
+                />
+              </motion.div>
             ))}
           </div>
 
@@ -131,18 +142,27 @@ const SearchResults: React.FC = () => {
 
   return (
     <>
-    {selectedGame && (
-      <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-slate-950 lg:hidden">
-        <div className="p-3">
-          <GameCard
-            game={selectedGame}
-            isSelected={true}
-            fullscreen={true}
-            onSelect={() => setSelectedGameId(null)}
-          />
-        </div>
-      </div>
-    )}
+    <AnimatePresence>
+      {selectedGame && (
+        <motion.div
+          key="mobile-fullscreen"
+          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-slate-950 lg:hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="p-3">
+            <GameCard
+              game={selectedGame}
+              isSelected={true}
+              fullscreen={true}
+              onSelect={() => setSelectedGameId(null)}
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
     <section ref={sectionRef} className="flex-1 w-full mx-auto">
       <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'} ${hideMobileControls ? 'results-sticky-header-mobile-hidden' : ''}`}>
         <div className="flex w-full items-center justify-end lg:justify-between gap-3">

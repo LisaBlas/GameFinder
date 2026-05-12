@@ -8,6 +8,7 @@ import SavedGamesPanel from '../components/SavedGamesPanel';
 import { FaGithub, FaHeart } from 'react-icons/fa';
 import { FaXTwitter, FaGlobe } from 'react-icons/fa6';
 import { useSavedGames } from '../context/SavedGamesContext';
+import { motion } from 'framer-motion';
 
 const HomeContent: React.FC = () => {
   const { gameResults } = useFilters();
@@ -51,19 +52,25 @@ const HomeContent: React.FC = () => {
       <div className="lg:hidden flex shrink-0 border-b border-border bg-background/80 backdrop-blur-sm">
         <button
           onClick={() => setActiveTab('build')}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
+          className={`relative flex-1 py-3 text-sm font-medium transition-colors ${
             activeTab === 'build'
-              ? 'text-primary border-b-2 border-primary'
+              ? 'text-primary'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           Build
+          {activeTab === 'build' && (
+            <motion.div
+              layoutId="tab-indicator"
+              className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+            />
+          )}
         </button>
         <button
           onClick={() => setActiveTab('results')}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
+          className={`relative flex-1 py-3 text-sm font-medium transition-colors ${
             activeTab === 'results'
-              ? 'text-primary border-b-2 border-primary'
+              ? 'text-primary'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -73,15 +80,28 @@ const HomeContent: React.FC = () => {
               {gameResults.length}
             </span>
           )}
+          {activeTab === 'results' && (
+            <motion.div
+              layoutId="tab-indicator"
+              className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+            />
+          )}
         </button>
       </div>
 
       {/* Workspace panels */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
-        {/* Build panel — mobile: active tab only, desktop: left 40% */}
+      <motion.div
+        className="flex-1 overflow-hidden min-h-0 relative lg:flex"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+      >
+        {/* Build panel — mobile: cross-fade, desktop: left 40% */}
         <div
-          className={`bg-card flex-col overflow-y-auto w-full lg:w-2/5 lg:border-r lg:border-border ${
-            activeTab === 'build' ? 'flex' : 'hidden lg:flex'
+          className={`absolute inset-0 lg:static bg-card flex flex-col overflow-y-auto lg:w-2/5 lg:border-r lg:border-border transition-opacity duration-200 ${
+            activeTab === 'build'
+              ? 'opacity-100 pointer-events-auto z-10'
+              : 'opacity-0 pointer-events-none z-0 lg:opacity-100 lg:pointer-events-auto'
           }`}
         >
           {/* Keyword builder */}
@@ -108,10 +128,12 @@ const HomeContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Results panel — mobile: active tab only, desktop: right 60% */}
+        {/* Results panel — mobile: cross-fade, desktop: right 60% */}
         <div
-          className={`flex-col overflow-y-auto w-full lg:flex-1 ${
-            activeTab === 'results' ? 'flex' : 'hidden lg:flex'
+          className={`absolute inset-0 lg:static flex flex-col overflow-y-auto lg:flex-1 transition-opacity duration-200 ${
+            activeTab === 'results'
+              ? 'opacity-100 pointer-events-auto z-10'
+              : 'opacity-0 pointer-events-none z-0 lg:opacity-100 lg:pointer-events-auto'
           }`}
         >
           <ResultsSection
@@ -119,7 +141,7 @@ const HomeContent: React.FC = () => {
             resultsSectionRef={resultsSectionRef}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* Action bar — fixed bottom drawer on mobile; desktop version lives inside the left panel */}
       <BottomBar

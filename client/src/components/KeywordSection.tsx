@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Filter } from "./Filter";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
@@ -260,37 +261,48 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-180 text-foreground" : "text-muted-foreground"}`} />
                     </button>
 
-                    {isOpen && (
-                      <div className="grid gap-1 pl-2 pt-1">
-                        {subcategories.map((subCategoryName) => {
-                          const keywords = getKeywordsForSubcategory(subCategoryName);
-                          const isActive = selectedSubcategory === subCategoryName;
-                          const description = getSubcategoryDescription(mainCat, subCategoryName);
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          key={mainCat}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <div className="grid gap-1 pl-2 pt-1">
+                            {subcategories.map((subCategoryName) => {
+                              const keywords = getKeywordsForSubcategory(subCategoryName);
+                              const isActive = selectedSubcategory === subCategoryName;
+                              const description = getSubcategoryDescription(mainCat, subCategoryName);
 
-                          return (
-                            <Tooltip key={subCategoryName} content={description}>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveMainCategory(mainCat);
-                                  setActiveSubcategory(subCategoryName);
-                                }}
-                                className={`relative flex min-h-[2.65rem] w-full items-center gap-2.5 rounded-lg px-3 py-2 pl-4 text-left text-sm font-semibold transition-colors duration-200 ${
-                                  isActive
-                                    ? "bg-primary/15 text-foreground"
-                                    : "bg-transparent text-muted-foreground hover:bg-white/[0.035] hover:text-foreground"
-                                }`}
-                              >
-                                {isActive && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary" />}
-                                {getSubcategoryIcon(subCategoryName, `w-4 h-4 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`)}
-                                <span className="min-w-0 flex-1 truncate">{subCategoryName}</span>
-                                <span className="shrink-0 text-xs font-medium text-muted-foreground/75">{keywords.length}</span>
-                              </button>
-                            </Tooltip>
-                          );
-                        })}
-                      </div>
-                    )}
+                              return (
+                                <Tooltip key={subCategoryName} content={description}>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setActiveMainCategory(mainCat);
+                                      setActiveSubcategory(subCategoryName);
+                                    }}
+                                    className={`relative flex min-h-[2.65rem] w-full items-center gap-2.5 rounded-lg px-3 py-2 pl-4 text-left text-sm font-semibold transition-colors duration-200 ${
+                                      isActive
+                                        ? "bg-primary/15 text-foreground"
+                                        : "bg-transparent text-muted-foreground hover:bg-white/[0.035] hover:text-foreground"
+                                    }`}
+                                  >
+                                    {isActive && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary" />}
+                                    {getSubcategoryIcon(subCategoryName, `w-4 h-4 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`)}
+                                    <span className="min-w-0 flex-1 truncate">{subCategoryName}</span>
+                                    <span className="shrink-0 text-xs font-medium text-muted-foreground/75">{keywords.length}</span>
+                                  </button>
+                                </Tooltip>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </section>
                 );
               })}
@@ -299,21 +311,41 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         </div>
 
         <div className="min-h-0 min-w-0">
-          {selectedSubcategory ? (
-            renderKeywordPanel(selectedSubcategory, "desktop")
-          ) : (
-            <div className="flex h-full min-h-[18rem] items-center justify-center px-6 text-center">
-              <div className="max-w-sm">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-card text-primary">
-                  <LayoutGrid className="h-5 w-5" />
+          <AnimatePresence mode="wait">
+            {selectedSubcategory ? (
+              <motion.div
+                key={selectedSubcategory}
+                className="h-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {renderKeywordPanel(selectedSubcategory, "desktop")}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty-state"
+                className="h-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <div className="flex h-full min-h-[18rem] items-center justify-center px-6 text-center">
+                  <div className="max-w-sm">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-card text-primary">
+                      <LayoutGrid className="h-5 w-5" />
+                    </div>
+                    <h3 className="mt-4 text-lg font-bold text-foreground">Choose a category</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      Open Mechanics, World, or Style to browse their subcategories.
+                    </p>
+                  </div>
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-foreground">Choose a category</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Open Mechanics, World, or Style to browse their subcategories.
-                </p>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     );
@@ -324,7 +356,14 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     const { displayedKeywords, description, extendedKeywords, totalKeywords, moreAvailable, unseenExtended } = getKeywordPanelData(activeSubcategory);
 
     return (
-      <div className="lg:hidden fixed inset-0 z-50 flex flex-col bg-background overflow-hidden">
+      <motion.div
+        key={activeSubcategory}
+        className="lg:hidden fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+      >
         <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
           <button
             type="button"
@@ -366,7 +405,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -413,37 +452,47 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     <ChevronDown className={`mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180 text-primary" : ""}`} />
                   </button>
 
-                  {isOpen && (
-                    <div className="grid gap-3 border-t border-primary/25 pt-3">
-                      {subcategories.map((subCategoryName) => {
-                        const keywords = getKeywordsForSubcategory(subCategoryName);
-                        const description = getSubcategoryDescription(mainCat, subCategoryName);
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key={mainCat + '-mobile'}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="grid gap-3 border-t border-primary/25 pt-3">
+                          {subcategories.map((subCategoryName) => {
+                            const keywords = getKeywordsForSubcategory(subCategoryName);
+                            const description = getSubcategoryDescription(mainCat, subCategoryName);
 
-                        return (
-                          <section key={subCategoryName} className="rounded-lg border border-border bg-card/70">
-                            <button
-                              type="button"
-                              onClick={() => drillIntoSubcategory(mainCat, subCategoryName)}
-                              className="flex w-full items-center gap-3 px-3.5 py-3 text-left"
-                            >
-                              <span className="shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
-                                {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="flex items-center gap-2">
-                                  <span className="font-bold text-foreground">{subCategoryName}</span>
-                                  <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywords.length}</span>
-                                </span>
-                                <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{description}</span>
-                              </span>
-                              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                            </button>
-
-                          </section>
-                        );
-                      })}
-                    </div>
-                  )}
+                            return (
+                              <section key={subCategoryName} className="rounded-lg border border-border bg-card/70">
+                                <button
+                                  type="button"
+                                  onClick={() => drillIntoSubcategory(mainCat, subCategoryName)}
+                                  className="flex w-full items-center gap-3 px-3.5 py-3 text-left"
+                                >
+                                  <span className="shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
+                                    {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
+                                  </span>
+                                  <span className="min-w-0 flex-1">
+                                    <span className="flex items-center gap-2">
+                                      <span className="font-bold text-foreground">{subCategoryName}</span>
+                                      <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywords.length}</span>
+                                    </span>
+                                    <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{description}</span>
+                                  </span>
+                                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                </button>
+                              </section>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </section>
               );
             })}
@@ -463,7 +512,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   return (
     <div className="keyword-section relative w-full h-full flex flex-col transition-all duration-500">
-      {renderMobileSubcategoryDetail()}
+      <AnimatePresence>{renderMobileSubcategoryDetail()}</AnimatePresence>
       <Navbar />
 
       <div className="desktop-action-bar hidden lg:grid border-b border-border">
