@@ -41,7 +41,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
 
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
-  const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>("Mechanics & Systems");
+  const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
   const [animBatchStart, setAnimBatchStart] = useState(0);

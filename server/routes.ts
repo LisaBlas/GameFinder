@@ -77,6 +77,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Single game detail endpoint
+  app.get('/api/games/:id', async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      if (Number.isNaN(id)) return res.status(400).json({ message: 'Invalid game id' });
+      const game = await igdbService.getGameById(id);
+      if (!game) return res.status(404).json({ message: 'Game not found' });
+      res.json(game);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to fetch game', error: error?.message });
+    }
+  });
+
   // Game videos endpoint
   console.log('[routes] Registering GET /api/games/:id/videos');
   app.get('/api/games/:id/videos', async (req, res) => {

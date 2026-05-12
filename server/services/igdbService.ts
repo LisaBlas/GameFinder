@@ -292,6 +292,19 @@ export class IGDBService {
   }
 
   /**
+   * Fetch a single game by ID with full detail fields
+   */
+  async getGameById(gameId: number) {
+    const query = `
+      fields name, summary, first_release_date, cover.url, platforms.name, genres.name, themes.name, game_modes.name, keywords.name, rating, websites.url, websites.category, external_games.id, external_games.name, external_games.external_game_source, external_games.url, involved_companies.*, involved_companies.company.*;
+      where id = ${gameId};
+      limit 1;
+    `.trim();
+    const results = await this.makeRequest('games', query);
+    return results[0] ?? null;
+  }
+
+  /**
    * Fetch game videos from IGDB for a specific game
    */
   async getGameVideos(gameId: number) {

@@ -31,6 +31,30 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(16, 185, 129, 0.45) rgba(6, 17, 13, 0.55);
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: rgba(6, 17, 13, 0.55);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.38);
+    border: 2px solid rgba(6, 17, 13, 0.85);
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.58);
+  }
 }
 
 /* Filter Pill Styles */
