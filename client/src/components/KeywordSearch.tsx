@@ -35,7 +35,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchTimeout = useRef<NodeJS.Timeout>();
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const { addFilter, setSeedGame } = useFilters();
+  const { addFilter, setSeedGame, clearAllFilters } = useFilters();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -121,6 +121,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
     setKeywordSuggestions([]);
     setShowSuggestions(false);
 
+    clearAllFilters();
     setSeedGame({ id: game.id, name: game.name });
 
     try {

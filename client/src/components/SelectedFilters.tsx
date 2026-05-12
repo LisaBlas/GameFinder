@@ -59,10 +59,12 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
     );
   };
 
-  const renderLanePill = (filter: typeof selectedFilters[number]) => (
+  const renderLanePill = (filter: typeof selectedFilters[number]) => {
+    const isKeyword = filter.category === "Keywords";
+    return (
     <div
       key={`${filter.category}-${filter.id}`}
-      className={`selected-filter-pill keyword keyword-${filter.mode || "include"}`}
+      className={`selected-filter-pill${isKeyword ? ` keyword keyword-${filter.mode || "include"}` : ""}`}
       onClick={() => removeFilter(filter.id, filter.category, filter.endpoint)}
       role="button"
       tabIndex={0}
@@ -92,7 +94,8 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
         </button>
       )}
     </div>
-  );
+    );
+  };
 
   if (selectedFilters.length === 0 && !seedGame && variant === "wrap") {
     return <div className="text-text-secondary text-sm">No filters selected</div>;
