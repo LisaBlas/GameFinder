@@ -11,6 +11,15 @@ import { FaXTwitter, FaGlobe } from 'react-icons/fa6';
 import { useSavedGames } from '../context/SavedGamesContext';
 import { motion } from 'framer-motion';
 
+const homepageSeoLinks = [
+  { href: '/best/cozy-games', label: 'Cozy games' },
+  { href: '/best/survival-crafting-games', label: 'Survival crafting' },
+  { href: '/best/dark-fantasy-rpg-games', label: 'Dark fantasy RPGs' },
+  { href: '/best/souls-like-games', label: 'Souls-like games' },
+  { href: '/best/mystery-adventure-games', label: 'Mystery adventures' },
+  { href: '/best/city-builder-games', label: 'City builders' },
+];
+
 const HomeContent: React.FC = () => {
   const { gameResults } = useFilters();
   const { savedGames } = useSavedGames();
@@ -35,7 +44,7 @@ const HomeContent: React.FC = () => {
     <div className="h-screen flex flex-col overflow-hidden">
       <AnimatedBackground />
 
-      {/* App header — mobile only; desktop header lives inside the keyword section panel */}
+      {/* App header - mobile only; desktop header lives inside the keyword section panel */}
       <div className="lg:hidden shrink-0 px-4 py-3 bg-background/80 backdrop-blur-sm border-b border-border/40">
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2 flex-wrap">
@@ -111,7 +120,7 @@ const HomeContent: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
-        {/* Build panel — mobile: cross-fade, desktop: left 40% */}
+        {/* Build panel - mobile: cross-fade, desktop: left 40% */}
         <div
           className={`absolute inset-0 lg:static bg-card flex flex-col overflow-y-auto lg:w-2/5 lg:border-r lg:border-border transition-opacity duration-200 ${
             activeTab === 'build'
@@ -129,21 +138,34 @@ const HomeContent: React.FC = () => {
             />
           </div>
 
-          {/* External links footer */}
-          <div className="shrink-0 flex items-center gap-4 px-4 py-3 border-t border-border/40">
-            <a href="https://lisablas.github.io/BleepBloop/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Website">
-              <FaGlobe size={16} />
-            </a>
-            <a href="https://github.com/LisaBlas/GameFinder" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="GitHub">
-              <FaGithub size={16} />
-            </a>
-            <a href="https://x.com/BerliozGordon" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="X / Twitter">
-              <FaXTwitter size={16} />
-            </a>
+          {/* Footer links */}
+          <div className="shrink-0 border-t border-border/40 px-4 py-3">
+            <nav className="mb-3 flex flex-wrap gap-x-3 gap-y-1.5" aria-label="Popular game searches">
+              {homepageSeoLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+            <div className="flex items-center gap-4">
+              <a href="https://lisablas.github.io/BleepBloop/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Website">
+                <FaGlobe size={16} />
+              </a>
+              <a href="https://github.com/LisaBlas/GameFinder" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="GitHub">
+                <FaGithub size={16} />
+              </a>
+              <a href="https://x.com/BerliozGordon" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="X / Twitter">
+                <FaXTwitter size={16} />
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Results panel — mobile: cross-fade, desktop: right 60% */}
+        {/* Results panel - mobile: cross-fade, desktop: right 60% */}
         <div
           className={`absolute inset-0 lg:static flex flex-col overflow-y-auto lg:flex-1 transition-opacity duration-200 ${
             activeTab === 'results'
@@ -158,7 +180,7 @@ const HomeContent: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Action bar — fixed bottom drawer on mobile; desktop version lives inside the left panel */}
+      {/* Action bar - fixed bottom drawer on mobile; desktop version lives inside the left panel */}
       <BottomBar
         resetSections={() => {}}
         resultsSectionRef={resultsSectionRef}

@@ -25,6 +25,9 @@ This repo is the local GameFinder workspace. Treat `CLAUDE.md` as durable projec
 - Do not add a light mode toggle unless explicitly requested.
 - Prefer revenue-relevant improvements: affiliate flows, conversion clarity, SEO, and recommendation quality.
 
+## SEO Pages
+Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See the SEO Architecture section in `CLAUDE.md` for full details.
+
 ## Verification Defaults
 - Documentation-only changes: re-read edited files and run lightweight presence/readability checks.
 - UI/behavior changes: run the smallest relevant build/test/check first, then broaden only when the touched surface warrants it.

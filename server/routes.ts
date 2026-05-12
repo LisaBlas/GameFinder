@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { IGDBService } from "./services/igdbService";
 import keywordsRouter from "./routes/keywords";
+import { SEO_PAGE_MAP } from "./seoPages";
+import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize IGDB service
@@ -10,6 +12,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount the keywords router
   app.use('/api/keywords', keywordsRouter);
+
+  // Dynamic sitemap — includes homepage + all curated /best/* pages
+  app.get('/sitemap.xml', (_req, res) => {
+    res.set('Content-Type', 'application/xml');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(renderSitemap());
+  });
+
+  // SEO landing pages — server-rendered, crawlable, before the SPA fallback
+  app.get('/best/:slug', (req, res) => {
+    const page = SEO_PAGE_MAP.get(req.params.slug);
+    if (!page) {
+      return res.status(404).set('Content-Type', 'text/html').send(renderNotFoundPage());
+    }
+    res.set('Content-Type', 'text/html');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(renderSeoPage(page));
+  });
 
   // API routes
   app.get('/api/status', (req, res) => {

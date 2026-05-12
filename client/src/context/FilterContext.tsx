@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import axios from "axios";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
+import gameFilters from "../assets/game-filters.json";
 
 const toSlug = (name: string) =>
   name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -14,6 +15,20 @@ const slugToKeyword: Record<string, { id: number; name: string }> = {};
   const slug = toSlug(kw.name);
   if (!slugToKeyword[slug]) slugToKeyword[slug] = { id: kw.id, name: kw.name };
 });
+
+const gf = gameFilters as Record<string, Array<{ id: number | string; name: string; isParentOnly?: boolean; children?: Array<{ id: number; name: string }> }>>;
+const idToFilterName: Record<string, string> = {};
+for (const items of Object.values(gf)) {
+  for (const item of items) {
+    if (item.children) {
+      for (const child of item.children) {
+        idToFilterName[String(child.id)] = child.name;
+      }
+    } else if (!item.isParentOnly) {
+      idToFilterName[String(item.id)] = item.name;
+    }
+  }
+}
 
 // Define types for our filter objects
 export interface Filter {
@@ -606,7 +621,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     };
     for (const [key, category] of Object.entries(categoryMap)) {
       const val = params.get(key);
-      if (val) hydrated.push({ id: Number(val), name: val, category });
+      if (val) hydrated.push({ id: Number(val), name: idToFilterName[val] ?? val, category });
     }
 
     const sort = params.get('sort');

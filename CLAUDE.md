@@ -65,6 +65,22 @@ Primary state:
 - Filter/search/result state lives in `FilterContext` (`client/src/context/FilterContext.tsx`).
 - Saved game state lives in `SavedGamesContext` (`client/src/context/SavedGamesContext.tsx`) and persists to `localStorage` under `gamefinder_saved_games`.
 
+## SEO Architecture
+
+Server-rendered intent pages live at `/best/:slug` — crawlable HTML, no React required. They are registered in `server/routes.ts` **before** the SPA fallback so Express handles them directly.
+
+Key files:
+- `server/seoPages.ts` — 30 curated page configs (slug, title, description, intro, filters, relatedSlugs). Add new pages here.
+- `server/seoRenderer.ts` — renders full HTML for `/best/:slug` pages, the 404 page, and `/sitemap.xml`.
+
+Sitemap is generated dynamically from `SEO_PAGES` in `seoRenderer.ts` — do not edit `client/public/sitemap.xml` manually, it is now ignored in production.
+
+Filter hydration gotcha: non-keyword filters (genre, theme, platform, mode, perspective) are stored in the URL as integer IDs (e.g. `?genre=13`). `FilterContext` resolves these back to display names via `idToFilterName`, which is built from `game-filters.json` at module load. If a filter pill shows a raw number instead of a name, the ID is missing from `game-filters.json`.
+
+CTA URLs use the existing app param format: `/?kw=cozy,farming&genre=13`. Keywords use slugs (`toSlug(name)`); other filters use integer IDs. `buildAppUrl()` in `seoPages.ts` builds these from a page's filter config.
+
+Analytics: CTA clicks fire a `seo_open_app` GA event with `page_slug` via inline `gtag()` call in the rendered HTML.
+
 ## Active Product Flows
 1. **Keyword UX** - make keyword selection feel fun and rewarding. Keywords are curated and sorted intentionally; preserve their order and meaning.
 2. **Game/keyword search** - `KeywordSearch` queries both `/api/games/suggest` and `/api/keywords/search`.
