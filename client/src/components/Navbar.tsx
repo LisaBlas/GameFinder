@@ -12,8 +12,8 @@ const Navbar: React.FC = () => {
       <div className="hidden lg:flex flex-col justify-center sticky top-0 z-30 min-h-[4.75rem] border-b border-border bg-[rgba(3,8,7,0.96)] backdrop-blur-[14px] shadow-[0_8px_24px_rgba(0,0,0,0.32)] w-full px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-3">
-            <h1 className="shrink-0 font-cinzel text-[1.35rem] font-bold tracking-widest uppercase bg-gradient-to-r from-emerald-400 via-primary to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]">
-              Gamefinder
+            <h1 className="shrink-0 font-brand text-[1.55rem] font-normal tracking-[0.08em] bg-gradient-to-r from-emerald-300 via-primary to-emerald-100 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]">
+              GameFinder
             </h1>
             <span className="font-cinzel text-[0.65rem] tracking-[0.22em] uppercase text-muted-foreground/70">Find your next favourite game</span>
           </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -22,6 +22,7 @@ const categories: FilterCategoryConfig[] = [
 
 const FilterBar: React.FC = () => {
   const { selectedFilters, requireDeveloper, setRequireDeveloper, requireRating, setRequireRating } = useFilters();
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
 
   const getSelectedCount = (category: string) =>
     selectedFilters.filter(filter => filter.category === category).length;
@@ -34,7 +35,11 @@ const FilterBar: React.FC = () => {
           const options = filterData[key] as any[];
 
           return (
-            <Popover key={category}>
+            <Popover
+              key={category}
+              open={openCategory === category}
+              onOpenChange={(open) => setOpenCategory(open ? category : null)}
+            >
               <PopoverTrigger asChild>
                 <button
                   className={cn(
@@ -75,6 +80,7 @@ const FilterBar: React.FC = () => {
                       hasChildren={option.hasChildren}
                       kids={option.children}
                       isParentOnly={option.isParentOnly}
+                      onClick={() => setOpenCategory(null)}
                     />
                   ))}
                 </div>

@@ -6,6 +6,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        brand: ["Metamorphous", "Cinzel", "Georgia", "serif"],
         cinzel: ["Cinzel", "Georgia", "serif"],
       },
       screens: {

@@ -9,7 +9,7 @@ import {
   Coins, Sparkles, Wand2, LayoutGrid, Target, Trophy, Dices, Brain,
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
   Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
-  X, Search, ChevronDown, ChevronLeft, ChevronRight, RotateCcw,
+  X, Search, ChevronDown, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
@@ -164,11 +164,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     setRevealedExtended(prev => [...prev, ...unseenExtended.slice(0, EXTENDED_PAGE_SIZE)]);
   };
 
-  const restoreInitialKeywords = () => {
-    setRevealedExtended([]);
-    setAnimBatchStart(0);
-  };
-
   const renderKeywordPill = (keyword: KeywordItem, index: number, batchStart = 0) => (
     <div
       key={keyword.id}
@@ -184,41 +179,13 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     </div>
   );
 
-  const renderKeywordPanelActions = (subCategoryName: string, variant: "desktop" | "mobile") => {
-    const { unseenExtended, displayedKeywords, isModified, moreAvailable } = getKeywordPanelData(subCategoryName);
-    const buttonBase = variant === "desktop"
-      ? "flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
-      : "inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card px-3 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none";
-
-    return (
-      <div className={variant === "desktop" ? "shrink-0 flex items-center gap-1.5 lg:absolute lg:bottom-0 lg:right-4 lg:translate-y-1/2 lg:z-10 lg:bg-card lg:px-1" : "flex flex-wrap gap-2"}>
-        <Tooltip content={isModified ? "Restore initial list" : "Nothing to restore"}>
-          <button onClick={restoreInitialKeywords} disabled={!isModified} className={buttonBase}>
-            <RotateCcw className={variant === "desktop" ? "w-4 h-4" : "w-3.5 h-3.5"} />
-            {variant === "mobile" && "Restore"}
-          </button>
-        </Tooltip>
-        <Tooltip content={moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more keywords"}>
-          <button
-            onClick={() => revealMoreKeywords(displayedKeywords.length, unseenExtended)}
-            disabled={moreAvailable === 0}
-            className={buttonBase}
-          >
-            <ChevronDown className={variant === "desktop" ? "w-4 h-4" : "w-3.5 h-3.5"} />
-            {variant === "mobile" && (moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more")}
-          </button>
-        </Tooltip>
-      </div>
-    );
-  };
-
   const renderKeywordPanel = (subCategoryName: string, variant: "desktop" | "mobile") => {
-    const { extendedKeywords, displayedKeywords, totalKeywords, description } = getKeywordPanelData(subCategoryName);
+    const { extendedKeywords, displayedKeywords, totalKeywords, description, moreAvailable, unseenExtended } = getKeywordPanelData(subCategoryName);
 
     return (
       <div className={variant === "desktop" ? "flex h-full min-h-0 flex-col" : "grid gap-3"}>
         {variant === "desktop" && (
-          <div className="relative flex min-h-[6.5rem] items-center gap-4 border-b border-border bg-card p-5">
+          <div className="flex min-h-[6.5rem] items-center gap-4 border-b border-border bg-card p-5">
             <div className="shrink-0 p-2.5 rounded-lg bg-primary/10">
               {getSubcategoryIcon(subCategoryName, "w-5 h-5 text-primary")}
             </div>
@@ -233,7 +200,16 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               </div>
               <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
             </div>
-            {renderKeywordPanelActions(subCategoryName, "desktop")}
+            <Tooltip content={moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more keywords"}>
+              <button
+                onClick={() => revealMoreKeywords(displayedKeywords.length, unseenExtended)}
+                disabled={moreAvailable === 0}
+                className="shrink-0 flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
+              >
+                <ChevronDown className="w-3.5 h-3.5" />
+                {moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more"}
+              </button>
+            </Tooltip>
           </div>
         )}
 
@@ -242,8 +218,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             {displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
           </div>
         </div>
-
-        {variant === "mobile" && renderKeywordPanelActions(subCategoryName, "mobile")}
       </div>
     );
   };
@@ -379,7 +353,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
           <div className="keyword-inline-list">
             {displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
             {moreAvailable > 0 && (
-              <div className="keyword-inline-item" style={{ animationDelay: '0ms' }}>
+              <div className="keyword-inline-item" style={{ animationDelay: `${Math.min(Math.max(displayedKeywords.length - animBatchStart, 0) * 25, 400)}ms` }}>
                 <button
                   type="button"
                   onClick={() => revealMoreKeywords(displayedKeywords.length, unseenExtended)}

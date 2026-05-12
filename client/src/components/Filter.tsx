@@ -189,6 +189,7 @@ export const Filter: React.FC<FilterProps> = ({
                   kids={kid.children || []}
                   hasChildren={kid.children && kid.children.length > 0}
                   parentId={id}
+                  onClick={onClick}
                 />
               );
             })}

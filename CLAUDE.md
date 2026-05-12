@@ -63,7 +63,7 @@ All filter/keyword/result state flows from there.
 | `client/src/App.css` | Main stylesheet: imports tokens, Tailwind directives, shadcn HSL vars, global component classes. |
 | `client/src/index.css` | Secondary Tailwind entry (Vite/Replit quirk). Contains `.filter-pill.animate-blink` and `.keyword-section` overrides. |
 | `client/src/styles/AnimatedBackground.css` | Styles for the animated canvas background only. |
-| `tailwind.config.ts` | Extends Tailwind: custom `slate` scale, `primary.*` emerald scale, `font-cinzel`, `widescreen` breakpoint (1400px), token color aliases. |
+| `tailwind.config.ts` | Extends Tailwind: custom `slate` scale, `primary.*` emerald scale, `font-brand`, `font-cinzel`, `widescreen` breakpoint (1400px), token color aliases. |
 
 ### Two token layers
 **`--c-*` CSS vars** (defined in `tokens.css`, also mapped to Tailwind aliases):
@@ -78,7 +78,8 @@ All filter/keyword/result state flows from there.
 
 ### Fonts
 - **Inter** (400–700) — body and all UI text. Loaded via Google Fonts.
-- **Cinzel** (400–900) — display font for the brand h1 and tagline only. Loaded via Google Fonts. Use `font-cinzel` Tailwind utility. Do not use Cinzel for body copy or UI controls.
+- **Metamorphous** (400) — brand h1 only. Loaded via Google Fonts. Use `font-brand` Tailwind utility.
+- **Cinzel** (400–900) — display font for the tagline only. Loaded via Google Fonts. Use `font-cinzel` Tailwind utility. Do not use Cinzel for body copy or UI controls.
 
 ### Component class conventions
 Reusable UI pieces are styled with plain CSS classes in `App.css` rather than Tailwind component layers, because they need multi-state cascade (hover, active, disabled, modifier variants) that inline classes make unwieldy:

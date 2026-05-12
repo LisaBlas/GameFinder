@@ -10,13 +10,22 @@ interface SelectedFiltersProps {
 export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wrap" }) => {
   const { selectedFilters, removeFilter, addFilter, seedGame, clearSeedGame } = useFilters();
 
+  const getPillClassName = (filter: typeof selectedFilters[number]) => {
+    const mode = filter.mode || "include";
+    return [
+      "selected-filter-pill",
+      filter.category === "Keywords" && mode === "include" ? "keyword keyword-include" : "",
+      mode === "exclude" ? "keyword-exclude" : "",
+    ].filter(Boolean).join(" ");
+  };
+
   const renderPill = (filter: typeof selectedFilters[number]) => {
     const isKeyword = filter.category === "Keywords";
 
     return (
       <div
         key={`${filter.category}-${filter.id}`}
-        className={`selected-filter-pill${isKeyword ? ` keyword keyword-${filter.mode || "include"}` : ""}`}
+        className={getPillClassName(filter)}
         onClick={isKeyword ? () => removeFilter(filter.id, filter.category, filter.endpoint) : undefined}
         role={isKeyword ? "button" : undefined}
         tabIndex={isKeyword ? 0 : undefined}
@@ -64,7 +73,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
     return (
     <div
       key={`${filter.category}-${filter.id}`}
-      className={`selected-filter-pill${isKeyword ? ` keyword keyword-${filter.mode || "include"}` : ""}`}
+      className={getPillClassName(filter)}
       onClick={() => removeFilter(filter.id, filter.category, filter.endpoint)}
       role="button"
       tabIndex={0}
