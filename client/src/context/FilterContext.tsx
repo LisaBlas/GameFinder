@@ -260,12 +260,22 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         .filter(f => f.category === 'Keywords' && f.mode === 'exclude')
         .map(f => Number(f.id));
 
+      const excludeFilterIds = selectedFilters
+        .filter(f => f.mode === 'exclude' && f.category !== 'Keywords')
+        .reduce<Record<string, number[]>>((acc, f) => {
+          const key = f.category.toLowerCase().replace(/\s+/g, '_');
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(Number(f.id));
+          return acc;
+        }, {});
+
       const response = await axios.post('/api/games/search', {
         filters: groupedFilters,
         sort: sortBy,
         page: 1,
         excludeIds: seedGame ? [seedGame.id] : [],
         excludeKeywords: excludeKeywordIds,
+        excludeFilters: excludeFilterIds,
         requireDeveloper,
         requireRating
       });
@@ -353,6 +363,15 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         .filter(f => f.category === 'Keywords' && f.mode === 'exclude')
         .map(f => Number(f.id));
 
+      const excludeFilterIds = selectedFilters
+        .filter(f => f.mode === 'exclude' && f.category !== 'Keywords')
+        .reduce<Record<string, number[]>>((acc, f) => {
+          const key = f.category.toLowerCase().replace(/\s+/g, '_');
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(Number(f.id));
+          return acc;
+        }, {});
+
       const excludeIds = [
         ...gameResults.map(game => game.id),
         ...(seedGame ? [seedGame.id] : [])
@@ -364,6 +383,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         page: nextPage,
         excludeIds,
         excludeKeywords: excludeKeywordIds,
+        excludeFilters: excludeFilterIds,
         requireDeveloper,
         requireRating
       });

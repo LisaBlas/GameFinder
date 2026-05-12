@@ -115,6 +115,7 @@ const SearchResults: React.FC = () => {
             {gameResults.map((game, index) => (
               <motion.div
                 key={`game-${game.id}`}
+                className={selectedGameId === game.id ? 'widescreen:col-span-2' : undefined}
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{

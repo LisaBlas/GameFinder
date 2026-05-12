@@ -8,6 +8,7 @@ interface Game {
   genres?: Array<{ id: number; name: string }>;
   themes?: Array<{ id: number; name: string }>;
   game_modes?: Array<{ id: number; name: string }>;
+  player_perspectives?: Array<{ id: number; name: string }>;
   keywords?: Array<{ id: number; name: string }>;
   external_games?: Array<{
     id: number;
@@ -144,7 +145,7 @@ export class IGDBService {
   /**
    * Search games based on provided filters
    */
-  async searchGames(filters: any, sortOption: string = 'relevance', page: number = 1, excludeIds: number[] = [], excludeKeywords: number[] = [], requireDeveloper: boolean = false, requireRating: boolean = false) {
+  async searchGames(filters: any, sortOption: string = 'relevance', page: number = 1, excludeIds: number[] = [], excludeKeywords: number[] = [], requireDeveloper: boolean = false, requireRating: boolean = false, excludeFilters: Record<string, number[]> = {}) {
     try {
       console.log('[igdbService] Starting search:', { 
         page, 
@@ -232,7 +233,7 @@ export class IGDBService {
 
       // Build the query
       const query = `
-        fields name, summary, first_release_date, cover.url, platforms.name, genres.name, themes.name, game_modes.name, keywords.name, rating, websites.url, websites.category, external_games.id, external_games.name, external_games.external_game_source, external_games.url, involved_companies.*, involved_companies.company.*;
+        fields name, summary, first_release_date, cover.url, platforms.name, genres.name, themes.name, game_modes.name, player_perspectives.name, keywords.name, rating, websites.url, websites.category, external_games.id, external_games.name, external_games.external_game_source, external_games.url, involved_companies.*, involved_companies.company.*;
         where ${whereClause};
         ${sortClause}
         limit 50;
@@ -256,12 +257,33 @@ export class IGDBService {
         }
       }
 
-      // Post-filter: remove games that have any excluded keyword
-      let filteredGames = excludeKeywords.length > 0
-        ? games.filter((game: Game) =>
-            !game.keywords?.some(kw => excludeKeywords.includes(kw.id))
-          )
-        : games;
+      // Post-filter: remove games that match any excluded filter value.
+      // IGDB's != on array fields is not "not contains", so all exclusions are enforced here.
+      const excludeFieldMap: Record<string, keyof Game> = {
+        platforms: 'platforms',
+        genres: 'genres',
+        themes: 'themes',
+        game_mode: 'game_modes',
+        perspective: 'player_perspectives',
+      };
+
+      let filteredGames: Game[] = games;
+
+      if (excludeKeywords.length > 0) {
+        filteredGames = filteredGames.filter((game: Game) =>
+          !game.keywords?.some(kw => excludeKeywords.includes(kw.id))
+        );
+      }
+
+      Object.entries(excludeFilters).forEach(([category, ids]) => {
+        if (!ids || ids.length === 0) return;
+        const field = excludeFieldMap[category];
+        if (!field) return;
+        filteredGames = filteredGames.filter((game: Game) => {
+          const items = game[field] as Array<{ id: number }> | undefined;
+          return !items?.some(item => ids.includes(item.id));
+        });
+      });
 
       // Post-filter: remove games with no named developer studio
       if (requireDeveloper) {

@@ -539,15 +539,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
   return (
     <div className={`relative group ${fullscreen ? 'pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'widescreen:col-span-2' : ''}`}>
-      {!fullscreen && (
-        <div
-          className={`absolute inset-0 -z-10 scale-[1.08] transition-opacity duration-700 blur-2xl ${isSelected ? 'opacity-45' : 'opacity-20 group-hover:opacity-35'}`}
-          aria-hidden="true"
-        >
-          <img src={imageUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
-        </div>
-      )}
-
       {fullscreen && (
         <button
           type="button"
