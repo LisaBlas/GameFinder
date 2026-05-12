@@ -16,7 +16,7 @@ const CATEGORIES: { key: CategoryKey; label: string; category: string }[] = [
 ];
 
 const MobileFilterSheet: React.FC = () => {
-  const { selectedFilters, clearAllFilters, searchGames } = useFilters();
+  const { selectedFilters, clearAllFilters, searchGames, requireDeveloper, setRequireDeveloper, requireRating, setRequireRating } = useFilters();
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
   const nonKeywordFilters = selectedFilters.filter(f => f.category !== 'Keywords');
@@ -111,6 +111,32 @@ const MobileFilterSheet: React.FC = () => {
                 </div>
               );
             })}
+
+            <div className="pt-2 border-t border-border flex flex-col gap-3">
+              <span className="text-[0.65rem] font-bold uppercase tracking-widest text-muted-foreground/60">Quality filters</span>
+              <label className="flex items-center gap-3 cursor-pointer group select-none">
+                <input
+                  type="checkbox"
+                  checked={requireDeveloper}
+                  onChange={e => setRequireDeveloper(e.target.checked)}
+                  className="accent-primary h-4 w-4 cursor-pointer"
+                />
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  Has a developer studio name
+                </span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group select-none">
+                <input
+                  type="checkbox"
+                  checked={requireRating}
+                  onChange={e => setRequireRating(e.target.checked)}
+                  className="accent-primary h-4 w-4 cursor-pointer"
+                />
+                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                  Has a rating
+                </span>
+              </label>
+            </div>
           </div>
 
           {/* Footer */}

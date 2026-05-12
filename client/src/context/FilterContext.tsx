@@ -42,6 +42,10 @@ interface FilterContextType {
   seedGame: { id: number; name: string } | null;
   setSeedGame: (game: { id: number; name: string } | null) => void;
   clearSeedGame: () => void;
+  requireDeveloper: boolean;
+  setRequireDeveloper: (value: boolean) => void;
+  requireRating: boolean;
+  setRequireRating: (value: boolean) => void;
 }
 
 // Create the FilterContext with the defined type
@@ -61,6 +65,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   const [selectedFilters, setSelectedFilters] = useState<Filter[]>([]);
   const [keywordMode, setKeywordMode] = useState<"include" | "exclude">("include");
   const [seedGame, setSeedGame] = useState<{ id: number; name: string } | null>(null);
+  const [requireDeveloper, setRequireDeveloper] = useState<boolean>(true);
+  const [requireRating, setRequireRating] = useState<boolean>(false);
   const clearSeedGame = useCallback(() => setSeedGame(null), []);
   
   // State for expanded filters
@@ -259,7 +265,9 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         sort: sortBy,
         page: 1,
         excludeIds: seedGame ? [seedGame.id] : [],
-        excludeKeywords: excludeKeywordIds
+        excludeKeywords: excludeKeywordIds,
+        requireDeveloper,
+        requireRating
       });
       
       const processedResults = response.data.map((game: any) => {
@@ -301,7 +309,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedFilters, sortBy, seedGame]);
+  }, [selectedFilters, sortBy, seedGame, requireDeveloper, requireRating]);
 
   const loadMoreGames = useCallback(async () => {
     if (isLoading || !hasMore) return;
@@ -355,7 +363,9 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         sort: sortBy,
         page: nextPage,
         excludeIds,
-        excludeKeywords: excludeKeywordIds
+        excludeKeywords: excludeKeywordIds,
+        requireDeveloper,
+        requireRating
       });
       
       setPendingRequests(prev => ({
@@ -465,7 +475,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       });
       setIsLoading(false);
     }
-  }, [isLoading, hasMore, page, selectedFilters, sortBy, gameResults, pageCache, pendingRequests, retryCount, seedGame]);
+  }, [isLoading, hasMore, page, selectedFilters, sortBy, gameResults, pageCache, pendingRequests, retryCount, seedGame, requireDeveloper, requireRating]);
   
   const retryLoadMore = useCallback(async () => {
     if (lastError) {
@@ -504,7 +514,11 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     retryLoadMore,
     seedGame,
     setSeedGame,
-    clearSeedGame
+    clearSeedGame,
+    requireDeveloper,
+    setRequireDeveloper,
+    requireRating,
+    setRequireRating
   };
   
   return (

@@ -9,7 +9,7 @@ import {
   Coins, Sparkles, Wand2, LayoutGrid, Target, Trophy, Dices, Brain,
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
   Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
-  X, Search, ChevronDown, RotateCcw,
+  X, Search, ChevronDown, ChevronLeft, ChevronRight, RotateCcw,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
@@ -43,10 +43,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+  const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
   const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
   const [animBatchStart, setAnimBatchStart] = useState(0);
   const EXTENDED_PAGE_SIZE = 20;
-  const MOBILE_PREVIEW_COUNT = 4;
 
   useEffect(() => {
     setRevealedExtended([]);
@@ -56,6 +56,15 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const selectMainCategory = (cat: MainCategory) => {
     setActiveMainCategory(current => current === cat ? null : cat);
     setActiveSubcategory(null);
+    setMobileSubcategoryView(false);
+    setRevealedExtended([]);
+    setAnimBatchStart(0);
+  };
+
+  const drillIntoSubcategory = (mainCat: MainCategory, subCategoryName: string) => {
+    setActiveMainCategory(mainCat);
+    setActiveSubcategory(subCategoryName);
+    setMobileSubcategoryView(true);
     setRevealedExtended([]);
     setAnimBatchStart(0);
   };
@@ -274,9 +283,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         {getCategoryIcon(mainCat)}
                       </span>
                       <span className="min-w-0 flex-1 truncate text-sm font-bold">{mainCat}</span>
-                      <span className="shrink-0 px-1 text-xs font-semibold text-muted-foreground/75">
-                        {getTotalKeywordCount(mainCat)}
-                      </span>
                       <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-180 text-foreground" : "text-muted-foreground"}`} />
                     </button>
 
@@ -339,10 +345,61 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
+  const renderMobileSubcategoryDetail = () => {
+    if (!mobileSubcategoryView || !activeSubcategory) return null;
+    const { displayedKeywords, description, extendedKeywords, totalKeywords, moreAvailable, unseenExtended } = getKeywordPanelData(activeSubcategory);
+
+    return (
+      <div className="lg:hidden fixed inset-0 z-50 flex flex-col bg-background overflow-hidden">
+        <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
+          <button
+            type="button"
+            onClick={() => setMobileSubcategoryView(false)}
+            className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
+            aria-label="Back to categories"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
+            {getSubcategoryIcon(activeSubcategory, "w-4 h-4")}
+          </span>
+          <span className="font-bold text-foreground truncate flex-1">{activeSubcategory}</span>
+          <span className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+            {displayedKeywords.length}{extendedKeywords.length > 0 ? ` of ${totalKeywords}` : ""}
+          </span>
+        </div>
+
+        {description && (
+          <div className="shrink-0 px-4 py-2.5 bg-background/40 border-b border-border/50">
+            <p className="text-xs text-muted-foreground leading-snug">{description}</p>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
+          <div className="keyword-inline-list">
+            {displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
+            {moreAvailable > 0 && (
+              <div className="keyword-inline-item" style={{ animationDelay: '0ms' }}>
+                <button
+                  type="button"
+                  onClick={() => revealMoreKeywords(displayedKeywords.length, unseenExtended)}
+                  className="mb-2 inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background/70 px-3 text-xs font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                  Show {Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderMobileShelves = () => {
     return (
-      <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-background/40 lg:hidden">
-        <div className="flex-1 overflow-y-auto p-3">
+      <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
+        <div className="flex-1 overflow-y-auto">
           <div className="grid gap-4">
             <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
             {mainCategoryOrder.map((mainCat) => {
@@ -352,15 +409,22 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               if (subcategories.length === 0) return null;
 
               return (
-                <section key={mainCat} className="grid gap-2">
+                <section
+                  key={mainCat}
+                  className={`rounded-xl border transition-colors ${
+                    isOpen
+                      ? "border-primary/35 bg-card/35 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
+                      : "border-border bg-card/25 p-3"
+                  }`}
+                >
                   <button
                     type="button"
                     onClick={() => selectMainCategory(mainCat)}
                     aria-expanded={isOpen}
-                    className={`flex items-start gap-3 rounded-lg border border-transparent px-1 py-2 text-left transition-colors ${
+                    className={`flex w-full items-start gap-3 rounded-lg border border-transparent text-left transition-colors ${
                       isOpen
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
+                        ? "px-0 pb-3 pt-0 text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     <div className="shrink-0 mt-0.5 p-2 rounded-lg bg-primary/15">
@@ -369,7 +433,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 flex-wrap">
                         <span className="text-xl font-bold text-foreground">{mainCat}</span>
-                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">{getTotalKeywordCount(mainCat)}</span>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1 leading-snug">{descriptor}</p>
                     </div>
@@ -377,28 +440,19 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   </button>
 
                   {isOpen && (
-                    <div className="grid gap-3 border-t border-border/70 pt-3">
+                    <div className="grid gap-3 border-t border-primary/25 pt-3">
                       {subcategories.map((subCategoryName) => {
                         const keywords = getKeywordsForSubcategory(subCategoryName);
                         const description = getSubcategoryDescription(mainCat, subCategoryName);
-                        const isExpanded = activeSubcategory === subCategoryName;
-                        const previewKeywords = keywords.slice(0, MOBILE_PREVIEW_COUNT);
 
                         return (
-                          <section
-                            key={subCategoryName}
-                            className={`rounded-lg border bg-card/70 transition-colors ${isExpanded ? "border-primary/50" : "border-border"}`}
-                          >
+                          <section key={subCategoryName} className="rounded-lg border border-border bg-card/70">
                             <button
                               type="button"
-                              onClick={() => {
-                                setActiveMainCategory(mainCat);
-                                setActiveSubcategory(isExpanded ? null : subCategoryName);
-                              }}
-                              className="flex w-full items-start gap-3 px-3.5 py-3 text-left"
-                              aria-expanded={isExpanded}
+                              onClick={() => drillIntoSubcategory(mainCat, subCategoryName)}
+                              className="flex w-full items-center gap-3 px-3.5 py-3 text-left"
                             >
-                              <span className="mt-0.5 shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
+                              <span className="shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
                                 {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
                               </span>
                               <span className="min-w-0 flex-1">
@@ -406,32 +460,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                                   <span className="font-bold text-foreground">{subCategoryName}</span>
                                   <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywords.length}</span>
                                 </span>
-                                <span className="mt-1 block text-xs leading-snug text-muted-foreground">{description}</span>
+                                <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{description}</span>
                               </span>
-                              <ChevronDown className={`mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                              <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                             </button>
 
-                            <div className="px-3.5 pb-3">
-                              {isExpanded ? (
-                                renderKeywordPanel(subCategoryName, "mobile")
-                              ) : (
-                                <div className="keyword-inline-list">
-                                  {previewKeywords.map((keyword, index) => renderKeywordPill(keyword, index))}
-                                  {keywords.length > previewKeywords.length && (
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setActiveMainCategory(mainCat);
-                                        setActiveSubcategory(subCategoryName);
-                                      }}
-                                      className="mb-2 inline-flex h-8 items-center rounded-full border border-border bg-background/70 px-3 text-xs font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
-                                    >
-                                      More
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                            </div>
                           </section>
                         );
                       })}
@@ -455,7 +488,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   return (
-    <div className="keyword-section w-full h-full flex flex-col transition-all duration-500">
+    <div className="keyword-section relative w-full h-full flex flex-col transition-all duration-500">
+      {renderMobileSubcategoryDetail()}
       <Navbar />
 
       <div className="desktop-action-bar hidden lg:grid border-b border-border">
@@ -497,7 +531,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 p-6">
+      <div className="flex-1 min-h-0 p-3 lg:p-6">
         <div className="flex h-full min-h-0 flex-col gap-5">
           {renderDesktopExplorer()}
           {renderMobileShelves()}

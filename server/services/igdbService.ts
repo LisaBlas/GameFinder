@@ -144,7 +144,7 @@ export class IGDBService {
   /**
    * Search games based on provided filters
    */
-  async searchGames(filters: any, sortOption: string = 'relevance', page: number = 1, excludeIds: number[] = [], excludeKeywords: number[] = []) {
+  async searchGames(filters: any, sortOption: string = 'relevance', page: number = 1, excludeIds: number[] = [], excludeKeywords: number[] = [], requireDeveloper: boolean = false, requireRating: boolean = false) {
     try {
       console.log('[igdbService] Starting search:', { 
         page, 
@@ -201,6 +201,14 @@ export class IGDBService {
       // Note: IGDB's != on array fields does not mean "not contains", so keyword
       // exclusion is enforced via post-filtering below instead.
 
+      // Quality filter conditions added to the IGDB where clause
+      if (requireRating) {
+        filterConditions.push('rating != null');
+      }
+      if (requireDeveloper) {
+        filterConditions.push('involved_companies.developer = true');
+      }
+
       // Convert filter conditions to where clause
       let whereClause = filterConditions.length > 0
         ? filterConditions.join(' & ') + excludeClause
@@ -249,11 +257,18 @@ export class IGDBService {
       }
 
       // Post-filter: remove games that have any excluded keyword
-      const filteredGames = excludeKeywords.length > 0
+      let filteredGames = excludeKeywords.length > 0
         ? games.filter((game: Game) =>
             !game.keywords?.some(kw => excludeKeywords.includes(kw.id))
           )
         : games;
+
+      // Post-filter: remove games with no named developer studio
+      if (requireDeveloper) {
+        filteredGames = filteredGames.filter((game: Game) =>
+          game.involved_companies?.some(ic => ic.developer && ic.company?.name?.trim())
+        );
+      }
 
       // Process and return the results
       const processedGames = filteredGames.map((game: Game) => {

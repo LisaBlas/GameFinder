@@ -44,6 +44,8 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
   };
 
   const hasFilters = selectedFilters.length > 0;
+  const includeCount = selectedFilters.filter(filter => (filter.mode || "include") === "include").length;
+  const excludeCount = selectedFilters.filter(filter => filter.mode === "exclude").length;
 
   const translateClass = !hasFilters
     ? 'translate-y-full'
@@ -53,11 +55,11 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/95 backdrop-blur-sm
+      className={`fixed bottom-0 left-0 right-0 z-50 lg:hidden rounded-t-2xl bg-background/95 backdrop-blur-md
         transition-transform duration-300 ease-in-out
         ${translateClass}
         ${hasFilters
-          ? 'border-t border-[#f4b01b]/50 shadow-[0_-4px_20px_rgba(244,176,27,0.15)]'
+          ? 'border-t border-[#f4b01b]/35 shadow-[0_-10px_32px_rgba(0,0,0,0.38),0_-1px_18px_rgba(244,176,27,0.12)]'
           : 'border-t border-border'
         }
       `}
@@ -75,6 +77,18 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
           <>
             <span className="text-xs font-semibold mt-1 text-[#f4b01b]/80">
               {selectedFilters.length} selected
+            </span>
+            <span className="mt-1 flex items-center gap-1 text-[0.68rem] font-bold">
+              {includeCount > 0 && (
+                <span className="rounded-full border border-[#f4b01b]/55 bg-[#f4b01b]/10 px-1.5 py-0.5 text-[#ffd36a]">
+                  +{includeCount}
+                </span>
+              )}
+              {excludeCount > 0 && (
+                <span className="rounded-full border border-[#ff6b74]/55 bg-[#ff6b74]/10 px-1.5 py-0.5 text-[#ffc4c7]">
+                  -{excludeCount}
+                </span>
+              )}
             </span>
             <ChevronUp className="w-4 h-4 mt-1 text-[#f4b01b]/80" />
           </>

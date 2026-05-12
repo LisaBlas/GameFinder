@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, Filter as FilterIcon } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Filter } from './Filter';
@@ -21,18 +21,13 @@ const categories: FilterCategoryConfig[] = [
 ];
 
 const FilterBar: React.FC = () => {
-  const { selectedFilters } = useFilters();
+  const { selectedFilters, requireDeveloper, setRequireDeveloper, requireRating, setRequireRating } = useFilters();
 
   const getSelectedCount = (category: string) =>
     selectedFilters.filter(filter => filter.category === category).length;
 
   return (
     <div className="results-filter-bar">
-      <div className="flex items-center gap-2 pr-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        <FilterIcon className="h-4 w-4 text-primary" />
-        <span>Filters</span>
-      </div>
-
       <div className="results-filter-scroll">
         {categories.map(({ key, label, category }) => {
           const selectedCount = getSelectedCount(category);
@@ -87,6 +82,31 @@ const FilterBar: React.FC = () => {
             </Popover>
           );
         })}
+
+        <div className="flex items-center gap-3 pl-1 border-l border-border ml-1">
+          <label className="flex items-center gap-1.5 cursor-pointer group select-none">
+            <input
+              type="checkbox"
+              checked={requireDeveloper}
+              onChange={e => setRequireDeveloper(e.target.checked)}
+              className="accent-primary h-3.5 w-3.5 cursor-pointer"
+            />
+            <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors whitespace-nowrap">
+              Has studio
+            </span>
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer group select-none">
+            <input
+              type="checkbox"
+              checked={requireRating}
+              onChange={e => setRequireRating(e.target.checked)}
+              className="accent-primary h-3.5 w-3.5 cursor-pointer"
+            />
+            <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors whitespace-nowrap">
+              Has rating
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   );
