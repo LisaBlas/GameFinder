@@ -9,6 +9,38 @@ interface SelectedFiltersProps {
 
 export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wrap" }) => {
   const { selectedFilters, removeFilter, addFilter, seedGame, clearSeedGame } = useFilters();
+  const includeLaneRef = React.useRef<HTMLDivElement>(null);
+  const excludeLaneRef = React.useRef<HTMLDivElement>(null);
+  const includedFilters = selectedFilters.filter(filter => (filter.mode || "include") === "include");
+  const excludedFilters = selectedFilters.filter(filter => filter.mode === "exclude");
+  const includedFilterKey = includedFilters.map(filter => `${filter.category}-${filter.id}`).join("|");
+  const excludedFilterKey = excludedFilters.map(filter => `${filter.category}-${filter.id}`).join("|");
+
+  React.useEffect(() => {
+    if (variant !== "lanes") return;
+
+    requestAnimationFrame(() => {
+      const lane = includeLaneRef.current;
+      lane?.scrollTo({ left: lane.scrollWidth, behavior: "smooth" });
+    });
+  }, [includedFilterKey, variant]);
+
+  React.useEffect(() => {
+    if (variant !== "lanes") return;
+
+    requestAnimationFrame(() => {
+      const lane = excludeLaneRef.current;
+      lane?.scrollTo({ left: lane.scrollWidth, behavior: "smooth" });
+    });
+  }, [excludedFilterKey, variant]);
+
+  const handleLaneWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    const lane = event.currentTarget;
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX) || lane.scrollWidth <= lane.clientWidth) return;
+
+    event.preventDefault();
+    lane.scrollLeft += event.deltaY;
+  };
 
   const getPillClassName = (filter: typeof selectedFilters[number]) => {
     const mode = filter.mode || "include";
@@ -111,9 +143,6 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
   }
 
   if (variant === "lanes") {
-    const includedFilters = selectedFilters.filter(filter => (filter.mode || "include") === "include");
-    const excludedFilters = selectedFilters.filter(filter => filter.mode === "exclude");
-
     return (
       <div className="selected-filter-lanes">
         <div className="selected-filter-lane">
@@ -121,7 +150,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
             <Plus className="w-3.5 h-3.5" />
             INCLUDE
           </div>
-          <div className="selected-filter-lane-scroll">
+          <div ref={includeLaneRef} className="selected-filter-lane-scroll" onWheel={handleLaneWheel}>
             {includedFilters.length > 0
               ? includedFilters.map(renderLanePill)
               : <span className="selected-filter-empty">No included keywords</span>
@@ -133,7 +162,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
             <Ban className="w-3.5 h-3.5" />
             EXCLUDE
           </div>
-          <div className="selected-filter-lane-scroll">
+          <div ref={excludeLaneRef} className="selected-filter-lane-scroll" onWheel={handleLaneWheel}>
             {excludedFilters.length > 0
               ? excludedFilters.map(renderLanePill)
               : <span className="selected-filter-empty">No excluded keywords</span>

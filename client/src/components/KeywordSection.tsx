@@ -11,6 +11,7 @@ import {
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
   Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
   X, Search, Share2, Check, ChevronDown, ChevronLeft, ChevronRight,
+  Shuffle,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
@@ -27,6 +28,18 @@ interface KeywordItem {
 }
 
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
+type UtilityPanel = "intro" | "combo";
+
+interface KeywordComboSuggestion {
+  title: string;
+  hook: string;
+  filters: Array<{
+    id: number;
+    name: string;
+    category: string;
+    mode?: "include" | "exclude";
+  }>;
+}
 
 interface KeywordSectionProps {
   expanded: boolean;
@@ -38,17 +51,50 @@ interface KeywordSectionProps {
 export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const category = 'Keywords';
-  const { clearAllFilters, searchGames, selectedFilters, isLoading, searchFresh } = useFilters();
+  const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
   const [shareCopied, setShareCopied] = useState(false);
 
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
+  const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel>("intro");
   const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
   const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
   const [animBatchStart, setAnimBatchStart] = useState(0);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const EXTENDED_PAGE_SIZE = 20;
+
+  const keywordComboSuggestions: KeywordComboSuggestion[] = [
+    {
+      title: "Side-Scroll Souls",
+      hook: "Tough 2D action with deliberate combat, minus the anime gloss.",
+      filters: [
+        { id: 288, name: "2D", category },
+        { id: 17326, name: "Souls-like", category },
+        { id: 78, name: "Anime", category, mode: "exclude" },
+      ],
+    },
+    {
+      title: "Roguelite Fight Night",
+      hook: "Replayable runs built for multiplayer brawls and competitive friction.",
+      filters: [
+        { id: 17292, name: "Roguelite", category },
+        { id: 2, name: "Multiplayer", category: "Game Mode" },
+        { id: 4, name: "Fighting", category: "genres" },
+      ],
+    },
+    {
+      title: "Cozy Indie Hangout",
+      hook: "Low-pressure multiplayer comfort games with a softer indie pulse.",
+      filters: [
+        { id: 24685, name: "Cozy", category },
+        { id: 2084, name: "Relaxing", category },
+        { id: 2, name: "Multiplayer", category: "Game Mode" },
+        { id: 32, name: "Indie", category: "genres" },
+      ],
+    },
+  ];
 
   useEffect(() => {
     setRevealedExtended([]);
@@ -58,6 +104,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const selectMainCategory = (cat: MainCategory) => {
     setActiveMainCategory(current => current === cat ? null : cat);
     setActiveSubcategory(null);
+    setActiveUtilityPanel("intro");
     setMobileSubcategoryView(false);
     setRevealedExtended([]);
     setAnimBatchStart(0);
@@ -66,6 +113,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const drillIntoSubcategory = (mainCat: MainCategory, subCategoryName: string) => {
     setActiveMainCategory(mainCat);
     setActiveSubcategory(subCategoryName);
+    setActiveUtilityPanel("intro");
     setMobileSubcategoryView(true);
     setRevealedExtended([]);
     setAnimBatchStart(0);
@@ -181,6 +229,128 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     </div>
   );
 
+  const applySuggestion = (suggestion: KeywordComboSuggestion) => {
+    selectedFilters
+      .filter(filter => filter.category === category)
+      .forEach(filter => removeFilter(filter.id, filter.category, filter.endpoint));
+
+    suggestion.filters.forEach(filter => {
+      addFilter({
+        id: filter.id,
+        name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
+        category: filter.category,
+        mode: filter.category === category ? filter.mode || "include" : undefined,
+      });
+    });
+  };
+
+  const renderComboFilter = (filter: KeywordComboSuggestion["filters"][number]) => {
+    const selectedFilter = selectedFilters.find(
+      selected => selected.id === filter.id && selected.category === filter.category
+    );
+    const isExclude = filter.category === category && filter.mode === "exclude";
+    const isSelected = selectedFilter && (
+      isExclude ? selectedFilter.mode === "exclude" : selectedFilter.mode !== "exclude"
+    );
+    const label = filter.name.replace(/\b\w/g, c => c.toUpperCase());
+
+    return (
+      <button
+        key={`${filter.category}-${filter.id}-${filter.mode || "include"}`}
+        type="button"
+        className={`filter-pill${isSelected ? " selected" : ""}${filter.category === category && isSelected ? ` keyword-${filter.mode || "include"}` : ""}`}
+        onClick={() => {
+          if (isSelected) {
+            removeFilter(filter.id, filter.category);
+            return;
+          }
+
+          addFilter({
+            id: filter.id,
+            name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
+            category: filter.category,
+            mode: filter.category === category ? filter.mode || "include" : undefined,
+          });
+        }}
+      >
+        <span>{label}</span>
+      </button>
+    );
+  };
+
+  const renderKeywordSuggestion = () => {
+    const suggestion = keywordComboSuggestions[activeSuggestionIndex];
+
+    return (
+      <div className="keyword-combo-empty-state">
+        <div className="keyword-combo-card">
+          <div className="keyword-combo-kicker">
+            <Sparkles className="h-3.5 w-3.5" />
+            Popular Combos
+          </div>
+          <div className="keyword-combo-main">
+            <div className="keyword-combo-copy">
+              <h3>{suggestion.title}</h3>
+              <p>{suggestion.hook}</p>
+            </div>
+            <div className="keyword-combo-count">
+              {activeSuggestionIndex + 1}/{keywordComboSuggestions.length}
+            </div>
+          </div>
+          <div className="keyword-combo-recipe" aria-label={`${suggestion.title} filter combination`}>
+            {suggestion.filters.map((filter, index) => (
+              <React.Fragment key={`${filter.category}-${filter.id}-${filter.mode || "include"}`}>
+                <span className={`keyword-combo-operator${filter.mode === "exclude" ? " exclude" : ""}`}>
+                  {filter.mode === "exclude" ? "-" : "+"}
+                </span>
+                {renderComboFilter(filter)}
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="keyword-combo-actions">
+            <button
+              type="button"
+              className="keyword-combo-button keyword-combo-button-primary"
+              onClick={() => applySuggestion(suggestion)}
+            >
+              <Check className="h-4 w-4" />
+              Try combo
+            </button>
+            <button
+              type="button"
+              className="keyword-combo-button keyword-combo-button-secondary"
+              onClick={() => setActiveSuggestionIndex(index => (index + 1) % keywordComboSuggestions.length)}
+            >
+              <Shuffle className="h-4 w-4" />
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderKeywordIntro = () => (
+    <div className="keyword-intro-empty-state">
+      <div className="keyword-intro-card">
+        <div className="keyword-intro-icon">
+          <LayoutGrid className="h-5 w-5" />
+        </div>
+        <div>
+          <h3>Build a game mood</h3>
+          <p>
+            Pick a category, choose a subcategory, then stack up to a few keywords that describe the game you want.
+          </p>
+        </div>
+        <div className="keyword-intro-steps" aria-label="Keyword search steps">
+          <span>1. Open a rail</span>
+          <span>2. Pick keywords</span>
+          <span>3. Search</span>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderKeywordPanel = (subCategoryName: string, variant: "desktop" | "mobile") => {
     const { extendedKeywords, displayedKeywords, totalKeywords, description, moreAvailable, unseenExtended } = getKeywordPanelData(subCategoryName);
 
@@ -226,9 +396,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   const renderDesktopExplorer = () => {
     const openSubcategories = activeMainCategory ? getAvailableSubcategories(activeMainCategory) : [];
-    const selectedSubcategory = activeSubcategory && openSubcategories.includes(activeSubcategory)
-      ? activeSubcategory
-      : openSubcategories[0];
+    const selectedSubcategory = activeUtilityPanel === "combo"
+      ? undefined
+      : activeSubcategory && openSubcategories.includes(activeSubcategory)
+        ? activeSubcategory
+        : openSubcategories[0];
 
     return (
       <div className="hidden flex-1 min-h-0 overflow-hidden rounded-xl border border-border bg-background/40 lg:grid lg:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.55fr)]">
@@ -285,6 +457,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                                     onClick={() => {
                                       setActiveMainCategory(mainCat);
                                       setActiveSubcategory(subCategoryName);
+                                      setActiveUtilityPanel("intro");
                                     }}
                                     className={`relative flex min-h-[2.65rem] w-full items-center gap-2.5 rounded-lg px-3 py-2 pl-4 text-left text-sm font-semibold transition-colors duration-200 ${
                                       isActive
@@ -307,6 +480,29 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   </section>
                 );
               })}
+
+              <section className="grid gap-2 border-t border-border/70 pt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveUtilityPanel(current => current === "combo" ? "intro" : "combo");
+                    setActiveMainCategory(null);
+                    setActiveSubcategory(null);
+                  }}
+                  aria-pressed={activeUtilityPanel === "combo"}
+                  className={`flex min-h-[2.5rem] w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left transition-colors ${
+                    activeUtilityPanel === "combo"
+                      ? "bg-primary/15 text-foreground"
+                      : "text-muted-foreground hover:bg-white/[0.025] hover:text-foreground"
+                  }`}
+                >
+                  <span className={`shrink-0 rounded-md p-1.5 ${activeUtilityPanel === "combo" ? "bg-background/45 text-primary" : "text-muted-foreground"}`}>
+                    <Sparkles className="w-5 h-5" />
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-bold">Popular Combos</span>
+                  <span className="shrink-0 text-xs font-medium text-muted-foreground/75">{keywordComboSuggestions.length}</span>
+                </button>
+              </section>
             </div>
           </div>
         </div>
@@ -324,6 +520,17 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               >
                 {renderKeywordPanel(selectedSubcategory, "desktop")}
               </motion.div>
+            ) : activeUtilityPanel === "combo" ? (
+              <motion.div
+                key="combo-panel"
+                className="h-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {renderKeywordSuggestion()}
+              </motion.div>
             ) : (
               <motion.div
                 key="empty-state"
@@ -333,17 +540,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                <div className="flex h-full min-h-[18rem] items-center justify-center px-6 text-center">
-                  <div className="max-w-sm">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-card text-primary">
-                      <LayoutGrid className="h-5 w-5" />
-                    </div>
-                    <h3 className="mt-4 text-lg font-bold text-foreground">Choose a category</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      Open Mechanics, World, or Style to browse their subcategories.
-                    </p>
-                  </div>
-                </div>
+                {renderKeywordIntro()}
               </motion.div>
             )}
           </AnimatePresence>
