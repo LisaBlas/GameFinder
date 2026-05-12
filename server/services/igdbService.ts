@@ -356,6 +356,33 @@ export class IGDBService {
   }
 
   /**
+   * Suggest games by name for autocomplete (lightweight fields only)
+   */
+  async suggestGames(q: string): Promise<Array<{ id: number; name: string; cover?: { url: string }; first_release_date?: number }>> {
+    const safe = q.replace(/"/g, '\\"');
+    const query = `
+      search "${safe}";
+      fields id, name, cover.url, first_release_date;
+      where version_parent = null;
+      limit 5;
+    `.trim();
+    return await this.makeRequest('games', query);
+  }
+
+  /**
+   * Fetch a game's genres, themes, and keywords to seed a similarity search
+   */
+  async getGameSeedData(gameId: number): Promise<{ id: number; name: string; genres: Array<{ id: number; name: string }>; themes: Array<{ id: number; name: string }>; keywords: Array<{ id: number; name: string }> } | null> {
+    const query = `
+      fields id, name, genres.id, genres.name, themes.id, themes.name, keywords.id, keywords.name;
+      where id = ${gameId};
+      limit 1;
+    `.trim();
+    const results = await this.makeRequest('games', query);
+    return results[0] ?? null;
+  }
+
+  /**
    * Debug function to explore store endpoint
    */
   async debugStores() {

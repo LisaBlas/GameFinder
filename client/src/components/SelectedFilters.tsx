@@ -8,7 +8,7 @@ interface SelectedFiltersProps {
 }
 
 export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wrap" }) => {
-  const { selectedFilters, removeFilter, addFilter } = useFilters();
+  const { selectedFilters, removeFilter, addFilter, seedGame, clearSeedGame } = useFilters();
 
   const renderPill = (filter: typeof selectedFilters[number]) => {
     const isKeyword = filter.category === "Keywords";
@@ -94,7 +94,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
     </div>
   );
 
-  if (selectedFilters.length === 0 && variant === "wrap") {
+  if (selectedFilters.length === 0 && !seedGame && variant === "wrap") {
     return <div className="text-text-secondary text-sm">No filters selected</div>;
   }
 
@@ -134,6 +134,19 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
 
   return (
     <div className="selected-filters-container">
+      {seedGame && (
+        <div className="flex items-center gap-1.5 mb-1.5 px-2.5 py-1 bg-primary/10 border border-primary/30 rounded-full text-xs text-primary w-fit">
+          <span>Based on <strong>{seedGame.name}</strong></span>
+          <button
+            type="button"
+            onClick={clearSeedGame}
+            className="ml-0.5 text-primary/70 hover:text-primary transition-colors"
+            aria-label="Remove seed game"
+          >
+            <RiCloseLine className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
       <div className="selected-filters-content">
         {selectedFilters.map(renderPill)}
       </div>

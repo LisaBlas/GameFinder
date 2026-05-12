@@ -39,6 +39,9 @@ interface FilterContextType {
   hasMore: boolean;
   loadMoreGames: () => Promise<void>;
   retryLoadMore: () => Promise<void>;
+  seedGame: { id: number; name: string } | null;
+  setSeedGame: (game: { id: number; name: string } | null) => void;
+  clearSeedGame: () => void;
 }
 
 // Create the FilterContext with the defined type
@@ -57,6 +60,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   // State for selected filters
   const [selectedFilters, setSelectedFilters] = useState<Filter[]>([]);
   const [keywordMode, setKeywordMode] = useState<"include" | "exclude">("include");
+  const [seedGame, setSeedGame] = useState<{ id: number; name: string } | null>(null);
+  const clearSeedGame = useCallback(() => setSeedGame(null), []);
   
   // State for expanded filters
   const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>({});
@@ -157,13 +162,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   }, [selectedFilters]);
   
   const clearAllFilters = useCallback(() => {
-    // Clear all selected filters
     setSelectedFilters([]);
-    
-    // Collapse all parent filters and categories
     setExpandedFilters({});
-    
-    // Reset categories to default state (all collapsed)
     setExpandedCategories({
       platforms: false,
       genres: false,
@@ -172,6 +172,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       Perspective: false,
       Keywords: false
     });
+    setSeedGame(null);
   }, []);
   
   // Filter expansion management
@@ -257,6 +258,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         filters: groupedFilters,
         sort: sortBy,
         page: 1,
+        excludeIds: seedGame ? [seedGame.id] : [],
         excludeKeywords: excludeKeywordIds
       });
       
@@ -299,8 +301,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedFilters, sortBy]);
-  
+  }, [selectedFilters, sortBy, seedGame]);
+
   const loadMoreGames = useCallback(async () => {
     if (isLoading || !hasMore) return;
     
@@ -343,7 +345,10 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         .filter(f => f.category === 'Keywords' && f.mode === 'exclude')
         .map(f => Number(f.id));
 
-      const excludeIds = gameResults.map(game => game.id);
+      const excludeIds = [
+        ...gameResults.map(game => game.id),
+        ...(seedGame ? [seedGame.id] : [])
+      ];
 
       const request = axios.post('/api/games/search', {
         filters: groupedFilters,
@@ -460,7 +465,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       });
       setIsLoading(false);
     }
-  }, [isLoading, hasMore, page, selectedFilters, sortBy, gameResults, pageCache, pendingRequests, retryCount]);
+  }, [isLoading, hasMore, page, selectedFilters, sortBy, gameResults, pageCache, pendingRequests, retryCount, seedGame]);
   
   const retryLoadMore = useCallback(async () => {
     if (lastError) {
@@ -496,7 +501,10 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     searchGames,
     hasMore,
     loadMoreGames,
-    retryLoadMore
+    retryLoadMore,
+    seedGame,
+    setSeedGame,
+    clearSeedGame
   };
   
   return (

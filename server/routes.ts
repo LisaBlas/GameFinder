@@ -77,6 +77,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Game autocomplete — must be registered before /:id to avoid "suggest" being parsed as an id
+  app.get('/api/games/suggest', async (req, res) => {
+    try {
+      const q = String(req.query.q ?? '').trim();
+      if (!q) return res.json([]);
+      const games = await igdbService.suggestGames(q);
+      res.json(games);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to suggest games', error: error?.message });
+    }
+  });
+
+  // Similar-seed endpoint — returns genres, themes, keywords for a given game id
+  app.get('/api/games/:id/similar-seed', async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      if (Number.isNaN(id)) return res.status(400).json({ message: 'Invalid game id' });
+      const seed = await igdbService.getGameSeedData(id);
+      if (!seed) return res.status(404).json({ message: 'Game not found' });
+      res.json(seed);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to fetch seed data', error: error?.message });
+    }
+  });
+
   // Single game detail endpoint
   app.get('/api/games/:id', async (req, res) => {
     try {

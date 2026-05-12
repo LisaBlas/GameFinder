@@ -9,7 +9,7 @@ import MobileFilterSheet from './MobileFilterSheet';
 import { FaInfoCircle } from 'react-icons/fa';
 
 const SearchResults: React.FC = () => {
-  const { gameResults, isLoading, error, sortBy, setSortBy, hasMore } = useFilters();
+  const { gameResults, isLoading, error, sortBy, setSortBy, hasMore, seedGame } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
   const [hideMobileControls, setHideMobileControls] = useState(false);
@@ -100,6 +100,11 @@ const SearchResults: React.FC = () => {
     if (gameResults.length > 0) {
       return (
         <>
+          {seedGame && (
+            <p className="mb-3 text-xs text-muted-foreground">
+              Showing games similar to <span className="text-primary">{seedGame.name}</span> based on shared keywords.
+            </p>
+          )}
           <div className="mb-4 flex items-start gap-2 rounded-lg border border-slate-700/40 bg-slate-900/70 px-3 py-2 text-xs text-slate-400">
             <FaInfoCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-slate-500" />
             <span>We only list reputable sellers. Prices may vary; check seller ratings before purchase.</span>
