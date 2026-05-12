@@ -14,6 +14,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
   const [isExpanded, setIsExpanded] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [shareShineActive, setShareShineActive] = useState(false);
   const prevCountRef = useRef(selectedFilters.length);
 
   useEffect(() => {
@@ -29,6 +30,23 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
 
     prevCountRef.current = currCount;
   }, [selectedFilters.length]);
+
+  useEffect(() => {
+    let shineStart: ReturnType<typeof setTimeout> | undefined;
+    let shineEnd: ReturnType<typeof setTimeout> | undefined;
+
+    setShareShineActive(false);
+
+    if (searchFresh && !isLoading) {
+      shineStart = setTimeout(() => setShareShineActive(true), 500);
+      shineEnd = setTimeout(() => setShareShineActive(false), 2100);
+    }
+
+    return () => {
+      if (shineStart) clearTimeout(shineStart);
+      if (shineEnd) clearTimeout(shineEnd);
+    };
+  }, [searchFresh, isLoading]);
 
   const handleSearch = async () => {
     if (!hasSearchableFilters) return;
@@ -130,7 +148,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
               hasSearchableFilters || searchFresh
                 ? 'mobile-action-button-search-active'
                 : 'mobile-action-button-search-disabled'
-            }`}
+            } ${shareShineActive ? 'hero-button-share-shine' : ''}`}
           >
             {isLoading ? (
               <>

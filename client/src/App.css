@@ -1649,6 +1649,65 @@ svg.filter-caret.expanded {
   color: var(--c-emerald-soft);
 }
 
+.keyword-combo-mobile-state {
+  min-height: 0;
+  height: auto;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
+
+.keyword-combo-mobile-state .keyword-combo-card {
+  width: 100%;
+  gap: 0.85rem;
+  border-color: rgba(var(--c-border-rgb), 0.16);
+  background:
+    linear-gradient(145deg, rgba(var(--c-surface-rgb), 0.78), var(--c-surface-2)),
+    var(--c-surface);
+  padding: 0.95rem;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .keyword-combo-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.55rem;
+  }
+
+  .keyword-combo-count {
+    width: fit-content;
+  }
+
+  .keyword-combo-copy h3 {
+    font-size: 1.12rem;
+  }
+
+  .keyword-combo-copy p {
+    font-size: 0.84rem;
+  }
+
+  .keyword-combo-recipe {
+    gap: 0.42rem;
+    padding: 0.8rem 0;
+  }
+
+  .keyword-combo-recipe .filter-pill {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .keyword-combo-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+  }
+
+  .keyword-combo-button {
+    min-width: 0;
+    padding: 0 0.72rem;
+  }
+}
+
 .keyword-section::after {
   display: none;
 }
@@ -1784,8 +1843,27 @@ svg.filter-caret.expanded {
   animation: light-streak 0.4s ease-out forwards;
 }
 
+.hero-button.hero-button-share-shine:not(:disabled)::before {
+  opacity: 1;
+  animation: share-button-shine 1.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 @keyframes light-streak {
   0%   { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
   50%  { opacity: 1; }
   100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+}
+
+@keyframes share-button-shine {
+  0%   { transform: translateX(-115%) translateY(-115%) rotate(45deg); opacity: 0; }
+  18%  { opacity: 1; }
+  82%  { opacity: 1; }
+  100% { transform: translateX(115%) translateY(115%) rotate(45deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-button.hero-button-share-shine:not(:disabled)::before {
+    animation: none;
+    opacity: 0;
+  }
 }

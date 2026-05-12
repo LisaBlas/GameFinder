@@ -57,7 +57,7 @@ Desktop:
 - Mobile switches between Build and Results tabs; Search auto-switches to Results.
 - `FilterSidebar` is no longer part of the active split layout.
 - `Hero` is not part of the active home layout, though the component still exists.
-- `KeywordSection` uses a hierarchical category/subcategory rail plus detail panel on desktop, and category-grouped expandable shelves with subcategory drill-in on mobile.
+- `KeywordSection` uses a hierarchical category/subcategory rail plus detail panel on desktop, and mobile shows keyword search, category-grouped expandable shelves with subcategory drill-in, then a compact Popular Combos shelf.
 - `SelectedFilters` appears in both desktop and mobile action areas.
 - `BottomBar` is mobile-only, fixed, and behaves as an expandable drawer.
 

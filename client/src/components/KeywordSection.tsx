@@ -54,6 +54,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
   const [shareCopied, setShareCopied] = useState(false);
+  const [shareShineActive, setShareShineActive] = useState(false);
 
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>(null);
@@ -100,6 +101,23 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     setRevealedExtended([]);
     setAnimBatchStart(0);
   }, [activeSubcategory]);
+
+  useEffect(() => {
+    let shineStart: ReturnType<typeof setTimeout> | undefined;
+    let shineEnd: ReturnType<typeof setTimeout> | undefined;
+
+    setShareShineActive(false);
+
+    if (searchFresh && !isLoading) {
+      shineStart = setTimeout(() => setShareShineActive(true), 500);
+      shineEnd = setTimeout(() => setShareShineActive(false), 2100);
+    }
+
+    return () => {
+      if (shineStart) clearTimeout(shineStart);
+      if (shineEnd) clearTimeout(shineEnd);
+    };
+  }, [searchFresh, isLoading]);
 
   const selectMainCategory = (cat: MainCategory) => {
     setActiveMainCategory(current => current === cat ? null : cat);
@@ -278,11 +296,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  const renderKeywordSuggestion = () => {
+  const renderKeywordSuggestion = (variant: "desktop" | "mobile" = "desktop") => {
     const suggestion = keywordComboSuggestions[activeSuggestionIndex];
 
     return (
-      <div className="keyword-combo-empty-state">
+      <div className={`keyword-combo-empty-state ${variant === "mobile" ? "keyword-combo-mobile-state" : ""}`}>
         <div className="keyword-combo-card">
           <div className="keyword-combo-kicker">
             <Sparkles className="h-3.5 w-3.5" />
@@ -694,6 +712,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 </section>
               );
             })}
+            <section className="rounded-xl border border-primary/25 bg-card/35 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+              {renderKeywordSuggestion("mobile")}
+            </section>
           </div>
         </div>
       </div>
@@ -743,7 +764,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               hasSearchableFilters || searchFresh
                 ? 'desktop-action-button-search-active'
                 : 'desktop-action-button-search-disabled'
-            }`}
+            } ${shareShineActive ? 'hero-button-share-shine' : ''}`}
           >
             {isLoading ? (
               <>
