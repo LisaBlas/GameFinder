@@ -10,7 +10,7 @@ import {
   Coins, Sparkles, Wand2, LayoutGrid, Target, Trophy, Dices, Brain,
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
   Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
-  X, Search, ChevronDown, ChevronLeft, ChevronRight,
+  X, Search, Share2, Check, ChevronDown, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
@@ -38,8 +38,9 @@ interface KeywordSectionProps {
 export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const category = 'Keywords';
-  const { clearAllFilters, searchGames, selectedFilters, isLoading } = useFilters();
+  const { clearAllFilters, searchGames, selectedFilters, isLoading, searchFresh } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
+  const [shareCopied, setShareCopied] = useState(false);
 
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>(null);
@@ -506,6 +507,17 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     await searchGames();
   };
 
+  const handleDesktopShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      await navigator.share({ title: 'GameFinder', url });
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }
+  };
+
   const handleDesktopClear = () => {
     clearAllFilters();
   };
@@ -528,10 +540,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             Clear
           </button>
           <button
-            onClick={handleDesktopSearch}
-            disabled={!hasSearchableFilters || isLoading}
+            onClick={searchFresh ? handleDesktopShare : handleDesktopSearch}
+            disabled={(!hasSearchableFilters && !searchFresh) || isLoading}
             className={`hero-button desktop-action-button desktop-action-button-search ${
-              hasSearchableFilters
+              hasSearchableFilters || searchFresh
                 ? 'desktop-action-button-search-active'
                 : 'desktop-action-button-search-disabled'
             }`}
@@ -543,6 +555,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
                 Searching...
+              </>
+            ) : searchFresh ? (
+              <>
+                {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+                {shareCopied ? 'Copied!' : 'Share'}
               </>
             ) : (
               <>

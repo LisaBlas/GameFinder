@@ -1,5 +1,19 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import axios from "axios";
+import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
+import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
+
+const toSlug = (name: string) =>
+  name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+
+const slugToKeyword: Record<string, { id: number; name: string }> = {};
+[
+  ...Object.values(topKeywordsByCategory as unknown as Record<string, Array<{ id: number; name: string }>>).flat(),
+  ...Object.values(extendedKeywordsByCategory as unknown as Record<string, Array<{ id: number; name: string }>>).flat(),
+].forEach(kw => {
+  const slug = toSlug(kw.name);
+  if (!slugToKeyword[slug]) slugToKeyword[slug] = { id: kw.id, name: kw.name };
+});
 
 // Define types for our filter objects
 export interface Filter {
@@ -36,6 +50,7 @@ interface FilterContextType {
   sortBy: string;
   setSortBy: (sort: string) => void;
   searchGames: () => Promise<void>;
+  searchFresh: boolean;
   hasMore: boolean;
   loadMoreGames: () => Promise<void>;
   retryLoadMore: () => Promise<void>;
@@ -86,7 +101,13 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   const [gameResults, setGameResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<string>("relevance");
+  const [sortBy, setSortByRaw] = useState<string>("relevance");
+  const [searchFresh, setSearchFresh] = useState(false);
+
+  const setSortBy = useCallback((sort: string) => {
+    setSearchFresh(false);
+    setSortByRaw(sort);
+  }, []);
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [pageCache, setPageCache] = useState<Record<number, any[]>>({});
@@ -98,6 +119,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   
   // Filter management functions
   const addFilter = useCallback((filter: Filter) => {
+    setSearchFresh(false);
     setSelectedFilters(prevFilters => {
       // For platforms category, only allow one selection at a time
       if (filter.category === 'platforms') {
@@ -154,7 +176,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   }, []);
   
   const removeFilter = useCallback((id: string | number, category: string, endpoint?: string) => {
-    setSelectedFilters(prevFilters => 
+    setSearchFresh(false);
+    setSelectedFilters(prevFilters =>
       prevFilters.filter(filter => 
         !(filter.id === id && filter.category === category && filter.endpoint === endpoint)
       )
@@ -168,6 +191,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   }, [selectedFilters]);
   
   const clearAllFilters = useCallback(() => {
+    setSearchFresh(false);
     setSelectedFilters([]);
     setExpandedFilters({});
     setExpandedCategories({
@@ -235,7 +259,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       console.log('[FilterContext] No filters selected, aborting search');
       return;
     }
-    
+
+    setSearchFresh(true);
     setIsLoading(true);
     setError(null);
     setPage(1);
@@ -507,7 +532,101 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       await loadMoreGames();
     }
   }, [lastError, loadMoreGames]);
-  
+
+  const isMountedRef = useRef(false);
+  const autoSearchRef = useRef(false);
+
+  const syncToUrl = useCallback((filters: Filter[], sort: string) => {
+    const params = new URLSearchParams();
+
+    const kwInclude = filters
+      .filter(f => f.category === 'Keywords' && f.mode !== 'exclude')
+      .map(f => f.slug || toSlug(f.name));
+    const kwExclude = filters
+      .filter(f => f.category === 'Keywords' && f.mode === 'exclude')
+      .map(f => f.slug || toSlug(f.name));
+
+    if (kwInclude.length) params.set('kw', kwInclude.join(','));
+    if (kwExclude.length) params.set('kw-ex', kwExclude.join(','));
+
+    const categoryParams: Record<string, string> = {
+      genres: 'genre',
+      platforms: 'platform',
+      themes: 'theme',
+      'Game Mode': 'mode',
+      Perspective: 'perspective',
+    };
+    for (const [cat, key] of Object.entries(categoryParams)) {
+      const f = filters.find(f => f.category === cat && !f.isParentOnly);
+      if (f) params.set(key, String(f.id));
+    }
+
+    if (sort && sort !== 'relevance') params.set('sort', sort);
+
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params}`
+      : window.location.pathname;
+    window.history.replaceState(null, '', newUrl);
+  }, []);
+
+  // URL sync — skip the very first render so hydration can set state before we write
+  useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      return;
+    }
+    syncToUrl(selectedFilters, sortBy);
+  }, [selectedFilters, sortBy, syncToUrl]);
+
+  // Hydrate state from URL params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.toString()) return;
+
+    const hydrated: Filter[] = [];
+
+    const kwSlugs = params.get('kw')?.split(',').filter(Boolean) ?? [];
+    const kwExSlugs = params.get('kw-ex')?.split(',').filter(Boolean) ?? [];
+
+    kwSlugs.forEach(slug => {
+      const kw = slugToKeyword[slug];
+      if (kw) hydrated.push({ id: kw.id, name: kw.name, category: 'Keywords', mode: 'include', slug });
+    });
+    kwExSlugs.forEach(slug => {
+      const kw = slugToKeyword[slug];
+      if (kw) hydrated.push({ id: kw.id, name: kw.name, category: 'Keywords', mode: 'exclude', slug });
+    });
+
+    const categoryMap: Record<string, string> = {
+      genre: 'genres',
+      platform: 'platforms',
+      theme: 'themes',
+      mode: 'Game Mode',
+      perspective: 'Perspective',
+    };
+    for (const [key, category] of Object.entries(categoryMap)) {
+      const val = params.get(key);
+      if (val) hydrated.push({ id: Number(val), name: val, category });
+    }
+
+    const sort = params.get('sort');
+    if (sort) setSortBy(sort);
+
+    if (hydrated.length) {
+      setSelectedFilters(hydrated);
+      autoSearchRef.current = true;
+    }
+  }, []);
+
+  // Auto-search once after hydration from URL
+  useEffect(() => {
+    if (autoSearchRef.current && selectedFilters.length > 0) {
+      autoSearchRef.current = false;
+      searchGames();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFilters]);
+
   // Provide all our values and functions through the context
   const value = {
     selectedFilters,
@@ -529,6 +648,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     sortBy,
     setSortBy,
     searchGames,
+    searchFresh,
     hasMore,
     loadMoreGames,
     retryLoadMore,

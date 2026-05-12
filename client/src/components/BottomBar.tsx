@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Search, ChevronUp, ChevronDown } from 'lucide-react';
+import { X, Search, Share2, Check, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFilters } from '../context/FilterContext';
 import { SelectedFilters } from './SelectedFilters';
 
@@ -10,9 +10,10 @@ interface BottomBarProps {
 }
 
 const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef, onSearchSuccess }) => {
-  const { clearAllFilters, searchGames, selectedFilters, isLoading } = useFilters();
+  const { clearAllFilters, searchGames, selectedFilters, isLoading, searchFresh } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
   const [isExpanded, setIsExpanded] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
   const prevCountRef = useRef(selectedFilters.length);
 
   useEffect(() => {
@@ -36,6 +37,17 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
     await searchGames();
     resultsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     resetSections();
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      await navigator.share({ title: 'GameFinder', url });
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }
   };
 
   const handleClearAll = () => {
@@ -112,10 +124,10 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
           </button>
 
           <button
-            onClick={handleSearch}
-            disabled={!hasSearchableFilters || isLoading}
+            onClick={searchFresh ? handleShare : handleSearch}
+            disabled={(!hasSearchableFilters && !searchFresh) || isLoading}
             className={`hero-button mobile-action-button mobile-action-button-search ${
-              hasSearchableFilters
+              hasSearchableFilters || searchFresh
                 ? 'mobile-action-button-search-active'
                 : 'mobile-action-button-search-disabled'
             }`}
@@ -127,6 +139,11 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
                 Searching...
+              </>
+            ) : searchFresh ? (
+              <>
+                {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+                {shareCopied ? 'Copied!' : 'Share'}
               </>
             ) : (
               <>

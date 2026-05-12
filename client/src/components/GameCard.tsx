@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 declare const gtag: any;
 import { SiAppstore, SiEpicgames, SiGogdotcom, SiGoogleplay, SiItchdotio, SiPlaystation, SiSteam } from 'react-icons/si';
 import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGamepad, FaGlobe, FaHeart, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
+import { Share2, Check } from 'lucide-react';
 import { useFilters } from '../context/FilterContext';
 import { useSavedGames } from '../context/SavedGamesContext';
 import EnebaIconImg from '../assets/icons/eneba.png';
@@ -198,6 +199,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [isMediaSyncedLayout, setIsMediaSyncedLayout] = useState(false);
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
   const [partnerStoresExpanded, setPartnerStoresExpanded] = useState(false);
+  const [gameCopied, setGameCopied] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
   const { addFilter, removeFilter, isFilterSelected, selectedFilters } = useFilters();
@@ -300,6 +302,20 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         category,
         compositeId: `${category}-${tag.id}-${tag.name}`.toLowerCase().replace(/\s+/g, '-')
       });
+    }
+  };
+
+  const gameDeepLink = `${window.location.origin}${window.location.pathname}?game=${game.id}`;
+
+  const handleGameShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const text = `Check out ${game.name} on GameFinder → ${gameDeepLink}`;
+    if (navigator.share) {
+      await navigator.share({ title: game.name, text, url: gameDeepLink });
+    } else {
+      await navigator.clipboard.writeText(gameDeepLink);
+      setGameCopied(true);
+      setTimeout(() => setGameCopied(false), 2000);
     }
   };
 
@@ -634,6 +650,16 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   {!isSelected && (
                     <FaChevronRight className="mt-1 h-5 w-5 text-amber-300/70 md:hidden" />
                   )}
+                  <button
+                    type="button"
+                    onClick={handleGameShare}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-800/70 hover:text-slate-300"
+                    aria-label="Share game"
+                  >
+                    {gameCopied
+                      ? <Check className="h-4 w-4 text-[var(--c-emerald)]" />
+                      : <Share2 className="h-4 w-4" />}
+                  </button>
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); toggleSaved({ id: game.id, name: game.name, cover: game.cover, rating: game.rating, first_release_date: game.first_release_date }); }}

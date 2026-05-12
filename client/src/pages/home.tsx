@@ -1,10 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ResultsSection from '../components/ResultsSection';
 import { KeywordSection } from '../components/KeywordSection';
 import { FilterProvider, useFilters } from '../context/FilterContext';
 import BottomBar from '../components/BottomBar';
 import AnimatedBackground from '../components/AnimatedBackground';
 import SavedGamesPanel from '../components/SavedGamesPanel';
+import GameCardModal from '../components/GameCardModal';
 import { FaGithub, FaHeart } from 'react-icons/fa';
 import { FaXTwitter, FaGlobe } from 'react-icons/fa6';
 import { useSavedGames } from '../context/SavedGamesContext';
@@ -15,7 +16,20 @@ const HomeContent: React.FC = () => {
   const { savedGames } = useSavedGames();
   const [activeTab, setActiveTab] = useState<'build' | 'results'>('build');
   const [panelOpen, setPanelOpen] = useState(false);
+  const [deepLinkGameId, setDeepLinkGameId] = useState<number | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gameId = params.get('game');
+    if (!gameId) return;
+    setDeepLinkGameId(Number(gameId));
+    params.delete('game');
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params}`
+      : window.location.pathname;
+    window.history.replaceState(null, '', newUrl);
+  }, []);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
@@ -47,6 +61,7 @@ const HomeContent: React.FC = () => {
       </div>
 
       <SavedGamesPanel open={panelOpen} onOpenChange={setPanelOpen} />
+      <GameCardModal gameId={deepLinkGameId} onClose={() => setDeepLinkGameId(null)} />
 
       {/* Mobile Tab Bar */}
       <div className="lg:hidden flex shrink-0 border-b border-border bg-background/80 backdrop-blur-sm">
