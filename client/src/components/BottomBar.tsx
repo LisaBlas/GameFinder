@@ -57,7 +57,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
         transition-transform duration-300 ease-in-out
         ${translateClass}
         ${hasFilters
-          ? 'border-t border-[#f5a614]/50 shadow-[0_-4px_20px_rgba(245,166,10,0.15)]'
+          ? 'border-t border-[#f4b01b]/50 shadow-[0_-4px_20px_rgba(244,176,27,0.15)]'
           : 'border-t border-border'
         }
       `}
@@ -73,10 +73,10 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
           <ChevronDown className="w-4 h-4 mt-1" />
         ) : (
           <>
-            <span className="text-xs font-semibold mt-1 text-[#f5a614]/80">
+            <span className="text-xs font-semibold mt-1 text-[#f4b01b]/80">
               {selectedFilters.length} selected
             </span>
-            <ChevronUp className="w-4 h-4 mt-1 text-[#f5a614]/80" />
+            <ChevronUp className="w-4 h-4 mt-1 text-[#f4b01b]/80" />
           </>
         )}
       </button>

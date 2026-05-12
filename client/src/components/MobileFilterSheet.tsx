@@ -28,7 +28,7 @@ const MobileFilterSheet: React.FC = () => {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <button className="relative inline-flex items-center gap-1.5 rounded-lg border border-[#245344] bg-[#0b211b] px-3 py-2 text-sm font-semibold text-[#dbeafe] transition-colors hover:border-primary hover:bg-primary/10">
+        <button className="relative inline-flex items-center gap-1.5 rounded-lg border border-[#2d4540] bg-[#07110f] px-3 py-2 text-sm font-semibold text-[#9caeaa] transition-colors hover:border-primary hover:bg-primary/10">
           <FilterIcon className="h-4 w-4 text-primary" />
           {totalSelected > 0 && (
             <span className="ml-0.5 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-white">

@@ -54,6 +54,41 @@ All filter/keyword/result state flows from there.
 3. **Affiliate links** — add links to key resellers (Steam, GOG, Humble Bundle, G2A, Kinguin) with affiliate tracking. Revenue-generating priority.
 4. **Overall flow** — reduce friction from landing to finding a game recommendation.
 
+## Styling System
+
+### Files
+| File | Purpose |
+|------|---------|
+| `client/src/styles/tokens.css` | Single source of truth for design tokens (CSS custom properties). Imported first in `App.css`. |
+| `client/src/App.css` | Main stylesheet: imports tokens, Tailwind directives, shadcn HSL vars, global component classes. |
+| `client/src/index.css` | Secondary Tailwind entry (Vite/Replit quirk). Contains `.filter-pill.animate-blink` and `.keyword-section` overrides. |
+| `client/src/styles/AnimatedBackground.css` | Styles for the animated canvas background only. |
+| `tailwind.config.ts` | Extends Tailwind: custom `slate` scale, `primary.*` emerald scale, `font-cinzel`, `widescreen` breakpoint (1400px), token color aliases. |
+
+### Two token layers
+**`--c-*` CSS vars** (defined in `tokens.css`, also mapped to Tailwind aliases):
+- Surfaces: `--c-bg` `#030807`, `--c-surface` `#07110f`, `--c-surface-2` `#0b1815`
+- Emerald accent: `--c-emerald` `#20e6a7`, `--c-emerald-soft` `#79ffd2`
+- Gold accent: `--c-gold` `#f4b01b`, `--c-gold-deep` `#c47a00`
+- Danger: `--c-danger` `#ff5f68`
+- Text: `--c-text` `#f4f7f5`, `--c-muted` `#9caeaa`, `--c-dim` `#647570`
+- Each color also has an `*-rgb` companion (e.g. `--c-emerald-rgb: 32, 230, 167`) for opacity composition via `rgba(var(--c-emerald-rgb), 0.2)` — use this pattern instead of Tailwind opacity modifiers when working with `--c-*` vars.
+
+**shadcn/Radix HSL vars** (defined in `App.css` `@layer base`): `--background`, `--foreground`, `--primary`, `--muted-foreground`, `--border`, etc. Used as `hsl(var(--primary))` in Tailwind utilities. These drive shadcn components and should not be repurposed.
+
+### Fonts
+- **Inter** (400–700) — body and all UI text. Loaded via Google Fonts.
+- **Cinzel** (400–900) — display font for the brand h1 and tagline only. Loaded via Google Fonts. Use `font-cinzel` Tailwind utility. Do not use Cinzel for body copy or UI controls.
+
+### Component class conventions
+Reusable UI pieces are styled with plain CSS classes in `App.css` rather than Tailwind component layers, because they need multi-state cascade (hover, active, disabled, modifier variants) that inline classes make unwieldy:
+- `.filter-pill` — base keyword/filter pill. Modifiers: `.selected`, `.keyword-include`, `.keyword-exclude`, `.parent`, `.kid`, `.include-hover-mode`, `.exclude-hover-mode`
+- `.selected-filter-pill` — pills in the bottom action bar. Modifiers: `.keyword`, `.keyword-exclude`
+- `.desktop-action-button-*` / `.mobile-action-button-*` — Clear and Search button states
+- `.results-filter-trigger`, `.results-sticky-header`, `.workspace-sticky-header` — results panel chrome
+
+Use Tailwind for layout, spacing, and one-off styles. Use the CSS classes above for anything involving multiple interactive states.
+
 ## Design Constraints
 - Mobile-first but desktop matters (search traffic comes from both)
 - Dark theme only — do not add light mode toggle

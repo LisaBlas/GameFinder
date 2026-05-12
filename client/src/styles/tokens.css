@@ -1,0 +1,37 @@
+/* ==========================================================
+   Design tokens — single source of truth for all colors.
+
+   Solid usage:   var(--c-gold)
+   With opacity:  rgba(var(--c-gold-rgb), 0.2)
+   ========================================================== */
+
+:root {
+  /* surfaces */
+  --c-bg:          #030807;
+  --c-bg-rgb:      3, 8, 7;
+  --c-surface:     #07110f;
+  --c-surface-rgb: 7, 17, 15;
+  --c-surface-2:   #0b1815;
+
+  /* emerald accent */
+  --c-emerald:      #20e6a7;
+  --c-emerald-rgb:  32, 230, 167;
+  --c-emerald-soft: #79ffd2;
+
+  /* gold accent */
+  --c-gold:      #f4b01b;
+  --c-gold-rgb:  244, 176, 27;
+  --c-gold-deep: #c47a00;
+
+  /* danger */
+  --c-danger:     #ff5f68;
+  --c-danger-rgb: 255, 95, 104;
+
+  /* text */
+  --c-text:  #f4f7f5;
+  --c-muted: #9caeaa;
+  --c-dim:   #647570;
+
+  /* border channel — lighter emerald tint used for borders */
+  --c-border-rgb: 111, 255, 197;
+}

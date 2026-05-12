@@ -3,56 +3,72 @@ import '../styles/AnimatedBackground.css';
 
 const AnimatedBackground: React.FC = () => {
   useEffect(() => {
-    // Create particles
+    const container = document.querySelector('.animated-background');
+    if (!container) return;
+
     const createParticle = () => {
       const particle = document.createElement('div');
       particle.className = 'particle';
-      
-      // Random starting position
       particle.style.left = `${Math.random() * 100}vw`;
       particle.style.top = `${Math.random() * 100}vh`;
-      
-      // Random animation duration (between 20 and 40 seconds)
       particle.style.animationDuration = `${Math.random() * 20 + 20}s`;
-      
-      // Random animation delay
       particle.style.animationDelay = `-${Math.random() * 40}s`;
-      
-      // Random opacity
-      particle.style.opacity = `${Math.random() * 0.5 + 0.2}`;
-      
-      // Random animation name (one of four directions)
+      particle.style.opacity = `${Math.random() * 0.4 + 0.35}`;
       const animations = ['drift1', 'drift2', 'drift3', 'drift4'];
       particle.style.animationName = animations[Math.floor(Math.random() * animations.length)];
-      
-      // Randomly assign variants
-      if (Math.random() < 0.3) { // 30% chance of being emerald
-        particle.classList.add('emerald');
-      }
-      
-      if (Math.random() < 0.2) { // 20% chance of being large
-        particle.classList.add('large');
-      }
-      
-      if (Math.random() < 0.25) { // 25% chance of being shiny
-        particle.classList.add('shiny');
-      }
-      
+      if (Math.random() < 0.2) particle.classList.add('emerald');
+      if (Math.random() < 0.12) particle.classList.add('large');
+      if (Math.random() < 0.18) particle.classList.add('shiny');
       return particle;
     };
 
-    const container = document.querySelector('.animated-background');
-    if (container) {
-      // Add particles
-      for (let i = 0; i < 50; i++) {
-        container.appendChild(createParticle());
-      }
+    for (let i = 0; i < 65; i++) {
+      container.appendChild(createParticle());
     }
 
-    return () => {
-      if (container) {
-        container.innerHTML = '';
+    const createGoldenParticle = () => {
+      const particle = document.createElement('div');
+      particle.className = 'particle golden';
+
+      const type = Math.floor(Math.random() * 4);
+      if (type === 0) {
+        particle.style.left = '0';
+        particle.style.top = `${Math.random() * 80 + 10}vh`;
+        particle.style.animationName = 'goldenFly1';
+      } else if (type === 1) {
+        particle.style.left = '0';
+        particle.style.top = `${Math.random() * 80 + 10}vh`;
+        particle.style.animationName = 'goldenFly2';
+      } else if (type === 2) {
+        particle.style.left = `${Math.random() * 60}vw`;
+        particle.style.top = '0';
+        particle.style.animationName = 'goldenFly3';
+      } else {
+        particle.style.left = `${Math.random() * 40}vw`;
+        particle.style.top = '100vh';
+        particle.style.animationName = 'goldenFly4';
       }
+
+      particle.style.animationDuration = `${Math.random() * 1.5 + 2}s`;
+      particle.style.animationTimingFunction = 'ease-in-out';
+      particle.style.animationIterationCount = '1';
+      particle.style.animationFillMode = 'forwards';
+      particle.addEventListener('animationend', () => particle.remove());
+      container.appendChild(particle);
+    };
+
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const scheduleGolden = (delay?: number) => {
+      timeoutId = setTimeout(() => {
+        createGoldenParticle();
+        scheduleGolden(Math.random() * 4000 + 3000);
+      }, delay ?? 2000);
+    };
+    scheduleGolden();
+
+    return () => {
+      clearTimeout(timeoutId);
+      container.innerHTML = '';
     };
   }, []);
 
@@ -61,4 +77,4 @@ const AnimatedBackground: React.FC = () => {
   );
 };
 
-export default AnimatedBackground; 
+export default AnimatedBackground;

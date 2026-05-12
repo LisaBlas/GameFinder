@@ -61,9 +61,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const getCategoryIcon = (mainCat: MainCategory) => {
-    if (mainCat === "Mechanics & Systems") return <Cog className="w-6 h-6 text-primary" />;
-    if (mainCat === "Setting & World") return <Globe className="w-6 h-6 text-primary" />;
-    return <Palette className="w-6 h-6 text-primary" />;
+    if (mainCat === "Mechanics & Systems") return <Cog className="w-5 h-5" />;
+    if (mainCat === "Setting & World") return <Globe className="w-5 h-5" />;
+    return <Palette className="w-5 h-5" />;
   };
 
   const subcategoryIconMap: Record<string, LucideIcon> = {
@@ -209,7 +209,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <div className={variant === "desktop" ? "flex h-full min-h-0 flex-col" : "grid gap-3"}>
         {variant === "desktop" && (
-          <div className="relative flex items-center gap-4 border-b border-border bg-card p-5">
+          <div className="relative flex min-h-[6.5rem] items-center gap-4 border-b border-border bg-card p-5">
             <div className="shrink-0 p-2.5 rounded-lg bg-primary/10">
               {getSubcategoryIcon(subCategoryName, "w-5 h-5 text-primary")}
             </div>
@@ -248,7 +248,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <div className="hidden flex-1 min-h-0 overflow-hidden rounded-xl border border-border bg-background/40 lg:grid lg:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.55fr)]">
         <div className="flex min-h-0 flex-col border-r border-border bg-card/45">
-          <div className="border-b border-border/70 p-2.5">
+          <div className="flex min-h-[6.5rem] items-center border-b border-border px-4">
             <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
           </div>
           <div className="flex-1 overflow-y-auto p-2.5">
@@ -264,24 +264,24 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       type="button"
                       onClick={() => selectMainCategory(mainCat)}
                       aria-expanded={isOpen}
-                      className={`flex min-h-[2.5rem] w-full items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors ${
+                      className={`flex min-h-[2.5rem] w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left transition-colors ${
                         isOpen
-                          ? "border-primary/25 bg-card/80 text-foreground"
-                          : "border-transparent text-muted-foreground hover:bg-primary/5 hover:text-foreground"
+                          ? "bg-white/[0.035] text-foreground"
+                          : "text-muted-foreground hover:bg-white/[0.025] hover:text-foreground"
                       }`}
                     >
-                      <span className="shrink-0 rounded-md bg-background/55 p-1.5 text-primary">
+                      <span className={`shrink-0 rounded-md p-1.5 ${isOpen ? "bg-background/45 text-muted-foreground" : "text-muted-foreground"}`}>
                         {getCategoryIcon(mainCat)}
                       </span>
                       <span className="min-w-0 flex-1 truncate text-sm font-bold">{mainCat}</span>
-                      <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                      <span className="shrink-0 px-1 text-xs font-semibold text-muted-foreground/75">
                         {getTotalKeywordCount(mainCat)}
                       </span>
-                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-180 text-primary" : ""}`} />
+                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-180 text-foreground" : "text-muted-foreground"}`} />
                     </button>
 
                     {isOpen && (
-                      <div className="grid gap-1 border-t border-border/70 pt-2">
+                      <div className="grid gap-1 pl-2 pt-1">
                         {subcategories.map((subCategoryName) => {
                           const keywords = getKeywordsForSubcategory(subCategoryName);
                           const isActive = selectedSubcategory === subCategoryName;
@@ -295,15 +295,16 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                                   setActiveMainCategory(mainCat);
                                   setActiveSubcategory(subCategoryName);
                                 }}
-                                className={`flex min-h-[2.65rem] w-full items-center gap-2.5 rounded-lg border px-3 py-2 text-left text-sm font-semibold transition-all duration-200 ${
+                                className={`relative flex min-h-[2.65rem] w-full items-center gap-2.5 rounded-lg px-3 py-2 pl-4 text-left text-sm font-semibold transition-colors duration-200 ${
                                   isActive
-                                    ? "border-primary/60 bg-primary/15 text-foreground shadow-[0_0_18px_rgba(16,185,129,0.10)]"
-                                    : "border-transparent bg-transparent text-muted-foreground hover:border-primary/35 hover:bg-primary/10 hover:text-foreground"
+                                    ? "bg-primary/15 text-foreground"
+                                    : "bg-transparent text-muted-foreground hover:bg-white/[0.035] hover:text-foreground"
                                 }`}
                               >
-                                {getSubcategoryIcon(subCategoryName, "w-4 h-4 shrink-0 text-primary")}
+                                {isActive && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary" />}
+                                {getSubcategoryIcon(subCategoryName, `w-4 h-4 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`)}
                                 <span className="min-w-0 flex-1 truncate">{subCategoryName}</span>
-                                <span className="shrink-0 text-xs text-muted-foreground">{keywords.length}</span>
+                                <span className="shrink-0 text-xs font-medium text-muted-foreground/75">{keywords.length}</span>
                               </button>
                             </Tooltip>
                           );

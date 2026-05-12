@@ -167,7 +167,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setShowSuggestions(true)}
           placeholder="Search games or keywords..."
-          className="w-full px-4 py-3 pl-12 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="w-full rounded-lg border border-transparent bg-white/[0.035] px-4 py-3 pl-12 text-sm text-foreground placeholder:text-muted-foreground/70 transition-colors focus:border-primary/30 focus:bg-background/60 focus:outline-none focus:ring-2 focus:ring-primary/35"
         />
         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
       </div>

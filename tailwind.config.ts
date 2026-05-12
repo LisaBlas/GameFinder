@@ -5,6 +5,9 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        cinzel: ["Cinzel", "Georgia", "serif"],
+      },
       screens: {
         widescreen: "1400px",
       },
@@ -15,23 +18,35 @@ export default {
       },
       colors: {
         slate: {
-          50: "#f2fbf6",
-          100: "#d9f2e5",
-          200: "#b8e3ce",
-          300: "#8ac9ad",
-          400: "#5fa98a",
-          500: "#3f876c",
-          600: "#2f6c56",
-          700: "#245344",
-          750: "#1b4135",
-          800: "#15342b",
-          900: "#0b211b",
-          950: "#06130f",
+          50: "#f4f7f5",
+          100: "#e2ecea",
+          200: "#c8d8d4",
+          300: "#9caeaa",
+          400: "#7a9691",
+          500: "#647570",
+          600: "#4a5a56",
+          700: "#2d4540",
+          750: "#1f352f",
+          800: "#102820",
+          900: "#07110f",
+          950: "#030807",
         },
+        // design tokens — reference CSS custom properties from tokens.css
+        "c-bg":           "var(--c-bg)",
+        "c-surface":      "var(--c-surface)",
+        "c-surface-2":    "var(--c-surface-2)",
+        "c-emerald":      "var(--c-emerald)",
+        "c-emerald-soft": "var(--c-emerald-soft)",
+        "c-gold":         "var(--c-gold)",
+        "c-gold-deep":    "var(--c-gold-deep)",
+        "c-danger":       "var(--c-danger)",
+        "c-text":         "var(--c-text)",
+        "c-muted":        "var(--c-muted)",
+        "c-dim":          "var(--c-dim)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
-          DEFAULT: "#0f241d66",
+          DEFAULT: "#07110f66",
           foreground: "hsl(var(--card-foreground))",
         },
         popover: {

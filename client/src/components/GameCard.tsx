@@ -512,11 +512,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
     let keywordClass: string;
     if (isExcluded) {
-      keywordClass = 'bg-red-900/20 text-red-200 ring-2 ring-red-400/50 hover:bg-red-500/20';
+      keywordClass = 'bg-red-900/25 text-red-300/90 ring-1 ring-red-500/30 hover:bg-red-900/35';
     } else if (isSelectedTag) {
-      keywordClass = 'bg-amber-500/30 text-amber-100 ring-2 ring-amber-400/50';
+      keywordClass = 'bg-amber-900/40 text-amber-300 ring-1 ring-amber-500/35';
     } else {
-      keywordClass = 'bg-amber-900/20 text-amber-200 hover:bg-amber-800/30';
+      keywordClass = 'bg-slate-800/60 text-slate-400 hover:bg-slate-800/80 hover:text-amber-200/80';
     }
 
     return (
@@ -526,8 +526,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         className={`inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${
           isEmerald
             ? isSelectedTag
-              ? 'bg-emerald-500/30 text-emerald-100 ring-2 ring-emerald-400/50'
-              : 'bg-emerald-900/20 text-emerald-200 hover:bg-emerald-800/30'
+              ? 'bg-slate-700/55 text-emerald-400 ring-1 ring-emerald-500/30'
+              : 'bg-slate-800/60 text-slate-400 hover:bg-slate-800/80 hover:text-emerald-300/80'
             : keywordClass
         }`}
         title={isExcluded ? `Click to remove "${displayName}" exclusion` : `Click to add "${displayName}" to filters`}
@@ -646,7 +646,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   <button
                     onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(true); }}
                     className="absolute bottom-0 right-0 pl-8 text-xs text-emerald-400 hover:text-emerald-300"
-                    style={{ background: 'linear-gradient(to right, transparent, #0b211b 40%)' }}
+                    style={{ background: 'linear-gradient(to right, transparent, #07110f 40%)' }}
                   >
                     Read more
                   </button>

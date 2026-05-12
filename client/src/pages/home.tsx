@@ -24,10 +24,10 @@ const HomeContent: React.FC = () => {
       <div className="lg:hidden shrink-0 px-4 py-3 bg-background/80 backdrop-blur-sm border-b border-border/40">
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2 flex-wrap">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+            <h1 className="font-cinzel text-base font-bold tracking-widest uppercase bg-gradient-to-r from-emerald-400 via-primary to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(16,185,129,0.35)]">
               Gamefinder
             </h1>
-            <span className="text-xs text-muted-foreground">Find your next favourite game</span>
+            <span className="font-cinzel text-[0.55rem] tracking-[0.2em] uppercase text-muted-foreground/70">Find your next favourite game</span>
           </div>
           <button
             type="button"
