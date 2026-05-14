@@ -170,11 +170,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     } as React.CSSProperties;
   };
 
-  const getCategoryPreviewKeywords = (mainCat: MainCategory): string[] =>
-    getAvailableSubcategories(mainCat)
-      .slice(0, 3)
-      .map(sub => getKeywordsForSubcategory(sub)[0]?.name)
-      .filter(Boolean) as string[];
+  const getCategoryPreviewKeywords = (mainCat: MainCategory): string[] => ({
+    "Mechanics & Systems": ["Combat", "Stealth", "Crafting", "Co-op"],
+    "Setting & World": ["Medieval", "Space", "Cyberpunk", "Mythology"],
+    "Aesthetics & Style": ["Cozy", "Dark", "Pixel Art", "Retro"],
+  }[mainCat] ?? []);
 
   const subcategoryIconMap: Record<string, LucideIcon> = {
     "Combat Systems": Sword,
@@ -754,7 +754,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             </div>
             {mainCategoryOrder.map((mainCat) => {
               const subcategories = getAvailableSubcategories(mainCat);
-              const descriptor = (keywordCategories[mainCat] as unknown as { description: string }).description;
               if (subcategories.length === 0) return null;
 
               return (
@@ -772,11 +771,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       {getCategoryIcon(mainCat, "w-6 h-6")}
                     </div>
                     <div className="mobile-category-copy">
-                      <div className="mobile-category-title-row">
-                        <span className="mobile-category-title">{mainCat}</span>
-                        <span className="mobile-category-count">{subcategories.length} groups</span>
-                      </div>
-                      <p>{descriptor}</p>
+                      <span className="mobile-category-title">{mainCat}</span>
                       <div className="mobile-category-keyword-chips">
                         {getCategoryPreviewKeywords(mainCat).map(name => (
                           <span key={name} className="mobile-category-keyword-chip">{name}</span>
