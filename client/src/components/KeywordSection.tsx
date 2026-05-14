@@ -164,7 +164,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       '--cat-accent-rgb': 'var(--c-violet-rgb)',
       '--cat-accent-soft': 'var(--c-violet-soft)',
     } as React.CSSProperties;
-    return {};
+    return {
+      '--cat-accent-rgb': 'var(--c-cyan-rgb)',
+      '--cat-accent-soft': 'var(--c-cyan-soft)',
+    } as React.CSSProperties;
   };
 
   const getCategoryPreviewKeywords = (mainCat: MainCategory): string[] =>

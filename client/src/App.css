@@ -1669,8 +1669,8 @@ svg.filter-caret.expanded {
 }
 
 .mobile-category-shelf {
-  --cat-accent-rgb: var(--c-emerald-rgb);
-  --cat-accent-soft: var(--c-emerald-soft);
+  --cat-accent-rgb: var(--c-cyan-rgb);
+  --cat-accent-soft: var(--c-cyan-soft);
   overflow: hidden;
   border-top: 1px solid rgba(var(--c-border-rgb), 0.15);
   border-right: 1px solid rgba(var(--c-border-rgb), 0.15);
@@ -1816,7 +1816,7 @@ svg.filter-caret.expanded {
 }
 
 .mobile-subcategory-button:hover {
-  background: rgba(var(--c-emerald-rgb), 0.055);
+  background: rgba(var(--cat-accent-rgb), 0.055);
 }
 
 .mobile-subcategory-icon {
@@ -1826,8 +1826,8 @@ svg.filter-caret.expanded {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  background: rgba(var(--c-emerald-rgb), 0.08);
-  color: var(--c-emerald-soft);
+  background: rgba(var(--cat-accent-rgb), 0.08);
+  color: var(--cat-accent-soft);
 }
 
 .mobile-subcategory-copy {

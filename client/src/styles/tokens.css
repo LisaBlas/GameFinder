@@ -24,6 +24,11 @@
   --c-gold-rgb:  244, 176, 27;
   --c-gold-deep: #c47a00;
 
+  /* cyan accent */
+  --c-cyan:      #22d3ee;
+  --c-cyan-rgb:  34, 211, 238;
+  --c-cyan-soft: #67e8f9;
+
   /* violet accent */
   --c-violet:     #a78bfa;
   --c-violet-rgb: 167, 139, 250;
