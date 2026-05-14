@@ -629,7 +629,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
         <div className="flex-1 overflow-y-auto">
-          <div className="grid gap-3">
+          <div className="grid gap-4">
             <div className="mobile-keyword-search-wrap">
               <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
             </div>
@@ -663,7 +663,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         <span className="mobile-category-count">{subcategories.length} groups</span>
                       </div>
                       <p>{descriptor}</p>
-                      <span className="mobile-category-meta">{keywordTotal} curated keywords</span>
                     </div>
                     <ChevronDown className="mobile-category-caret" />
                   </button>
