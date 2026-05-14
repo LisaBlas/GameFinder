@@ -605,6 +605,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <motion.div
         key={activeSubcategory}
         className="lg:hidden fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
+        style={activeMainCategory ? getCategoryAccentVars(activeMainCategory) : {}}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -619,11 +620,17 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
+          <span
+            className="shrink-0 rounded-md p-1.5"
+            style={{ background: 'rgba(var(--cat-accent-rgb), 0.1)', color: 'var(--cat-accent-soft)' }}
+          >
             {getSubcategoryIcon(activeSubcategory, "w-4 h-4")}
           </span>
           <span className="font-bold text-foreground truncate flex-1">{activeSubcategory}</span>
-          <span className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+          <span
+            className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full"
+            style={{ background: 'rgba(var(--cat-accent-rgb), 0.12)', color: 'var(--cat-accent-soft)' }}
+          >
             {displayedKeywords.length}{extendedKeywords.length > 0 ? ` of ${totalKeywords}` : ""}
           </span>
         </div>
@@ -664,6 +671,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <motion.div
         key={activeMainCategory + '-category-detail'}
         className="lg:hidden fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
+        style={getCategoryAccentVars(activeMainCategory)}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -678,11 +686,17 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
+          <span
+            className="shrink-0 rounded-md p-1.5"
+            style={{ background: 'rgba(var(--cat-accent-rgb), 0.1)', color: 'var(--cat-accent-soft)' }}
+          >
             {getCategoryIcon(activeMainCategory)}
           </span>
           <span className="font-bold text-foreground truncate flex-1">{activeMainCategory}</span>
-          <span className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+          <span
+            className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full"
+            style={{ background: 'rgba(var(--cat-accent-rgb), 0.12)', color: 'var(--cat-accent-soft)' }}
+          >
             {subcategories.length} groups
           </span>
         </div>
