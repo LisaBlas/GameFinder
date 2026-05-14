@@ -85,12 +85,14 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
 
   return (
     <div
-      className={`fixed bottom-2.5 left-3 right-3 z-50 lg:hidden rounded-2xl bg-[#0c1c16] backdrop-blur-xl
+      className={`fixed bottom-2.5 left-3 right-3 z-50 lg:hidden rounded-2xl bg-[#0f2318] backdrop-blur-xl
         transition-transform duration-300 ease-in-out
         ${translateClass}
-        shadow-[0_8px_32px_rgba(0,0,0,0.52),0_2px_8px_rgba(0,0,0,0.28)] border border-white/[0.04]
+        shadow-[0_-10px_30px_rgba(0,0,0,0.65),0_-2px_8px_rgba(0,0,0,0.45)] border border-white/[0.11]
       `}
     >
+      {/* Top-edge accent — anchors the bar against the dark page content above */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f4b01b]/40 to-transparent rounded-t-2xl pointer-events-none" />
       {/* Handle bar */}
       <button
         onClick={() => hasFilters && setIsExpanded(prev => !prev)}
