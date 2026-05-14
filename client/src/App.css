@@ -1661,13 +1661,21 @@ svg.filter-caret.expanded {
   margin-bottom: 0.15rem;
 }
 
+.mobile-keyword-search-wrap input {
+  border-radius: 999px !important;
+  background: rgba(var(--c-bg-rgb), 0.72) !important;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  border-color: rgba(var(--c-border-rgb), 0.12) !important;
+}
+
 .mobile-category-shelf {
   overflow: hidden;
   border: 1px solid rgba(var(--c-border-rgb), 0.2);
-  border-radius: 8px;
+  border-radius: 12px;
   background:
     linear-gradient(145deg, rgba(var(--c-surface-rgb), 0.58), rgba(var(--c-bg-rgb), 0.72)),
     var(--c-bg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -1676,7 +1684,10 @@ svg.filter-caret.expanded {
   background:
     linear-gradient(145deg, rgba(var(--c-surface-rgb), 0.76), rgba(var(--c-bg-rgb), 0.82)),
     var(--c-surface);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.35),
+    0 1px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
 .mobile-category-trigger {
@@ -1743,9 +1754,9 @@ svg.filter-caret.expanded {
 
 
 .mobile-category-caret {
-  margin-top: 0.32rem;
-  height: 1rem;
-  width: 1rem;
+  margin-top: 0.26rem;
+  height: 1.3rem;
+  width: 1.3rem;
   flex-shrink: 0;
   color: var(--c-dim);
   transition: color 0.2s ease, transform 0.2s ease;
