@@ -398,8 +398,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
   const storeButtonClass = "inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border border-slate-700/60 bg-slate-900/70 px-3 py-2 text-sm font-semibold text-slate-100 transition-colors hover:border-emerald-400/45 hover:bg-emerald-400/10 hover:text-white";
   const storeIconClass = "flex h-5 w-5 flex-shrink-0 items-center justify-center text-slate-300";
-  const partnerStoreIconClass = "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-slate-700/70 bg-slate-950/85 text-white transition-colors group-hover/alt:border-amber-300/45 group-hover/alt:bg-slate-900";
-
   const officialStoreLinks = (
     <>
       {renderableOfficialStores.map((store) => {
@@ -482,52 +480,44 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     ...partnerStores.slice(0, partnerStoreOffset)
   ];
   const primaryPartnerStore = rotatedPartnerStores[0];
-  const secondaryPartnerStore = rotatedPartnerStores[1];
   const alternatePartnerStores = rotatedPartnerStores.slice(1);
 
   const partnerStoreLinks = (
     <div className="grid gap-2.5">
-      <button
-        type="button"
-        onClick={primaryPartnerStore.onClick}
-        className="group/partner flex w-full items-center gap-3 rounded-lg border border-amber-300/35 bg-amber-300/10 px-3 py-3 text-left transition-colors hover:border-amber-200/60 hover:bg-amber-300/15"
-        title={primaryPartnerStore.name}
-      >
-        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-slate-950/80 text-white">
-          {primaryPartnerStore.icon}
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[10px] font-semibold uppercase tracking-widest text-amber-200/80">Partner store</span>
-          <span className="mt-0.5 block truncate text-sm font-semibold text-white">{primaryPartnerStore.label}</span>
-        </span>
-        <FaExternalLinkAlt className="h-3 w-3 flex-shrink-0 text-amber-200/75 transition-transform group-hover/partner:translate-x-0.5" />
-      </button>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={primaryPartnerStore.onClick}
+          className={storeButtonClass}
+          title={primaryPartnerStore.name}
+        >
+          <span className={storeIconClass}>{primaryPartnerStore.icon}</span>
+          <span className="truncate">{primaryPartnerStore.name}</span>
+        </button>
+      </div>
 
       <button
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setPartnerStoresExpanded((expanded) => !expanded);
-        }}
-        className="flex min-h-10 w-full items-center justify-between gap-3 rounded-lg border border-slate-800/70 bg-slate-900/45 px-3 py-2 text-left text-xs font-semibold text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800/70 hover:text-white"
+        onClick={(e) => { e.stopPropagation(); setPartnerStoresExpanded((v) => !v); }}
+        className="flex min-h-9 w-full items-center justify-between gap-3 rounded-lg border border-slate-800/70 bg-slate-900/45 px-3 py-2 text-left text-xs font-semibold text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800/70 hover:text-white"
         aria-expanded={partnerStoresExpanded}
       >
-        <span>{partnerStoresExpanded ? 'Hide partner stores' : `Compare ${alternatePartnerStores.length} more stores`}</span>
+        <span>{partnerStoresExpanded ? 'Hide other stores' : `Show ${alternatePartnerStores.length} more stores`}</span>
         <FaChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform ${partnerStoresExpanded ? 'rotate-180' : ''}`} />
       </button>
 
       {partnerStoresExpanded && (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="flex flex-wrap gap-2">
           {alternatePartnerStores.map((store) => (
             <button
               key={store.key}
               type="button"
               onClick={store.onClick}
-              className="group/alt flex min-w-0 items-center gap-2 rounded-lg border border-slate-700/60 bg-slate-900/70 px-2.5 py-2 text-left transition-colors hover:border-slate-500 hover:bg-slate-800"
+              className={storeButtonClass}
               title={store.name}
             >
-              <span className={partnerStoreIconClass}>{store.icon}</span>
-              <span className="min-w-0 truncate text-xs font-semibold text-slate-200">{store.name}</span>
+              <span className={storeIconClass}>{store.icon}</span>
+              <span className="truncate">{store.name}</span>
             </button>
           ))}
         </div>
@@ -623,10 +613,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       )}
 
       <article
-        className={`game-card border transition-all duration-300 cursor-pointer ring-1 ring-inset ${fullscreen ? 'bg-[#0b1815]' : 'bg-slate-900/95'} ${
-          isSelected
-            ? 'border-amber-400/45 ring-amber-300/20 shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
-            : 'border-slate-600/35 ring-white/[0.045] shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:border-amber-300/35 hover:bg-slate-900 hover:ring-amber-200/12 hover:shadow-[0_0_0_1px_rgba(251,191,36,0.10),0_18px_55px_rgba(0,0,0,0.32)]'
+        className={`game-card transition-all duration-300 cursor-pointer ${fullscreen ? 'bg-[#0b1815]' : 'bg-slate-900/95'} ${
+          fullscreen && isSelected
+            ? 'rounded-none shadow-none md:border md:ring-1 md:ring-inset md:rounded-lg md:border-amber-400/45 md:ring-amber-300/20 md:shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
+            : isSelected
+              ? 'border ring-1 ring-inset border-amber-400/45 ring-amber-300/20 shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
+              : 'border ring-1 ring-inset border-slate-600/35 ring-white/[0.045] shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:border-amber-300/35 hover:bg-slate-900 hover:ring-amber-200/12 hover:shadow-[0_0_0_1px_rgba(251,191,36,0.10),0_18px_55px_rgba(0,0,0,0.32)]'
         }`}
         onClick={onSelect}
         role="button"
@@ -649,6 +641,28 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
               decoding="async"
             />
             {!isSelected && (
+              <div className="absolute right-3 top-3 z-10 flex items-center gap-2 md:hidden">
+                <button
+                  type="button"
+                  onClick={handleGameShare}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-950/75 text-white shadow-[0_10px_26px_rgba(0,0,0,0.45)] ring-1 ring-white/25 backdrop-blur-md transition-colors hover:bg-slate-900/85"
+                  aria-label="Share game"
+                >
+                  {gameCopied
+                    ? <Check className="h-4 w-4 text-emerald-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.75)]" />
+                    : <Share2 className="h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.75)]" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); toggleSaved({ id: game.id, name: game.name, cover: game.cover, rating: game.rating, first_release_date: game.first_release_date }); }}
+                  className={`flex h-9 w-9 items-center justify-center rounded-full bg-slate-950/75 shadow-[0_10px_26px_rgba(0,0,0,0.45)] ring-1 ring-white/25 backdrop-blur-md transition-colors hover:bg-slate-900/85 ${isSaved(game.id) ? 'text-rose-300' : 'text-white hover:text-rose-300'}`}
+                  aria-label={isSaved(game.id) ? 'Remove from saved' : 'Save game'}
+                >
+                  <FaHeart className="h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.75)]" />
+                </button>
+              </div>
+            )}
+            {!isSelected && (
               <div className="absolute inset-x-0 bottom-0 hidden bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:block">
                 <div className="flex items-center justify-between text-xs font-semibold text-white">
                   <span>Open details</span>
@@ -658,11 +672,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
             )}
           </div>
 
-          <div className="flex-1 min-w-0 p-4 md:p-5">
+          <div className={`flex-1 min-w-0 ${fullscreen && isSelected ? 'px-4 pt-3 pb-4 md:p-5' : 'p-4 md:p-5'}`}>
             <div className="flex flex-col gap-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className={`flex items-center gap-2 flex-wrap ${fullscreen && isSelected ? 'hidden md:flex' : ''}`}>
                     <h3 className="text-xl font-bold text-white leading-tight">{game.name}</h3>
                     {rating && (
                       <span className="flex-shrink-0 text-xs font-semibold text-amber-200 bg-slate-800/80 px-2 py-0.5 rounded-md">
@@ -684,7 +698,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   <button
                     type="button"
                     onClick={handleGameShare}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-800/70 hover:text-slate-300"
+                    className={`h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-800/70 hover:text-slate-300 ${!isSelected ? 'hidden md:flex' : 'flex'}`}
                     aria-label="Share game"
                   >
                     {gameCopied
@@ -694,7 +708,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); toggleSaved({ id: game.id, name: game.name, cover: game.cover, rating: game.rating, first_release_date: game.first_release_date }); }}
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-slate-800/70 ${isSaved(game.id) ? 'text-rose-400' : 'text-slate-500 hover:text-rose-400'}`}
+                    className={`h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-slate-800/70 ${!isSelected ? 'hidden md:flex' : 'flex'} ${isSaved(game.id) ? 'text-rose-400' : 'text-slate-500 hover:text-rose-400'}`}
                     aria-label={isSaved(game.id) ? 'Remove from saved' : 'Save game'}
                   >
                     <FaHeart className="h-4 w-4" />
@@ -772,14 +786,13 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                     </div>
 
                     <div
-                      className="flex min-h-0 flex-col rounded-lg border border-slate-700/40 bg-slate-950/45 p-4"
+                      className="flex min-h-0 flex-col rounded-lg border border-slate-700/40 bg-slate-950/45 px-4 pb-4 pt-2.5"
                       style={mediaHeight && isMediaSyncedLayout ? { height: `${mediaHeight}px` } : undefined}
                     >
-                      <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Where to play</h4>
-                      <div className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1">
+                      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
                         <div className="grid gap-4">
                           <div className="min-w-0">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Official stores</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Stores</span>
                             <div className="mt-2 flex flex-wrap gap-2">
                               {hasOfficialLinks ? officialStoreLinks : (
                                 <span className="rounded-lg border border-slate-800/70 bg-slate-900/45 px-3 py-2 text-xs leading-relaxed text-slate-500">
@@ -789,7 +802,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                             </div>
                           </div>
                           <div className="min-w-0">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Partner alternatives</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Marketplaces</span>
                             <div className="mt-2">
                               {partnerStoreLinks}
                             </div>
@@ -799,9 +812,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                     </div>
                   </div>
 
-                  <div className="rounded-lg border border-slate-700/40 bg-slate-950/45 p-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Tags & platforms</h4>
-                    <div className="mt-3">
+                  <div className="rounded-lg border border-slate-700/40 bg-slate-950/45 px-4 pb-4 pt-2.5">
+                    <div>
                       {tagGroups.length > 0 ? (
                         <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
                           {tagGroups.map(group => (
