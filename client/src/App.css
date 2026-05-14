@@ -1356,17 +1356,6 @@ svg.filter-caret.expanded {
   margin: 0 auto;
 }
 
-.keyword-section::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(to right, var(--c-surface), var(--c-emerald), var(--c-surface));
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  z-index: 1;
-}
 
 .keyword-section::-webkit-scrollbar {
   width: 6px;
