@@ -30,7 +30,7 @@ const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose }) => {
 
   return (
     <Dialog open={gameId !== null} onOpenChange={open => { if (!open) onClose(); }}>
-      <DialogContent className="max-w-3xl xl:max-w-5xl w-full border-slate-700/60 bg-slate-900 xl:bg-transparent p-0 shadow-none [&>button]:hidden overflow-y-auto max-h-[90vh]">
+      <DialogContent className="max-w-3xl xl:max-w-5xl w-full border-slate-700/60 bg-[#0b1815] xl:bg-transparent p-0 shadow-none [&>button]:hidden overflow-y-auto max-h-[90vh]">
         {loading && (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />

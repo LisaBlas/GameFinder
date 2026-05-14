@@ -578,13 +578,44 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   return (
     <div className={`relative group ${fullscreen ? 'pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'widescreen:col-span-2' : ''}`}>
       {fullscreen && (
+        <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-slate-700/40 bg-[#0b1815]/95 px-3 py-2 backdrop-blur-sm md:hidden">
+          <h2 className="min-w-0 flex-1 truncate pr-1 text-sm font-semibold text-white">{game.name}</h2>
+          <div className="flex flex-shrink-0 items-center gap-0.5">
+            <button
+              type="button"
+              onClick={handleGameShare}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-700/60 hover:text-slate-200"
+              aria-label="Share game"
+            >
+              {gameCopied ? <Check className="h-4 w-4 text-[var(--c-emerald)]" /> : <Share2 className="h-4 w-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); toggleSaved({ id: game.id, name: game.name, cover: game.cover, rating: game.rating, first_release_date: game.first_release_date }); }}
+              className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-slate-700/60 ${isSaved(game.id) ? 'text-rose-400' : 'text-slate-400 hover:text-rose-400'}`}
+              aria-label={isSaved(game.id) ? 'Remove from saved' : 'Save game'}
+            >
+              <FaHeart className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onSelect(); }}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800/50 text-slate-300 transition-colors hover:bg-slate-700 hover:text-white"
+              aria-label="Close game details"
+            >
+              <FaTimes className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+      {fullscreen && (
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onSelect();
           }}
-          className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700/70 bg-slate-950/85 text-slate-300 shadow-lg backdrop-blur transition-colors hover:bg-slate-800 hover:text-white"
+          className="absolute right-3 top-3 z-20 hidden h-9 w-9 items-center justify-center rounded-lg border border-slate-700/70 bg-slate-950/85 text-slate-300 shadow-lg backdrop-blur transition-colors hover:bg-slate-800 hover:text-white md:flex"
           aria-label="Close game details"
         >
           <FaTimes className="h-4 w-4" />
@@ -592,7 +623,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       )}
 
       <article
-        className={`game-card border transition-all duration-300 cursor-pointer ring-1 ring-inset ${fullscreen ? 'bg-slate-900' : 'bg-slate-900/95'} ${
+        className={`game-card border transition-all duration-300 cursor-pointer ring-1 ring-inset ${fullscreen ? 'bg-[#0b1815]' : 'bg-slate-900/95'} ${
           isSelected
             ? 'border-amber-400/45 ring-amber-300/20 shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
             : 'border-slate-600/35 ring-white/[0.045] shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:border-amber-300/35 hover:bg-slate-900 hover:ring-amber-200/12 hover:shadow-[0_0_0_1px_rgba(251,191,36,0.10),0_18px_55px_rgba(0,0,0,0.32)]'
@@ -646,7 +677,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className={`flex items-center gap-1 flex-shrink-0 ${fullscreen ? 'hidden md:flex' : ''}`}>
                   {!isSelected && (
                     <FaChevronRight className="mt-1 h-5 w-5 text-amber-300/70 md:hidden" />
                   )}
