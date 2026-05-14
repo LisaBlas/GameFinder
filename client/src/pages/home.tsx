@@ -27,6 +27,23 @@ const HomeContent: React.FC = () => {
   const [panelOpen, setPanelOpen] = useState(false);
   const [deepLinkGameId, setDeepLinkGameId] = useState<number | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+    touchStartX.current = null;
+    touchStartY.current = null;
+    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+    setActiveTab(deltaX < 0 ? 'results' : 'build');
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -119,6 +136,8 @@ const HomeContent: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Build panel - mobile: cross-fade, desktop: left 40% */}
         <div
