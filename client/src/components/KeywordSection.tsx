@@ -149,11 +149,29 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     setAnimBatchStart(0);
   };
 
-  const getCategoryIcon = (mainCat: MainCategory) => {
-    if (mainCat === "Mechanics & Systems") return <Cog className="w-5 h-5" />;
-    if (mainCat === "Setting & World") return <Globe className="w-5 h-5" />;
-    return <Palette className="w-5 h-5" />;
+  const getCategoryIcon = (mainCat: MainCategory, size = "w-5 h-5") => {
+    if (mainCat === "Mechanics & Systems") return <Cog className={size} />;
+    if (mainCat === "Setting & World") return <Globe className={size} />;
+    return <Palette className={size} />;
   };
+
+  const getCategoryAccentVars = (mainCat: MainCategory): React.CSSProperties => {
+    if (mainCat === "Setting & World") return {
+      '--cat-accent-rgb': 'var(--c-gold-rgb)',
+      '--cat-accent-soft': 'var(--c-gold)',
+    } as React.CSSProperties;
+    if (mainCat === "Aesthetics & Style") return {
+      '--cat-accent-rgb': 'var(--c-violet-rgb)',
+      '--cat-accent-soft': 'var(--c-violet-soft)',
+    } as React.CSSProperties;
+    return {};
+  };
+
+  const getCategoryPreviewKeywords = (mainCat: MainCategory): string[] =>
+    getAvailableSubcategories(mainCat)
+      .slice(0, 3)
+      .map(sub => getKeywordsForSubcategory(sub)[0]?.name)
+      .filter(Boolean) as string[];
 
   const subcategoryIconMap: Record<string, LucideIcon> = {
     "Combat Systems": Sword,
@@ -726,6 +744,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 <section
                   key={mainCat}
                   className="mobile-category-shelf"
+                  style={getCategoryAccentVars(mainCat)}
                 >
                   <button
                     type="button"
@@ -733,7 +752,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     className="mobile-category-trigger"
                   >
                     <div className="mobile-category-icon">
-                      {getCategoryIcon(mainCat)}
+                      {getCategoryIcon(mainCat, "w-6 h-6")}
                     </div>
                     <div className="mobile-category-copy">
                       <div className="mobile-category-title-row">
@@ -741,6 +760,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         <span className="mobile-category-count">{subcategories.length} groups</span>
                       </div>
                       <p>{descriptor}</p>
+                      <div className="mobile-category-keyword-chips">
+                        {getCategoryPreviewKeywords(mainCat).map(name => (
+                          <span key={name} className="mobile-category-keyword-chip">{name}</span>
+                        ))}
+                      </div>
                     </div>
                     <ChevronRight className="mobile-category-caret" />
                   </button>

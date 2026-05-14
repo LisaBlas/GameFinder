@@ -1669,8 +1669,13 @@ svg.filter-caret.expanded {
 }
 
 .mobile-category-shelf {
+  --cat-accent-rgb: var(--c-emerald-rgb);
+  --cat-accent-soft: var(--c-emerald-soft);
   overflow: hidden;
-  border: 1px solid rgba(var(--c-border-rgb), 0.2);
+  border-top: 1px solid rgba(var(--c-border-rgb), 0.15);
+  border-right: 1px solid rgba(var(--c-border-rgb), 0.15);
+  border-bottom: 1px solid rgba(var(--c-border-rgb), 0.15);
+  border-left: 4px solid rgba(var(--cat-accent-rgb), 0.65);
   border-radius: 12px;
   background:
     linear-gradient(145deg, rgba(var(--c-surface-rgb), 0.58), rgba(var(--c-bg-rgb), 0.72)),
@@ -1702,14 +1707,16 @@ svg.filter-caret.expanded {
 
 .mobile-category-icon {
   display: flex;
-  height: 2.35rem;
-  width: 2.35rem;
+  flex-shrink: 0;
+  height: 3rem;
+  width: 3rem;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(var(--c-emerald-rgb), 0.16);
-  border-radius: 8px;
-  background: rgba(var(--c-emerald-rgb), 0.1);
-  color: var(--c-emerald-soft);
+  border: 1px solid rgba(var(--cat-accent-rgb), 0.24);
+  border-radius: 10px;
+  background: rgba(var(--cat-accent-rgb), 0.1);
+  color: var(--cat-accent-soft);
+  box-shadow: 0 0 14px rgba(var(--cat-accent-rgb), 0.18);
 }
 
 .mobile-category-copy {
@@ -1754,12 +1761,31 @@ svg.filter-caret.expanded {
 
 
 .mobile-category-caret {
-  margin-top: 0.26rem;
-  height: 1.3rem;
-  width: 1.3rem;
+  margin-top: 0.1rem;
+  height: 1.65rem;
+  width: 1.65rem;
   flex-shrink: 0;
-  color: var(--c-dim);
+  color: rgba(var(--cat-accent-rgb), 0.5);
   transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.mobile-category-keyword-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.55rem;
+}
+
+.mobile-category-keyword-chip {
+  border: 1px solid rgba(var(--cat-accent-rgb), 0.2);
+  border-radius: 999px;
+  background: rgba(var(--cat-accent-rgb), 0.07);
+  color: rgba(var(--cat-accent-rgb), 0.75);
+  padding: 0.15rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
 .mobile-category-shelf.is-open .mobile-category-caret {
