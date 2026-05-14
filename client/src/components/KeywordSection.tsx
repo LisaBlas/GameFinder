@@ -60,6 +60,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>(null);
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel>("intro");
+  const [mobileCategoryView, setMobileCategoryView] = useState(false);
   const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
   const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
   const [animBatchStart, setAnimBatchStart] = useState(0);
@@ -123,6 +124,16 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     setActiveMainCategory(current => current === cat ? null : cat);
     setActiveSubcategory(null);
     setActiveUtilityPanel("intro");
+    setMobileCategoryView(false);
+    setMobileSubcategoryView(false);
+    setRevealedExtended([]);
+    setAnimBatchStart(0);
+  };
+
+  const drillIntoCategory = (cat: MainCategory) => {
+    setActiveMainCategory(cat);
+    setActiveSubcategory(null);
+    setMobileCategoryView(true);
     setMobileSubcategoryView(false);
     setRevealedExtended([]);
     setAnimBatchStart(0);
@@ -132,6 +143,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     setActiveMainCategory(mainCat);
     setActiveSubcategory(subCategoryName);
     setActiveUtilityPanel("intro");
+    setMobileCategoryView(true);
     setMobileSubcategoryView(true);
     setRevealedExtended([]);
     setAnimBatchStart(0);
@@ -574,7 +586,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <motion.div
         key={activeSubcategory}
-        className="lg:hidden fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
+        className="lg:hidden fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -625,6 +637,78 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
+  const renderMobileCategoryDetail = () => {
+    if (!mobileCategoryView || !activeMainCategory) return null;
+    const subcategories = getAvailableSubcategories(activeMainCategory);
+    const descriptor = (keywordCategories[activeMainCategory] as unknown as { description: string }).description;
+
+    return (
+      <motion.div
+        key={activeMainCategory + '-category-detail'}
+        className="lg:hidden fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+      >
+        <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
+          <button
+            type="button"
+            onClick={() => setMobileCategoryView(false)}
+            className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
+            aria-label="Back to categories"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="shrink-0 rounded-md bg-primary/10 p-1.5 text-primary">
+            {getCategoryIcon(activeMainCategory)}
+          </span>
+          <span className="font-bold text-foreground truncate flex-1">{activeMainCategory}</span>
+          <span className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+            {subcategories.length} groups
+          </span>
+        </div>
+
+        {descriptor && (
+          <div className="shrink-0 px-4 py-2.5 bg-background/40 border-b border-border/50">
+            <p className="text-xs text-muted-foreground leading-snug">{descriptor}</p>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto overscroll-contain">
+          <div className="mobile-subcategory-list">
+            {subcategories.map((subCategoryName) => {
+              const keywords = getKeywordsForSubcategory(subCategoryName);
+              const description = getSubcategoryDescription(activeMainCategory, subCategoryName);
+
+              return (
+                <section key={subCategoryName} className="mobile-subcategory-row">
+                  <button
+                    type="button"
+                    onClick={() => drillIntoSubcategory(activeMainCategory, subCategoryName)}
+                    className="mobile-subcategory-button"
+                  >
+                    <span className="mobile-subcategory-icon">
+                      {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
+                    </span>
+                    <span className="mobile-subcategory-copy">
+                      <span className="mobile-subcategory-heading">
+                        <span>{subCategoryName}</span>
+                        <span>{keywords.length}</span>
+                      </span>
+                      <span className="mobile-subcategory-description">{description}</span>
+                    </span>
+                    <ChevronRight className="mobile-subcategory-caret" />
+                  </button>
+                </section>
+              );
+            })}
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
   const renderMobileShelves = () => {
     return (
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
@@ -636,22 +720,16 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             {mainCategoryOrder.map((mainCat) => {
               const subcategories = getAvailableSubcategories(mainCat);
               const descriptor = (keywordCategories[mainCat] as unknown as { description: string }).description;
-              const isOpen = activeMainCategory === mainCat;
-              const keywordTotal = subcategories.reduce(
-                (total, subCategoryName) => total + getKeywordsForSubcategory(subCategoryName).length,
-                0
-              );
               if (subcategories.length === 0) return null;
 
               return (
                 <section
                   key={mainCat}
-                  className={`mobile-category-shelf${isOpen ? " is-open" : ""}`}
+                  className="mobile-category-shelf"
                 >
                   <button
                     type="button"
-                    onClick={() => selectMainCategory(mainCat)}
-                    aria-expanded={isOpen}
+                    onClick={() => drillIntoCategory(mainCat)}
                     className="mobile-category-trigger"
                   >
                     <div className="mobile-category-icon">
@@ -664,50 +742,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       </div>
                       <p>{descriptor}</p>
                     </div>
-                    <ChevronDown className="mobile-category-caret" />
+                    <ChevronRight className="mobile-category-caret" />
                   </button>
-
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        key={mainCat + '-mobile'}
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mobile-subcategory-list">
-                          {subcategories.map((subCategoryName) => {
-                            const keywords = getKeywordsForSubcategory(subCategoryName);
-                            const description = getSubcategoryDescription(mainCat, subCategoryName);
-
-                            return (
-                              <section key={subCategoryName} className="mobile-subcategory-row">
-                                <button
-                                  type="button"
-                                  onClick={() => drillIntoSubcategory(mainCat, subCategoryName)}
-                                  className="mobile-subcategory-button"
-                                >
-                                  <span className="mobile-subcategory-icon">
-                                    {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
-                                  </span>
-                                  <span className="mobile-subcategory-copy">
-                                    <span className="mobile-subcategory-heading">
-                                      <span>{subCategoryName}</span>
-                                      <span>{keywords.length}</span>
-                                    </span>
-                                    <span className="mobile-subcategory-description">{description}</span>
-                                  </span>
-                                  <ChevronRight className="mobile-subcategory-caret" />
-                                </button>
-                              </section>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </section>
               );
             })}
@@ -739,6 +775,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   return (
     <div className="keyword-section relative w-full h-full flex flex-col transition-all duration-500">
+      <AnimatePresence>{renderMobileCategoryDetail()}</AnimatePresence>
       <AnimatePresence>{renderMobileSubcategoryDetail()}</AnimatePresence>
       <Navbar />
 
