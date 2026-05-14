@@ -85,7 +85,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
 
   return (
     <div
-      className={`fixed bottom-2.5 left-3 right-3 z-50 lg:hidden rounded-2xl bg-[#0f2318] backdrop-blur-xl
+      className={`fixed bottom-2.5 left-3 right-3 z-50 lg:hidden rounded-2xl backdrop-blur-xl
         transition-transform duration-300 ease-in-out
         ${translateClass}
         shadow-[0_-10px_30px_rgba(0,0,0,0.65),0_-2px_8px_rgba(0,0,0,0.45)] border border-white/[0.11]
