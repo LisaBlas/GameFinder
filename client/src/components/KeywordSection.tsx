@@ -431,15 +431,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
           <LayoutGrid className="h-5 w-5" />
         </div>
         <div>
-          <h3>Build a game mood</h3>
+          <h3>Find a unique keyword</h3>
           <p>
-            Pick a category, choose a subcategory, then stack up to a few keywords that describe the game you want.
+            Explore 5000+ keywords. Combine, exclude and match to find hidden gems.
           </p>
-        </div>
-        <div className="keyword-intro-steps" aria-label="Keyword search steps">
-          <span>1. Open a rail</span>
-          <span>2. Pick keywords</span>
-          <span>3. Search</span>
         </div>
       </div>
     </div>
