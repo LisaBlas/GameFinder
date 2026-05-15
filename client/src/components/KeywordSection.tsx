@@ -215,9 +215,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const getCategoryPreviewKeywords = (mainCat: MainCategory): string[] => ({
-    "Mechanics & Systems": ["Combat", "Stealth", "Crafting", "Co-op"],
-    "Setting & World": ["Medieval", "Space", "Cyberpunk", "Mythology"],
-    "Aesthetics & Style": ["Cozy", "Dark", "Pixel Art", "Retro"],
+    "Mechanics & Systems": ["Bullet Hell", "Roguelike Deckbuilder", "Base Building", "Card-Based Combat"],
+    "Setting & World": ["Cosmic Horror", "Underwater", "Post-Apocalyptic", "Viking Age"],
+    "Aesthetics & Style": ["Cel-Shaded", "Voxel Art", "Minimalist UI", "Chiptune"],
   }[mainCat] ?? []);
 
   const subcategoryIconMap: Record<string, LucideIcon> = {
