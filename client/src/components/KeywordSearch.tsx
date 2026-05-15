@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Gamepad2, Tag } from 'lucide-react';
 import { useFilters } from '../context/FilterContext';
+import GameCardModal from './GameCardModal';
 
 interface Keyword {
   id: number;
@@ -14,14 +15,6 @@ interface SuggestedGame {
   first_release_date?: number;
 }
 
-interface SeedData {
-  id: number;
-  name: string;
-  genres?: Array<{ id: number; name: string }>;
-  themes?: Array<{ id: number; name: string }>;
-  keywords?: Array<{ id: number; name: string }>;
-}
-
 interface KeywordSearchProps {
   inputRef?: React.RefObject<HTMLInputElement>;
   onKeywordSelect?: () => void;
@@ -33,9 +26,10 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
   const [keywordSuggestions, setKeywordSuggestions] = useState<Keyword[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeModalGameId, setActiveModalGameId] = useState<number | null>(null);
   const searchTimeout = useRef<NodeJS.Timeout>();
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const { addFilter, setSeedGame, clearAllFilters } = useFilters();
+  const { addFilter } = useFilters();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -115,49 +109,18 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
     if (onKeywordSelect) setTimeout(onKeywordSelect, 100);
   };
 
-  const handleGameSelect = async (game: SuggestedGame) => {
+  const handleGameSelect = (game: SuggestedGame) => {
     setSearchTerm('');
     setGameSuggestions([]);
     setKeywordSuggestions([]);
     setShowSuggestions(false);
-
-    clearAllFilters();
-    setSeedGame({ id: game.id, name: game.name });
-
-    try {
-      const res = await fetch(`/api/games/${game.id}/similar-seed`);
-      if (!res.ok) return;
-      const seed: SeedData = await res.json();
-
-      // Add up to 3 keywords, then genre and theme
-      const keywords = (seed.keywords ?? []).slice(0, 3);
-      keywords.forEach(kw =>
-        addFilter({
-          id: kw.id,
-          name: kw.name,
-          category: 'Keywords',
-          mode: 'include',
-          slug: kw.name.toLowerCase().replace(/\s+/g, '-')
-        })
-      );
-
-      if (seed.genres && seed.genres.length > 0) {
-        addFilter({ id: seed.genres[0].id, name: seed.genres[0].name, category: 'genres' });
-      }
-
-      if (seed.themes && seed.themes.length > 0) {
-        addFilter({ id: seed.themes[0].id, name: seed.themes[0].name, category: 'themes' });
-      }
-    } catch {
-      // Seed fetch failed — seedGame is still set; user can search manually
-    }
-
-    if (onKeywordSelect) setTimeout(onKeywordSelect, 100);
+    setActiveModalGameId(game.id);
   };
 
   const hasSuggestions = gameSuggestions.length > 0 || keywordSuggestions.length > 0;
 
   return (
+    <>
     <div className="relative w-full" ref={searchContainerRef}>
       <div className="relative">
         <input
@@ -249,6 +212,12 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
         </div>
       )}
     </div>
+    <GameCardModal
+      gameId={activeModalGameId}
+      highlightFilters
+      onClose={() => setActiveModalGameId(null)}
+    />
+    </>
   );
 };
 

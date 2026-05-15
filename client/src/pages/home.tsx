@@ -73,7 +73,7 @@ const HomeContent: React.FC = () => {
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
-            className="relative text-white/70 hover:text-rose-400 transition-colors p-1"
+            className="relative text-[var(--c-emerald-soft)] hover:text-rose-400 transition-colors p-1"
             aria-label="Saved games"
           >
             <FaHeart size={18} />
@@ -156,32 +156,6 @@ const HomeContent: React.FC = () => {
               heroRef={resultsSectionRef}
             />
           </div>
-
-          {/* Footer links */}
-          <div className="shrink-0 border-t border-border/40 px-4 py-3">
-            <nav className="mb-3 flex flex-wrap gap-x-3 gap-y-1.5" aria-label="Popular game searches">
-              {homepageSeoLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-            <div className="flex items-center gap-4">
-              <a href="https://lisablas.github.io/BleepBloop/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Website">
-                <FaGlobe size={16} />
-              </a>
-              <a href="https://github.com/LisaBlas/GameFinder" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="GitHub">
-                <FaGithub size={16} />
-              </a>
-              <a href="https://x.com/BerliozGordon" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="X / Twitter">
-                <FaXTwitter size={16} />
-              </a>
-            </div>
-          </div>
         </div>
 
         {/* Results panel - mobile: cross-fade, desktop: right 60% */}
@@ -198,6 +172,32 @@ const HomeContent: React.FC = () => {
           />
         </div>
       </motion.div>
+
+      {/* Full-width footer - desktop only */}
+      <div className="hidden lg:flex shrink-0 items-center justify-between border-t border-border/40 px-6 py-2.5">
+        <nav className="flex flex-wrap gap-x-4 gap-y-1" aria-label="Popular game searches">
+          {homepageSeoLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <div className="flex items-center gap-4 shrink-0">
+          <a href="https://lisablas.github.io/BleepBloop/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Website">
+            <FaGlobe size={16} />
+          </a>
+          <a href="https://github.com/LisaBlas/GameFinder" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="GitHub">
+            <FaGithub size={16} />
+          </a>
+          <a href="https://x.com/BerliozGordon" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="X / Twitter">
+            <FaXTwitter size={16} />
+          </a>
+        </div>
+      </div>
 
       {/* Action bar - fixed bottom drawer on mobile; desktop version lives inside the left panel */}
       <BottomBar

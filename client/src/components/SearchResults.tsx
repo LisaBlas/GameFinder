@@ -115,7 +115,7 @@ const SearchResults: React.FC = () => {
             {gameResults.map((game, index) => (
               <motion.div
                 key={`game-${game.id}`}
-                className={selectedGameId === game.id ? 'widescreen:col-span-2' : undefined}
+                className={selectedGameId === game.id ? 'widescreen:col-span-2' : 'h-full'}
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -177,7 +177,7 @@ const SearchResults: React.FC = () => {
 
             <div className="results-sort-control">
               <select
-                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="results-sort-select"
                 value={sortBy}
                 onChange={handleSortChange}
                 aria-label="Sort results"

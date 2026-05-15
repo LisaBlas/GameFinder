@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
-            className="relative text-white/70 hover:text-rose-400 transition-colors"
+            className="relative text-[var(--c-emerald-soft)] hover:text-rose-400 transition-colors"
             aria-label="Saved games"
           >
             <FaHeart size={18} />

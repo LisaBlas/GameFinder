@@ -396,14 +396,20 @@ export class IGDBService {
    * Suggest games by name for autocomplete (lightweight fields only)
    */
   async suggestGames(q: string): Promise<Array<{ id: number; name: string; cover?: { url: string }; first_release_date?: number }>> {
-    const safe = q.replace(/"/g, '\\"');
+    // Strip characters that would break the Apicalypse wildcard query
+    const safe = q.replace(/"/g, '').replace(/\*/g, '');
     const query = `
-      search "${safe}";
-      fields id, name, cover.url, first_release_date;
-      where version_parent = null;
-      limit 5;
+      fields id, name, cover.url, first_release_date, category;
+      where name ~ *"${safe}"*;
+      sort follows desc;
+      limit 8;
     `.trim();
-    return await this.makeRequest('games', query);
+    const results = await this.makeRequest('games', query);
+    // Post-filter: exclude DLC/addons (1), episodes (6), seasons (7), mods (5)
+    const EXCLUDED_CATEGORIES = new Set([1, 5, 6, 7]);
+    return results
+      .filter((g: any) => !EXCLUDED_CATEGORIES.has(g.category))
+      .slice(0, 5);
   }
 
   /**

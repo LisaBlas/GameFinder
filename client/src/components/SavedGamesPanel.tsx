@@ -51,7 +51,7 @@ const SavedGamesPanel: React.FC<SavedGamesPanelProps> = ({ open, onOpenChange })
                     <li key={game.id} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-800/40">
                       <button
                         type="button"
-                        onClick={() => setActiveGameId(game.id)}
+                        onClick={() => { setActiveGameId(game.id); onOpenChange(false); }}
                         className="flex min-w-0 flex-1 items-center gap-3 text-left"
                         aria-label={`Open ${game.name}`}
                       >

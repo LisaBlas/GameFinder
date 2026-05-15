@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 // Global analytics variable (if present)
 declare const gtag: any;
 import { SiAppstore, SiEpicgames, SiGogdotcom, SiGoogleplay, SiItchdotio, SiPlaystation, SiSteam } from 'react-icons/si';
-import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGamepad, FaGlobe, FaHeart, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
-import { Share2, Check } from 'lucide-react';
+import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGlobe, FaHeart, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
+import { Share2, Check, Gamepad2, KeyRound } from 'lucide-react';
 import { useFilters } from '../context/FilterContext';
 import { useSavedGames } from '../context/SavedGamesContext';
 import EnebaIconImg from '../assets/icons/eneba.png';
@@ -65,6 +65,7 @@ interface GameCardProps {
   isSelected: boolean;
   onSelect: () => void;
   fullscreen?: boolean;
+  highlightFilters?: boolean;
 }
 
 const encodeGameTitle = (title: string): string => {
@@ -191,7 +192,7 @@ const useKinguinRedirect = (gameTitle: string) => {
   return { handleKinguinClick };
 };
 
-const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false }) => {
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
@@ -201,6 +202,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [partnerStoresExpanded, setPartnerStoresExpanded] = useState(false);
   const [gameCopied, setGameCopied] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
+  const tagsRef = useRef<HTMLDivElement | null>(null);
   const { handleKinguinClick } = useKinguinRedirect(game.name);
   const { addFilter, removeFilter, isFilterSelected, selectedFilters } = useFilters();
   const { isSaved, toggleSaved } = useSavedGames();
@@ -243,6 +245,25 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     };
     fetchVideos();
   }, [game.id, hasLoadedVideos, isSelected]);
+
+  useEffect(() => {
+    if (!highlightFilters || !isSelected) return;
+    let glowTimer: ReturnType<typeof setTimeout>;
+    const initTimer = setTimeout(() => {
+      if (!tagsRef.current) return;
+      if (window.innerWidth < 768) {
+        tagsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      tagsRef.current.classList.add('tags-gold-glow');
+      glowTimer = setTimeout(() => {
+        tagsRef.current?.classList.remove('tags-gold-glow');
+      }, 3000);
+    }, 350);
+    return () => {
+      clearTimeout(initTimer);
+      clearTimeout(glowTimer);
+    };
+  }, [highlightFilters, isSelected]);
 
   useEffect(() => {
     const updateMediaSyncedLayout = () => {
@@ -295,7 +316,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           compositeId: `${category}-${tag.id}-${tag.name}`.toLowerCase().replace(/\s+/g, '-')
         });
       }
-    } else if (!isFilterSelected(tag.id, category)) {
+    } else if (isFilterSelected(tag.id, category)) {
+      removeFilter(tag.id, category, undefined);
+    } else {
       addFilter({
         id: tag.id,
         name: tag.name,
@@ -328,38 +351,25 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
   const selectedTagKeys = new Set(selectedFilters.map(f => `${f.category}-${f.id}`));
 
-  const selectedKeywords = (game.keywords || [])
-    .filter(t => selectedTagKeys.has(`Keywords-${t.id}`))
-    .map(t => ({ ...t, type: 'keyword', category: 'Keywords' }));
-
-  const previewTags = [
-    ...selectedKeywords,
-    ...[
-      ...(game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' })),
-      ...(game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' })),
-    ].sort((a, b) => {
-      const aSelected = selectedTagKeys.has(`${a.category}-${a.id}`) ? 1 : 0;
-      const bSelected = selectedTagKeys.has(`${b.category}-${b.id}`) ? 1 : 0;
-      return bSelected - aSelected;
-    }),
-  ].slice(0, 5);
+  const keywordCount = game.keywords?.length ?? 0;
+  const platformCount = game.platforms?.length ?? 0;
 
   const tagGroups = [
     {
       label: 'Platforms',
-      tags: (game.platforms || []).map(t => ({ ...t, type: 'platform', category: 'platforms' }))
+      tags: (game.platforms || []).map(t => ({ ...t, type: 'platform', category: 'platforms' })),
     },
     {
       label: 'Genres',
-      tags: (game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' }))
+      tags: (game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' })),
     },
     {
       label: 'Themes',
-      tags: (game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' }))
+      tags: (game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' })),
     },
     {
       label: 'Modes',
-      tags: (game.game_modes || []).map(t => ({ ...t, type: 'game_mode', category: 'Game Mode' }))
+      tags: (game.game_modes || []).map(t => ({ ...t, type: 'game_mode', category: 'Game Mode' })),
     },
     {
       label: 'Keywords',
@@ -369,9 +379,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           const aSelected = selectedTagKeys.has(`Keywords-${a.id}`) ? 1 : 0;
           const bSelected = selectedTagKeys.has(`Keywords-${b.id}`) ? 1 : 0;
           return bSelected - aSelected;
-        })
+        }),
+      emptyText: 'This game might be too recent, too obscure, or missing detailed keyword data.'
     },
-  ].filter(group => group.tags.length > 0);
+  ].filter(group => group.tags.length > 0 || group.label === 'Keywords');
 
   const filteredStores = (game.external_games || []).filter((store, index, self) => {
     if (!store.url) return false;
@@ -396,8 +407,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null);
   const synopsis = game.summary || 'No synopsis available yet.';
   const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
-  const storeButtonClass = "inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border border-slate-700/60 bg-slate-900/70 px-3 py-2 text-sm font-semibold text-slate-100 transition-colors hover:border-emerald-400/45 hover:bg-emerald-400/10 hover:text-white";
-  const storeIconClass = "flex h-5 w-5 flex-shrink-0 items-center justify-center text-slate-300";
+  const storeButtonClass = "game-card-store-button inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors";
+  const storeIconClass = "game-card-store-icon flex h-5 w-5 flex-shrink-0 items-center justify-center";
   const officialStoreLinks = (
     <>
       {renderableOfficialStores.map((store) => {
@@ -499,7 +510,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); setPartnerStoresExpanded((v) => !v); }}
-        className="flex min-h-9 w-full items-center justify-between gap-3 rounded-lg border border-slate-800/70 bg-slate-900/45 px-3 py-2 text-left text-xs font-semibold text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800/70 hover:text-white"
+        className="game-card-store-toggle flex min-h-9 w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors"
         aria-expanded={partnerStoresExpanded}
       >
         <span>{partnerStoresExpanded ? 'Hide other stores' : `Show ${alternatePartnerStores.length} more stores`}</span>
@@ -542,23 +553,25 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
     let tagClass: string;
     if (isExcluded) {
-      tagClass = 'bg-red-900/25 text-red-300/90 ring-1 ring-red-500/30 hover:bg-red-900/35';
+      tagClass = 'game-card-tag-excluded';
+    } else if (isSelectedTag && isKeyword) {
+      tagClass = 'game-card-tag-keyword-selected';
     } else if (isSelectedTag) {
-      tagClass = 'bg-amber-900/40 text-amber-300 ring-1 ring-amber-500/35';
+      tagClass = 'game-card-tag-selected';
     } else if (isPlatform) {
-      tagClass = 'bg-slate-800/60 text-slate-300 hover:bg-slate-800/80 hover:text-sky-300/80';
+      tagClass = 'game-card-tag-platform';
     } else if (isEmerald) {
-      tagClass = 'bg-slate-800/60 text-slate-400 hover:bg-slate-800/80 hover:text-emerald-300/80';
+      tagClass = 'game-card-tag-emerald';
     } else {
-      tagClass = 'bg-slate-800/60 text-slate-400 hover:bg-slate-800/80 hover:text-amber-200/80';
+      tagClass = 'game-card-tag-muted';
     }
 
     return (
       <button
         key={`${tag.type}-${tag.id}-${tag.name}`}
         onClick={(e) => handleTagClick(tag, tag.category, e)}
-        className={`inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${tagClass}`}
-        title={isExcluded ? `Click to remove "${displayName}" exclusion` : `Click to add "${displayName}" to filters`}
+        className={`game-card-tag inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${tagClass}`}
+        title={isExcluded ? `Click to remove "${displayName}" exclusion` : isSelectedTag ? `Click to remove "${displayName}" filter` : `Click to add "${displayName}" to filters`}
       >
         {displayName}
       </button>
@@ -566,7 +579,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   };
 
   return (
-    <div className={`relative group ${fullscreen ? 'pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'widescreen:col-span-2' : ''}`}>
+    <div className={`relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'widescreen:col-span-2' : ''}`}>
       {fullscreen && (
         <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-slate-700/40 bg-[#0b1815]/95 px-3 py-2 backdrop-blur-sm md:hidden">
           <h2 className="min-w-0 flex-1 truncate pr-1 text-sm font-semibold text-white">{game.name}</h2>
@@ -613,7 +626,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       )}
 
       <article
-        className={`game-card transition-all duration-300 cursor-pointer ${fullscreen ? 'bg-[#0b1815]' : 'bg-slate-900/95'} ${
+        className={`game-card ${!fullscreen && !isSelected ? 'h-full' : ''} ${isSelected ? 'game-card-selected' : 'game-card-compact'} ${fullscreen ? 'game-card-fullscreen bg-[#0b1815]' : 'bg-slate-900/95'} transition-all duration-300 cursor-pointer ${
           fullscreen && isSelected
             ? 'rounded-none shadow-none md:border md:ring-1 md:ring-inset md:rounded-lg md:border-amber-400/45 md:ring-amber-300/20 md:shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
             : isSelected
@@ -631,7 +644,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           }
         }}
       >
-        <div className="flex flex-col md:flex-row">
+        <div className={`flex flex-col md:flex-row ${!fullscreen && !isSelected ? 'h-full' : ''}`}>
           <div className={`relative w-full h-56 md:w-40 lg:w-44 md:h-auto md:min-h-[230px] self-stretch flex-shrink-0 overflow-hidden bg-slate-950 ${isSelected ? 'hidden' : ''}`}>
             <img
               src={imageUrl}
@@ -676,10 +689,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
             <div className="flex flex-col gap-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <div className={`flex items-center gap-2 flex-wrap ${fullscreen && isSelected ? 'hidden md:flex' : ''}`}>
-                    <h3 className="text-xl font-bold text-white leading-tight">{game.name}</h3>
+                  <div className={`flex gap-2 ${isSelected ? 'items-center flex-wrap' : 'items-start flex-nowrap'} ${fullscreen && isSelected ? 'hidden md:flex' : ''}`}>
+                    <h3 className={`min-w-0 flex-1 text-xl font-bold text-white leading-tight ${!isSelected ? 'line-clamp-2' : ''}`}>{game.name}</h3>
                     {rating && (
-                      <span className="flex-shrink-0 text-xs font-semibold text-amber-200 bg-slate-800/80 px-2 py-0.5 rounded-md">
+                      <span className="game-card-rating flex-shrink-0 text-xs font-semibold px-2 py-0.5 rounded-md">
                         {rating.toFixed(1)}
                       </span>
                     )}
@@ -716,9 +729,26 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </div>
               </div>
 
-              {!isSelected && previewTags.length > 0 && (
+              {!isSelected && (
                 <div className="flex flex-wrap gap-1.5">
-                  {previewTags.map(renderTagButton)}
+                  <span
+                    className="game-card-compact-stat"
+                    title={`${keywordCount} ${keywordCount === 1 ? 'keyword' : 'keywords'}`}
+                    aria-label={`${keywordCount} ${keywordCount === 1 ? 'keyword' : 'keywords'}`}
+                  >
+                    <KeyRound className="h-3 w-3" aria-hidden="true" />
+                    {keywordCount}
+                  </span>
+                  {platformCount > 0 && (
+                    <span
+                      className="game-card-compact-stat"
+                      title={`${platformCount} ${platformCount === 1 ? 'platform' : 'platforms'}`}
+                      aria-label={`${platformCount} ${platformCount === 1 ? 'platform' : 'platforms'}`}
+                    >
+                      <Gamepad2 className="h-3 w-3" aria-hidden="true" />
+                      {platformCount}
+                    </span>
+                  )}
                 </div>
               )}
 
@@ -786,7 +816,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                     </div>
 
                     <div
-                      className="flex min-h-0 flex-col rounded-lg border border-slate-700/40 bg-slate-950/45 px-4 pb-4 pt-2.5"
+                      className="game-card-panel flex min-h-0 flex-col rounded-lg border px-4 pb-4 pt-2.5"
                       style={mediaHeight && isMediaSyncedLayout ? { height: `${mediaHeight}px` } : undefined}
                     >
                       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
@@ -795,7 +825,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                             <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Stores</span>
                             <div className="mt-2 flex flex-wrap gap-2">
                               {hasOfficialLinks ? officialStoreLinks : (
-                                <span className="rounded-lg border border-slate-800/70 bg-slate-900/45 px-3 py-2 text-xs leading-relaxed text-slate-500">
+                                <span className="game-card-empty-state rounded-lg border px-3 py-2 text-xs leading-relaxed">
                                   No official links found. This game may be too old, delisted, or missing current store links.
                                 </span>
                               )}
@@ -812,7 +842,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                     </div>
                   </div>
 
-                  <div className="rounded-lg border border-slate-700/40 bg-slate-950/45 px-4 pb-4 pt-2.5">
+                  <div ref={tagsRef} className="game-card-panel rounded-lg border px-4 pb-4 pt-2.5">
                     <div>
                       {tagGroups.length > 0 ? (
                         <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
@@ -820,7 +850,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                             <div key={group.label} className="min-w-0">
                               <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">{group.label}</span>
                               <div className="mt-1.5 flex flex-wrap gap-1.5">
-                                {group.tags.map(renderTagButton)}
+                                {group.tags.length > 0
+                                  ? group.tags.map(renderTagButton)
+                                  : <span className="game-card-keyword-empty">{group.emptyText}</span>}
                               </div>
                             </div>
                           ))}

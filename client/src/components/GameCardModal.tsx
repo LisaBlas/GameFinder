@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogContent } from './ui/dialog';
+import { motion, AnimatePresence } from 'framer-motion';
 import GameCard from './GameCard';
 
 interface GameCardModalProps {
   gameId: number | null;
   onClose: () => void;
+  highlightFilters?: boolean;
 }
 
-const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose }) => {
+const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose, highlightFilters = false }) => {
   const [game, setGame] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -28,29 +29,50 @@ const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose }) => {
       .finally(() => setLoading(false));
   }, [gameId]);
 
+  useEffect(() => {
+    if (gameId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [gameId]);
+
   return (
-    <Dialog open={gameId !== null} onOpenChange={open => { if (!open) onClose(); }}>
-      <DialogContent className="max-w-3xl xl:max-w-5xl w-full border-slate-700/60 bg-[#0b1815] xl:bg-transparent p-0 shadow-none [&>button]:hidden overflow-y-auto max-h-[90vh]">
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+    <AnimatePresence>
+      {gameId !== null && (
+        <motion.div
+          key="game-card-overlay"
+          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-slate-950"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="p-3">
+            {loading && (
+              <div className="flex items-center justify-center py-20">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+              </div>
+            )}
+            {error && (
+              <div className="py-16 text-center text-sm text-slate-400">
+                Failed to load game details.
+              </div>
+            )}
+            {game && (
+              <GameCard
+                game={game}
+                isSelected={true}
+                onSelect={onClose}
+                fullscreen={true}
+                highlightFilters={highlightFilters}
+              />
+            )}
           </div>
-        )}
-        {error && (
-          <div className="py-16 text-center text-sm text-slate-400">
-            Failed to load game details.
-          </div>
-        )}
-        {game && (
-          <GameCard
-            game={game}
-            isSelected={true}
-            onSelect={onClose}
-            fullscreen={true}
-          />
-        )}
-      </DialogContent>
-    </Dialog>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

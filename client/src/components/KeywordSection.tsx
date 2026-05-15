@@ -32,7 +32,6 @@ type UtilityPanel = "intro" | "combo";
 
 interface KeywordComboSuggestion {
   title: string;
-  hook: string;
   filters: Array<{
     id: number;
     name: string;
@@ -69,8 +68,63 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   const keywordComboSuggestions: KeywordComboSuggestion[] = [
     {
+      title: "Poker Roguelike",
+      filters: [
+        { id: 154, name: "Poker", category },
+        { id: 27419, name: "Roguelike Deckbuilder", category },
+        { id: 35, name: "Card & Board Game", category: "genres" },
+      ],
+    },
+    {
+      title: "Storm City Roguelite",
+      filters: [
+        { id: 3533, name: "City Builder", category },
+        { id: 17292, name: "Roguelite", category },
+        { id: 606, name: "Resource Management", category },
+      ],
+    },
+    {
+      title: "Cozy Horror Fishing",
+      filters: [
+        { id: 509, name: "Fishing", category },
+        { id: 2379, name: "Cosmic Horror", category },
+        { id: 72, name: "Exploration", category },
+      ],
+    },
+    {
+      title: "Sushi Dive Management",
+      filters: [
+        { id: 509, name: "Fishing", category },
+        { id: 38859, name: "Restaurant Management", category },
+        { id: 138, name: "Underwater", category },
+      ],
+    },
+    {
+      title: "Cult Base Roguelike",
+      filters: [
+        { id: 2498, name: "Cult", category },
+        { id: 41781, name: "Action Roguelike", category },
+        { id: 1905, name: "Base Building", category },
+      ],
+    },
+    {
+      title: "Roadtrip Survival",
+      filters: [
+        { id: 778, name: "Driving", category },
+        { id: 21, name: "Survival", category: "themes" },
+        { id: 1, name: "First person", category: "Perspective" },
+      ],
+    },
+    {
+      title: "Card-Based FPS Parkour",
+      filters: [
+        { id: 4214, name: "Card Based Combat", category },
+        { id: 453, name: "First Person Shooter", category },
+        { id: 390, name: "Parkour", category },
+      ],
+    },
+    {
       title: "Side-Scroll Souls",
-      hook: "Tough 2D action with deliberate combat, minus the anime gloss.",
       filters: [
         { id: 288, name: "2D", category },
         { id: 17326, name: "Souls-like", category },
@@ -78,17 +132,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       ],
     },
     {
-      title: "Roguelite Fight Night",
-      hook: "Replayable runs built for multiplayer brawls and competitive friction.",
-      filters: [
-        { id: 17292, name: "Roguelite", category },
-        { id: 2, name: "Multiplayer", category: "Game Mode" },
-        { id: 4, name: "Fighting", category: "genres" },
-      ],
-    },
-    {
       title: "Cozy Indie Hangout",
-      hook: "Low-pressure multiplayer comfort games with a softer indie pulse.",
       filters: [
         { id: 24685, name: "Cozy", category },
         { id: 2084, name: "Relaxing", category },
@@ -335,17 +379,13 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <div className={`keyword-combo-empty-state ${variant === "mobile" ? "keyword-combo-mobile-state" : ""}`}>
         <div className="keyword-combo-card">
-          <div className="keyword-combo-kicker">
-            <Sparkles className="h-3.5 w-3.5" />
-            Popular Combos
-          </div>
           <div className="keyword-combo-main">
             <div className="keyword-combo-copy">
               <h3>{suggestion.title}</h3>
-              <p>{suggestion.hook}</p>
             </div>
-            <div className="keyword-combo-count">
-              {activeSuggestionIndex + 1}/{keywordComboSuggestions.length}
+            <div className="keyword-combo-kicker">
+              <Sparkles className="h-3.5 w-3.5" />
+              Hand-picked
             </div>
           </div>
           <div className="keyword-combo-recipe" aria-label={`${suggestion.title} filter combination`}>
@@ -374,6 +414,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             >
               <Shuffle className="h-4 w-4" />
               Next
+              <span className="keyword-combo-button-count">
+                {activeSuggestionIndex + 1}/{keywordComboSuggestions.length}
+              </span>
             </button>
           </div>
         </div>
