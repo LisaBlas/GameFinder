@@ -28,7 +28,7 @@ interface KeywordItem {
 }
 
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
-type UtilityPanel = "intro" | "combo";
+type UtilityPanel = "intro" | "qs-keyword" | "qs-combo";
 
 interface KeywordComboSuggestion {
   title: string;
@@ -64,6 +64,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
   const [animBatchStart, setAnimBatchStart] = useState(0);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
+  const [activeQsKeywordIndex, setActiveQsKeywordIndex] = useState(0);
   const EXTENDED_PAGE_SIZE = 20;
 
   const keywordComboSuggestions: KeywordComboSuggestion[] = [
@@ -140,6 +141,15 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         { id: 32, name: "Indie", category: "genres" },
       ],
     },
+  ];
+
+  const quickStartKeywords = [
+    { id: 21,    name: "Survival",     emoji: "☄️", category: "themes" },
+    { id: 24685, name: "Cozy",         emoji: "🌿", category },
+    { id: 17292, name: "Roguelite",    emoji: "🎲", category },
+    { id: 17326, name: "Souls-like",   emoji: "⚔️", category },
+    { id: 2379,  name: "Cosmic Horror",emoji: "🌌", category },
+    { id: 3533,  name: "City Builder", emoji: "🏙️", category },
   ];
 
   useEffect(() => {
@@ -483,9 +493,95 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
+  const renderQsKeywordPanel = () => {
+    const kw = quickStartKeywords[activeQsKeywordIndex];
+    return (
+      <div className="qs-keyword-panel">
+        <div className="qs-keyword-card">
+          <p className="qs-keyword-sublabel">Featured keyword</p>
+          <div className="qs-keyword-pill">
+            <span className="qs-keyword-pill-emoji">{kw.emoji}</span>
+            <span>{kw.name}</span>
+          </div>
+          <div className="qs-keyword-actions">
+            <button
+              type="button"
+              className="qs-keyword-explore-btn"
+              onClick={() => {
+                addFilter({
+                  id: kw.id,
+                  name: kw.name.replace(/\b\w/g, c => c.toUpperCase()),
+                  category: kw.category,
+                  mode: "include",
+                });
+              }}
+            >
+              Explore
+            </button>
+            <button
+              type="button"
+              className="qs-keyword-shuffle-btn"
+              onClick={() => setActiveQsKeywordIndex(i => (i + 1) % quickStartKeywords.length)}
+            >
+              <Shuffle className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderQsComboPanel = () => {
+    const suggestion = keywordComboSuggestions[activeSuggestionIndex];
+    return (
+      <div className="qs-combo-panel">
+        <div className="qs-combo-card">
+          <div className="qs-combo-header">
+            <h3 className="qs-combo-title">{suggestion.title}</h3>
+            <span className="qs-combo-kicker">
+              <Sparkles className="h-3 w-3" />
+              Hand-picked
+            </span>
+          </div>
+          <div className="qs-combo-recipe">
+            {suggestion.filters.map((filter) => (
+              <React.Fragment key={`${filter.category}-${filter.id}-${filter.mode || "include"}`}>
+                <span className={`qs-combo-operator${filter.mode === "exclude" ? " exclude" : ""}`}>
+                  {filter.mode === "exclude" ? "−" : "+"}
+                </span>
+                {renderComboFilter(filter)}
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="qs-combo-actions">
+            <button
+              type="button"
+              className="qs-combo-btn-primary"
+              onClick={() => applySuggestion(suggestion)}
+            >
+              <Check className="h-4 w-4" />
+              Try combo
+            </button>
+            <button
+              type="button"
+              className="qs-combo-btn-secondary"
+              onClick={() => setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length)}
+            >
+              <Shuffle className="h-4 w-4" />
+              Next
+              <span className="qs-combo-count">
+                {activeSuggestionIndex + 1}/{keywordComboSuggestions.length}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderDesktopExplorer = () => {
     const openSubcategories = activeMainCategory ? getAvailableSubcategories(activeMainCategory) : [];
-    const selectedSubcategory = activeUtilityPanel === "combo"
+    const selectedSubcategory = (activeUtilityPanel === "qs-combo" || activeUtilityPanel === "qs-keyword")
       ? undefined
       : activeSubcategory && openSubcategories.includes(activeSubcategory)
         ? activeSubcategory
@@ -571,26 +667,36 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               })}
 
               <section className="grid gap-2 border-t border-border/70 pt-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveUtilityPanel(current => current === "combo" ? "intro" : "combo");
-                    setActiveMainCategory(null);
-                    setActiveSubcategory(null);
-                  }}
-                  aria-pressed={activeUtilityPanel === "combo"}
-                  className={`flex min-h-[2.5rem] w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left transition-colors ${
-                    activeUtilityPanel === "combo"
-                      ? "bg-primary/15 text-foreground"
-                      : "text-muted-foreground hover:bg-white/[0.025] hover:text-foreground"
-                  }`}
-                >
-                  <span className={`shrink-0 rounded-md p-1.5 ${activeUtilityPanel === "combo" ? "bg-background/45 text-primary" : "text-muted-foreground"}`}>
-                    <Sparkles className="w-5 h-5" />
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-bold">Popular Combos</span>
-                  <span className="shrink-0 text-xs font-medium text-muted-foreground/75">{keywordComboSuggestions.length}</span>
-                </button>
+                <div className="qs-section-label">
+                  <Wand2 className="w-3 h-3" />
+                  Quick Start
+                </div>
+                <div className="qs-cards-grid">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveUtilityPanel(current => current === "qs-keyword" ? "intro" : "qs-keyword");
+                      setActiveMainCategory(null);
+                      setActiveSubcategory(null);
+                    }}
+                    className={`qs-card${activeUtilityPanel === "qs-keyword" ? " active" : ""}`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Try a Keyword</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveUtilityPanel(current => current === "qs-combo" ? "intro" : "qs-combo");
+                      setActiveMainCategory(null);
+                      setActiveSubcategory(null);
+                    }}
+                    className={`qs-card${activeUtilityPanel === "qs-combo" ? " active" : ""}`}
+                  >
+                    <Shuffle className="w-3.5 h-3.5" />
+                    <span>Try a Combo</span>
+                  </button>
+                </div>
               </section>
             </div>
           </div>
@@ -609,16 +715,27 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               >
                 {renderKeywordPanel(selectedSubcategory, "desktop")}
               </motion.div>
-            ) : activeUtilityPanel === "combo" ? (
+            ) : activeUtilityPanel === "qs-combo" ? (
               <motion.div
-                key="combo-panel"
+                key="qs-combo-panel"
                 className="h-full"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
               >
-                {renderKeywordSuggestion()}
+                {renderQsComboPanel()}
+              </motion.div>
+            ) : activeUtilityPanel === "qs-keyword" ? (
+              <motion.div
+                key="qs-keyword-panel"
+                className="h-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {renderQsKeywordPanel()}
               </motion.div>
             ) : (
               <motion.div
