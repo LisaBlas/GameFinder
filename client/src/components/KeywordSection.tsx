@@ -145,12 +145,12 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   ];
 
   const quickStartKeywords = [
-    { id: 21,    name: "Survival",     emoji: "☄️", category: "themes" },
-    { id: 24685, name: "Cozy",         emoji: "🌿", category },
-    { id: 17292, name: "Roguelite",    emoji: "🎲", category },
-    { id: 17326, name: "Souls-like",   emoji: "⚔️", category },
-    { id: 2379,  name: "Cosmic Horror",emoji: "🌌", category },
-    { id: 3533,  name: "City Builder", emoji: "🏙️", category },
+    { id: 2158,  name: "Time Loop",     emoji: "🔄", category },
+    { id: 243,   name: "Heist",         emoji: "🎭", category },
+    { id: 1136,  name: "Noir",          emoji: "🕵️", category },
+    { id: 2668,  name: "Alchemy",       emoji: "⚗️", category },
+    { id: 38865, name: "Deckbuilder",   emoji: "🃏", category },
+    { id: 43194, name: "Immersive Sim", emoji: "🧩", category },
   ];
 
   useEffect(() => {
