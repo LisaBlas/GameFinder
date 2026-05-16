@@ -1,5 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
+declare const gtag: (...args: any[]) => void;
+
 export interface SavedGame {
   id: number;
   name: string;
@@ -42,11 +44,16 @@ export const SavedGamesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const isSaved = useCallback((id: number) => savedGames.some(g => g.id === id), [savedGames]);
 
   const toggleSaved = useCallback((game: SavedGame) => {
-    setSavedGames(prev =>
-      prev.some(g => g.id === game.id)
-        ? prev.filter(g => g.id !== game.id)
-        : [...prev, game]
-    );
+    setSavedGames(prev => {
+      const removing = prev.some(g => g.id === game.id);
+      if (typeof gtag !== 'undefined') {
+        gtag('event', removing ? 'game_unsaved' : 'game_saved', {
+          game_id: game.id,
+          game_name: game.name,
+        });
+      }
+      return removing ? prev.filter(g => g.id !== game.id) : [...prev, game];
+    });
   }, []);
 
   const removeSaved = useCallback((id: number) => {

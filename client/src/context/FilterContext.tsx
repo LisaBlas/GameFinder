@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import axios from "axios";
+
+declare const gtag: (...args: any[]) => void;
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
 import gameFilters from "../assets/game-filters.json";
@@ -273,6 +275,14 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     if (searchableFilters.length === 0) {
       console.log('[FilterContext] No filters selected, aborting search');
       return;
+    }
+
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'keyword_search', {
+        keywords: searchableFilters.filter(f => f.category === 'Keywords').map(f => f.name).join(','),
+        keyword_count: searchableFilters.filter(f => f.category === 'Keywords').length,
+        total_filters: searchableFilters.length,
+      });
     }
 
     setSearchFresh(true);
