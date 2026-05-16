@@ -61,6 +61,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel>("intro");
   const [mobileCategoryView, setMobileCategoryView] = useState(false);
   const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
+  const [mobileQsView, setMobileQsView] = useState<"keyword" | "combo" | null>(null);
   const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
   const [animBatchStart, setAnimBatchStart] = useState(0);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
@@ -899,6 +900,41 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
+  const renderMobileQsDetail = () => {
+    if (!mobileQsView) return null;
+    const isKeyword = mobileQsView === "keyword";
+    return (
+      <motion.div
+        key={`mobile-qs-${mobileQsView}`}
+        className="lg:hidden fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+      >
+        <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
+          <button
+            type="button"
+            onClick={() => setMobileQsView(null)}
+            className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
+            aria-label="Back"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          {isKeyword
+            ? <Sparkles className="h-4 w-4 text-primary" />
+            : <Shuffle className="h-4 w-4 text-primary" />}
+          <span className="font-bold text-foreground">
+            {isKeyword ? "Try a Keyword" : "Try a Combo"}
+          </span>
+        </div>
+        <div className="flex-1 min-h-0">
+          {isKeyword ? renderQsKeywordPanel() : renderQsComboPanel()}
+        </div>
+      </motion.div>
+    );
+  };
+
   const renderMobileShelves = () => {
     return (
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
@@ -938,7 +974,30 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 </section>
               );
             })}
-            {renderKeywordSuggestion("mobile")}
+            <section className="grid gap-2 mx-1 pt-3 border-t border-border/70">
+              <div className="qs-section-label">
+                <Wand2 className="w-3 h-3" />
+                Quick Start
+              </div>
+              <div className="qs-cards-grid">
+                <button
+                  type="button"
+                  onClick={() => setMobileQsView("keyword")}
+                  className="qs-card"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Try a Keyword</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileQsView("combo")}
+                  className="qs-card"
+                >
+                  <Shuffle className="w-3.5 h-3.5" />
+                  <span>Try a Combo</span>
+                </button>
+              </div>
+            </section>
           </div>
         </div>
       </div>
@@ -968,6 +1027,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     <div className="keyword-section relative w-full h-full flex flex-col transition-all duration-500">
       <AnimatePresence>{renderMobileCategoryDetail()}</AnimatePresence>
       <AnimatePresence>{renderMobileSubcategoryDetail()}</AnimatePresence>
+      <AnimatePresence>{renderMobileQsDetail()}</AnimatePresence>
       <Navbar />
 
       <div className="desktop-action-bar hidden lg:grid border-b border-border">
