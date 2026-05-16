@@ -159,6 +159,20 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   }, [activeSubcategory]);
 
   useEffect(() => {
+    const handlePopState = () => {
+      if (mobileSubcategoryView) {
+        setMobileSubcategoryView(false);
+      } else if (mobileQsView !== null) {
+        setMobileQsView(null);
+      } else if (mobileCategoryView) {
+        setMobileCategoryView(false);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [mobileSubcategoryView, mobileQsView, mobileCategoryView]);
+
+  useEffect(() => {
     let shineStart: ReturnType<typeof setTimeout> | undefined;
     let shineEnd: ReturnType<typeof setTimeout> | undefined;
 
@@ -186,6 +200,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const drillIntoCategory = (cat: MainCategory) => {
+    window.history.pushState({ gamefinder: 'category' }, '');
     setActiveMainCategory(cat);
     setActiveSubcategory(null);
     setMobileCategoryView(true);
@@ -195,6 +210,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const drillIntoSubcategory = (mainCat: MainCategory, subCategoryName: string) => {
+    window.history.pushState({ gamefinder: 'subcategory' }, '');
     setActiveMainCategory(mainCat);
     setActiveSubcategory(subCategoryName);
     setActiveUtilityPanel("intro");
@@ -773,7 +789,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
           <button
             type="button"
-            onClick={() => setMobileSubcategoryView(false)}
+            onClick={() => window.history.back()}
             className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
             aria-label="Back to categories"
           >
@@ -839,7 +855,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
           <button
             type="button"
-            onClick={() => setMobileCategoryView(false)}
+            onClick={() => window.history.back()}
             className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
             aria-label="Back to categories"
           >
@@ -915,7 +931,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
           <button
             type="button"
-            onClick={() => setMobileQsView(null)}
+            onClick={() => window.history.back()}
             className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
             aria-label="Back"
           >
@@ -948,7 +964,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               <div className="qs-cards-grid">
                 <button
                   type="button"
-                  onClick={() => setMobileQsView("keyword")}
+                  onClick={() => { window.history.pushState({ gamefinder: 'qs' }, ''); setMobileQsView("keyword"); }}
                   className="qs-card"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
@@ -956,7 +972,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMobileQsView("combo")}
+                  onClick={() => { window.history.pushState({ gamefinder: 'qs' }, ''); setMobileQsView("combo"); }}
                   className="qs-card"
                 >
                   <Shuffle className="w-3.5 h-3.5" />

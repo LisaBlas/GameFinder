@@ -25,6 +25,23 @@ const HomeContent: React.FC = () => {
   const { savedGames } = useSavedGames();
   const [activeTab, setActiveTab] = useState<'build' | 'results'>('build');
   const [panelOpen, setPanelOpen] = useState(false);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (panelOpen) setPanelOpen(false);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [panelOpen]);
+
+  const handlePanelOpenChange = (open: boolean) => {
+    if (open) {
+      window.history.pushState({ gamefinder: 'saved-panel' }, '');
+    } else if (panelOpen) {
+      window.history.back();
+    }
+    setPanelOpen(open);
+  };
   const [deepLinkGameId, setDeepLinkGameId] = useState<number | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
@@ -72,7 +89,7 @@ const HomeContent: React.FC = () => {
           </div>
           <button
             type="button"
-            onClick={() => setPanelOpen(true)}
+            onClick={() => handlePanelOpenChange(true)}
             className="relative text-[var(--c-emerald-soft)] hover:text-rose-400 transition-colors p-1"
             aria-label="Saved games"
           >
@@ -86,7 +103,7 @@ const HomeContent: React.FC = () => {
         </div>
       </div>
 
-      <SavedGamesPanel open={panelOpen} onOpenChange={setPanelOpen} />
+      <SavedGamesPanel open={panelOpen} onOpenChange={handlePanelOpenChange} />
       <GameCardModal gameId={deepLinkGameId} onClose={() => setDeepLinkGameId(null)} />
 
       {/* Mobile Tab Bar */}
