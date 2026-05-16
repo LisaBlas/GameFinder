@@ -26,12 +26,21 @@ const SearchResults: React.FC = () => {
   const selectedGame = gameResults.find(g => g.id === selectedGameId) ?? null;
 
   useEffect(() => {
-    if (selectedGameId) {
+    if (selectedGameId !== null) {
       document.body.style.overflow = 'hidden';
+      window.history.pushState({ gamefinder: 'game-card' }, '');
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
+  }, [selectedGameId]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (selectedGameId !== null) setSelectedGameId(null);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, [selectedGameId]);
 
   useEffect(() => {
