@@ -940,6 +940,30 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-4">
+            <section className="grid gap-2 mx-1">
+              <div className="qs-section-label">
+                <Wand2 className="w-3 h-3" />
+                Quick Start
+              </div>
+              <div className="qs-cards-grid">
+                <button
+                  type="button"
+                  onClick={() => setMobileQsView("keyword")}
+                  className="qs-card"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Try a Keyword</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileQsView("combo")}
+                  className="qs-card"
+                >
+                  <Shuffle className="w-3.5 h-3.5" />
+                  <span>Try a Combo</span>
+                </button>
+              </div>
+            </section>
             <div className="mobile-keyword-search-wrap">
               <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
             </div>
@@ -974,30 +998,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 </section>
               );
             })}
-            <section className="grid gap-2 mx-1 pt-3 border-t border-border/70">
-              <div className="qs-section-label">
-                <Wand2 className="w-3 h-3" />
-                Quick Start
-              </div>
-              <div className="qs-cards-grid">
-                <button
-                  type="button"
-                  onClick={() => setMobileQsView("keyword")}
-                  className="qs-card"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Try a Keyword</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMobileQsView("combo")}
-                  className="qs-card"
-                >
-                  <Shuffle className="w-3.5 h-3.5" />
-                  <span>Try a Combo</span>
-                </button>
-              </div>
-            </section>
           </div>
         </div>
       </div>
