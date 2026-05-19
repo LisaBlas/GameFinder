@@ -106,8 +106,7 @@ const getAffiliateLinks = (gameTitle: string) => {
   const encodedTitle = encodeGameTitle(gameTitle);
   return {
     kinguin: {
-      url: `https://kinguin.net/?r=6821d3b3a5047`,
-      searchUrl: `https://kinguin.net/catalogsearch/result/index/?q=${encodedTitle}&r=6821d3b3a5047`,
+      url: `https://kinguin.net/catalogsearch/result/index/?q=${encodedTitle}&r=6821d3b3a5047`,
       name: 'Kinguin',
       icon: KinguinIcon
     },
@@ -134,63 +133,6 @@ const getAffiliateLinks = (gameTitle: string) => {
   };
 };
 
-const useKinguinRedirect = (gameTitle: string) => {
-  const [hasVisitedKinguin, setHasVisitedKinguin] = useState(() => {
-    try {
-      return localStorage.getItem('kinguin_cookie_set') === 'true';
-    } catch (e) {
-      return false;
-    }
-  });
-
-  const { kinguin } = getAffiliateLinks(gameTitle);
-
-  const handleKinguinClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    trackExternalClick('Kinguin', 'affiliate', gameTitle);
-
-    if (!hasVisitedKinguin) {
-      const modal = document.createElement('div');
-      modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
-
-      const message = document.createElement('div');
-      message.style.cssText = 'color:white;margin-bottom:20px;text-align:center;max-width:80%;';
-      message.innerHTML = `<p style="font-size:18px;margin-bottom:10px;">Setting affiliate cookie for Kinguin...</p><p style="font-size:14px;">You'll be redirected to search results for "${gameTitle}" in a few seconds.</p>`;
-      modal.appendChild(message);
-
-      const iframe = document.createElement('iframe');
-      iframe.style.cssText = 'width:1px;height:1px;border:none;position:absolute;left:-9999px;';
-      iframe.src = kinguin.url;
-      modal.appendChild(iframe);
-
-      const spinner = document.createElement('div');
-      spinner.style.cssText = 'border:4px solid rgba(255,255,255,0.3);border-top:4px solid white;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;';
-      modal.appendChild(spinner);
-
-      const style = document.createElement('style');
-      style.innerHTML = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
-      document.head.appendChild(style);
-
-      document.body.appendChild(modal);
-
-      setTimeout(() => {
-        try {
-          localStorage.setItem('kinguin_cookie_set', 'true');
-          setHasVisitedKinguin(true);
-        } catch (e) {
-          console.error('Could not save to localStorage:', e);
-        }
-        document.body.removeChild(modal);
-        window.open(kinguin.searchUrl, '_blank');
-      }, 3000);
-    } else {
-      window.open(kinguin.searchUrl, '_blank');
-    }
-  };
-
-  return { handleKinguinClick };
-};
 
 const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false }) => {
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
@@ -203,7 +145,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [gameCopied, setGameCopied] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const tagsRef = useRef<HTMLDivElement | null>(null);
-  const { handleKinguinClick } = useKinguinRedirect(game.name);
   const { addFilter, removeFilter, isFilterSelected, selectedFilters } = useFilters();
   const { isSaved, toggleSaved } = useSavedGames();
 
@@ -475,7 +416,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       name: affiliateLinks.kinguin.name,
       label: 'Open Kinguin',
       icon: <KinguinIcon />,
-      onClick: handleKinguinClick
+      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.kinguin.url, 'Kinguin', 'affiliate')
     },
     {
       key: 'g2a',
