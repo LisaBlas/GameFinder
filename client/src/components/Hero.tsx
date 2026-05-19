@@ -16,7 +16,7 @@ const Hero = forwardRef<HTMLDivElement>((props, ref) => {
         </span>
       </h1>
       <h2 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4 leading-[1.8]">
-      Get Smarter Game Recommendations <br /> Based on What Actually Matters.
+        Pick keywords that describe the feel you want — mechanics, setting, vibe — and find games that actually match.
       </h2>
 
       <div ref={ref} className="mt-10 flex justify-center">

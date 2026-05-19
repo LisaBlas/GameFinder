@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
             <h1 className="brand-wordmark shrink-0 font-brand text-[1.62rem] font-normal tracking-[0.075em]">
               GameFinder
             </h1>
-            <span className="font-cinzel text-[0.65rem] tracking-[0.22em] uppercase text-muted-foreground/70">Find your next favourite game</span>
+            <span className="font-cinzel text-[0.65rem] tracking-[0.22em] uppercase text-muted-foreground/70">Search by vibe, not just genre</span>
           </div>
           <button
             type="button"

@@ -79,7 +79,7 @@ const SearchPlaceholder: React.FC = () => {
       className="py-4"
     >
       <p className="mb-4 text-sm text-muted-foreground">
-        Pick a vibe to get started, or build your own combination on the left.
+        Pick a vibe to get started, or build your own keyword combo.
       </p>
 
       <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-3">

@@ -15,7 +15,7 @@ const EmptyState: React.FC = () => {
       <p className="text-slate-400 max-w-md text-lg">
         {keywordCount > 1
           ? <>No games match <b className="text-slate-50">all {keywordCount} keywords</b> at once — try removing one.</>
-          : <>Consider using <b className="text-slate-50">less filters</b> or <b className="text-slate-50">adjusting</b> your criterias.</>
+          : <>Try using <b className="text-slate-50">fewer keywords</b> or <b className="text-slate-50">adjusting</b> your filters.</>
         }
       </p>
     </div>

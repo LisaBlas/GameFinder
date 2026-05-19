@@ -458,9 +458,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
           <LayoutGrid className="h-5 w-5" />
         </div>
         <div>
-          <h3>Find a unique keyword</h3>
+          <h3>Pick 2–3 keywords. Describe a vibe.</h3>
           <p>
-            Explore 5000+ keywords. Combine, exclude and match to find hidden gems.
+            Browse 5,000+ curated tags — mechanics, settings, aesthetics. Combine them to surface games that match the exact feel you're after.
           </p>
         </div>
       </div>
