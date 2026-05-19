@@ -6,6 +6,7 @@ import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
 import FilterBar from './FilterBar';
 import MobileFilterSheet from './MobileFilterSheet';
+import SearchPlaceholder from './SearchPlaceholder';
 import { FaInfoCircle } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -103,10 +104,14 @@ const SearchResults: React.FC = () => {
       return <LoadingState />;
     }
     
+    if (!hasSearched) {
+      return <SearchPlaceholder />;
+    }
+
     if (!isLoading && gameResults.length === 0 && hasSearched) {
       return <EmptyState />;
     }
-    
+
     if (gameResults.length > 0) {
       return (
         <>

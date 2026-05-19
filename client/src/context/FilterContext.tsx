@@ -78,6 +78,7 @@ interface FilterContextType {
   setRequireDeveloper: (value: boolean) => void;
   requireRating: boolean;
   setRequireRating: (value: boolean) => void;
+  applyFiltersAndSearch: (filters: Filter[]) => void;
 }
 
 // Create the FilterContext with the defined type
@@ -547,6 +548,12 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isLoading, hasMore, page, selectedFilters, sortBy, gameResults, pageCache, pendingRequests, retryCount, seedGame, requireDeveloper, requireRating]);
   
+  const applyFiltersAndSearch = useCallback((filters: Filter[]) => {
+    setSelectedFilters(filters);
+    setSeedGame(null);
+    autoSearchRef.current = true;
+  }, []);
+
   const retryLoadMore = useCallback(async () => {
     if (lastError) {
       setRetryCount(prev => ({
@@ -683,7 +690,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     requireDeveloper,
     setRequireDeveloper,
     requireRating,
-    setRequireRating
+    setRequireRating,
+    applyFiltersAndSearch,
   };
   
   return (
