@@ -2299,6 +2299,240 @@ svg.filter-caret.expanded {
 
 /* ── end Quick Start ────────────────────────────────────────── */
 
+/* ── Mobile Roll / Uniques button variants ───────────────────── */
+
+/* Random keyword — muted green, utilitarian, low glow */
+.qs-card.qs-card-rnd-kw {
+  background: rgba(var(--c-emerald-rgb), 0.03);
+  border-color: rgba(var(--c-emerald-rgb), 0.08);
+  color: var(--c-dim);
+}
+
+.qs-card.qs-card-rnd-kw svg {
+  color: rgba(var(--c-emerald-soft-rgb), 0.48);
+}
+
+.qs-card.qs-card-rnd-kw:hover {
+  background: rgba(var(--c-emerald-rgb), 0.065);
+  border-color: rgba(var(--c-emerald-rgb), 0.15);
+  color: var(--c-muted);
+  box-shadow: 0 0 7px rgba(var(--c-emerald-rgb), 0.05);
+}
+
+/* Random combo — cyan/blue, alchemical glow, floating particles */
+.qs-card.qs-card-rnd-combo {
+  position: relative;
+  overflow: hidden;
+  background: rgba(var(--c-cyan-rgb), 0.04);
+  border-color: rgba(var(--c-cyan-rgb), 0.12);
+  color: rgba(var(--c-cyan-rgb), 0.75);
+}
+
+.qs-card.qs-card-rnd-combo svg {
+  color: rgba(var(--c-cyan-rgb), 0.65);
+}
+
+.qs-card.qs-card-rnd-combo:hover {
+  background: rgba(var(--c-cyan-rgb), 0.085);
+  border-color: rgba(var(--c-cyan-rgb), 0.28);
+  color: var(--c-cyan-soft);
+  box-shadow:
+    0 0 14px rgba(var(--c-cyan-rgb), 0.13),
+    inset 0 0 10px rgba(var(--c-cyan-rgb), 0.045);
+}
+
+/* Particle dots — two floating specks via pseudo-elements */
+.qs-card.qs-card-rnd-combo::before,
+.qs-card.qs-card-rnd-combo::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(var(--c-cyan-rgb), 0.55);
+  pointer-events: none;
+}
+
+.qs-card.qs-card-rnd-combo::before {
+  width: 3px;
+  height: 3px;
+  top: 28%;
+  right: 18%;
+  animation: qs-particle-a 2.8s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+.qs-card.qs-card-rnd-combo::after {
+  width: 2px;
+  height: 2px;
+  bottom: 24%;
+  left: 20%;
+  background: rgba(var(--c-cyan-rgb), 0.4);
+  animation: qs-particle-b 3.5s ease-in-out infinite;
+}
+
+@keyframes qs-particle-a {
+  0%, 100% { transform: translateY(0) scale(1);   opacity: 0.32; }
+  50%       { transform: translateY(-5px) scale(1.5); opacity: 0.72; }
+}
+
+@keyframes qs-particle-b {
+  0%, 100% { transform: translateY(0) scale(1);   opacity: 0.22; }
+  50%       { transform: translateY(-4px) scale(1.3); opacity: 0.55; }
+}
+
+/* Unique Keyword card — gold/amber, crosshatch texture, serif name, shimmer, corner filigree */
+.qs-card.qs-card-unique-kw {
+  position: relative;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(var(--c-gold-rgb), 0.024) 3px,
+      rgba(var(--c-gold-rgb), 0.024) 4px
+    ),
+    rgba(var(--c-gold-rgb), 0.06);
+  border-color: rgba(var(--c-gold-rgb), 0.2);
+  color: var(--c-gold);
+}
+
+.qs-card.qs-card-unique-kw svg {
+  color: rgba(var(--c-gold-rgb), 0.6);
+}
+
+.qs-card.qs-card-unique-kw:hover {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(var(--c-gold-rgb), 0.038) 3px,
+      rgba(var(--c-gold-rgb), 0.038) 4px
+    ),
+    rgba(var(--c-gold-rgb), 0.1);
+  border-color: rgba(var(--c-gold-rgb), 0.34);
+  color: var(--c-gold);
+  box-shadow: 0 0 10px rgba(var(--c-gold-rgb), 0.1);
+}
+
+/* Shimmer sweep — travels left to right on a slow interval */
+.qs-card.qs-card-unique-kw::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 25%,
+    rgba(var(--c-gold-rgb), 0.13) 47%,
+    rgba(var(--c-gold-rgb), 0.06) 50%,
+    rgba(var(--c-gold-rgb), 0.07) 53%,
+    transparent 75%
+  );
+  transform: translateX(-120%);
+  animation: unique-kw-shimmer 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes unique-kw-shimmer {
+  0%,  38% { transform: translateX(-120%); opacity: 0; }
+  44%       { opacity: 1; }
+  62%, 100% { transform: translateX(120%); opacity: 0; }
+}
+
+/* Top-right corner bracket filigree */
+.qs-card.qs-card-unique-kw::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid rgba(var(--c-gold-rgb), 0.38);
+  border-right: 1.5px solid rgba(var(--c-gold-rgb), 0.38);
+  border-top-right-radius: 2px;
+  pointer-events: none;
+}
+
+/* Serif keyword name — Georgia avoids Cinzel which is reserved for the brand tagline */
+.qs-card-unique-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.63rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+}
+
+/* Unique Combo card — strongest in section, layered gradient, pulsing aura, bold type */
+.qs-card.qs-card-unique-combo {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--c-gold-rgb), 0.14) 0%,
+    rgba(var(--c-gold-rgb), 0.06) 52%,
+    rgba(var(--c-gold-rgb), 0.11) 100%
+  );
+  border-color: rgba(var(--c-gold-rgb), 0.3);
+  color: var(--c-gold);
+}
+
+.qs-card.qs-card-unique-combo svg {
+  color: var(--c-gold);
+}
+
+/* Aura lives on ::before so :hover box-shadow on the element doesn't conflict */
+.qs-card.qs-card-unique-combo::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 9px;
+  pointer-events: none;
+  animation: unique-combo-aura 3.4s ease-in-out infinite;
+}
+
+@keyframes unique-combo-aura {
+  0%, 100% { box-shadow: 0 0 5px rgba(var(--c-gold-rgb), 0.06);  opacity: 0.65; }
+  50%       { box-shadow: 0 0 18px rgba(var(--c-gold-rgb), 0.2);  opacity: 1; }
+}
+
+.qs-card.qs-card-unique-combo:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(var(--c-gold-rgb), 0.2) 0%,
+    rgba(var(--c-gold-rgb), 0.12) 52%,
+    rgba(var(--c-gold-rgb), 0.17) 100%
+  );
+  border-color: rgba(var(--c-gold-rgb), 0.52);
+  color: var(--c-gold);
+  box-shadow:
+    0 0 22px rgba(var(--c-gold-rgb), 0.2),
+    inset 0 0 14px rgba(var(--c-gold-rgb), 0.07);
+}
+
+.qs-card.qs-card-unique-combo:hover::before {
+  animation: none;
+  opacity: 0;
+}
+
+/* Sublabel — more refined, tighter tracking */
+.qs-card.qs-card-unique-combo .qs-card-sublabel {
+  opacity: 1;
+  color: rgba(var(--c-gold-rgb), 0.52);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+}
+
+/* Combo title — bolder weight, near-full gold brightness */
+.qs-card-combo-title {
+  color: rgba(var(--c-gold-rgb), 0.95);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+/* ── end Roll / Uniques variants ────────────────────────────── */
+
 .mobile-keyword-search-wrap {
   margin-bottom: 0.15rem;
 }

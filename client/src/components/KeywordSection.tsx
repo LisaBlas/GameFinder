@@ -11,7 +11,7 @@ import {
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
   Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
   X, Search, Share2, Check, ChevronDown, ChevronLeft, ChevronRight,
-  Shuffle, Gem, FlaskConical,
+  Shuffle, Gem, FlaskConical, Star,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
@@ -1094,62 +1094,75 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-4">
-            <section className="grid gap-2 mx-1">
-              <div className="qs-section-label">
-                <Wand2 className="w-3 h-3" />
-                Quick Start
-              </div>
-              <div className="qs-cards-grid">
-                <button
-                  type="button"
-                  onClick={() => {
-                    clearAllFilters();
-                    const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
-                    addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
-                  }}
-                  className="qs-card"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Random keyword</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    clearAllFilters();
-                    const suggestion = keywordComboSuggestions[activeSuggestionIndex];
-                    suggestion.filters.forEach(filter => {
-                      addFilter({
-                        id: filter.id,
-                        name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
-                        category: filter.category,
-                        mode: filter.category === category ? filter.mode || "include" : undefined,
+            <section className="grid gap-3 mx-1">
+              {/* Roll sub-group */}
+              <div className="grid gap-1.5">
+                <div className="qs-section-label">
+                  <Dices className="w-3 h-3" />
+                  Roll
+                </div>
+                <div className="qs-cards-grid">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearAllFilters();
+                      const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
+                      addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
+                    }}
+                    className="qs-card qs-card-rnd-kw"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Random keyword</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearAllFilters();
+                      const suggestion = keywordComboSuggestions[activeSuggestionIndex];
+                      suggestion.filters.forEach(filter => {
+                        addFilter({
+                          id: filter.id,
+                          name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
+                          category: filter.category,
+                          mode: filter.category === category ? filter.mode || "include" : undefined,
+                        });
                       });
-                    });
-                    setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
-                  }}
-                  className="qs-card"
-                >
-                  <Shuffle className="w-3.5 h-3.5" />
-                  <span>Hand picked combo</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={applyUniqueKeyword}
-                  className="qs-card unique"
-                >
-                  <Gem className="w-3.5 h-3.5" />
-                  <span className="qs-card-sublabel">Unique</span>
-                  <span>{uniqueKeywords[activeUniqueKeywordIndex].name}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={applyUniqueCombo}
-                  className="qs-card unique"
-                >
-                  <FlaskConical className="w-3.5 h-3.5" />
-                  <span className="qs-card-sublabel">Unique combo</span>
-                  <span>{uniqueComboSuggestions[activeUniqueComboIndex].title}</span>
-                </button>
+                      setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
+                    }}
+                    className="qs-card qs-card-rnd-combo"
+                  >
+                    <Shuffle className="w-3.5 h-3.5" />
+                    <span>Random combo</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Uniques sub-group */}
+              <div className="grid gap-1.5">
+                <div className="qs-section-label">
+                  <Star className="w-3 h-3" />
+                  Uniques
+                </div>
+                <div className="qs-cards-grid">
+                  <button
+                    type="button"
+                    onClick={applyUniqueKeyword}
+                    className="qs-card qs-card-unique-kw"
+                  >
+                    <Gem className="w-3.5 h-3.5" />
+                    <span className="qs-card-sublabel">Unique</span>
+                    <span className="qs-card-unique-name">{uniqueKeywords[activeUniqueKeywordIndex].name}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={applyUniqueCombo}
+                    className="qs-card qs-card-unique-combo"
+                  >
+                    <FlaskConical className="w-3.5 h-3.5" />
+                    <span className="qs-card-sublabel">Unique combo</span>
+                    <span className="qs-card-combo-title">{uniqueComboSuggestions[activeUniqueComboIndex].title}</span>
+                  </button>
+                </div>
               </div>
             </section>
             <div className="mobile-keyword-search-wrap">
