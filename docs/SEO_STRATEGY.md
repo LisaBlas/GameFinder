@@ -165,6 +165,9 @@ Mechanic × mood/setting pairs. One confirmed priority target already in `SEO_KE
 - [ ] Identify 10–20 highest-confidence combos from SEO_KEYWORDS.md Priority Combos section and build them
 - [ ] Review generated page intros for any keywords where the template reads awkwardly (especially cultural_ip and internet_culture categories)
 
+### Link Building
+- [ ] Post on Reddit (r/gamesuggestions, r/patientgamers, or r/indiegaming) mentioning specific mechanic pages — e.g. "built a tool for finding parry games specifically" with a link to `/best/parry-games`. Niche angle beats generic "check out my site."
+
 ### Monitoring
 - [ ] Check GSC in ~2 weeks for first impressions on mechanic pages
 - [ ] Identify pages with impressions but low CTR (title/description optimization opportunity)
