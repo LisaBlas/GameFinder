@@ -26,7 +26,7 @@ This repo is the local GameFinder workspace. Treat `CLAUDE.md` as durable projec
 - Prefer revenue-relevant improvements: affiliate flows, conversion clarity, SEO, and recommendation quality.
 
 ## SEO Pages
-Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See the SEO Architecture section in `CLAUDE.md` for full details.
+Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. Game listings (top 10 per page) are cached in Neon (`seo_page_cache`) and injected at render time — refresh via `npm run seo:refresh-cache` on the VPS. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See the SEO Architecture section in `CLAUDE.md` for full details.
 
 ## Verification Defaults
 - Documentation-only changes: re-read edited files and run lightweight presence/readability checks.

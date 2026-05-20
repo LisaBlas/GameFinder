@@ -103,14 +103,11 @@ These have the lowest competition and highest search intent alignment with GameF
 
 ## Implementation Priorities
 
-### 1. Add game listings to SEO pages (highest impact)
+### ~~1. Add game listings to SEO pages~~ ✅ Done (May 2026)
 
-Render actual game results server-side on each `/best/:slug` page — at minimum the top 10 games matching that page's filters, with title, cover image, and a short description.
+Top 10 games per page are cached in Neon (`seo_page_cache` table) and rendered server-side on every `/best/:slug` page. Cover image, rating badge, and summary are included. JSON-LD `ItemList` added to structured data. Cache refresh runs via `npm run seo:refresh-cache` — add to VPS nightly cron.
 
-- Requires calling IGDB at render time (or caching results)
-- Gives Google real, specific content to index
-- Dramatically improves engagement signals (users can browse without clicking through to the app)
-- Applies immediately to all 30 existing pages before new ones are added
+Key files: `server/seoRenderer.ts`, `server/scripts/refreshSeoCache.ts`, `server/db.ts`, `shared/schema.ts`.
 
 ### 2. Build the mechanic-based priority pages (~17 slugs)
 
@@ -135,7 +132,10 @@ GSC data reveals which pages are already getting impressions but not clicks — 
 ## Architecture Notes
 
 - New pages are added to `server/seoPages.ts` as `SeoPage` objects
-- `server/seoRenderer.ts` handles HTML rendering — game listings would be added here
+- `server/seoRenderer.ts` handles HTML rendering — renders game list inline from cache
+- `server/db.ts` — Neon/Drizzle connection (null-safe; pages degrade gracefully without it)
+- `server/scripts/refreshSeoCache.ts` — cache refresh script, run via `npm run seo:refresh-cache`
+- `shared/schema.ts` — `seo_page_cache` table + `CachedGame` type
 - `server/routes.ts` registers `/best/:slug` before the SPA fallback
 - Sitemap auto-updates from `SEO_PAGES` — no manual edits needed
 - CTA URLs are built by `buildAppUrl()` from filter configs
@@ -153,8 +153,8 @@ GSC data reveals which pages are already getting impressions but not clicks — 
    - All traffic is brand search ("game finder", "gamefinder") — no discovery traffic yet
    - The sitemap has 31 URLs but GSC last read it in November 2025 and hasn't re-crawled since — none of the `/best/` pages are indexed
    - robots.txt is correct (`Allow: /`); 3 redirect pages are www/non-www variants (not urgent); 1 stale robots-blocked URL to investigate via URL Inspection
-   - **Do not request indexing for `/best/` pages until game listings are live.** Pages without game content will get "Crawled — currently not indexed" and may be harder to re-index later.
-   - **Sitemap resubmission** (GSC → Sitemaps → delete → re-add) can be done now to ensure Google is aware of all pages — but hold off on manual indexing requests until Priority 1 is complete.
+   - **Game listings are now live** (Priority 1 complete). Unblocked: submit sitemap and request indexing.
+   - **Next GSC action:** resubmit sitemap (GSC → Sitemaps → delete → re-add) and use URL Inspection to request indexing on the highest-priority pages (mechanic tier first).
 
 ## Resolved: Intro Copy at Scale
 

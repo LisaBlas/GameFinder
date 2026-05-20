@@ -13,12 +13,13 @@ Game recommendation SPA with growing organic Google traffic.
 
 ## Key Commands
 ```bash
-npm run dev          # dev server (tsx server/index.ts)
-npm run build        # full build (client + server)
-npm run start        # production
-npm run db:push      # push schema to Neon
-npm run db:seed      # seed database
-npm run check        # TypeScript check; currently has known baseline failures
+npm run dev                 # dev server (tsx server/index.ts)
+npm run build               # full build (client + server)
+npm run start               # production
+npm run db:push             # push schema to Neon
+npm run db:seed             # seed database
+npm run seo:refresh-cache   # repopulate seo_page_cache from IGDB (run on VPS, needs env vars)
+npm run check               # TypeScript check; currently has known baseline failures
 ```
 
 Windows gotcha: `npm run build` currently completes the Vite client build and esbuild server bundle, then fails at the final Unix `cp -r client/src/assets dist/` step. Use Git Bash/WSL for the full build or replace that copy step with a cross-platform command before relying on it locally.
@@ -70,10 +71,15 @@ Primary state:
 Server-rendered intent pages live at `/best/:slug` — crawlable HTML, no React required. They are registered in `server/routes.ts` **before** the SPA fallback so Express handles them directly.
 
 Key files:
-- `server/seoPages.ts` — 30 curated page configs (slug, title, description, intro, filters, relatedSlugs). Add new pages here.
-- `server/seoRenderer.ts` — renders full HTML for `/best/:slug` pages, the 404 page, and `/sitemap.xml`.
+- `server/seoPages.ts` — curated page configs (slug, title, description, intro, filters, relatedSlugs). Add new pages here.
+- `server/seoRenderer.ts` — renders full HTML for `/best/:slug` pages. `renderSeoPage(page, games?)` accepts an optional `CachedGame[]` and injects a "Top games" section (cover, rating, summary) above the filter chips. Also renders the 404 page and `/sitemap.xml`.
+- `server/db.ts` — Neon/Drizzle connection. Returns `null` if `DATABASE_URL` is unset; SEO pages degrade gracefully (render without game listings).
+- `server/scripts/refreshSeoCache.ts` — iterates all SEO pages, calls IGDB with each page's filters, upserts top 10 results into `seo_page_cache`. Run via `npm run seo:refresh-cache`. Add to VPS nightly cron.
+- `shared/schema.ts` — includes `seo_page_cache` table (slug PK, games jsonb, updated_at) and `CachedGame` type.
 
 Sitemap is generated dynamically from `SEO_PAGES` in `seoRenderer.ts` — do not edit `client/public/sitemap.xml` manually, it is now ignored in production.
+
+Game cache gotcha: `DATABASE_URL` must be set on both Render (app reads cache on each request) and the VPS (refresh script writes cache). Without it the app still works — pages just show no game listings.
 
 Filter hydration gotcha: non-keyword filters (genre, theme, platform, mode, perspective) are stored in the URL as integer IDs (e.g. `?genre=13`). `FilterContext` resolves these back to display names via `idToFilterName`, which is built from `game-filters.json` at module load. If a filter pill shows a raw number instead of a name, the ID is missing from `game-filters.json`.
 
