@@ -105,27 +105,29 @@ These have the lowest competition and highest search intent alignment with GameF
 
 ### ~~1. Add game listings to SEO pages~~ ✅ Done (May 2026)
 
-Top 10 games per page are cached in Neon (`seo_page_cache` table) and rendered server-side on every `/best/:slug` page. Cover image, rating badge, and summary are included. JSON-LD `ItemList` added to structured data. Cache refresh runs via `npm run seo:refresh-cache` — add to VPS nightly cron.
+Top 10 games per page are cached in Neon (`seo_page_cache` table) and rendered server-side on every `/best/:slug` page. Cover image, rating badge, and summary are included. JSON-LD `ItemList` added to structured data. Cache refresh runs via `npm run seo:refresh-cache` — added to VPS nightly cron.
 
 Key files: `server/seoRenderer.ts`, `server/scripts/refreshSeoCache.ts`, `server/db.ts`, `shared/schema.ts`.
 
-### 2. Build the mechanic-based priority pages (~17 slugs)
+### ~~2. Build the mechanic-based priority pages~~ ✅ Done (May 2026)
 
-Low effort, high confidence. These are the pages most likely to rank quickly given near-zero dedicated competition. Hand-write intros for quality — this is the batch where editorial quality matters most.
+16 mechanic pages deployed: parry, ragdoll physics, bullet time, parkour, wall jump, grapple, music/rhythm, permadeath, gore, physics, physics puzzle, destructible environment, time travel, melee, martial arts, duels. Hand-written intros, single-keyword filters.
 
-### 3. Scale to ~300 pages (single-keyword + combo)
+### ~~3. Scale to ~300 pages (single-keyword)~~ ✅ Done (May 2026)
 
-A generator script produces `seoPages.ts` entries from a structured config based on SEO_KEYWORDS.md.
+Generator script built from `SEO_KEYWORDS.md`. 169 pages auto-generated across 23 sub-categories (sports, combat systems, art styles, time periods, atmosphere, etc.) with 2–3 templated intro variants per category. Total live: **215 pages**.
 
-Steps:
-1. Build the generator script from SEO_KEYWORDS.md entries
-2. Use templated but accurate titles, descriptions, and intros
-3. AI-assisted intro generation at scale with quality review pass
-4. Launch single-keyword pages first, then combos
+Key files: `server/scripts/seoKeywords.ts`, `server/scripts/generateSeoPages.ts`, `server/generatedSeoPages.ts`. Run `npm run seo:generate-pages` to regenerate after editing keywords.
 
-### 4. Validate with Google Search Console
+Cache refreshed on VPS after deploy — all 215 pages have game listings.
 
-GSC data reveals which pages are already getting impressions but not clicks — the fastest wins. Sharing GSC access enables targeting these directly.
+### 4. Get pages indexed and monitor GSC
+
+Submit sitemap, request indexing in priority order, watch for impressions.
+
+### 5. Combo pages (~50–100)
+
+Mechanic × mood/setting pairs. One confirmed priority target already in `SEO_KEYWORDS.md`: `dancing` + `party`. Build single-keyword pages first (done), then combos as a second batch.
 
 ---
 
@@ -143,6 +145,33 @@ GSC data reveals which pages are already getting impressions but not clicks — 
 
 ---
 
+---
+
+## Open Checklist
+
+### Indexing (this week)
+- [x] Request indexing: `cozy-games`
+- [x] Request indexing: `souls-like-games`, `roguelike-games`, `roguelite-games`, `metroidvania-games`, `cozy-horror-games`, `cozy-farming-games`, `dungeon-crawler-rpg-games`, `pixel-art-games`
+- [ ] Request indexing: 16 mechanic pages (parry, ragdoll-physics, bullet-time, parkour, wall-jump, grapple, music-rhythm, permadeath, gore, physics, physics-puzzle, destructible-environment, time-travel, melee, martial-arts, duels)
+- [ ] Resubmit sitemap in GSC (now 215 URLs — delete old entry, re-add)
+- [ ] Batch-request indexing for generated pages, priority order: combat/mechanic categories first, then art styles and atmosphere, then time periods and cultural
+
+### Infrastructure
+- [x] `npm run seo:refresh-cache` added to VPS nightly cron
+- [ ] Confirm cron is actually firing (check VPS cron logs or run manually and verify `updated_at` timestamps in Neon)
+
+### Content (next batch)
+- [ ] Build combo pages: start with `dancing-party-games` (confirmed priority in SEO_KEYWORDS.md)
+- [ ] Identify 10–20 highest-confidence combos from SEO_KEYWORDS.md Priority Combos section and build them
+- [ ] Review generated page intros for any keywords where the template reads awkwardly (especially cultural_ip and internet_culture categories)
+
+### Monitoring
+- [ ] Check GSC in ~2 weeks for first impressions on mechanic pages
+- [ ] Identify pages with impressions but low CTR (title/description optimization opportunity)
+- [ ] Track which pages start ranking and use them to inform combo page priorities
+
+---
+
 ## Resolved Decisions
 
 1. **Game data: cache in Neon, refresh nightly.** Store top 10 game results per slug in a `seo_page_cache` table (slug, games JSON, updated_at). Render from cache, fall back to live on cache miss. The VPS keep-alive cron already runs nightly — add a cache refresh job there. Avoids IGDB rate limits, latency, and downtime risk at 300+ pages.
@@ -151,10 +180,9 @@ GSC data reveals which pages are already getting impressions but not clicks — 
 
 3. **Search Console: already set up for gamefinder-app.com.** GSC analysis complete (May 2026). Key findings:
    - All traffic is brand search ("game finder", "gamefinder") — no discovery traffic yet
-   - The sitemap has 31 URLs but GSC last read it in November 2025 and hasn't re-crawled since — none of the `/best/` pages are indexed
-   - robots.txt is correct (`Allow: /`); 3 redirect pages are www/non-www variants (not urgent); 1 stale robots-blocked URL to investigate via URL Inspection
-   - **Game listings are now live** (Priority 1 complete). Unblocked: submit sitemap and request indexing.
-   - **Next GSC action:** resubmit sitemap (GSC → Sitemaps → delete → re-add) and use URL Inspection to request indexing on the highest-priority pages (mechanic tier first).
+   - robots.txt is correct (`Allow: /`); 3 redirect pages are www/non-www variants (not urgent)
+   - **Indexing requests submitted (May 2026):** `cozy-games` + 8 priority pages from the original 30. 16 mechanic pages pending (submit tomorrow). Sitemap resubmission pending (now 215 URLs).
+   - **Next GSC action:** resubmit sitemap (GSC → Sitemaps → delete → re-add), then batch-request indexing for mechanic and generated pages. Check back in ~2 weeks for first impression data.
 
 ## Resolved: Intro Copy at Scale
 
