@@ -769,11 +769,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setActiveUtilityPanel(current => current === "qs-keyword" ? "intro" : "qs-keyword");
-                      setActiveMainCategory(null);
-                      setActiveSubcategory(null);
+                      const kw = quickStartKeywords[Math.floor(Math.random() * quickStartKeywords.length)];
+                      addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category: kw.category, mode: "include" });
                     }}
-                    className={`qs-card${activeUtilityPanel === "qs-keyword" ? " active" : ""}`}
+                    className="qs-card"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Random keyword</span>
@@ -788,7 +787,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     className={`qs-card${activeUtilityPanel === "qs-combo" ? " active" : ""}`}
                   >
                     <Shuffle className="w-3.5 h-3.5" />
-                    <span>Random combo</span>
+                    <span>Hand picked combo</span>
                   </button>
                   <button
                     type="button"
@@ -1036,7 +1035,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             ? <Sparkles className="h-4 w-4 text-primary" />
             : <Shuffle className="h-4 w-4 text-primary" />}
           <span className="font-bold text-foreground">
-            {isKeyword ? "Random keyword" : "Random combo"}
+            {isKeyword ? "Random keyword" : "Hand picked combo"}
           </span>
         </div>
         <div className="flex-1 min-h-0">
@@ -1059,7 +1058,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               <div className="qs-cards-grid">
                 <button
                   type="button"
-                  onClick={() => { window.history.pushState({ gamefinder: 'qs' }, ''); setMobileQsView("keyword"); }}
+                  onClick={() => {
+                    const kw = quickStartKeywords[Math.floor(Math.random() * quickStartKeywords.length)];
+                    addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category: kw.category, mode: "include" });
+                  }}
                   className="qs-card"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
@@ -1071,7 +1073,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   className="qs-card"
                 >
                   <Shuffle className="w-3.5 h-3.5" />
-                  <span>Random combo</span>
+                  <span>Hand picked combo</span>
                 </button>
                 <button
                   type="button"
