@@ -220,17 +220,19 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   ];
 
   const applyUniqueKeyword = () => {
+    clearAllFilters();
     const kw = uniqueKeywords[activeUniqueKeywordIndex];
     addFilter({
       id: kw.id,
       name: kw.name.replace(/\b\w/g, c => c.toUpperCase()),
-      category: kw.category,
+      category,
       mode: "include",
     });
     setActiveUniqueKeywordIndex(i => (i + 1) % uniqueKeywords.length);
   };
 
   const applyUniqueCombo = () => {
+    clearAllFilters();
     const suggestion = uniqueComboSuggestions[activeUniqueComboIndex];
     suggestion.filters.forEach(filter => {
       addFilter({
@@ -782,6 +784,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   <button
                     type="button"
                     onClick={() => {
+                      clearAllFilters();
                       const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
                       addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
                     }}
@@ -793,11 +796,19 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setActiveUtilityPanel(current => current === "qs-combo" ? "intro" : "qs-combo");
-                      setActiveMainCategory(null);
-                      setActiveSubcategory(null);
+                      clearAllFilters();
+                      const suggestion = keywordComboSuggestions[activeSuggestionIndex];
+                      suggestion.filters.forEach(filter => {
+                        addFilter({
+                          id: filter.id,
+                          name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
+                          category: filter.category,
+                          mode: filter.category === category ? filter.mode || "include" : undefined,
+                        });
+                      });
+                      setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
                     }}
-                    className={`qs-card${activeUtilityPanel === "qs-combo" ? " active" : ""}`}
+                    className="qs-card"
                   >
                     <Shuffle className="w-3.5 h-3.5" />
                     <span>Hand picked combo</span>
@@ -1072,6 +1083,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 <button
                   type="button"
                   onClick={() => {
+                    clearAllFilters();
                     const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
                     addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
                   }}
@@ -1082,7 +1094,19 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { window.history.pushState({ gamefinder: 'qs' }, ''); setMobileQsView("combo"); }}
+                  onClick={() => {
+                    clearAllFilters();
+                    const suggestion = keywordComboSuggestions[activeSuggestionIndex];
+                    suggestion.filters.forEach(filter => {
+                      addFilter({
+                        id: filter.id,
+                        name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
+                        category: filter.category,
+                        mode: filter.category === category ? filter.mode || "include" : undefined,
+                      });
+                    });
+                    setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
+                  }}
                   className="qs-card"
                 >
                   <Shuffle className="w-3.5 h-3.5" />
