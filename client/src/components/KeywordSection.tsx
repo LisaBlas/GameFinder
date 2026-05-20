@@ -783,7 +783,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     type="button"
                     onClick={() => {
                       const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
-                      addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category: kw.category, mode: "include" });
+                      addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
                     }}
                     className="qs-card"
                   >
@@ -1073,7 +1073,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   type="button"
                   onClick={() => {
                     const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
-                    addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category: kw.category, mode: "include" });
+                    addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
                   }}
                   className="qs-card"
                 >
