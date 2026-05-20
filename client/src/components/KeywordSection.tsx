@@ -11,7 +11,7 @@ import {
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
   Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
   X, Search, Share2, Check, ChevronDown, ChevronLeft, ChevronRight,
-  Shuffle,
+  Shuffle, Gem, FlaskConical,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
@@ -66,6 +66,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [animBatchStart, setAnimBatchStart] = useState(0);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [activeQsKeywordIndex, setActiveQsKeywordIndex] = useState(0);
+  const [activeUniqueKeywordIndex, setActiveUniqueKeywordIndex] = useState(0);
+  const [activeUniqueComboIndex, setActiveUniqueComboIndex] = useState(0);
   const EXTENDED_PAGE_SIZE = 20;
 
   const keywordComboSuggestions: KeywordComboSuggestion[] = [
@@ -152,6 +154,81 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     { id: 38865, name: "Deckbuilder",   emoji: "🃏", category },
     { id: 43194, name: "Immersive Sim", emoji: "🧩", category },
   ];
+
+  const uniqueKeywords = [
+    { id: 41980, name: "Hiking",            emoji: "🥾", category },
+    { id: 41907, name: "Bank Robbery",      emoji: "🏦", category },
+    { id: 38428, name: "Solarpunk",         emoji: "🌿", category },
+    { id: 44092, name: "Astronomy",         emoji: "🔭", category },
+    { id: 38817, name: "Avant Garde",       emoji: "🎨", category },
+    { id: 42679, name: "Food Truck",        emoji: "🚚", category },
+    { id: 44749, name: "Canoeing",          emoji: "🛶", category },
+    { id: 38661, name: "K-Pop",             emoji: "🎤", category },
+    { id: 41829, name: "Air Traffic Control", emoji: "✈️", category },
+    { id: 38790, name: "Snowmobile",        emoji: "🏔️", category },
+  ];
+
+  const uniqueComboSuggestions: KeywordComboSuggestion[] = [
+    {
+      title: "Solarpunk Village",
+      filters: [
+        { id: 38428, name: "Solarpunk", category },
+        { id: 3533,  name: "City Builder", category },
+      ],
+    },
+    {
+      title: "Cosmic Heist",
+      filters: [
+        { id: 41907, name: "Bank Robbery", category },
+        { id: 2379,  name: "Cosmic Horror", category },
+      ],
+    },
+    {
+      title: "K-Pop Rhythm",
+      filters: [
+        { id: 38661, name: "K-Pop", category },
+        { id: 43110, name: "Rhythm", category },
+      ],
+    },
+    {
+      title: "Stargazer Trail",
+      filters: [
+        { id: 44092, name: "Astronomy", category },
+        { id: 41980, name: "Hiking", category },
+      ],
+    },
+    {
+      title: "Avant Horror",
+      filters: [
+        { id: 38817, name: "Avant Garde", category },
+        { id: 131,   name: "Psychological Horror", category },
+      ],
+    },
+  ];
+
+  const applyUniqueKeyword = () => {
+    const kw = uniqueKeywords[activeUniqueKeywordIndex];
+    addFilter({
+      id: kw.id,
+      name: kw.name.replace(/\b\w/g, c => c.toUpperCase()),
+      category: kw.category,
+      mode: "include",
+    });
+    setActiveUniqueKeywordIndex(i => (i + 1) % uniqueKeywords.length);
+  };
+
+  const applyUniqueCombo = () => {
+    const suggestion = uniqueComboSuggestions[activeUniqueComboIndex];
+    suggestion.filters.forEach(filter => {
+      addFilter({
+        id: filter.id,
+        name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
+        category: filter.category,
+        mode: filter.category === category ? filter.mode || "include" : undefined,
+      });
+    });
+    setActiveUniqueComboIndex(i => (i + 1) % uniqueComboSuggestions.length);
+  };
 
   useEffect(() => {
     setRevealedExtended([]);
@@ -699,7 +776,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     className={`qs-card${activeUtilityPanel === "qs-keyword" ? " active" : ""}`}
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Try a Keyword</span>
+                    <span>Random keyword</span>
                   </button>
                   <button
                     type="button"
@@ -711,7 +788,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     className={`qs-card${activeUtilityPanel === "qs-combo" ? " active" : ""}`}
                   >
                     <Shuffle className="w-3.5 h-3.5" />
-                    <span>Try a Combo</span>
+                    <span>Random combo</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={applyUniqueKeyword}
+                    className="qs-card unique"
+                  >
+                    <Gem className="w-3.5 h-3.5" />
+                    <span className="qs-card-sublabel">Unique</span>
+                    <span>{uniqueKeywords[activeUniqueKeywordIndex].name}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={applyUniqueCombo}
+                    className="qs-card unique"
+                  >
+                    <FlaskConical className="w-3.5 h-3.5" />
+                    <span className="qs-card-sublabel">Unique combo</span>
+                    <span>{uniqueComboSuggestions[activeUniqueComboIndex].title}</span>
                   </button>
                 </div>
               </section>
@@ -941,7 +1036,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             ? <Sparkles className="h-4 w-4 text-primary" />
             : <Shuffle className="h-4 w-4 text-primary" />}
           <span className="font-bold text-foreground">
-            {isKeyword ? "Try a Keyword" : "Try a Combo"}
+            {isKeyword ? "Random keyword" : "Random combo"}
           </span>
         </div>
         <div className="flex-1 min-h-0">
@@ -968,7 +1063,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   className="qs-card"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Try a Keyword</span>
+                  <span>Random keyword</span>
                 </button>
                 <button
                   type="button"
@@ -976,7 +1071,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   className="qs-card"
                 >
                   <Shuffle className="w-3.5 h-3.5" />
-                  <span>Try a Combo</span>
+                  <span>Random combo</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={applyUniqueKeyword}
+                  className="qs-card unique"
+                >
+                  <Gem className="w-3.5 h-3.5" />
+                  <span className="qs-card-sublabel">Unique</span>
+                  <span>{uniqueKeywords[activeUniqueKeywordIndex].name}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={applyUniqueCombo}
+                  className="qs-card unique"
+                >
+                  <FlaskConical className="w-3.5 h-3.5" />
+                  <span className="qs-card-sublabel">Unique combo</span>
+                  <span>{uniqueComboSuggestions[activeUniqueComboIndex].title}</span>
                 </button>
               </div>
             </section>
