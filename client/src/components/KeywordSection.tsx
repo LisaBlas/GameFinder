@@ -27,6 +27,19 @@ interface KeywordItem {
   game_count?: number;
 }
 
+type RawKw = { id: number; name: string };
+const _randomKeywordPool: RawKw[] = (() => {
+  const seen = new Set<number>();
+  const out: RawKw[] = [];
+  for (const kw of [
+    ...Object.values(topKeywordsByCategory as Record<string, RawKw[]>).flat(),
+    ...Object.values(extendedKeywordsByCategory as Record<string, RawKw[]>).flat(),
+  ]) {
+    if (!seen.has(kw.id)) { seen.add(kw.id); out.push(kw); }
+  }
+  return out;
+})();
+
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
 type UtilityPanel = "intro" | "qs-keyword" | "qs-combo";
 
@@ -769,7 +782,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      const kw = quickStartKeywords[Math.floor(Math.random() * quickStartKeywords.length)];
+                      const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
                       addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category: kw.category, mode: "include" });
                     }}
                     className="qs-card"
@@ -1059,7 +1072,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    const kw = quickStartKeywords[Math.floor(Math.random() * quickStartKeywords.length)];
+                    const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
                     addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category: kw.category, mode: "include" });
                   }}
                   className="qs-card"
