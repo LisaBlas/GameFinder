@@ -109,7 +109,7 @@ export const SEO_PAGES: SeoPage[] = [
       { category: "Keywords", id: 416, name: "Roguelike" },
       { category: "Keywords", id: 2228, name: "Dungeon Crawler" },
     ],
-    relatedSlugs: ["roguelite-games", "dungeon-crawler-rpg-games", "dark-fantasy-rpg-games"],
+    relatedSlugs: ["roguelite-games", "permadeath-games", "dungeon-crawler-rpg-games"],
     searchLabel: "Find roguelike games",
   },
   {
@@ -245,7 +245,7 @@ export const SEO_PAGES: SeoPage[] = [
       { category: "Keywords", id: 223, name: "Dark" },
       { category: "genres", id: 12, name: "Role-playing (RPG)" },
     ],
-    relatedSlugs: ["dark-fantasy-rpg-games", "dungeon-crawler-rpg-games", "medieval-rpg-games"],
+    relatedSlugs: ["dark-fantasy-rpg-games", "dungeon-crawler-rpg-games", "parry-games"],
     searchLabel: "Find souls-like games",
   },
   {
@@ -443,7 +443,7 @@ export const SEO_PAGES: SeoPage[] = [
       { category: "Keywords", id: 3014, name: "2D Platformer" },
       { category: "genres", id: 8, name: "Platform" },
     ],
-    relatedSlugs: ["metroidvania-games", "pixel-art-games", "roguelite-games"],
+    relatedSlugs: ["metroidvania-games", "parkour-games", "pixel-art-games"],
     searchLabel: "Find 2D platformer games",
   },
   {
@@ -505,6 +505,222 @@ export const SEO_PAGES: SeoPage[] = [
     ],
     relatedSlugs: ["mystery-adventure-games", "puzzle-mystery-games", "story-rich-narrative-games"],
     searchLabel: "Find point-and-click adventures",
+  },
+  // --- Priority 2: Mechanic-Based Pages ---
+  {
+    slug: "parry-games",
+    title: "Best Parry Games - Master Timing, Punish Every Attack",
+    description:
+      "Find the best parry games where reading and countering attacks is the core skill. From tight action games to deep combat systems, discover titles built around the perfect parry.",
+    intro:
+      "A well-timed parry is one of gaming's best feelings - the precise moment of reading an attack, committing to the window, and turning your enemy's aggression against them. Parry games build entire combat philosophies around this single mechanic.",
+    filters: [
+      { category: "Keywords", id: 5019, name: "Parry" },
+    ],
+    relatedSlugs: ["souls-like-games", "melee-games", "duels-games"],
+    searchLabel: "Find parry games",
+  },
+  {
+    slug: "ragdoll-physics-games",
+    title: "Best Ragdoll Physics Games - Gloriously Unpredictable",
+    description:
+      "Discover the best ragdoll physics games where real-time physics simulation drives the action. From comedy chaos to precision challenges, find games where no two moments ever play the same.",
+    intro:
+      "Ragdoll physics games are honest about what they are: a love letter to beautiful chaos. When a body flails perfectly off a ledge or a stack of enemies collapses in just the right way, no animation could ever plan it. The best ones build challenge and comedy in equal measure around that unpredictability.",
+    filters: [
+      { category: "Keywords", id: 4770, name: "Ragdoll Physics" },
+      { category: "Keywords", id: 287, name: "Physics-Focus" },
+    ],
+    relatedSlugs: ["physics-games", "physics-puzzle-games", "parkour-games"],
+    searchLabel: "Find ragdoll physics games",
+  },
+  {
+    slug: "bullet-time-games",
+    title: "Best Bullet Time Games - Slow Time, Own the Moment",
+    description:
+      "Find the best bullet time games where slowing time is a core combat mechanic. Discover action games that turn chaos into choreography when the world grinds to a halt.",
+    intro:
+      "Bullet time turns panic into mastery. When the world slows to a crawl and you have just enough time to see every bullet, line up every shot, and step between the gaps - that's when action games feel like ballet. These titles were built around that specific power fantasy.",
+    filters: [
+      { category: "Keywords", id: 1309, name: "Bullet Time" },
+    ],
+    relatedSlugs: ["parry-games", "melee-games", "souls-like-games"],
+    searchLabel: "Find bullet time games",
+  },
+  {
+    slug: "parkour-games",
+    title: "Best Parkour Games - Flow State, Open Cities, Mastered Movement",
+    description:
+      "Discover the best parkour games. Filter by setting, movement system, and platform to find games that make traversal feel like an art form worth mastering.",
+    intro:
+      "Parkour games are about flow state - reading a rooftop and moving through it without breaking stride. At their best, the city becomes a canvas and the movement system is your brush. These are games where getting from A to B is the whole point.",
+    filters: [
+      { category: "Keywords", id: 390, name: "Parkour" },
+    ],
+    relatedSlugs: ["wall-jump-games", "grapple-games", "2d-platformer-games"],
+    searchLabel: "Find parkour games",
+  },
+  {
+    slug: "wall-jump-games",
+    title: "Best Wall Jump Games - Defy Gravity, Master the Climb",
+    description:
+      "Find the best wall jump games where vertical movement and wall-based traversal are core mechanics. Discover platformers and action games that turn every surface into a launchpad.",
+    intro:
+      "Wall jumping is the platformer's second language. It opens vertical space, rewards mastery, and reframes every surface as a possibility. The best wall jump games design entire levels around this extra dimension - teaching you to think in angles, not just directions.",
+    filters: [
+      { category: "Keywords", id: 2155, name: "Wall Jump" },
+    ],
+    relatedSlugs: ["parkour-games", "grapple-games", "metroidvania-games"],
+    searchLabel: "Find wall jump games",
+  },
+  {
+    slug: "grapple-games",
+    title: "Best Grapple Hook Games - Swing, Pull, Own the Space",
+    description:
+      "Find the best grapple hook games where mobility and momentum define the experience. Discover games where mastering the grapple transforms every level into a physics playground.",
+    intro:
+      "A good grapple hook changes how you read space. Every surface becomes a possible anchor, every gap a trajectory to solve. Grapple games reward spatial instinct and the specific thrill of a perfectly timed swing - or a perfectly timed yank.",
+    filters: [
+      { category: "Keywords", id: 4903, name: "Grapple" },
+      { category: "Keywords", id: 390, name: "Parkour" },
+    ],
+    relatedSlugs: ["parkour-games", "wall-jump-games", "2d-platformer-games"],
+    searchLabel: "Find grapple hook games",
+  },
+  {
+    slug: "music-rhythm-games",
+    title: "Best Music & Rhythm Games - Play the Beat, Feel the Music",
+    description:
+      "Discover the best music and rhythm games. From high-precision arcade challenges to story-driven musical experiences, find games where the soundtrack is the mechanic.",
+    intro:
+      "Rhythm games collapse the distance between listener and player. When inputs lock to the beat, every note you hit feels musical and every miss feels physical. The best ones don't just play music at you - they teach you to hear it in a completely new way.",
+    filters: [
+      { category: "Keywords", id: 4137, name: "Music & Rhythm" },
+      { category: "Keywords", id: 1687, name: "Music Based" },
+    ],
+    relatedSlugs: ["bullet-time-games", "relaxing-simulation-games", "pixel-art-games"],
+    searchLabel: "Find music rhythm games",
+  },
+  {
+    slug: "permadeath-games",
+    title: "Best Permadeath Games - Every Life Counts, Every Death Is Final",
+    description:
+      "Find the best permadeath games where dying means starting over. Discover roguelikes, survival games, and tactical titles where permanent consequences sharpen every decision.",
+    intro:
+      "Permadeath makes everything matter. When a death ends the run, each resource becomes precious, each piece of information becomes currency, and every room you enter is a genuine risk assessment. These games demand respect from the player - and return it in full.",
+    filters: [
+      { category: "Keywords", id: 578, name: "Permadeath" },
+    ],
+    relatedSlugs: ["roguelike-games", "roguelite-games", "souls-like-games"],
+    searchLabel: "Find permadeath games",
+  },
+  {
+    slug: "gore-games",
+    title: "Best Gore Games - Visceral, Brutal, Unfiltered Combat",
+    description:
+      "Find the best gore games with intense, visceral violence and brutal combat. Discover games that use gore as meaningful feedback, not just spectacle.",
+    intro:
+      "The best gore games use violence as a feedback system. The visual crunch of a well-landed blow, the consequence of a perfectly placed shot, the reminder that the world has weight and your actions have impact. These are games that take their violence seriously as a mechanic.",
+    filters: [
+      { category: "Keywords", id: 1308, name: "Gore" },
+      { category: "Keywords", id: 129, name: "Bloody" },
+    ],
+    relatedSlugs: ["souls-like-games", "dark-fantasy-rpg-games", "horror-games"],
+    searchLabel: "Find gore games",
+  },
+  {
+    slug: "physics-games",
+    title: "Best Physics Games - Where Simulation Is the Mechanic",
+    description:
+      "Discover the best physics-driven games. Find sandbox, simulation, and action titles where realistic physics isn't just visual polish - it's the core system you play with.",
+    intro:
+      "In the best physics games, the engine is the designer. Mass, friction, and momentum create emergent scenarios no level designer could script. These are games where you prod the system and then ride whatever chaos comes back at you.",
+    filters: [
+      { category: "Keywords", id: 287, name: "Physics-Focus" },
+    ],
+    relatedSlugs: ["ragdoll-physics-games", "physics-puzzle-games", "destructible-environment-games"],
+    searchLabel: "Find physics games",
+  },
+  {
+    slug: "physics-puzzle-games",
+    title: "Best Physics Puzzle Games - Think in Forces, Solve with Gravity",
+    description:
+      "Find the best physics puzzle games. Discover titles where mass, momentum, and gravity are your tools - and the solution only reveals itself once you understand the underlying system.",
+    intro:
+      "Physics puzzle games make you think in forces. Every object has mass, every surface has friction, and the gap between your current state and the solution is an equation waiting to be solved intuitively. The moment it clicks feels less like solving a puzzle and more like understanding a rule of the universe.",
+    filters: [
+      { category: "Keywords", id: 2451, name: "Physics" },
+      { category: "Keywords", id: 287, name: "Physics-Focus" },
+    ],
+    relatedSlugs: ["physics-games", "ragdoll-physics-games", "puzzle-mystery-games"],
+    searchLabel: "Find physics puzzle games",
+  },
+  {
+    slug: "destructible-environment-games",
+    title: "Best Destructible Environment Games - Wreck It, Reroute Everything",
+    description:
+      "Find the best games with destructible environments. Discover action, strategy, and sandbox titles where breaking the world open is as important as navigating it.",
+    intro:
+      "Destructible environments change the contract. When walls can be broken, cover is temporary, and every path is one explosion away from a new shortcut. The best games with destructible environments reward creativity - sometimes the most powerful move is just making a new door.",
+    filters: [
+      { category: "Keywords", id: 5453, name: "Destructible Environment" },
+    ],
+    relatedSlugs: ["physics-games", "physics-puzzle-games", "ragdoll-physics-games"],
+    searchLabel: "Find destructible environment games",
+  },
+  {
+    slug: "time-travel-games",
+    title: "Best Time Travel Games - Rewrite the Timeline, Unravel the Past",
+    description:
+      "Discover the best time travel games. From puzzle mechanics built on rewinding seconds to narrative epics about reshaping history, find games that make time a first-class design element.",
+    intro:
+      "Time travel games ask an impossible question and then dare you to answer it. Whether you're rewinding a few seconds to undo a mistake or reshaping an entire timeline, the best ones use the mechanic to make choices feel consequential in ways linear games can't reach.",
+    filters: [
+      { category: "Keywords", id: 170, name: "Time Travel" },
+    ],
+    relatedSlugs: ["puzzle-mystery-games", "story-rich-narrative-games", "physics-puzzle-games"],
+    searchLabel: "Find time travel games",
+  },
+  {
+    slug: "melee-games",
+    title: "Best Melee Combat Games - Up Close, No Distance, Pure Skill",
+    description:
+      "Find the best melee combat games. Filter by combat system, setting, and difficulty to discover games that make close-quarters fighting feel real, readable, and deeply satisfying.",
+    intro:
+      "Melee combat strips away distance and forces a direct confrontation with design. Hitboxes, timing windows, combo systems, and the geometry of positioning - when it works, close-quarters combat is one of the most readable and satisfying feedback loops in all of games.",
+    filters: [
+      { category: "Keywords", id: 4891, name: "Melee" },
+    ],
+    relatedSlugs: ["parry-games", "duels-games", "souls-like-games"],
+    searchLabel: "Find melee combat games",
+  },
+  {
+    slug: "martial-arts-games",
+    title: "Best Martial Arts Games - Discipline, Technique, and Controlled Violence",
+    description:
+      "Discover the best martial arts games. From stylized brawlers to grounded technical fighters, find games where martial arts is the core identity - not just a skin on generic combat.",
+    intro:
+      "The best martial arts games understand that technique is the point. Not just button chains, but the weight of a well-executed throw, the satisfaction of a counter that lands exactly right, and worlds built around the culture and discipline behind the fighting style.",
+    filters: [
+      { category: "Keywords", id: 61, name: "Martial Arts" },
+      { category: "Keywords", id: 4891, name: "Melee" },
+    ],
+    relatedSlugs: ["melee-games", "parry-games", "duels-games"],
+    searchLabel: "Find martial arts games",
+  },
+  {
+    slug: "duels-games",
+    title: "Best Dueling Games - One on One, Every Move Counts",
+    description:
+      "Find the best dueling games where one-on-one combat is the core experience. From swordfighting sims to honor-based showdowns, discover games that make every duel feel like chess at speed.",
+    intro:
+      "A duel is the purest form of combat: no allies, no cover, just two opponents reading each other until one makes the decisive mistake. The best dueling games build entire philosophies around that dynamic - the tension of the standoff, the commitment of the first move, and the earned finality of the last.",
+    filters: [
+      { category: "Keywords", id: 4860, name: "Duels" },
+      { category: "Keywords", id: 4891, name: "Melee" },
+    ],
+    relatedSlugs: ["parry-games", "melee-games", "martial-arts-games"],
+    searchLabel: "Find dueling games",
   },
 ];
 
