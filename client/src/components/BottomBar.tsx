@@ -21,7 +21,7 @@ const BottomBar: React.FC<BottomBarProps> = ({ resetSections, resultsSectionRef,
     const prevCount = prevCountRef.current;
     const currCount = selectedFilters.length;
 
-    if (currCount > 0 && prevCount === 0) {
+    if (currCount > prevCount) {
       setIsExpanded(true);
     }
     if (currCount === 0) {
