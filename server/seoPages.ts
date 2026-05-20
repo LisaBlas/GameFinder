@@ -49,7 +49,9 @@ export function buildAppUrl(filters: SeoFilter[], sort = "relevance"): string {
   return `/?${params.toString()}`;
 }
 
-export const SEO_PAGES: SeoPage[] = [
+import { GENERATED_SEO_PAGES } from './generatedSeoPages.js';
+
+const MANUAL_SEO_PAGES: SeoPage[] = [
   {
     slug: "cozy-farming-games",
     title: "Best Cozy Farming Games - Find Your Next Feel-Good Farm",
@@ -723,6 +725,8 @@ export const SEO_PAGES: SeoPage[] = [
     searchLabel: "Find dueling games",
   },
 ];
+
+export const SEO_PAGES: SeoPage[] = [...MANUAL_SEO_PAGES, ...GENERATED_SEO_PAGES];
 
 export const SEO_PAGE_MAP = new Map<string, SeoPage>(
   SEO_PAGES.map((p) => [p.slug, p])
