@@ -1,4 +1,5 @@
 import { type SeoPage, type SeoFilter, buildAppUrl, SEO_PAGES } from "./seoPages";
+import type { CachedGame } from "../shared/schema.js";
 
 const BASE_URL = "https://gamefinder-app.com";
 
@@ -26,8 +27,29 @@ function relatedLinkHtml(slug: string): string {
   return `<a href="${BASE_URL}/best/${escapeHtml(slug)}" style="display:inline-block;padding:6px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);color:#9caeaa;font-size:13px;text-decoration:none;margin:4px;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#10b981';this.style.color='#34d399';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='#9caeaa';">${escapeHtml(label)}</a>`;
 }
 
-function buildJsonLd(page: SeoPage, appUrl: string): string {
-  const collectionPage = {
+function gameCardHtml(game: CachedGame, position: number): string {
+  const coverImg = game.cover
+    ? `<img class="game-cover" src="${escapeHtml(game.cover)}" alt="${escapeHtml(game.name)} cover" loading="lazy" width="72" height="96" />`
+    : `<div class="game-cover-placeholder"></div>`;
+  const ratingBadge = game.rating != null
+    ? `<span class="game-rating">${game.rating}</span>`
+    : "";
+  const summary = game.summary
+    ? `<p class="game-summary">${escapeHtml(game.summary.slice(0, 160))}${game.summary.length > 160 ? "…" : ""}</p>`
+    : "";
+  return `<div class="game-card" itemscope itemtype="https://schema.org/VideoGame" data-position="${position}">
+      ${coverImg}
+      <div class="game-info">
+        <div class="game-title-text">
+          <span itemprop="name">${escapeHtml(game.name)}</span>${ratingBadge}
+        </div>
+        ${summary}
+      </div>
+    </div>`;
+}
+
+function buildJsonLd(page: SeoPage, appUrl: string, games?: CachedGame[]): string {
+  const collectionPage: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: page.title,
@@ -41,6 +63,18 @@ function buildJsonLd(page: SeoPage, appUrl: string): string {
       ],
     },
   };
+
+  if (games && games.length > 0) {
+    collectionPage.mainEntity = {
+      "@type": "ItemList",
+      numberOfItems: games.length,
+      itemListElement: games.map((g, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: g.name,
+      })),
+    };
+  }
 
   const webApp = {
     "@context": "https://schema.org",
@@ -56,7 +90,7 @@ function buildJsonLd(page: SeoPage, appUrl: string): string {
   return `<script type="application/ld+json">${JSON.stringify(collectionPage)}</script>\n<script type="application/ld+json">${JSON.stringify(webApp)}</script>`;
 }
 
-export function renderSeoPage(page: SeoPage): string {
+export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
   const appUrl = buildAppUrl(page.filters);
   const fullAppUrl = `${BASE_URL}${appUrl}`;
   const canonicalUrl = `${BASE_URL}/best/${page.slug}`;
@@ -64,7 +98,13 @@ export function renderSeoPage(page: SeoPage): string {
 
   const filterChips = page.filters.map(filterChipHtml).join("\n");
   const relatedLinks = page.relatedSlugs.map(relatedLinkHtml).join("\n");
-  const jsonLd = buildJsonLd(page, appUrl);
+  const jsonLd = buildJsonLd(page, appUrl, games);
+  const gameListHtml = games && games.length > 0
+    ? `<div class="games-section">
+      <p class="section-label">Top games</p>
+      ${games.map((g, i) => gameCardHtml(g, i + 1)).join("\n")}
+    </div>`
+    : "";
   const titleEsc = escapeHtml(page.title);
   const descEsc = escapeHtml(page.description);
   const introEsc = escapeHtml(page.intro);
@@ -198,6 +238,54 @@ export function renderSeoPage(page: SeoPage): string {
     }
     .footer-note a { color: #10b981; text-decoration: none; }
     .footer-note a:hover { text-decoration: underline; }
+    .games-section { margin-bottom: 40px; }
+    .game-card {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .game-card:first-of-type { border-top: 1px solid rgba(255,255,255,0.06); }
+    .game-cover {
+      width: 72px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.05);
+    }
+    .game-cover-placeholder {
+      width: 72px;
+      height: 96px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+    .game-info { flex: 1; min-width: 0; }
+    .game-title-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f4f7f5;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .game-rating {
+      font-size: 12px;
+      font-weight: 600;
+      color: #10b981;
+      background: rgba(16,185,129,0.12);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+    .game-summary {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #647570;
+      margin-top: 4px;
+    }
   </style>
 
   <script>
@@ -228,6 +316,8 @@ export function renderSeoPage(page: SeoPage): string {
 
     <h1>${titleEsc}</h1>
     <p class="intro">${introEsc}</p>
+
+    ${gameListHtml}
 
     <p class="section-label">Active filters</p>
     <div class="chips-wrap" aria-label="Selected filters">

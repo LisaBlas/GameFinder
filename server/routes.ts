@@ -1,10 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { eq } from "drizzle-orm";
 import { storage } from "./storage";
 import { IGDBService } from "./services/igdbService";
 import keywordsRouter from "./routes/keywords";
 import { SEO_PAGE_MAP } from "./seoPages";
 import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
+import { db } from "./db";
+import { seoPageCache } from "../shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize IGDB service
@@ -21,14 +24,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SEO landing pages — server-rendered, crawlable, before the SPA fallback
-  app.get('/best/:slug', (req, res) => {
+  app.get('/best/:slug', async (req, res) => {
     const page = SEO_PAGE_MAP.get(req.params.slug);
     if (!page) {
       return res.status(404).set('Content-Type', 'text/html').send(renderNotFoundPage());
     }
+
+    let cachedGames;
+    if (db) {
+      try {
+        const rows = await db.select().from(seoPageCache).where(eq(seoPageCache.slug, req.params.slug)).limit(1);
+        cachedGames = rows[0]?.games ?? undefined;
+      } catch {
+        // DB unavailable — render without games
+      }
+    }
+
     res.set('Content-Type', 'text/html');
     res.set('Cache-Control', 'public, max-age=3600');
-    res.send(renderSeoPage(page));
+    res.send(renderSeoPage(page, cachedGames));
   });
 
   // API routes

@@ -2,7 +2,7 @@
 
 ## The Core Opportunity
 
-GameFinder can rank on the first page of Google for a large number of long-tail searches by creating dedicated server-rendered pages for specific keyword/filter combinations (e.g. `/best/cozy-horror-games`, `/best/colony-builder-games`).
+GameFinder can rank on the first page of Google for a large number of long-tail searches by creating dedicated server-rendered pages for specific keyword/filter combinations (e.g. `/best/parry-games`, `/best/ragdoll-physics-games`).
 
 This is called **programmatic SEO**: one URL per search intent, each with real content Google can crawl and index.
 
@@ -14,21 +14,23 @@ This is called **programmatic SEO**: one URL per search intent, each with real c
 
 | Tier | Examples | Effort | Expected result |
 |------|----------|--------|-----------------|
-| Easy wins | "free co-op survival games PC", "cozy horror games" | Low | Page 1 within months — near-zero dedicated-page competition |
-| Medium effort | "co-op horror games", "colony builder games" | Medium | Beatable with structured SSR pages vs. Reddit threads and listicles |
-| Hard (skip for now) | "best PC games", "horror games" | Very high | IGN, Steam, GameSpot own these — don't target directly |
+| Easy wins | "parry games", "ragdoll physics games", "bullet time games" | Low | Page 1 within months — mechanic searches have near-zero dedicated-page competition |
+| Medium effort | "soulslike games with parry", "wholesome farming games" | Medium | Beatable with structured SSR pages vs. Reddit threads and listicles |
+| Hard (skip for now) | "best PC games", "horror games", "roguelike games" | Very high | IGN, Steam, GameSpot, and dedicated genre sites own these |
+
+**The mechanic angle is the core insight.** Major gaming sites organize by genre and platform, not by mechanic. Steam's mechanic tags are JavaScript-rendered and invisible to Google. No competitor has dedicated, crawlable pages for mechanic-specific searches.
 
 ---
 
 ## Competition Analysis
 
-- **Large gaming sites** (IGN, Metacritic, GameSpot): focus on reviews and news, not combinatorial discovery pages
+- **Large gaming sites** (IGN, Metacritic, GameSpot): focus on reviews and news, not mechanic or combinatorial discovery pages
+- **Mid-tier SEO sites** (DualShockers, GameRant, TheGamer): do write mechanic-based lists, but as static listicles — no filtering, no live data, decays over time
 - **Steam**: filtered results are JavaScript-rendered — invisible to Google
-- **Reddit**: ranks well but static, decays over time
+- **Reddit**: ranks well but static, no interactivity, decays over time
 - **RAWG.io**: has the data, weak SEO execution
-- **"Top 10" listicles**: thin content, no interactivity
 
-**The gap is real.** Almost no competitor has dedicated, crawlable pages for specific keyword + filter combinations.
+**GameFinder's structural advantage over all of them:** their pages are static lists. GameFinder's pages show real, filterable, up-to-date IGDB results with covers, ratings, and interactive filtering. That is better content by Google's definition — and it compounds as new games are added to IGDB.
 
 ---
 
@@ -67,6 +69,38 @@ A competitor page that lists even 10 game titles with short descriptions has sig
 
 ---
 
+## Keyword Strategy
+
+Research and curation is complete. See **`docs/SEO_KEYWORDS.md`** for the full source of truth.
+
+### Two page types
+
+**Single-keyword pages** — the keyword itself is the search query. The slug maps directly to one IGDB keyword filter.
+
+- Examples: `/best/parry-games`, `/best/ragdoll-physics-games`, `/best/farming-games`
+- Use when: the keyword alone defines a clear, searchable intent
+- Scale: ~200 confirmed targets in SEO_KEYWORDS.md
+
+**Combo pages** — two or more keywords/filters combine to define a specific niche that neither covers alone.
+
+- Examples: `/best/dancing-party-games`, `/best/wholesome-farming-games`, `/best/parry-soulslike-games`
+- Use when: adding the second keyword changes *who* the page is for, not just narrows the result count
+- Scale: ~50–100 high-confidence combos as a second batch
+
+**Target scale: ~300 pages in the first launch batch.**
+
+### Keyword tiers
+
+**Priority — Mechanic-Based (build first):** Parry, Ragdoll Physics, Bullet Time, Grapple, Parkour, Wall Jump, Souls-like, Martial Arts, Melee, Duels, Destructible Environment, Physics-Focus, Music & Rhythm, Permadeath, Gore, Time Travel, Physics
+
+These have the lowest competition and highest search intent alignment with GameFinder's filtering system.
+
+**Second tier:** setting/mood/aesthetic keywords (Steampunk, Post-Apocalyptic, Psychological Horror, Wholesome, etc.) and simulation genres (Farming, City Builder, Dating, etc.)
+
+**Combo tier:** mechanic × mood pairs identified during curation (see SEO_KEYWORDS.md Priority Combos section).
+
+---
+
 ## Implementation Priorities
 
 ### 1. Add game listings to SEO pages (highest impact)
@@ -76,30 +110,25 @@ Render actual game results server-side on each `/best/:slug` page — at minimum
 - Requires calling IGDB at render time (or caching results)
 - Gives Google real, specific content to index
 - Dramatically improves engagement signals (users can browse without clicking through to the app)
+- Applies immediately to all 30 existing pages before new ones are added
 
-### 2. Scale from 30 pages to 500–2,000
+### 2. Build the mechanic-based priority pages (~17 slugs)
 
-The meaningful combinatorial space is roughly **500–2,000 slugs** before combos become too niche to have search volume. A generator script can produce `seoPages.ts` entries from a structured config.
+Low effort, high confidence. These are the pages most likely to rank quickly given near-zero dedicated competition. Hand-write intros for quality — this is the batch where editorial quality matters most.
+
+### 3. Scale to ~300 pages (single-keyword + combo)
+
+A generator script produces `seoPages.ts` entries from a structured config based on SEO_KEYWORDS.md.
 
 Steps:
-1. Define the full combo space (genre × keyword, keyword × keyword, platform × genre, etc.)
-2. Use Google Trends to prioritize which combos have real search interest (see below)
-3. Generate page configs with templated but accurate titles, descriptions, and intros
-4. Consider AI-assisted intro generation at scale (with quality review)
+1. Build the generator script from SEO_KEYWORDS.md entries
+2. Use templated but accurate titles, descriptions, and intros
+3. AI-assisted intro generation at scale with quality review pass
+4. Launch single-keyword pages first, then combos
 
-### 3. Keyword/combo research via Google Trends
+### 4. Validate with Google Search Console
 
-Before generating hundreds of pages, validate which combos are worth targeting.
-
-**What's possible:**
-- Fetch Google Trends data for a list of candidate slug ideas
-- Compare relative search interest across combos
-- Flag rising vs. declining trends
-- Prioritize the top N combos to build first
-
-**Limitation:** Google Trends gives relative popularity, not exact monthly volumes. Exact volumes require Ahrefs, SEMrush, or Google Keyword Planner (paid). Relative data is sufficient for prioritization.
-
-**Workflow:** provide a list of ~50 candidate combos → rank by Trends interest → build pages for the top 20–30 first.
+GSC data reveals which pages are already getting impressions but not clicks — the fastest wins. Sharing GSC access enables targeting these directly.
 
 ---
 
@@ -110,12 +139,32 @@ Before generating hundreds of pages, validate which combos are worth targeting.
 - `server/routes.ts` registers `/best/:slug` before the SPA fallback
 - Sitemap auto-updates from `SEO_PAGES` — no manual edits needed
 - CTA URLs are built by `buildAppUrl()` from filter configs
+- Combo pages use multiple keyword IDs in the filter config — same architecture, no changes needed
 
 ---
 
-## Open Questions Before Implementation
+## Resolved Decisions
 
-1. **Game data on SEO pages:** fetch live from IGDB at render time, or pre-cache per slug? Live is simpler but adds latency and IGDB rate limit risk. Cache is more robust.
-2. **Intro copy at scale:** hand-written (current quality) vs. AI-generated with review. Quality matters for HCU compliance.
-3. **How many pages to launch in the first batch?** Start with ~100 high-confidence combos or go broad immediately?
-4. **Search Console access:** sharing GSC data would allow targeting pages that are already getting impressions but not clicks (low-hanging fruit).
+1. **Game data: cache in Neon, refresh nightly.** Store top 10 game results per slug in a `seo_page_cache` table (slug, games JSON, updated_at). Render from cache, fall back to live on cache miss. The VPS keep-alive cron already runs nightly — add a cache refresh job there. Avoids IGDB rate limits, latency, and downtime risk at 300+ pages.
+
+2. **Intro copy at scale:** TBD — see below.
+
+3. **Search Console: already set up for gamefinder-app.com.** GSC analysis complete (May 2026). Key findings:
+   - All traffic is brand search ("game finder", "gamefinder") — no discovery traffic yet
+   - The sitemap has 31 URLs but GSC last read it in November 2025 and hasn't re-crawled since — none of the `/best/` pages are indexed
+   - robots.txt is correct (`Allow: /`); 3 redirect pages are www/non-www variants (not urgent); 1 stale robots-blocked URL to investigate via URL Inspection
+   - **Do not request indexing for `/best/` pages until game listings are live.** Pages without game content will get "Crawled — currently not indexed" and may be harder to re-index later.
+   - **Sitemap resubmission** (GSC → Sitemaps → delete → re-add) can be done now to ensure Google is aware of all pages — but hold off on manual indexing requests until Priority 1 is complete.
+
+## Resolved: Intro Copy at Scale
+
+**Approach: hand-written category templates, filled at generation time.**
+
+The keyword list in `SEO_KEYWORDS.md` maps to ~28 sub-categories, not 300 unique intro types. Write 2–3 intro template variants per sub-category (~60–80 sentences total). The generator script picks a variant and fills in a `{keyword}` slot and optionally `{example_games}` from the cache. Templates are written once, reviewed once, carry editorial voice, and require no API dependency.
+
+**Critical constraint: never ship templated pages without game listings.** A templated intro is 3 sentences on a page that also has 10 unique game titles, covers, ratings, and descriptions — Google sees unique content. A templated intro on a page with no game data is thin/duplicate content and an HCU liability. The sequence is non-negotiable:
+
+1. Add game listings to existing pages first (Priority 1)
+2. Only then launch new pages with templated intros
+
+Title tags, H1s, and meta descriptions are unique per page by definition since the keyword changes — this is sufficient for Google to treat each page as distinct even when intro templates are shared across a sub-category.
