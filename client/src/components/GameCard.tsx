@@ -374,7 +374,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null);
   const synopsis = game.summary || 'No synopsis available yet.';
   const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
-  const storeButtonClass = "game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors";
+  const storeButtonClass = "game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm font-semibold transition-colors";
   const storeIconClass = "game-card-store-icon flex h-5 w-5 flex-shrink-0 items-center justify-center";
   const officialStoreLinks = (
     <>
