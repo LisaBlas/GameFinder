@@ -1441,7 +1441,7 @@ h3{
   z-index: 0;
   pointer-events: none;
   border-radius: inherit;
-  border: 1px solid rgba(var(--c-gold-rgb), 0.09);
+  border: none;
   box-shadow:
     inset 0 1px 0 rgba(244, 200, 100, 0.08),
     inset 0 -1px 0 rgba(0, 0, 0, 0.28),
@@ -1467,7 +1467,6 @@ h3{
 }
 
 .game-card-compact:hover::after {
-  border-color: rgba(var(--c-gold-rgb), 0.18);
   box-shadow:
     inset 0 1px 0 rgba(244, 200, 100, 0.10),
     inset 0 -1px 0 rgba(0, 0, 0, 0.28),
@@ -1481,7 +1480,6 @@ h3{
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.99), rgba(var(--c-card-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
   box-shadow:
-    0 0 0 1px rgba(var(--c-gold-rgb), 0.09),
     0 22px 70px rgba(0, 0, 0, 0.38),
     0 0 48px rgba(var(--c-emerald-rgb), 0.05);
 }
@@ -1514,7 +1512,6 @@ h3{
 }
 
 .game-card-selected::after {
-  border-color: rgba(var(--c-gold-rgb), 0.22);
   box-shadow:
     inset 0 1px 0 rgba(244, 200, 100, 0.10),
     inset 0 -1px 0 rgba(0, 0, 0, 0.3),
