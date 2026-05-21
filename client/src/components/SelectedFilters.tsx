@@ -51,6 +51,29 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
     ].filter(Boolean).join(" ");
   };
 
+  const renderModeToggle = (filter: typeof selectedFilters[number]) => {
+    const mode = filter.mode || "include";
+    const nextMode = mode === "exclude" ? "include" : "exclude";
+    const Icon = nextMode === "include" ? Plus : Ban;
+
+    return (
+      <button
+        type="button"
+        className="keyword-mode-chip-button"
+        onClick={(event) => {
+          event.stopPropagation();
+          addFilter({
+            ...filter,
+            mode: nextMode
+          });
+        }}
+        aria-label={`${nextMode === "include" ? "Include" : "Exclude"} ${filter.name}`}
+      >
+        <Icon className="w-3.5 h-3.5" />
+      </button>
+    );
+  };
+
   const renderPill = (filter: typeof selectedFilters[number]) => {
     const isKeyword = filter.category === "Keywords";
 
@@ -70,22 +93,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
         aria-label={isKeyword ? `Remove ${filter.name} filter` : undefined}
       >
         <span className="selected-filter-name">{filter.name}</span>
-        {isKeyword && (filter.mode || "include") === "include" && (
-          <button
-            type="button"
-            className="keyword-mode-chip-button"
-            onClick={(event) => {
-              event.stopPropagation();
-              addFilter({
-                ...filter,
-                mode: "exclude"
-              });
-            }}
-            aria-label={`Exclude ${filter.name}`}
-          >
-            <Ban className="w-3.5 h-3.5" />
-          </button>
-        )}
+        {isKeyword && renderModeToggle(filter)}
         {!isKeyword && (
           <button
             type="button"
@@ -101,7 +109,6 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
   };
 
   const renderLanePill = (filter: typeof selectedFilters[number]) => {
-    const isKeyword = filter.category === "Keywords";
     return (
     <div
       key={`${filter.category}-${filter.id}`}
@@ -118,22 +125,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
       aria-label={`Remove ${filter.name} filter`}
     >
       <span className="selected-filter-name">{filter.name}</span>
-      {(filter.mode || "include") === "include" && (
-        <button
-          type="button"
-          className="keyword-mode-chip-button"
-          onClick={(event) => {
-            event.stopPropagation();
-            addFilter({
-              ...filter,
-              mode: "exclude"
-            });
-          }}
-          aria-label={`Exclude ${filter.name}`}
-        >
-          <Ban className="w-3.5 h-3.5" />
-        </button>
-      )}
+      {renderModeToggle(filter)}
     </div>
     );
   };
@@ -147,8 +139,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
       <div className="selected-filter-lanes">
         <div className="selected-filter-lane">
           <div className="selected-filter-lane-mode selected-filter-lane-mode-include active">
-            <Plus className="w-3.5 h-3.5" />
-            INCLUDE
+            <Plus className="w-5 h-5" />
           </div>
           <div ref={includeLaneRef} className="selected-filter-lane-scroll" onWheel={handleLaneWheel}>
             {includedFilters.length > 0
@@ -159,8 +150,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
         </div>
         <div className="selected-filter-lane">
           <div className="selected-filter-lane-mode selected-filter-lane-mode-exclude active">
-            <Ban className="w-3.5 h-3.5" />
-            EXCLUDE
+            <Ban className="w-5 h-5" />
           </div>
           <div ref={excludeLaneRef} className="selected-filter-lane-scroll" onWheel={handleLaneWheel}>
             {excludedFilters.length > 0

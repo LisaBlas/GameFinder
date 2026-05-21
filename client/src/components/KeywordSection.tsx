@@ -11,7 +11,7 @@ import {
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
   Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
   X, Search, Share2, Check, ChevronDown, ChevronLeft, ChevronRight,
-  Shuffle, Gem, FlaskConical, Star,
+  Shuffle, Star, Lock, KeyRound, Hammer,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import Tooltip from "./Tooltip";
@@ -42,6 +42,7 @@ const _randomKeywordPool: RawKw[] = (() => {
 
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
 type UtilityPanel = "intro" | "qs-keyword" | "qs-combo";
+type RevealCard = "common-keyword" | "rare-combo" | "unique-keyword" | "unique-combo";
 
 interface KeywordComboSuggestion {
   title: string;
@@ -53,6 +54,36 @@ interface KeywordComboSuggestion {
   }>;
 }
 
+interface UniqueLimitsStore {
+  date: string;
+  kwUsed: number;
+  comboUsed: number;
+  lastKwName?: string;
+  lastKwEmoji?: string;
+  lastComboTitle?: string;
+}
+
+const UNIQUE_KW_DAILY_LIMIT = 3;
+const UNIQUE_COMBO_DAILY_LIMIT = 1;
+
+function loadUniqueLimits(): UniqueLimitsStore {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const raw = localStorage.getItem('gamefinder_unique_limits');
+    if (raw) {
+      const parsed: UniqueLimitsStore = JSON.parse(raw);
+      if (parsed.date === today) return parsed;
+    }
+    return { date: today, kwUsed: 0, comboUsed: 0 };
+  } catch {
+    return { date: new Date().toISOString().split('T')[0], kwUsed: 0, comboUsed: 0 };
+  }
+}
+
+function saveUniqueLimits(state: UniqueLimitsStore): void {
+  try { localStorage.setItem('gamefinder_unique_limits', JSON.stringify(state)); } catch {}
+}
+
 interface KeywordSectionProps {
   expanded: boolean;
   setActiveSection: (section: 'keywords' | 'results' | 'none') => void;
@@ -62,6 +93,7 @@ interface KeywordSectionProps {
 
 export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const category = 'Keywords';
   const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
@@ -69,7 +101,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [shareShineActive, setShareShineActive] = useState(false);
 
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
-  const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>(null);
+  const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>("Mechanics & Systems");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel>("intro");
   const [mobileCategoryView, setMobileCategoryView] = useState(false);
@@ -81,6 +113,20 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [activeQsKeywordIndex, setActiveQsKeywordIndex] = useState(0);
   const [activeUniqueKeywordIndex, setActiveUniqueKeywordIndex] = useState(0);
   const [activeUniqueComboIndex, setActiveUniqueComboIndex] = useState(0);
+  const [commonKeywordRevealed, setCommonKeywordRevealed] = useState<{ name: string } | null>(null);
+  const [rareComboRevealed, setRareComboRevealed] = useState<{ title: string } | null>(null);
+  const [activeRevealCard, setActiveRevealCard] = useState<RevealCard | null>(null);
+  const [uniqueLimits, setUniqueLimits] = useState<UniqueLimitsStore>(() => ({ date: new Date().toISOString().split('T')[0], kwUsed: 0, comboUsed: 0 }));
+  const [kwExhaustedTapped, setKwExhaustedTapped] = useState(false);
+  const [comboExhaustedTapped, setComboExhaustedTapped] = useState(false);
+  const kwLeft = UNIQUE_KW_DAILY_LIMIT - uniqueLimits.kwUsed;
+  const comboLeft = UNIQUE_COMBO_DAILY_LIMIT - uniqueLimits.comboUsed;
+  const kwRevealed = uniqueLimits.kwUsed > 0 ? { name: uniqueLimits.lastKwName ?? '', emoji: uniqueLimits.lastKwEmoji ?? '' } : null;
+  const comboRevealed = uniqueLimits.comboUsed > 0 ? { title: uniqueLimits.lastComboTitle ?? '' } : null;
+  const isKwExhausted = kwLeft <= 0 && (!kwRevealed || kwExhaustedTapped);
+  const isKwRevealedState = !!kwRevealed && !kwExhaustedTapped;
+  const isComboExhausted = comboLeft <= 0 && (!comboRevealed || comboExhaustedTapped);
+  const isComboRevealedState = !!comboRevealed && !comboExhaustedTapped;
   const EXTENDED_PAGE_SIZE = 20;
 
   const keywordComboSuggestions: KeywordComboSuggestion[] = [
@@ -239,19 +285,87 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     },
   ];
 
+  const commonKeywordLabel = "Common key";
+  const commonKeywordState = "Random keyword";
+  const rareComboLabel = "Rare craft";
+  const rareComboState = "Curated combo";
+  const isCommonKeywordRevealed = !!commonKeywordRevealed;
+  const isRareComboRevealed = !!rareComboRevealed;
+
+  const getCommonKeywordState = () => commonKeywordRevealed?.name ?? commonKeywordState;
+  const getRareComboState = () => rareComboRevealed?.title ?? rareComboState;
+
+  const triggerCardReveal = (card: RevealCard) => {
+    if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+    setActiveRevealCard(null);
+    window.setTimeout(() => setActiveRevealCard(card), 0);
+    revealTimerRef.current = window.setTimeout(() => {
+      setActiveRevealCard(null);
+      revealTimerRef.current = null;
+    }, 850);
+  };
+
+  const getCardClassName = (baseClass: string, card: RevealCard, hasResult = false) => (
+    [
+      'qs-card',
+      baseClass,
+      hasResult ? 'qs-card-has-result' : '',
+      activeRevealCard === card ? 'qs-card-reveal-pulse' : '',
+    ].filter(Boolean).join(' ')
+  );
+
+  const getUniqueKeywordState = () => {
+    if (isKwExhausted) return "Resets tomorrow";
+    if (isKwRevealedState) return kwRevealed!.name;
+    return `less than 5 results - ${kwLeft} left`;
+  };
+
+  const getUniqueComboState = () => {
+    if (isComboExhausted) return "Resets tomorrow";
+    if (isComboRevealedState) return comboRevealed!.title;
+    return `less than 5 results - ${comboLeft} left`;
+  };
+
+  const applyCommonKeyword = () => {
+    triggerCardReveal("common-keyword");
+    clearAllFilters();
+    const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
+    const name = kw.name.replace(/\b\w/g, c => c.toUpperCase());
+    addFilter({ id: kw.id, name, category, mode: "include" });
+    setCommonKeywordRevealed({ name });
+  };
+
+  const applyRareCombo = () => {
+    triggerCardReveal("rare-combo");
+    clearAllFilters();
+    const suggestion = keywordComboSuggestions[activeSuggestionIndex];
+    suggestion.filters.forEach(filter => {
+      addFilter({
+        id: filter.id,
+        name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
+        category: filter.category,
+        mode: filter.category === category ? filter.mode || "include" : undefined,
+      });
+    });
+    setRareComboRevealed({ title: suggestion.title });
+    setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
+  };
+
   const applyUniqueKeyword = () => {
+    if (uniqueLimits.kwUsed >= UNIQUE_KW_DAILY_LIMIT) return;
+    triggerCardReveal("unique-keyword");
     clearAllFilters();
     const kw = uniqueKeywords[activeUniqueKeywordIndex];
-    addFilter({
-      id: kw.id,
-      name: kw.name.replace(/\b\w/g, c => c.toUpperCase()),
-      category,
-      mode: "include",
-    });
+    addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
+    const newLimits: UniqueLimitsStore = { ...uniqueLimits, kwUsed: uniqueLimits.kwUsed + 1, lastKwName: kw.name, lastKwEmoji: kw.emoji };
+    saveUniqueLimits(newLimits);
+    setUniqueLimits(newLimits);
     setActiveUniqueKeywordIndex(i => (i + 1) % uniqueKeywords.length);
   };
 
   const applyUniqueCombo = () => {
+    if (uniqueLimits.comboUsed >= UNIQUE_COMBO_DAILY_LIMIT) return;
+    triggerCardReveal("unique-combo");
     clearAllFilters();
     const suggestion = uniqueComboSuggestions[activeUniqueComboIndex];
     suggestion.filters.forEach(filter => {
@@ -262,6 +376,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         mode: filter.category === category ? filter.mode || "include" : undefined,
       });
     });
+    const newLimits: UniqueLimitsStore = { ...uniqueLimits, comboUsed: uniqueLimits.comboUsed + 1, lastComboTitle: suggestion.title };
+    saveUniqueLimits(newLimits);
+    setUniqueLimits(newLimits);
     setActiveUniqueComboIndex(i => (i + 1) % uniqueComboSuggestions.length);
   };
 
@@ -301,6 +418,12 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     };
   }, [searchFresh, isLoading]);
 
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+    };
+  }, []);
+
   const selectMainCategory = (cat: MainCategory) => {
     setActiveMainCategory(current => current === cat ? null : cat);
     setActiveSubcategory(null);
@@ -312,11 +435,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const drillIntoCategory = (cat: MainCategory) => {
-    window.history.pushState({ gamefinder: 'category' }, '');
     setActiveMainCategory(cat);
     setActiveSubcategory(null);
-    setMobileCategoryView(true);
-    setMobileSubcategoryView(false);
     setRevealedExtended([]);
     setAnimBatchStart(0);
   };
@@ -338,26 +458,14 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return <Palette className={size} />;
   };
 
-  const getCategoryAccentVars = (mainCat: MainCategory): React.CSSProperties => {
-    if (mainCat === "Setting & World") return {
-      '--cat-accent-rgb': 'var(--c-gold-rgb)',
-      '--cat-accent-soft': 'var(--c-gold)',
-    } as React.CSSProperties;
-    if (mainCat === "Aesthetics & Style") return {
-      '--cat-accent-rgb': 'var(--c-violet-rgb)',
-      '--cat-accent-soft': 'var(--c-violet-soft)',
-    } as React.CSSProperties;
+  const getCategoryAccentVars = (_mainCat: MainCategory): React.CSSProperties => {
     return {
-      '--cat-accent-rgb': 'var(--c-cyan-rgb)',
-      '--cat-accent-soft': 'var(--c-cyan-soft)',
+      '--cat-accent-rgb': 'var(--c-emerald-rgb)',
+      '--cat-accent-soft': 'var(--c-emerald-soft)',
     } as React.CSSProperties;
   };
 
-  const getCategoryPreviewKeywords = (mainCat: MainCategory): string[] => ({
-    "Mechanics & Systems": ["Bullet Hell", "Roguelike Deckbuilder", "Base Building", "Card-Based Combat"],
-    "Setting & World": ["Cosmic Horror", "Underwater", "Post-Apocalyptic", "Viking Age"],
-    "Aesthetics & Style": ["Cel-Shaded", "Voxel Art", "Minimalist UI", "Chiptune"],
-  }[mainCat] ?? []);
+
 
   const subcategoryIconMap: Record<string, LucideIcon> = {
     "Combat Systems": Sword,
@@ -795,62 +903,86 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 );
               })}
 
-              <section className="grid gap-2 border-t border-border/70 pt-3">
-                <div className="qs-section-label">
-                  <Wand2 className="w-3 h-3" />
-                  Quick Start
+              <section className="grid gap-3 border-t border-border/70 pt-3">
+                {/* Roll sub-group */}
+                <div className="grid gap-1.5">
+                  <div className="qs-section-label">
+                    <Dices className="w-3 h-3" />
+                    Roll
+                  </div>
+                  <div className="qs-cards-grid">
+                    <button
+                      type="button"
+                      onClick={applyCommonKeyword}
+                      className={getCardClassName('qs-card-rnd-kw', 'common-keyword', isCommonKeywordRevealed)}
+                    >
+                      <span className="qs-card-shine" aria-hidden="true" />
+                      <KeyRound className="w-3.5 h-3.5" />
+                      {!isCommonKeywordRevealed && (
+                        <span className="qs-card-action-label">{commonKeywordLabel}</span>
+                      )}
+                      <span className="qs-card-state-line">{getCommonKeywordState()}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={applyRareCombo}
+                      className={getCardClassName('qs-card-rnd-combo', 'rare-combo', isRareComboRevealed)}
+                    >
+                      <span className="qs-card-shine" aria-hidden="true" />
+                      <Hammer className="w-3.5 h-3.5" />
+                      {!isRareComboRevealed && (
+                        <span className="qs-card-action-label">{rareComboLabel}</span>
+                      )}
+                      <span className="qs-card-state-line">{getRareComboState()}</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="qs-cards-grid">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      clearAllFilters();
-                      const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
-                      addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
-                    }}
-                    className="qs-card"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Random keyword</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      clearAllFilters();
-                      const suggestion = keywordComboSuggestions[activeSuggestionIndex];
-                      suggestion.filters.forEach(filter => {
-                        addFilter({
-                          id: filter.id,
-                          name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
-                          category: filter.category,
-                          mode: filter.category === category ? filter.mode || "include" : undefined,
-                        });
-                      });
-                      setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
-                    }}
-                    className="qs-card"
-                  >
-                    <Shuffle className="w-3.5 h-3.5" />
-                    <span>Hand picked combo</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyUniqueKeyword}
-                    className="qs-card unique"
-                  >
-                    <Gem className="w-3.5 h-3.5" />
-                    <span className="qs-card-sublabel">Unique</span>
-                    <span>{uniqueKeywords[activeUniqueKeywordIndex].name}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyUniqueCombo}
-                    className="qs-card unique"
-                  >
-                    <FlaskConical className="w-3.5 h-3.5" />
-                    <span className="qs-card-sublabel">Unique combo</span>
-                    <span>{uniqueComboSuggestions[activeUniqueComboIndex].title}</span>
-                  </button>
+                {/* Uniques sub-group */}
+                <div className="grid gap-1.5">
+                  <div className="qs-section-label">
+                    <Star className="w-3 h-3" />
+                    Uniques
+                  </div>
+                  <div className="qs-cards-grid">
+                    <div className="qs-unique-wrap">
+                      <button
+                        type="button"
+                        onClick={isKwExhausted ? undefined : (kwLeft > 0 ? applyUniqueKeyword : () => setKwExhaustedTapped(true))}
+                        disabled={isKwExhausted}
+                        className={[getCardClassName('qs-card-unique-kw', 'unique-keyword', isKwRevealedState), isKwExhausted ? 'qs-card-unique-exhausted' : ''].filter(Boolean).join(' ')}
+                      >
+                        <span className="qs-card-shine" aria-hidden="true" />
+                        {isKwExhausted ? <Lock className="w-3.5 h-3.5" /> : <KeyRound className="w-3.5 h-3.5" />}
+                        {!isKwRevealedState && (
+                          <span className="qs-card-action-label">
+                            {isKwExhausted ? 'No keys left' : 'Unique Key'}
+                          </span>
+                        )}
+                        <span className="qs-card-state-line">
+                          {getUniqueKeywordState()}
+                        </span>
+                      </button>
+                    </div>
+                    <div className="qs-unique-wrap">
+                      <button
+                        type="button"
+                        onClick={isComboExhausted ? undefined : (comboLeft > 0 ? applyUniqueCombo : () => setComboExhaustedTapped(true))}
+                        disabled={isComboExhausted}
+                        className={[getCardClassName('qs-card-unique-combo', 'unique-combo', isComboRevealedState), isComboExhausted ? 'qs-card-unique-exhausted' : ''].filter(Boolean).join(' ')}
+                      >
+                        <span className="qs-card-shine" aria-hidden="true" />
+                        {isComboExhausted ? <Lock className="w-3.5 h-3.5" /> : <Hammer className="w-3.5 h-3.5" />}
+                        {!isComboRevealedState && (
+                          <span className="qs-card-action-label">
+                            {isComboExhausted ? 'No crafts left' : 'Unique Craft'}
+                          </span>
+                        )}
+                        <span className="qs-card-state-line">
+                          {getUniqueComboState()}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </section>
             </div>
@@ -1076,10 +1208,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             <ChevronLeft className="h-4 w-4" />
           </button>
           {isKeyword
-            ? <Sparkles className="h-4 w-4 text-primary" />
-            : <Shuffle className="h-4 w-4 text-primary" />}
+            ? <KeyRound className="h-4 w-4 text-primary" />
+            : <Hammer className="h-4 w-4 text-primary" />}
           <span className="font-bold text-foreground">
-            {isKeyword ? "Random keyword" : "Hand picked combo"}
+            {isKeyword ? commonKeywordLabel : rareComboLabel}
           </span>
         </div>
         <div className="flex-1 min-h-0">
@@ -1090,6 +1222,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const renderMobileShelves = () => {
+    const inlineKwData = activeSubcategory ? getKeywordPanelData(activeSubcategory) : null;
     return (
       <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
         <div className="flex-1 overflow-y-auto">
@@ -1104,35 +1237,27 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 <div className="qs-cards-grid">
                   <button
                     type="button"
-                    onClick={() => {
-                      clearAllFilters();
-                      const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
-                      addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
-                    }}
-                    className="qs-card qs-card-rnd-kw"
+                    onClick={applyCommonKeyword}
+                    className={getCardClassName('qs-card-rnd-kw', 'common-keyword', isCommonKeywordRevealed)}
                   >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Random keyword</span>
+                    <span className="qs-card-shine" aria-hidden="true" />
+                    <KeyRound className="w-3.5 h-3.5" />
+                    {!isCommonKeywordRevealed && (
+                      <span className="qs-card-action-label">{commonKeywordLabel}</span>
+                    )}
+                    <span className="qs-card-state-line">{getCommonKeywordState()}</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      clearAllFilters();
-                      const suggestion = keywordComboSuggestions[activeSuggestionIndex];
-                      suggestion.filters.forEach(filter => {
-                        addFilter({
-                          id: filter.id,
-                          name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
-                          category: filter.category,
-                          mode: filter.category === category ? filter.mode || "include" : undefined,
-                        });
-                      });
-                      setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
-                    }}
-                    className="qs-card qs-card-rnd-combo"
+                    onClick={applyRareCombo}
+                    className={getCardClassName('qs-card-rnd-combo', 'rare-combo', isRareComboRevealed)}
                   >
-                    <Shuffle className="w-3.5 h-3.5" />
-                    <span>Random combo</span>
+                    <span className="qs-card-shine" aria-hidden="true" />
+                    <Hammer className="w-3.5 h-3.5" />
+                    {!isRareComboRevealed && (
+                      <span className="qs-card-action-label">{rareComboLabel}</span>
+                    )}
+                    <span className="qs-card-state-line">{getRareComboState()}</span>
                   </button>
                 </div>
               </div>
@@ -1144,61 +1269,135 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   Uniques
                 </div>
                 <div className="qs-cards-grid">
-                  <button
-                    type="button"
-                    onClick={applyUniqueKeyword}
-                    className="qs-card qs-card-unique-kw"
-                  >
-                    <Gem className="w-3.5 h-3.5" />
-                    <span className="qs-card-sublabel">Unique</span>
-                    <span className="qs-card-unique-name">{uniqueKeywords[activeUniqueKeywordIndex].name}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyUniqueCombo}
-                    className="qs-card qs-card-unique-combo"
-                  >
-                    <FlaskConical className="w-3.5 h-3.5" />
-                    <span className="qs-card-sublabel">Unique combo</span>
-                    <span className="qs-card-combo-title">{uniqueComboSuggestions[activeUniqueComboIndex].title}</span>
-                  </button>
+                  <div className="qs-unique-wrap">
+                    <button
+                      type="button"
+                      onClick={isKwExhausted ? undefined : (kwLeft > 0 ? applyUniqueKeyword : () => setKwExhaustedTapped(true))}
+                      disabled={isKwExhausted}
+                      className={[getCardClassName('qs-card-unique-kw', 'unique-keyword', isKwRevealedState), isKwExhausted ? 'qs-card-unique-exhausted' : ''].filter(Boolean).join(' ')}
+                    >
+                      <span className="qs-card-shine" aria-hidden="true" />
+                      {isKwExhausted ? <Lock className="w-3.5 h-3.5" /> : <KeyRound className="w-3.5 h-3.5" />}
+                      {!isKwRevealedState && (
+                        <span className="qs-card-action-label">
+                          {isKwExhausted ? 'No keys left' : 'Unique Key'}
+                        </span>
+                      )}
+                      <span className="qs-card-state-line">
+                        {getUniqueKeywordState()}
+                      </span>
+                    </button>
+                  </div>
+                  <div className="qs-unique-wrap">
+                    <button
+                      type="button"
+                      onClick={isComboExhausted ? undefined : (comboLeft > 0 ? applyUniqueCombo : () => setComboExhaustedTapped(true))}
+                      disabled={isComboExhausted}
+                      className={[getCardClassName('qs-card-unique-combo', 'unique-combo', isComboRevealedState), isComboExhausted ? 'qs-card-unique-exhausted' : ''].filter(Boolean).join(' ')}
+                    >
+                      <span className="qs-card-shine" aria-hidden="true" />
+                      {isComboExhausted ? <Lock className="w-3.5 h-3.5" /> : <Hammer className="w-3.5 h-3.5" />}
+                      {!isComboRevealedState && (
+                        <span className="qs-card-action-label">
+                          {isComboExhausted ? 'No crafts left' : 'Unique Craft'}
+                        </span>
+                      )}
+                      <span className="qs-card-state-line">
+                        {getUniqueComboState()}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </section>
             <div className="mobile-keyword-search-wrap">
               <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
             </div>
-            {mainCategoryOrder.map((mainCat) => {
-              const subcategories = getAvailableSubcategories(mainCat);
-              if (subcategories.length === 0) return null;
+            <div className="mobile-cat-segmented mx-1">
+              {mainCategoryOrder
+                .filter(mainCat => getAvailableSubcategories(mainCat).length > 0)
+                .map(mainCat => {
+                  const shortLabel = ({ "Mechanics & Systems": "Mechanics", "Setting & World": "Setting", "Aesthetics & Style": "Aesthetics" } as Record<MainCategory, string>)[mainCat];
+                  return (
+                    <button
+                      key={mainCat}
+                      type="button"
+                      onClick={() => drillIntoCategory(mainCat)}
+                      className={`mobile-cat-segment${activeMainCategory === mainCat ? ' mobile-cat-segment-active' : ''}`}
+                      style={getCategoryAccentVars(mainCat)}
+                    >
+                      {getCategoryIcon(mainCat, "w-3.5 h-3.5")}
+                      <span>{shortLabel}</span>
+                    </button>
+                  );
+                })}
+            </div>
 
-              return (
-                <section
-                  key={mainCat}
-                  className="mobile-category-shelf"
-                  style={getCategoryAccentVars(mainCat)}
-                >
-                  <button
-                    type="button"
-                    onClick={() => drillIntoCategory(mainCat)}
-                    className="mobile-category-trigger"
-                  >
-                    <div className="mobile-category-icon">
-                      {getCategoryIcon(mainCat, "w-6 h-6")}
+            {activeMainCategory && (
+              <div className="mobile-inline-cat-content mx-1" style={getCategoryAccentVars(activeMainCategory)}>
+                {activeSubcategory && inlineKwData ? (
+                  <>
+                    <div className="mobile-inline-kw-header">
+                      <button
+                        type="button"
+                        onClick={() => { setActiveSubcategory(null); setRevealedExtended([]); setAnimBatchStart(0); }}
+                        className="mobile-inline-back-btn"
+                        aria-label="Back"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <span className="mobile-inline-kw-icon">
+                        {getSubcategoryIcon(activeSubcategory, "w-3.5 h-3.5")}
+                      </span>
+                      <span className="mobile-inline-kw-name">{activeSubcategory}</span>
                     </div>
-                    <div className="mobile-category-copy">
-                      <span className="mobile-category-title">{mainCat}</span>
-                      <div className="mobile-category-keyword-chips">
-                        {getCategoryPreviewKeywords(mainCat).map(name => (
-                          <span key={name} className="mobile-category-keyword-chip">{name}</span>
-                        ))}
-                      </div>
+                    <div className="keyword-inline-list mobile-inline-kw-list">
+                      {inlineKwData.displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
+                      {inlineKwData.moreAvailable > 0 && (
+                        <div className="keyword-inline-item" style={{ animationDelay: `${Math.min(Math.max(inlineKwData.displayedKeywords.length - animBatchStart, 0) * 25, 400)}ms` }}>
+                          <button
+                            type="button"
+                            onClick={() => revealMoreKeywords(inlineKwData.displayedKeywords.length, inlineKwData.unseenExtended)}
+                            className="mb-2 inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background/70 px-3 text-xs font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                            Show {Math.min(inlineKwData.moreAvailable, EXTENDED_PAGE_SIZE)} more
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <ChevronRight className="mobile-category-caret" />
-                  </button>
-                </section>
-              );
-            })}
+                  </>
+                ) : (
+                  <div className="mobile-subcategory-list">
+                    {getAvailableSubcategories(activeMainCategory).map((subCategoryName) => {
+                      const keywords = getKeywordsForSubcategory(subCategoryName);
+                      const description = getSubcategoryDescription(activeMainCategory, subCategoryName);
+                      return (
+                        <section key={subCategoryName} className="mobile-subcategory-row">
+                          <button
+                            type="button"
+                            onClick={() => { setActiveSubcategory(subCategoryName); setRevealedExtended([]); setAnimBatchStart(0); }}
+                            className="mobile-subcategory-button"
+                          >
+                            <span className="mobile-subcategory-icon">
+                              {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
+                            </span>
+                            <span className="mobile-subcategory-copy">
+                              <span className="mobile-subcategory-heading">
+                                <span>{subCategoryName}</span>
+                                <span>{keywords.length}</span>
+                              </span>
+                              <span className="mobile-subcategory-description">{description}</span>
+                            </span>
+                            <ChevronRight className="mobile-subcategory-caret" />
+                          </button>
+                        </section>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
