@@ -835,12 +835,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                             </div>
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Marketplaces</span>
-                              {steamPrice?.price && !steamPrice.isFree && (
-                                <span className="text-[10px] text-slate-500">keys often cheaper than Steam's {steamPrice.price}</span>
-                              )}
-                            </div>
+                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Marketplaces</span>
                             <div className="mt-2">
                               {partnerStoreLinks}
                             </div>
