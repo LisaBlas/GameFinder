@@ -374,7 +374,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null);
   const synopsis = game.summary || 'No synopsis available yet.';
   const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
-  const storeButtonClass = "game-card-store-button flex w-full min-h-10 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors";
+  const storeButtonClass = "game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors";
   const storeIconClass = "game-card-store-icon flex h-5 w-5 flex-shrink-0 items-center justify-center";
   const officialStoreLinks = (
     <>
@@ -395,26 +395,23 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => { e.stopPropagation(); trackExternalClick(store.storeName, 'official', game.name); }}
-            className={`${storeButtonClass} ${isSteam && priceLabel ? 'justify-between' : ''}`}
+            className={storeButtonClass}
             title={store.storeName}
           >
-            <span className="flex items-center gap-2 min-w-0">
-              <span className={storeIconClass}>
-                {React.cloneElement(store.icon, { className: 'w-5 h-5' })}
-              </span>
-              <span className="truncate">{store.storeName}</span>
+            <span className={storeIconClass}>
+              {React.cloneElement(store.icon, { className: 'w-5 h-5' })}
             </span>
-            {priceLabel && (
-              <span className="flex items-center gap-1.5 flex-shrink-0 ml-3">
-                {originalLabel && (
-                  <span className="text-xs text-slate-500 line-through">{originalLabel}</span>
-                )}
-                {discountPct && (
-                  <span className="text-xs font-bold text-[var(--c-emerald)] bg-[rgba(var(--c-emerald-rgb),0.12)] px-1 py-0.5 rounded">-{discountPct}%</span>
-                )}
-                <span className={`text-sm font-semibold ${discountPct ? 'text-[var(--c-emerald)]' : 'text-slate-200'}`}>{priceLabel}</span>
-              </span>
-            )}
+            <span className="flex flex-1 min-w-0 flex-col gap-0">
+              <span className="truncate leading-tight">{store.storeName}</span>
+              {priceLabel && (
+                <span className="flex items-center gap-1.5">
+                  {originalLabel && <span className="text-[10px] font-normal text-slate-500 line-through">{originalLabel}</span>}
+                  {discountPct && <span className="text-[10px] font-bold text-[var(--c-emerald)] bg-[rgba(var(--c-emerald-rgb),0.12)] px-1 rounded">-{discountPct}%</span>}
+                  <span className={`text-[10px] font-semibold ${discountPct ? 'text-[var(--c-emerald)]' : 'text-slate-400'}`}>{priceLabel}</span>
+                </span>
+              )}
+            </span>
+            <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
           </a>
         );
       })}
@@ -423,15 +420,18 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           key={website.id}
           href={website.url}
           target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => { e.stopPropagation(); trackExternalClick('Official Website', 'official', game.name); }}
+          rel="noopener noreferrer"
+          onClick={(e) => { e.stopPropagation(); trackExternalClick('Official Website', 'official', game.name); }}
           className={storeButtonClass}
           title="Official Website"
         >
           <span className={storeIconClass}>
             <FaGlobe className="w-4 h-4" />
           </span>
-          <span className="truncate">Official site</span>
+          <span className="flex flex-1 min-w-0 flex-col gap-0">
+            <span className="truncate leading-tight">Official site</span>
+          </span>
+          <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
         </a>
       ))}
     </>
@@ -483,47 +483,45 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const alternatePartnerStores = rotatedPartnerStores.slice(1);
 
   const partnerStoreLinks = (
-    <div className="grid gap-2">
-      <div className="game-card-marketplaces-bg rounded-lg p-3 flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5">
+      <button
+        type="button"
+        onClick={primaryPartnerStore.onClick}
+        className={storeButtonClass}
+        title={primaryPartnerStore.name}
+      >
+        <span className={storeIconClass}>{primaryPartnerStore.icon}</span>
+        <span className="flex flex-1 min-w-0 flex-col gap-0">
+          <span className="truncate leading-tight">{primaryPartnerStore.name}</span>
+          <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{primaryPartnerStore.descriptor}</span>
+        </span>
+        <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
+      </button>
+      {partnerStoresExpanded && alternatePartnerStores.map((store) => (
         <button
+          key={store.key}
           type="button"
-          onClick={primaryPartnerStore.onClick}
+          onClick={store.onClick}
           className={storeButtonClass}
-          title={primaryPartnerStore.name}
+          title={store.name}
         >
-          <span className={`${storeIconClass} self-start mt-0.5`}>{primaryPartnerStore.icon}</span>
-          <span className="flex flex-col min-w-0 gap-0">
-            <span className="truncate leading-tight">{primaryPartnerStore.name}</span>
-            <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{primaryPartnerStore.descriptor}</span>
+          <span className={storeIconClass}>{store.icon}</span>
+          <span className="flex flex-1 min-w-0 flex-col gap-0">
+            <span className="truncate leading-tight">{store.name}</span>
+            <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{store.descriptor}</span>
           </span>
+          <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
         </button>
-        {partnerStoresExpanded && alternatePartnerStores.map((store) => (
-          <button
-            key={store.key}
-            type="button"
-            onClick={store.onClick}
-            className={storeButtonClass}
-            title={store.name}
-          >
-            <span className={`${storeIconClass} self-start mt-0.5`}>{store.icon}</span>
-            <span className="flex flex-col min-w-0 gap-0">
-              <span className="truncate leading-tight">{store.name}</span>
-              <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{store.descriptor}</span>
-            </span>
-          </button>
-        ))}
-      </div>
-
+      ))}
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); setPartnerStoresExpanded((v) => !v); }}
-        className="game-card-store-toggle flex min-h-9 w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left text-xs font-semibold transition-colors"
+        className="flex w-full items-center gap-1.5 pt-0.5 pb-1 text-xs text-slate-600 hover:text-slate-400 transition-colors"
         aria-expanded={partnerStoresExpanded}
       >
-        <span>{partnerStoresExpanded ? 'Hide other stores' : `Show ${alternatePartnerStores.length} more stores`}</span>
-        <FaChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform ${partnerStoresExpanded ? 'rotate-180' : ''}`} />
+        <FaChevronDown className={`h-2.5 w-2.5 flex-shrink-0 transition-transform ${partnerStoresExpanded ? 'rotate-180' : ''}`} />
+        <span>{partnerStoresExpanded ? 'Hide other stores' : `${alternatePartnerStores.length} more stores`}</span>
       </button>
-
     </div>
   );
 
@@ -826,7 +824,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                             <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Stores</span>
                             <div className="mt-2">
                               {hasOfficialLinks ? (
-                                <div className="game-card-stores-bg rounded-lg p-3 flex flex-col gap-1.5">
+                                <div className="flex flex-col gap-1.5">
                                   {officialStoreLinks}
                                 </div>
                               ) : (

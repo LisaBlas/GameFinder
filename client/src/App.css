@@ -1505,15 +1505,13 @@ h3{
 }
 
 .game-card-store-button,
-.game-card-store-toggle,
 .game-card-empty-state {
   border-color: rgba(var(--c-border-rgb), 0.16);
   background: rgba(var(--c-surface-rgb), 0.68);
   color: var(--c-text);
 }
 
-.game-card-store-button:hover,
-.game-card-store-toggle:hover {
+.game-card-store-button:hover {
   border-color: rgba(var(--c-emerald-rgb), 0.36);
   background: rgba(var(--c-emerald-rgb), 0.105);
   color: white;
@@ -1523,26 +1521,6 @@ h3{
   color: var(--c-emerald-soft);
 }
 
-.game-card-stores-bg {
-  background:
-    radial-gradient(circle, rgba(var(--c-emerald-rgb), 0.07) 1px, transparent 1px),
-    rgba(var(--c-bg-rgb), 0.5);
-  background-size: 20px 20px, auto;
-  border: 1px solid rgba(var(--c-emerald-rgb), 0.09);
-}
-
-.game-card-marketplaces-bg {
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      rgba(var(--c-gold-rgb), 0.04) 0px,
-      rgba(var(--c-gold-rgb), 0.04) 1px,
-      transparent 1px,
-      transparent 10px
-    ),
-    rgba(var(--c-bg-rgb), 0.5);
-  border: 1px solid rgba(var(--c-gold-rgb), 0.1);
-}
 
 .game-card-empty-state {
   color: var(--c-dim);
