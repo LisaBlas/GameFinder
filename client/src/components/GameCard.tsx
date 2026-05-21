@@ -374,7 +374,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null);
   const synopsis = game.summary || 'No synopsis available yet.';
   const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
-  const storeButtonClass = "game-card-store-button inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors";
+  const storeButtonClass = "game-card-store-button flex w-full min-h-10 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors";
   const storeIconClass = "game-card-store-icon flex h-5 w-5 flex-shrink-0 items-center justify-center";
   const officialStoreLinks = (
     <>
@@ -483,8 +483,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const alternatePartnerStores = rotatedPartnerStores.slice(1);
 
   const partnerStoreLinks = (
-    <div className="grid gap-2.5">
-      <div className="flex flex-wrap gap-2">
+    <div className="grid gap-2">
+      <div className="game-card-marketplaces-bg rounded-lg p-3 flex flex-col gap-1.5">
         <button
           type="button"
           onClick={primaryPartnerStore.onClick}
@@ -497,6 +497,21 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
             <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{primaryPartnerStore.descriptor}</span>
           </span>
         </button>
+        {partnerStoresExpanded && alternatePartnerStores.map((store) => (
+          <button
+            key={store.key}
+            type="button"
+            onClick={store.onClick}
+            className={storeButtonClass}
+            title={store.name}
+          >
+            <span className={`${storeIconClass} self-start mt-0.5`}>{store.icon}</span>
+            <span className="flex flex-col min-w-0 gap-0">
+              <span className="truncate leading-tight">{store.name}</span>
+              <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{store.descriptor}</span>
+            </span>
+          </button>
+        ))}
       </div>
 
       <button
@@ -508,26 +523,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         <span>{partnerStoresExpanded ? 'Hide other stores' : `Show ${alternatePartnerStores.length} more stores`}</span>
         <FaChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform ${partnerStoresExpanded ? 'rotate-180' : ''}`} />
       </button>
-
-      {partnerStoresExpanded && (
-        <div className="flex flex-wrap gap-2">
-          {alternatePartnerStores.map((store) => (
-            <button
-              key={store.key}
-              type="button"
-              onClick={store.onClick}
-              className={storeButtonClass}
-              title={store.name}
-            >
-              <span className={`${storeIconClass} self-start mt-0.5`}>{store.icon}</span>
-              <span className="flex flex-col min-w-0 gap-0">
-                <span className="truncate leading-tight">{store.name}</span>
-                <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{store.descriptor}</span>
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
 
       <p className="text-xs leading-relaxed text-slate-500">
         Some store links may be affiliate links and help support GameFinder at no extra cost.
@@ -840,8 +835,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                         <div className="grid gap-4">
                           <div className="min-w-0">
                             <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Stores</span>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {hasOfficialLinks ? officialStoreLinks : (
+                            <div className="mt-2">
+                              {hasOfficialLinks ? (
+                                <div className="game-card-stores-bg rounded-lg p-3 flex flex-col gap-1.5">
+                                  {officialStoreLinks}
+                                </div>
+                              ) : (
                                 <span className="game-card-empty-state rounded-lg border px-3 py-2 text-xs leading-relaxed">
                                   No official links found. This game may be too old, delisted, or missing current store links.
                                 </span>
