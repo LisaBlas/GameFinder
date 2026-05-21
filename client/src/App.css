@@ -1394,10 +1394,6 @@ h3{
   isolation: isolate;
   --rivet: radial-gradient(circle at 36% 36%, rgba(210, 210, 210, 0.50), rgba(130, 130, 130, 0.36) 44%, rgba(18, 18, 18, 0.26) 72%, transparent 100%);
   background:
-    var(--rivet) 10px 10px / 10px 10px no-repeat,
-    var(--rivet) calc(100% - 10px) 10px / 10px 10px no-repeat,
-    var(--rivet) 10px calc(100% - 10px) / 10px 10px no-repeat,
-    var(--rivet) calc(100% - 10px) calc(100% - 10px) / 10px 10px no-repeat,
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.97), rgba(var(--c-card-rgb), 0.95) 55%, rgba(var(--c-bg-rgb), 0.98));
   border-radius: 12px;
@@ -1466,10 +1462,6 @@ h3{
 
 .game-card-compact:hover {
   background:
-    var(--rivet) 10px 10px / 10px 10px no-repeat,
-    var(--rivet) calc(100% - 10px) 10px / 10px 10px no-repeat,
-    var(--rivet) 10px calc(100% - 10px) / 10px 10px no-repeat,
-    var(--rivet) calc(100% - 10px) calc(100% - 10px) / 10px 10px no-repeat,
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.99), rgba(var(--c-card-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
 }
@@ -1486,10 +1478,6 @@ h3{
 
 .game-card-selected {
   background:
-    var(--rivet) 10px 10px / 10px 10px no-repeat,
-    var(--rivet) calc(100% - 10px) 10px / 10px 10px no-repeat,
-    var(--rivet) 10px calc(100% - 10px) / 10px 10px no-repeat,
-    var(--rivet) calc(100% - 10px) calc(100% - 10px) / 10px 10px no-repeat,
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.99), rgba(var(--c-card-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
   box-shadow:
@@ -1555,10 +1543,10 @@ h3{
 .game-card-panel {
   border-color: rgba(var(--c-gold-rgb), 0.1);
   background:
-    var(--rivet) 10px 10px / 8px 8px no-repeat,
-    var(--rivet) calc(100% - 10px) 10px / 8px 8px no-repeat,
-    var(--rivet) 10px calc(100% - 10px) / 8px 8px no-repeat,
-    var(--rivet) calc(100% - 10px) calc(100% - 10px) / 8px 8px no-repeat,
+    var(--rivet) 4px 4px / 8px 8px no-repeat,
+    var(--rivet) calc(100% - 4px) 4px / 8px 8px no-repeat,
+    var(--rivet) 4px calc(100% - 4px) / 8px 8px no-repeat,
+    var(--rivet) calc(100% - 4px) calc(100% - 4px) / 8px 8px no-repeat,
     linear-gradient(180deg, rgba(var(--c-bg-rgb), 0.66), rgba(var(--c-surface-rgb), 0.5)),
     rgba(var(--c-bg-rgb), 0.48);
   box-shadow:
