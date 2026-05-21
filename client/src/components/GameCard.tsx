@@ -493,7 +493,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         <span className={storeIconClass}>{primaryPartnerStore.icon}</span>
         <span className="flex flex-1 min-w-0 flex-col gap-0">
           <span className="truncate leading-tight">{primaryPartnerStore.name}</span>
-          <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{primaryPartnerStore.descriptor}</span>
         </span>
         <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
       </button>
@@ -508,7 +507,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           <span className={storeIconClass}>{store.icon}</span>
           <span className="flex flex-1 min-w-0 flex-col gap-0">
             <span className="truncate leading-tight">{store.name}</span>
-            <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{store.descriptor}</span>
           </span>
           <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
         </button>
