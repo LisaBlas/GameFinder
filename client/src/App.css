@@ -1392,7 +1392,12 @@ h3{
 
 .game-card {
   isolation: isolate;
+  --rivet: radial-gradient(circle at 38% 38%, rgba(255, 220, 130, 0.90), rgba(180, 120, 40, 0.80) 42%, rgba(40, 25, 5, 0.60) 72%, transparent 100%);
   background:
+    var(--rivet) 10px 10px / 10px 10px no-repeat,
+    var(--rivet) calc(100% - 20px) 10px / 10px 10px no-repeat,
+    var(--rivet) 10px calc(100% - 20px) / 10px 10px no-repeat,
+    var(--rivet) calc(100% - 20px) calc(100% - 20px) / 10px 10px no-repeat,
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.97), rgba(var(--c-card-rgb), 0.95) 55%, rgba(var(--c-bg-rgb), 0.98));
   border-radius: 12px;
@@ -1454,15 +1459,17 @@ h3{
 }
 
 .game-card-compact {
-  border-color: rgba(var(--c-gold-rgb), 0.11);
   box-shadow:
     0 1px 0 rgba(244, 200, 100, 0.04),
     0 16px 46px rgba(0, 0, 0, 0.22);
 }
 
 .game-card-compact:hover {
-  border-color: rgba(var(--c-gold-rgb), 0.22);
   background:
+    var(--rivet) 10px 10px / 10px 10px no-repeat,
+    var(--rivet) calc(100% - 20px) 10px / 10px 10px no-repeat,
+    var(--rivet) 10px calc(100% - 20px) / 10px 10px no-repeat,
+    var(--rivet) calc(100% - 20px) calc(100% - 20px) / 10px 10px no-repeat,
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.99), rgba(var(--c-card-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
 }
@@ -1478,8 +1485,11 @@ h3{
 }
 
 .game-card-selected {
-  border-color: rgba(var(--c-gold-rgb), 0.2);
   background:
+    var(--rivet) 10px 10px / 10px 10px no-repeat,
+    var(--rivet) calc(100% - 20px) 10px / 10px 10px no-repeat,
+    var(--rivet) 10px calc(100% - 20px) / 10px 10px no-repeat,
+    var(--rivet) calc(100% - 20px) calc(100% - 20px) / 10px 10px no-repeat,
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.99), rgba(var(--c-card-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
   box-shadow:
@@ -1545,6 +1555,10 @@ h3{
 .game-card-panel {
   border-color: rgba(var(--c-gold-rgb), 0.1);
   background:
+    var(--rivet) 10px 10px / 8px 8px no-repeat,
+    var(--rivet) calc(100% - 18px) 10px / 8px 8px no-repeat,
+    var(--rivet) 10px calc(100% - 18px) / 8px 8px no-repeat,
+    var(--rivet) calc(100% - 18px) calc(100% - 18px) / 8px 8px no-repeat,
     linear-gradient(180deg, rgba(var(--c-bg-rgb), 0.66), rgba(var(--c-surface-rgb), 0.5)),
     rgba(var(--c-bg-rgb), 0.48);
   box-shadow:

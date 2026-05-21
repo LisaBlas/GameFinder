@@ -611,10 +611,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       <article
         className={`game-card ${!fullscreen && !isSelected ? 'h-full' : ''} ${isSelected ? 'game-card-selected' : 'game-card-compact'} ${fullscreen ? 'game-card-fullscreen bg-[#0b1815]' : 'bg-slate-900/95'} transition-all duration-300 cursor-pointer ${
           fullscreen && isSelected
-            ? 'rounded-none shadow-none md:border md:ring-1 md:ring-inset md:rounded-lg md:border-amber-400/45 md:ring-amber-300/20 md:shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
+            ? 'rounded-none shadow-none md:rounded-lg md:shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
             : isSelected
-              ? 'border ring-1 ring-inset border-amber-400/45 ring-amber-300/20 shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
-              : 'border ring-1 ring-inset border-slate-600/35 ring-white/[0.045] shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:border-amber-300/35 hover:bg-slate-900 hover:ring-amber-200/12 hover:shadow-[0_0_0_1px_rgba(251,191,36,0.10),0_18px_55px_rgba(0,0,0,0.32)]'
+              ? 'shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
+              : 'shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:bg-slate-900 hover:shadow-[0_0_0_1px_rgba(251,191,36,0.10),0_18px_55px_rgba(0,0,0,0.32)]'
         }`}
         onClick={onSelect}
         role="button"
