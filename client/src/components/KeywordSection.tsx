@@ -43,6 +43,29 @@ const _randomKeywordPool: RawKw[] = (() => {
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
 type UtilityPanel = "intro" | "qs-keyword" | "qs-combo";
 type RevealCard = "common-keyword" | "rare-combo" | "unique-keyword" | "unique-combo" | "popular" | "user-crafts";
+type RarityTier = "common" | "uncommon" | "rare" | "epic" | "unique";
+
+/** Shared model for each of the 6 discovery cards. */
+interface DiscoveryCard {
+  id: RevealCard;
+  label: string;
+  defaultText: string;
+  icon: React.ComponentType<{ className?: string }>;
+  apply: () => void;
+  revealedName?: string;
+  lastResultCount?: number;
+  rarity?: RarityTier | null;
+}
+
+/** Return rarity tier based on search result count. Thresholds are tuned here. */
+function getRarity(count: number): RarityTier | null {
+  if (count <= 0)   return null;
+  if (count <= 5)   return "unique";
+  if (count <= 20)  return "epic";
+  if (count <= 50)  return "rare";
+  if (count <= 150) return "uncommon";
+  return "common";
+}
 
 interface KeywordComboSuggestion {
   title: string;
@@ -95,7 +118,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const category = 'Keywords';
-  const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh } = useFilters();
+  const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh, gameResults } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
   const [shareCopied, setShareCopied] = useState(false);
   const [shareShineActive, setShareShineActive] = useState(false);
@@ -118,6 +141,12 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [popularRevealed, setPopularRevealed] = useState(false);
   const [userCraftsRevealed, setUserCraftsRevealed] = useState(false);
   const [activeRevealCard, setActiveRevealCard] = useState<RevealCard | null>(null);
+  // Rarity reveal — tracks which card was last tapped and its post-search result count
+  const [activeDiscoveryCardId, setActiveDiscoveryCardId] = useState<RevealCard | null>(null);
+  const [activeCardResultCount, setActiveCardResultCount] = useState<number | null>(null);
+  const activeDiscoveryCardIdRef = useRef<RevealCard | null>(null);
+  const resultCapturedRef = useRef(false);
+  const [postClickCardId, setPostClickCardId] = useState<RevealCard | null>(null);
   const [uniqueLimits, setUniqueLimits] = useState<UniqueLimitsStore>(() => ({ date: new Date().toISOString().split('T')[0], kwUsed: 0, comboUsed: 0 }));
   const [kwExhaustedTapped, setKwExhaustedTapped] = useState(false);
   const [comboExhaustedTapped, setComboExhaustedTapped] = useState(false);
@@ -294,9 +323,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const isCommonKeywordRevealed = !!commonKeywordRevealed;
   const isRareComboRevealed = !!rareComboRevealed;
 
-  const getCommonKeywordState = () => commonKeywordRevealed?.name ?? commonKeywordState;
-  const getRareComboState = () => rareComboRevealed?.title ?? rareComboState;
-
   const triggerCardReveal = (card: RevealCard) => {
     if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
     setActiveRevealCard(null);
@@ -307,29 +333,41 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     }, 850);
   };
 
-  const getCardClassName = (baseClass: string, card: RevealCard, hasResult = false) => (
-    [
+  /** Call instead of triggerCardReveal for all 6 discovery cards. Marks the card
+   *  as active so the rarity class can be applied once results arrive. */
+  const activateDiscoveryCard = (card: RevealCard) => {
+    triggerCardReveal(card);
+    setActiveDiscoveryCardId(card);
+    activeDiscoveryCardIdRef.current = card;
+    setActiveCardResultCount(null);
+    resultCapturedRef.current = false;
+    setPostClickCardId(card);
+  };
+
+  /** Rarity for the given card — non-null only after its search has returned results. */
+  const getActiveRarity = (card: RevealCard): RarityTier | null =>
+    card === activeDiscoveryCardId && activeCardResultCount !== null
+      ? getRarity(activeCardResultCount)
+      : null;
+
+  const getCardClassName = (baseClass: string, card: RevealCard, hasResult = false) => {
+    const rarity = getActiveRarity(card);
+    return [
       'qs-card',
       baseClass,
       hasResult ? 'qs-card-has-result' : '',
       activeRevealCard === card ? 'qs-card-reveal-pulse' : '',
-    ].filter(Boolean).join(' ')
-  );
-
-  const getUniqueKeywordState = () => {
-    if (isKwExhausted) return "Resets tomorrow";
-    if (isKwRevealedState) return kwRevealed!.name;
-    return `less than 5 results - ${kwLeft} left`;
+      rarity ? `qs-card-rarity-${rarity}` : '',
+      postClickCardId === card ? 'qs-card-post-click' : '',
+    ].filter(Boolean).join(' ');
   };
 
-  const getUniqueComboState = () => {
-    if (isComboExhausted) return "Resets tomorrow";
-    if (isComboRevealedState) return comboRevealed!.title;
-    return `less than 5 results - ${comboLeft} left`;
-  };
+  /** Wrapper class for a discovery card — adds --unique modifier when unique-tier. */
+  const getCardWrapClass = (card: RevealCard): string =>
+    getActiveRarity(card) === "unique" ? "qs-card-wrap qs-card-wrap--unique" : "qs-card-wrap";
 
   const applyCommonKeyword = () => {
-    triggerCardReveal("common-keyword");
+    activateDiscoveryCard("common-keyword");
     clearAllFilters();
     const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
     const name = kw.name.replace(/\b\w/g, c => c.toUpperCase());
@@ -338,7 +376,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const applyRareCombo = () => {
-    triggerCardReveal("rare-combo");
+    activateDiscoveryCard("rare-combo");
     clearAllFilters();
     const suggestion = keywordComboSuggestions[activeSuggestionIndex];
     suggestion.filters.forEach(filter => {
@@ -355,7 +393,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   const applyUniqueKeyword = () => {
     if (uniqueLimits.kwUsed >= UNIQUE_KW_DAILY_LIMIT) return;
-    triggerCardReveal("unique-keyword");
+    activateDiscoveryCard("unique-keyword");
     clearAllFilters();
     const kw = uniqueKeywords[activeUniqueKeywordIndex];
     addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
@@ -367,7 +405,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   const applyUniqueCombo = () => {
     if (uniqueLimits.comboUsed >= UNIQUE_COMBO_DAILY_LIMIT) return;
-    triggerCardReveal("unique-combo");
+    activateDiscoveryCard("unique-combo");
     clearAllFilters();
     const suggestion = uniqueComboSuggestions[activeUniqueComboIndex];
     suggestion.filters.forEach(filter => {
@@ -385,14 +423,14 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const applyPopular = () => {
-    triggerCardReveal("popular");
+    activateDiscoveryCard("popular");
     clearAllFilters();
     addFilter({ id: 41781, name: "Action Roguelike", category, mode: "include" });
     setPopularRevealed(true);
   };
 
   const applyUserCrafts = () => {
-    triggerCardReveal("user-crafts");
+    activateDiscoveryCard("user-crafts");
     clearAllFilters();
     addFilter({ id: 2379, name: "Cosmic Horror", category, mode: "include" });
     addFilter({ id: 32, name: "Indie", category: "genres" });
@@ -434,6 +472,19 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       if (shineEnd) clearTimeout(shineEnd);
     };
   }, [searchFresh, isLoading]);
+
+  // Capture result count once per fresh search completion for rarity reveal.
+  // Intentionally excludes gameResults from deps: we want exactly one capture per
+  // fresh search, not a re-fire on every loadMore batch.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (searchFresh && !isLoading && activeDiscoveryCardIdRef.current !== null && !resultCapturedRef.current) {
+      if (gameResults.length > 0) {
+        setActiveCardResultCount(gameResults.length);
+      }
+      resultCapturedRef.current = true;
+    }
+  }, [searchFresh, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     return () => {
@@ -1028,58 +1079,74 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   Roll
                 </div>
                 <div className="qs-cards-grid">
-                  <button
-                    type="button"
-                    onClick={applyPopular}
-                    className={getCardClassName('qs-card-rnd-kw', 'popular', popularRevealed)}
-                  >
-                    <span className="qs-card-shine" aria-hidden="true" />
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    {!popularRevealed && (
+                  <div className={getCardWrapClass('popular')}>
+                    <button
+                      type="button"
+                      onClick={applyPopular}
+                      onMouseLeave={() => setPostClickCardId(null)}
+                      className={getCardClassName('qs-card-rnd-kw', 'popular', popularRevealed)}
+                    >
+                      <span className="qs-card-shine" aria-hidden="true" />
+                      {getActiveRarity('popular') && (
+                        <span className="qs-card-rarity-label">{getActiveRarity('popular')}</span>
+                      )}
+                      <TrendingUp className="w-3.5 h-3.5" />
                       <span className="qs-card-action-label">Most Popular</span>
-                    )}
-                    <span className="qs-card-state-line">
-                      {popularRevealed ? "Action Roguelike" : "Top picks this week"}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyRareCombo}
-                    className={getCardClassName('qs-card-rnd-combo', 'rare-combo', isRareComboRevealed)}
-                  >
-                    <span className="qs-card-shine" aria-hidden="true" />
-                    <Hammer className="w-3.5 h-3.5" />
-                    {!isRareComboRevealed && (
+                      <span className="qs-state-initial qs-card-state-line">Top picks this week</span>
+                      <span className="qs-state-revealed qs-card-state-line">Action Roguelike</span>
+                    </button>
+                  </div>
+                  <div className={getCardWrapClass('rare-combo')}>
+                    <button
+                      type="button"
+                      onClick={applyRareCombo}
+                      onMouseLeave={() => setPostClickCardId(null)}
+                      className={getCardClassName('qs-card-rnd-combo', 'rare-combo', isRareComboRevealed)}
+                    >
+                      <span className="qs-card-shine" aria-hidden="true" />
+                      {getActiveRarity('rare-combo') && (
+                        <span className="qs-card-rarity-label">{getActiveRarity('rare-combo')}</span>
+                      )}
+                      <Hammer className="w-3.5 h-3.5" />
                       <span className="qs-card-action-label">{rareComboLabel}</span>
-                    )}
-                    <span className="qs-card-state-line">{getRareComboState()}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyCommonKeyword}
-                    className={getCardClassName('qs-card-popular', 'common-keyword', isCommonKeywordRevealed)}
-                  >
-                    <span className="qs-card-shine" aria-hidden="true" />
-                    <KeyRound className="w-3.5 h-3.5" />
-                    {!isCommonKeywordRevealed && (
+                      <span className="qs-state-initial qs-card-state-line">{rareComboState}</span>
+                      <span className="qs-state-revealed qs-card-state-line">{rareComboRevealed?.title ?? ''}</span>
+                    </button>
+                  </div>
+                  <div className={getCardWrapClass('common-keyword')}>
+                    <button
+                      type="button"
+                      onClick={applyCommonKeyword}
+                      onMouseLeave={() => setPostClickCardId(null)}
+                      className={getCardClassName('qs-card-popular', 'common-keyword', isCommonKeywordRevealed)}
+                    >
+                      <span className="qs-card-shine" aria-hidden="true" />
+                      {getActiveRarity('common-keyword') && (
+                        <span className="qs-card-rarity-label">{getActiveRarity('common-keyword')}</span>
+                      )}
+                      <KeyRound className="w-3.5 h-3.5" />
                       <span className="qs-card-action-label">{commonKeywordLabel}</span>
-                    )}
-                    <span className="qs-card-state-line">{getCommonKeywordState()}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={applyUserCrafts}
-                    className={getCardClassName('qs-card-user-crafts', 'user-crafts', userCraftsRevealed)}
-                  >
-                    <span className="qs-card-shine" aria-hidden="true" />
-                    <Users className="w-3.5 h-3.5" />
-                    {!userCraftsRevealed && (
+                      <span className="qs-state-initial qs-card-state-line">{commonKeywordState}</span>
+                      <span className="qs-state-revealed qs-card-state-line">{commonKeywordRevealed?.name ?? ''}</span>
+                    </button>
+                  </div>
+                  <div className={getCardWrapClass('user-crafts')}>
+                    <button
+                      type="button"
+                      onClick={applyUserCrafts}
+                      onMouseLeave={() => setPostClickCardId(null)}
+                      className={getCardClassName('qs-card-user-crafts', 'user-crafts', userCraftsRevealed)}
+                    >
+                      <span className="qs-card-shine" aria-hidden="true" />
+                      {getActiveRarity('user-crafts') && (
+                        <span className="qs-card-rarity-label">{getActiveRarity('user-crafts')}</span>
+                      )}
+                      <Users className="w-3.5 h-3.5" />
                       <span className="qs-card-action-label">User Crafts</span>
-                    )}
-                    <span className="qs-card-state-line">
-                      {userCraftsRevealed ? "Eldritch Indie" : "Community combos"}
-                    </span>
-                  </button>
+                      <span className="qs-state-initial qs-card-state-line">Community combos</span>
+                      <span className="qs-state-revealed qs-card-state-line">Eldritch Indie</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1090,41 +1157,51 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   Uniques
                 </div>
                 <div className="qs-cards-grid">
-                  <div className="qs-unique-wrap">
+                  <div className={`qs-unique-wrap ${getCardWrapClass('unique-keyword')}`}>
                     <button
                       type="button"
                       onClick={isKwExhausted ? undefined : (kwLeft > 0 ? applyUniqueKeyword : () => setKwExhaustedTapped(true))}
+                      onMouseLeave={() => setPostClickCardId(null)}
                       disabled={isKwExhausted}
                       className={[getCardClassName('qs-card-unique-kw', 'unique-keyword', isKwRevealedState), isKwExhausted ? 'qs-card-unique-exhausted' : ''].filter(Boolean).join(' ')}
                     >
                       <span className="qs-card-shine" aria-hidden="true" />
-                      {isKwExhausted ? <Lock className="w-3.5 h-3.5" /> : <KeyRound className="w-3.5 h-3.5" />}
-                      {!isKwRevealedState && (
-                        <span className="qs-card-action-label">
-                          {isKwExhausted ? 'No keys left' : 'Unique Key'}
-                        </span>
+                      {getActiveRarity('unique-keyword') && (
+                        <span className="qs-card-rarity-label">{getActiveRarity('unique-keyword')}</span>
                       )}
-                      <span className="qs-card-state-line">
-                        {getUniqueKeywordState()}
+                      {isKwExhausted ? <Lock className="w-3.5 h-3.5" /> : <KeyRound className="w-3.5 h-3.5" />}
+                      <span className="qs-card-action-label">
+                        {isKwExhausted ? 'No keys left' : 'Unique Key'}
+                      </span>
+                      <span className="qs-state-initial qs-card-state-line">
+                        {isKwExhausted ? 'Resets tomorrow' : `less than 5 results · ${kwLeft} left`}
+                      </span>
+                      <span className="qs-state-revealed qs-card-state-line">
+                        {kwRevealed?.name ?? ''}
                       </span>
                     </button>
                   </div>
-                  <div className="qs-unique-wrap">
+                  <div className={`qs-unique-wrap ${getCardWrapClass('unique-combo')}`}>
                     <button
                       type="button"
                       onClick={isComboExhausted ? undefined : (comboLeft > 0 ? applyUniqueCombo : () => setComboExhaustedTapped(true))}
+                      onMouseLeave={() => setPostClickCardId(null)}
                       disabled={isComboExhausted}
                       className={[getCardClassName('qs-card-unique-combo', 'unique-combo', isComboRevealedState), isComboExhausted ? 'qs-card-unique-exhausted' : ''].filter(Boolean).join(' ')}
                     >
                       <span className="qs-card-shine" aria-hidden="true" />
-                      {isComboExhausted ? <Lock className="w-3.5 h-3.5" /> : <Hammer className="w-3.5 h-3.5" />}
-                      {!isComboRevealedState && (
-                        <span className="qs-card-action-label">
-                          {isComboExhausted ? 'No crafts left' : 'Crafted'}
-                        </span>
+                      {getActiveRarity('unique-combo') && (
+                        <span className="qs-card-rarity-label">{getActiveRarity('unique-combo')}</span>
                       )}
-                      <span className="qs-card-state-line">
-                        {getUniqueComboState()}
+                      {isComboExhausted ? <Lock className="w-3.5 h-3.5" /> : <Hammer className="w-3.5 h-3.5" />}
+                      <span className="qs-card-action-label">
+                        {isComboExhausted ? 'No crafts left' : 'Crafted'}
+                      </span>
+                      <span className="qs-state-initial qs-card-state-line">
+                        {isComboExhausted ? 'Resets tomorrow' : `less than 5 results · ${comboLeft} left`}
+                      </span>
+                      <span className="qs-state-revealed qs-card-state-line">
+                        {comboRevealed?.title ?? ''}
                       </span>
                     </button>
                   </div>

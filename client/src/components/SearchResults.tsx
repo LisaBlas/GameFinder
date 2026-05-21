@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useFilters } from '../context/FilterContext';
+import { useFilters, Filter } from '../context/FilterContext';
 import GameCard from './GameCard';
 import EmptyState from './EmptyState';
 import LoadingState from './LoadingState';
@@ -7,11 +7,37 @@ import LoadMoreButton from './LoadMoreButton';
 import FilterBar from './FilterBar';
 import MobileFilterSheet from './MobileFilterSheet';
 import SearchPlaceholder from './SearchPlaceholder';
-import { FaInfoCircle } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
+type RarityTier = "common" | "uncommon" | "rare" | "epic" | "unique";
+
+function getRarity(count: number): RarityTier | null {
+  if (count <= 0)   return null;
+  if (count <= 5)   return "unique";
+  if (count <= 20)  return "epic";
+  if (count <= 50)  return "rare";
+  if (count <= 150) return "uncommon";
+  return "common";
+}
+
+const RARITY_RGB: Record<RarityTier, string> = {
+  common:   '--c-border-rgb',
+  uncommon: '--c-emerald-rgb',
+  rare:     '--c-rare-blue-rgb',
+  epic:     '--c-purple-rgb',
+  unique:   '--c-unique-rgb',
+};
+
+const RARITY_TEXT: Record<RarityTier, string> = {
+  common:   '--c-muted',
+  uncommon: '--c-emerald-soft',
+  rare:     '--c-rare-blue-soft',
+  epic:     '--c-purple-soft',
+  unique:   '--c-unique-soft',
+};
+
 const SearchResults: React.FC = () => {
-  const { gameResults, isLoading, error, sortBy, setSortBy, hasMore, seedGame } = useFilters();
+  const { gameResults, isLoading, error, sortBy, setSortBy, hasMore, seedGame, lastSearchedFilters } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
   const [hideMobileControls, setHideMobileControls] = useState(false);
@@ -113,6 +139,12 @@ const SearchResults: React.FC = () => {
     }
 
     if (gameResults.length > 0) {
+      const rarity = getRarity(gameResults.length);
+      const rgbVar = rarity ? RARITY_RGB[rarity] : '--c-border-rgb';
+      const textVar = rarity ? RARITY_TEXT[rarity] : '--c-muted';
+      const includedFilters = lastSearchedFilters.filter((f: Filter) => f.mode !== 'exclude');
+      const excludedFilters = lastSearchedFilters.filter((f: Filter) => f.mode === 'exclude');
+
       return (
         <>
           {seedGame && (
@@ -120,9 +152,29 @@ const SearchResults: React.FC = () => {
               Showing games similar to <span className="text-primary">{seedGame.name}</span> based on shared keywords.
             </p>
           )}
-          <div className="mb-4 flex items-start gap-2 rounded-lg border border-slate-700/40 bg-slate-900/70 px-3 py-2 text-xs text-slate-400">
-            <FaInfoCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-slate-500" />
-            <span>We only list reputable sellers. Prices may vary; check seller ratings before purchase.</span>
+          <div className="mb-4 flex flex-wrap items-center gap-1.5 rounded-lg border px-3 py-2 text-xs"
+               style={{
+                 borderColor: `rgba(var(${rgbVar}), 0.2)`,
+                 background: `rgba(var(${rgbVar}), 0.04)`,
+               }}>
+            {rarity && rarity !== 'common' && (
+              <span className="shrink-0 font-bold uppercase tracking-wider rounded border px-1.5 py-0.5"
+                    style={{ fontSize: '0.58rem', color: `var(${textVar})`, borderColor: `rgba(var(${rgbVar}), 0.3)` }}>
+                {rarity}
+              </span>
+            )}
+            {includedFilters.map((f, i) => (
+              <React.Fragment key={`${f.id}-${f.category}`}>
+                {i > 0 && <span style={{ color: 'var(--c-dim)' }}>·</span>}
+                <span style={{ color: `var(${textVar})` }}>{f.name}</span>
+              </React.Fragment>
+            ))}
+            {excludedFilters.map(f => (
+              <React.Fragment key={`excl-${f.id}-${f.category}`}>
+                <span style={{ color: 'var(--c-dim)' }}>·</span>
+                <span className="line-through" style={{ color: 'var(--c-dim)' }}>{f.name}</span>
+              </React.Fragment>
+            ))}
           </div>
 
           <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
@@ -178,10 +230,10 @@ const SearchResults: React.FC = () => {
         </motion.div>
       )}
     </AnimatePresence>
-    <section ref={sectionRef} className="flex-1 w-full mx-auto">
+    <section ref={sectionRef} className="flex min-h-0 flex-1 flex-col w-full mx-auto">
       <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'} ${hideMobileControls ? 'results-sticky-header-mobile-hidden' : ''}`}>
         <div className="flex w-full items-center justify-end lg:justify-between gap-3">
-          <h2 className="hidden lg:block shrink-0 text-2xl font-heading font-semibold text-white">
+          <h2 className="hidden lg:block shrink-0 text-2xl font-heading font-semibold text-slate-200/55">
             {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
           </h2>
 

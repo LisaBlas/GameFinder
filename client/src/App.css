@@ -495,15 +495,15 @@
 }
 
 .desktop-action-button-clear {
-  border: 1px solid rgba(var(--c-border-rgb), 0.18);
-  background: rgba(var(--c-surface-rgb), 0.9);
-  color: #d8e4e0;
+  border: 1px solid rgba(var(--c-border-rgb), 0.14);
+  background: rgba(var(--c-surface-rgb), 0.58);
+  color: rgba(216, 228, 224, 0.58);
 }
 
 .desktop-action-button-clear:hover {
   border-color: rgba(var(--c-danger-rgb), 0.65);
   background: rgba(100, 15, 20, 0.55);
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .desktop-action-button-search {
@@ -597,6 +597,31 @@
   padding: 0 0.3rem;
   font-size: 0.7rem;
   line-height: 1;
+}
+
+.results-quality-checkbox {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex: 0 0 auto;
+  cursor: pointer;
+  appearance: none;
+  border: 1px solid rgba(var(--c-border-rgb), 0.35);
+  border-radius: 2px;
+  background: rgba(var(--c-surface-rgb), 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.results-quality-checkbox:checked {
+  border-color: rgba(var(--c-emerald-rgb), 0.5);
+  background:
+    linear-gradient(135deg, transparent 0 42%, rgba(var(--c-bg-rgb), 0.78) 42% 58%, transparent 58%),
+    rgba(var(--c-emerald-rgb), 0.38);
+  box-shadow: 0 0 0 1px rgba(var(--c-emerald-rgb), 0.08);
+}
+
+.results-quality-checkbox:hover {
+  border-color: rgba(var(--c-emerald-rgb), 0.4);
 }
 
 .results-sort-control {
@@ -2010,18 +2035,19 @@ svg.filter-caret.expanded {
   min-height: 5rem;
   padding: 0.7rem 0.5rem;
   border-radius: 8px;
-  background: rgba(var(--c-emerald-rgb), 0.04);
-  border: 1px solid rgba(var(--c-emerald-rgb), 0.1);
+  /* Unified neutral base — all 6 discovery cards share this at rest */
+  background: rgba(var(--c-surface-rgb), 0.55);
+  border: 1px solid rgba(var(--c-border-rgb), 0.1);
   color: var(--c-dim);
   font-size: 0.71rem;
   font-weight: 700;
   line-height: 1.2;
   text-align: center;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
 }
 
 .qs-card > svg,
-.qs-card > span:not(.qs-card-shine) {
+.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label) {
   position: relative;
   z-index: 2;
 }
@@ -2071,7 +2097,19 @@ svg.filter-caret.expanded {
   transition: opacity 0.18s ease;
 }
 
-/* Wrapper for unique cards — holds the diamond outside the button's overflow:hidden */
+/* Wrapper shared by all 6 discovery cards — allows diamond pseudo-element to
+   sit outside the button's overflow:hidden boundary */
+.qs-card-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.qs-card-wrap > .qs-card {
+  flex: 1;
+}
+
+/* Unique section structural wrapper — same layout, kept for section identity */
 .qs-unique-wrap {
   position: relative;
   display: flex;
@@ -2082,8 +2120,8 @@ svg.filter-caret.expanded {
   flex: 1;
 }
 
-/* Diamond ornament centered on the bottom border */
-.qs-unique-wrap::after {
+/* Diamond ornament — only appears when the revealed result is Unique-tier */
+.qs-card-wrap--unique::after {
   content: '';
   position: absolute;
   bottom: -4px;
@@ -2092,7 +2130,7 @@ svg.filter-caret.expanded {
   width: 7px;
   height: 7px;
   background: var(--c-bg);
-  border: 1.5px solid rgba(var(--c-gold-rgb), 0.5);
+  border: 1.5px solid rgba(var(--c-unique-rgb), 0.65);
   border-radius: 1px;
   pointer-events: none;
   z-index: 1;
@@ -2122,6 +2160,25 @@ svg.filter-caret.expanded {
 .qs-card-type-vibe {
   color: var(--c-gold);
   border-color: rgba(var(--c-gold-rgb), 0.45);
+}
+
+/* Rarity label — tiny pill shown top-right of a card after reveal */
+.qs-card-rarity-label {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  font-size: 0.42rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.18em 0.42em;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+  opacity: 0.68;
+  z-index: 3;
+  pointer-events: none;
+  /* color inherited from the parent rarity class */
 }
 
 .qs-card:hover {
@@ -2403,53 +2460,12 @@ svg.filter-caret.expanded {
 
 /* ── Mobile Roll / Uniques button variants ───────────────────── */
 
-/* Random keyword — neutral grey, lowest rarity tier */
-.qs-card.qs-card-rnd-kw {
-  background: rgba(255, 255, 255, 0.025);
-  border-color: rgba(255, 255, 255, 0.07);
-  color: var(--c-dim);
-}
+/* Random keyword */
 
-.qs-card.qs-card-rnd-kw svg {
-  color: rgba(180, 196, 193, 0.45);
-}
-
-.qs-card.qs-card-rnd-kw .qs-card-action-label {
-  color: rgba(180, 196, 193, 0.52);
-}
-
-.qs-card.qs-card-rnd-kw .qs-card-state-line {
-  color: var(--c-muted);
-  opacity: 0.52;
-}
-
-.qs-card.qs-card-rnd-kw:hover {
-  background: rgba(255, 255, 255, 0.045);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: var(--c-muted);
-  box-shadow: 0 0 7px rgba(255, 255, 255, 0.03);
-}
-
-/* Common combo — emerald green, second rarity tier */
+/* Common crafted combo */
 .qs-card.qs-card-rnd-combo {
   position: relative;
   overflow: hidden;
-  background: rgba(var(--c-emerald-rgb), 0.045);
-  border-color: rgba(var(--c-emerald-rgb), 0.18);
-  color: rgba(var(--c-emerald-rgb), 0.75);
-}
-
-.qs-card.qs-card-rnd-combo svg {
-  color: rgba(var(--c-emerald-rgb), 0.76);
-}
-
-.qs-card.qs-card-rnd-combo .qs-card-action-label {
-  color: var(--c-emerald-soft);
-}
-
-.qs-card.qs-card-rnd-combo .qs-card-state-line {
-  color: rgba(var(--c-emerald-rgb), 0.8);
-  opacity: 0.78;
 }
 
 .qs-card-has-result .qs-card-state-line {
@@ -2460,22 +2476,53 @@ svg.filter-caret.expanded {
   letter-spacing: 0.01em;
 }
 
-.qs-card-rnd-kw.qs-card-has-result .qs-card-state-line {
-  color: rgba(180, 196, 193, 0.85);
+.qs-card-has-result .qs-card-state-line {
+  color: var(--c-muted);
 }
 
-.qs-card-rnd-combo.qs-card-has-result .qs-card-state-line {
-  color: rgba(var(--c-emerald-soft-rgb), 0.85);
+/* ── Initial / revealed state toggle ────────────────────────── */
+
+/* Revealed span is hidden until the card has a result */
+.qs-state-revealed { display: none; }
+
+/* Post-reveal at rest: hide action label + initial, show revealed */
+.qs-card-has-result .qs-card-action-label { display: none; }
+.qs-card-has-result .qs-state-initial      { display: none; }
+.qs-card-has-result .qs-state-revealed     { display: block; }
+
+/* Hover on a revealed card: flip back to initial appearance */
+.qs-card-has-result:hover .qs-card-action-label { display: block; }
+.qs-card-has-result:hover .qs-state-initial      { display: block; }
+.qs-card-has-result:hover .qs-state-revealed     { display: none; }
+
+/* Initial state line uses the base qs-card-state-line sizing, not the revealed sizing */
+.qs-card-has-result:hover .qs-state-initial {
+  font-size: 0.59rem;
+  font-weight: 500;
+  opacity: 0.6;
 }
 
-.qs-card.qs-card-rnd-combo:hover {
-  background: rgba(var(--c-emerald-rgb), 0.085);
-  border-color: rgba(var(--c-emerald-rgb), 0.28);
-  color: var(--c-emerald-soft);
-  box-shadow:
-    0 0 14px rgba(var(--c-emerald-rgb), 0.13),
-    inset 0 0 10px rgba(var(--c-emerald-rgb), 0.045);
+/* Just-clicked: suppress hover-to-initial so the result reveal shows immediately */
+.qs-card-has-result.qs-card-post-click:hover .qs-card-action-label { display: none; }
+.qs-card-has-result.qs-card-post-click:hover .qs-state-initial      { display: none; }
+.qs-card-has-result.qs-card-post-click:hover .qs-state-revealed     { display: block; }
+
+/* Hover-to-initial on a rarity card: reset child colors to neutral; bg/border handled by per-card hover rules */
+.qs-card-has-result[class*="qs-card-rarity-"]:not(.qs-card-post-click):hover > svg,
+.qs-card-has-result[class*="qs-card-rarity-"]:not(.qs-card-post-click):hover .qs-card-state-line,
+.qs-card-has-result[class*="qs-card-rarity-"]:not(.qs-card-post-click):hover .qs-card-action-label {
+  color: var(--c-muted);
+  opacity: 0.85;
 }
+.qs-card-has-result[class*="qs-card-rarity-"]:not(.qs-card-post-click):hover .qs-card-rarity-label {
+  display: none;
+}
+.qs-card-wrap--unique:has(.qs-card-has-result:not(.qs-card-post-click):hover)::after {
+  display: none;
+}
+
+/* ── end Initial / revealed state toggle ─────────────────────── */
+
 
 /* Particle dots — two floating specks via pseudo-elements */
 .qs-card.qs-card-rnd-combo::before,
@@ -2515,89 +2562,17 @@ svg.filter-caret.expanded {
   50%       { transform: translateY(-4px) scale(1.3); opacity: 0.55; }
 }
 
-/* Unique Keyword card — gold/amber, crosshatch texture, serif name, shimmer, corner filigree */
+/* Unique Keyword card */
 .qs-card.qs-card-unique-kw {
   position: relative;
   overflow: hidden;
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(var(--c-gold-rgb), 0.024) 3px,
-      rgba(var(--c-gold-rgb), 0.024) 4px
-    ),
-    rgba(var(--c-gold-rgb), 0.06);
-  border-color: rgba(var(--c-gold-rgb), 0.34);
-  color: var(--c-gold);
-}
-
-.qs-card.qs-card-unique-kw svg {
-  color: rgba(var(--c-gold-rgb), 0.82);
-}
-
-.qs-card.qs-card-unique-kw .qs-card-action-label,
-.qs-card.qs-card-unique-combo .qs-card-action-label {
-  color: var(--c-gold);
-}
-
-.qs-card.qs-card-unique-kw .qs-card-state-line,
-.qs-card.qs-card-unique-combo .qs-card-state-line {
-  color: rgba(var(--c-gold-rgb), 0.82);
-  opacity: 0.78;
 }
 
 .qs-card.qs-card-unique-kw:hover {
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(var(--c-gold-rgb), 0.038) 3px,
-      rgba(var(--c-gold-rgb), 0.038) 4px
-    ),
-    rgba(var(--c-gold-rgb), 0.1);
-  border-color: rgba(var(--c-gold-rgb), 0.34);
+  background: rgba(var(--c-gold-rgb), 0.08);
+  border-color: rgba(var(--c-gold-rgb), 0.3);
   color: var(--c-gold);
-  box-shadow: 0 0 10px rgba(var(--c-gold-rgb), 0.1);
-}
-
-/* Shimmer sweep — travels left to right on a slow interval */
-.qs-card.qs-card-unique-kw::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 25%,
-    rgba(var(--c-gold-rgb), 0.13) 47%,
-    rgba(var(--c-gold-rgb), 0.06) 50%,
-    rgba(var(--c-gold-rgb), 0.07) 53%,
-    transparent 75%
-  );
-  transform: translateX(-120%);
-  animation: unique-kw-shimmer 4.2s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes unique-kw-shimmer {
-  0%,  38% { transform: translateX(-120%); opacity: 0; }
-  44%       { opacity: 1; }
-  62%, 100% { transform: translateX(120%); opacity: 0; }
-}
-
-/* Top-right corner bracket filigree */
-.qs-card.qs-card-unique-kw::after {
-  content: '';
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 7px;
-  height: 7px;
-  border-top: 1.5px solid rgba(var(--c-gold-rgb), 0.38);
-  border-right: 1.5px solid rgba(var(--c-gold-rgb), 0.38);
-  border-top-right-radius: 2px;
-  pointer-events: none;
+  box-shadow: 0 0 9px rgba(var(--c-gold-rgb), 0.09);
 }
 
 /* Serif keyword name — Georgia avoids Cinzel which is reserved for the brand tagline */
@@ -2609,25 +2584,13 @@ svg.filter-caret.expanded {
   line-height: 1.15;
 }
 
-/* Unique Combo card — strongest in section, layered gradient, pulsing aura, bold type */
+/* Unique Combo card — subtle pulsing aura signals highest tier in section */
 .qs-card.qs-card-unique-combo {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    145deg,
-    rgba(var(--c-gold-rgb), 0.14) 0%,
-    rgba(var(--c-gold-rgb), 0.06) 52%,
-    rgba(var(--c-gold-rgb), 0.11) 100%
-  );
-  border-color: rgba(var(--c-gold-rgb), 0.38);
-  color: var(--c-gold);
 }
 
-.qs-card.qs-card-unique-combo svg {
-  color: var(--c-gold);
-}
-
-/* Aura lives on ::before so :hover box-shadow on the element doesn't conflict */
+/* Soft pulsing aura — muted at rest, intensifies via rarity classes */
 .qs-card.qs-card-unique-combo::before {
   content: '';
   position: absolute;
@@ -2638,22 +2601,17 @@ svg.filter-caret.expanded {
 }
 
 @keyframes unique-combo-aura {
-  0%, 100% { box-shadow: 0 0 5px rgba(var(--c-gold-rgb), 0.06);  opacity: 0.65; }
-  50%       { box-shadow: 0 0 18px rgba(var(--c-gold-rgb), 0.2);  opacity: 1; }
+  0%, 100% { box-shadow: 0 0 4px rgba(var(--c-border-rgb), 0.06);  opacity: 0.5; }
+  50%       { box-shadow: 0 0 10px rgba(var(--c-border-rgb), 0.14); opacity: 0.8; }
 }
 
 .qs-card.qs-card-unique-combo:hover {
-  background: linear-gradient(
-    145deg,
-    rgba(var(--c-gold-rgb), 0.2) 0%,
-    rgba(var(--c-gold-rgb), 0.12) 52%,
-    rgba(var(--c-gold-rgb), 0.17) 100%
-  );
-  border-color: rgba(var(--c-gold-rgb), 0.52);
+  background: rgba(var(--c-gold-rgb), 0.09);
+  border-color: rgba(var(--c-gold-rgb), 0.38);
   color: var(--c-gold);
   box-shadow:
-    0 0 22px rgba(var(--c-gold-rgb), 0.2),
-    inset 0 0 14px rgba(var(--c-gold-rgb), 0.07);
+    0 0 18px rgba(var(--c-gold-rgb), 0.16),
+    inset 0 0 10px rgba(var(--c-gold-rgb), 0.05);
 }
 
 .qs-card.qs-card-unique-combo:hover::before {
@@ -2704,67 +2662,29 @@ svg.filter-caret.expanded {
   box-shadow: none;
 }
 
+/* Shared hover for all 4 Roll cards */
+.qs-card.qs-card-rnd-kw:hover,
+.qs-card.qs-card-rnd-combo:hover,
+.qs-card.qs-card-popular:hover,
+.qs-card.qs-card-user-crafts:hover {
+  background: rgba(var(--c-emerald-rgb), 0.07);
+  border-color: rgba(var(--c-emerald-rgb), 0.22);
+  color: var(--c-muted);
+  box-shadow: 0 0 9px rgba(var(--c-emerald-rgb), 0.08);
+}
+
 /* ── end Roll / Uniques variants ────────────────────────────── */
 
 /* ── Purple tier: Most Popular + User Crafts ─────────────────── */
 
-/* Most Popular — cyan/blue, rare tier */
-.qs-card.qs-card-popular {
-  background: rgba(var(--c-cyan-rgb), 0.04);
-  border-color: rgba(var(--c-cyan-rgb), 0.14);
-  color: var(--c-dim);
-}
+/* Most Popular */
 
-.qs-card.qs-card-popular svg {
-  color: rgba(var(--c-cyan-rgb), 0.55);
-}
-
-.qs-card.qs-card-popular .qs-card-action-label {
-  color: rgba(var(--c-cyan-rgb), 0.72);
-}
-
-.qs-card.qs-card-popular .qs-card-state-line {
-  color: var(--c-cyan-soft);
-  opacity: 0.52;
-}
-
-.qs-card.qs-card-popular:hover {
-  background: rgba(var(--c-cyan-rgb), 0.08);
-  border-color: rgba(var(--c-cyan-rgb), 0.26);
-  color: var(--c-cyan-soft);
-  box-shadow: 0 0 8px rgba(var(--c-cyan-rgb), 0.08);
-}
-
-/* User Crafts — stronger purple, soft glow, floating speck */
+/* User Crafts — floating speck structural element */
 .qs-card.qs-card-user-crafts {
   position: relative;
   overflow: hidden;
-  background: rgba(var(--c-purple-rgb), 0.07);
-  border-color: rgba(var(--c-purple-rgb), 0.22);
-  color: rgba(var(--c-purple-rgb), 0.78);
 }
 
-.qs-card.qs-card-user-crafts svg {
-  color: rgba(var(--c-purple-rgb), 0.78);
-}
-
-.qs-card.qs-card-user-crafts .qs-card-action-label {
-  color: var(--c-purple-soft);
-}
-
-.qs-card.qs-card-user-crafts .qs-card-state-line {
-  color: rgba(var(--c-purple-rgb), 0.82);
-  opacity: 0.75;
-}
-
-.qs-card.qs-card-user-crafts:hover {
-  background: rgba(var(--c-purple-rgb), 0.12);
-  border-color: rgba(var(--c-purple-rgb), 0.36);
-  color: var(--c-purple-soft);
-  box-shadow:
-    0 0 14px rgba(var(--c-purple-rgb), 0.14),
-    inset 0 0 10px rgba(var(--c-purple-rgb), 0.04);
-}
 
 /* Floating speck on user crafts */
 .qs-card.qs-card-user-crafts::before {
@@ -2782,6 +2702,138 @@ svg.filter-caret.expanded {
 }
 
 /* ── end Purple tier ─────────────────────────────────────────── */
+
+/* ── Rarity reveal — applied to active discovery card after search ── */
+
+/* Common: high result count — neutral base, label only */
+.qs-card.qs-card-rarity-common {
+  /* no background or border change — the label does the work */
+  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+}
+
+.qs-card.qs-card-rarity-common .qs-card-rarity-label {
+  color: var(--c-muted);
+}
+
+/* Uncommon: moderate result count — soft emerald lift */
+.qs-card.qs-card-rarity-uncommon {
+  background: rgba(var(--c-emerald-rgb), 0.06);
+  border-color: rgba(var(--c-emerald-rgb), 0.28);
+  color: var(--c-emerald-soft);
+  box-shadow: 0 0 8px rgba(var(--c-emerald-rgb), 0.08);
+  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+}
+
+.qs-card.qs-card-rarity-uncommon > svg {
+  color: rgba(var(--c-emerald-rgb), 0.7);
+}
+
+.qs-card.qs-card-rarity-uncommon .qs-card-state-line,
+.qs-card.qs-card-rarity-uncommon .qs-card-action-label {
+  color: var(--c-emerald-soft);
+  opacity: 1;
+}
+
+.qs-card.qs-card-rarity-uncommon .qs-card-rarity-label {
+  color: var(--c-emerald-soft);
+}
+
+/* Rare: low result count — blue accent */
+.qs-card.qs-card-rarity-rare {
+  background: rgba(var(--c-rare-blue-rgb), 0.07);
+  border-color: rgba(var(--c-rare-blue-rgb), 0.36);
+  color: var(--c-rare-blue-soft);
+  box-shadow:
+    0 0 12px rgba(var(--c-rare-blue-rgb), 0.13),
+    inset 0 0 8px rgba(var(--c-rare-blue-rgb), 0.05);
+  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+}
+
+.qs-card.qs-card-rarity-rare > svg {
+  color: rgba(var(--c-rare-blue-rgb), 0.8);
+}
+
+.qs-card.qs-card-rarity-rare .qs-card-state-line,
+.qs-card.qs-card-rarity-rare .qs-card-action-label {
+  color: var(--c-rare-blue-soft);
+  opacity: 1;
+}
+
+.qs-card.qs-card-rarity-rare .qs-card-rarity-label {
+  color: var(--c-rare-blue-soft);
+}
+
+/* Epic: very low result count — purple accent */
+.qs-card.qs-card-rarity-epic {
+  background: rgba(var(--c-purple-rgb), 0.1);
+  border-color: rgba(var(--c-purple-rgb), 0.44);
+  color: var(--c-purple-soft);
+  box-shadow:
+    0 0 16px rgba(var(--c-purple-rgb), 0.18),
+    inset 0 0 10px rgba(var(--c-purple-rgb), 0.06);
+  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+}
+
+.qs-card.qs-card-rarity-epic > svg {
+  color: rgba(var(--c-purple-rgb), 0.85);
+}
+
+.qs-card.qs-card-rarity-epic .qs-card-state-line,
+.qs-card.qs-card-rarity-epic .qs-card-action-label {
+  color: var(--c-purple-soft);
+  opacity: 1;
+}
+
+.qs-card.qs-card-rarity-epic .qs-card-rarity-label {
+  color: var(--c-purple-soft);
+}
+
+/* Unique: extremely low non-zero result count — orange + diamond via wrapper */
+.qs-card.qs-card-rarity-unique {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(var(--c-unique-rgb), 0.045) 3px,
+      rgba(var(--c-unique-rgb), 0.045) 4px
+    ),
+    rgba(var(--c-unique-rgb), 0.08);
+  border-color: rgba(var(--c-unique-rgb), 0.48);
+  color: var(--c-unique-soft);
+  box-shadow:
+    0 0 20px rgba(var(--c-unique-rgb), 0.2),
+    inset 0 0 12px rgba(var(--c-unique-rgb), 0.07);
+  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+}
+
+.qs-card.qs-card-rarity-unique.qs-card-post-click:hover {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(var(--c-unique-rgb), 0.055) 3px,
+      rgba(var(--c-unique-rgb), 0.055) 4px
+    ),
+    rgba(var(--c-unique-rgb), 0.1);
+}
+
+.qs-card.qs-card-rarity-unique > svg {
+  color: rgba(var(--c-unique-rgb), 0.88);
+}
+
+.qs-card.qs-card-rarity-unique .qs-card-state-line,
+.qs-card.qs-card-rarity-unique .qs-card-action-label {
+  color: var(--c-unique-soft);
+  opacity: 1;
+}
+
+.qs-card.qs-card-rarity-unique .qs-card-rarity-label {
+  color: var(--c-unique-soft);
+}
+
+/* ── end Rarity reveal ───────────────────────────────────────── */
 
 .mobile-keyword-search-wrap {
   margin-bottom: 0.15rem;

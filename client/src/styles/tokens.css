@@ -39,6 +39,16 @@
   --c-purple-rgb:  163, 53, 238;
   --c-purple-soft: #c472fa;
 
+  /* rare blue (WoW rare tier) */
+  --c-rare-blue:      #0077ff;
+  --c-rare-blue-rgb:  0, 119, 255;
+  --c-rare-blue-soft: #4da6ff;
+
+  /* unique orange (top rarity tier) */
+  --c-unique:      #ff8000;
+  --c-unique-rgb:  255, 128, 0;
+  --c-unique-soft: #ffb352;
+
   /* danger */
   --c-danger:     #ff5f68;
   --c-danger-rgb: 255, 95, 104;

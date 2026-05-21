@@ -95,7 +95,7 @@ const FilterBar: React.FC = () => {
               type="checkbox"
               checked={requireDeveloper}
               onChange={e => setRequireDeveloper(e.target.checked)}
-              className="accent-primary h-3.5 w-3.5 cursor-pointer"
+              className="results-quality-checkbox"
             />
             <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors whitespace-nowrap">
               Has studio
@@ -106,7 +106,7 @@ const FilterBar: React.FC = () => {
               type="checkbox"
               checked={requireRating}
               onChange={e => setRequireRating(e.target.checked)}
-              className="accent-primary h-3.5 w-3.5 cursor-pointer"
+              className="results-quality-checkbox"
             />
             <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors whitespace-nowrap">
               Has rating

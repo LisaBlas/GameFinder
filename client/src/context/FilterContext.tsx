@@ -79,6 +79,7 @@ interface FilterContextType {
   requireRating: boolean;
   setRequireRating: (value: boolean) => void;
   applyFiltersAndSearch: (filters: Filter[]) => void;
+  lastSearchedFilters: Filter[];
 }
 
 // Create the FilterContext with the defined type
@@ -121,6 +122,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortByRaw] = useState<string>("relevance");
   const [searchFresh, setSearchFresh] = useState(false);
+  const [lastSearchedFilters, setLastSearchedFilters] = useState<Filter[]>([]);
 
   const setSortBy = useCallback((sort: string) => {
     setSearchFresh(false);
@@ -286,6 +288,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       });
     }
 
+    const filtersSnapshot = [...selectedFilters];
     setSearchFresh(true);
     setIsLoading(true);
     setError(null);
@@ -362,6 +365,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       }));
       
       setGameResults(processedResults);
+      setLastSearchedFilters(filtersSnapshot);
       setHasMore(response.data.length >= RESULTS_PER_PAGE);
     } catch (err: any) {
       console.error("Error searching games:", err);
@@ -692,6 +696,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     requireRating,
     setRequireRating,
     applyFiltersAndSearch,
+    lastSearchedFilters,
   };
   
   return (
