@@ -145,6 +145,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
   const [partnerStoresExpanded, setPartnerStoresExpanded] = useState(false);
   const [gameCopied, setGameCopied] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const tagsRef = useRef<HTMLDivElement | null>(null);
   const { addFilter, removeFilter, isFilterSelected, selectedFilters } = useFilters();
@@ -207,6 +208,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     };
     fetchVideos();
   }, [game.id, hasLoadedVideos, isSelected]);
+
+  useEffect(() => {
+    if (!isSelected) setVideoPlaying(false);
+  }, [isSelected]);
 
   useEffect(() => {
     if (!highlightFilters || !isSelected) return;
@@ -773,13 +778,35 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                         <div className="w-full h-full bg-slate-800 animate-pulse" />
                       )}
                       {!isVideoLoading && videos.length > 0 && (
-                        <iframe
-                          title={videos[0]?.name || `${game.name} video`}
-                          src={`https://www.youtube.com/embed/${videos[0].video_id}?rel=0`}
-                          className="w-full h-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          allowFullScreen
-                        />
+                        videoPlaying ? (
+                          <iframe
+                            title={videos[0]?.name || `${game.name} video`}
+                            src={`https://www.youtube.com/embed/${videos[0].video_id}?rel=0&autoplay=1`}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            className="relative w-full h-full group overflow-hidden"
+                            onClick={(e) => { e.stopPropagation(); setVideoPlaying(true); }}
+                            aria-label={`Play ${game.name} trailer`}
+                          >
+                            <img
+                              src={`https://i.ytimg.com/vi/${videos[0].video_id}/maxresdefault.jpg`}
+                              onError={(e) => { (e.target as HTMLImageElement).src = `https://i.ytimg.com/vi/${videos[0].video_id}/hqdefault.jpg`; }}
+                              alt=""
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-200" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-2xl transition-transform duration-200 group-hover:scale-110">
+                                <FaPlay className="ml-1 h-4 w-4 text-slate-900" />
+                              </div>
+                            </div>
+                          </button>
+                        )
                       )}
                       {!isVideoLoading && hasLoadedVideos && videos.length === 0 && (
                         <div className="relative flex h-full items-center justify-center overflow-hidden">
