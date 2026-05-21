@@ -14,6 +14,12 @@
   --c-surface-2:     #0b1815;
   --c-surface-2-rgb: 11, 24, 21;
 
+  /* card surfaces — warmer, less green */
+  --c-card:       #111312;
+  --c-card-rgb:   17, 19, 18;
+  --c-card-2:     #161816;
+  --c-card-2-rgb: 22, 24, 22;
+
   /* emerald accent */
   --c-emerald:      #20e6a7;
   --c-emerald-rgb:  32, 230, 167;
