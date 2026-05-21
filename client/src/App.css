@@ -1393,8 +1393,7 @@ h3{
 .game-card {
   isolation: isolate;
   background:
-    radial-gradient(circle at 18% 0%, rgba(var(--c-emerald-soft-rgb), 0.095), transparent 30%),
-    linear-gradient(145deg, rgba(var(--c-surface-rgb), 0.94), rgba(var(--c-bg-rgb), 0.98));
+    linear-gradient(160deg, rgba(var(--c-surface-2-rgb), 0.97), rgba(var(--c-surface-rgb), 0.95) 55%, rgba(var(--c-bg-rgb), 0.98));
   border-radius: 12px;
   overflow: hidden;
   border: none;
@@ -1408,12 +1407,11 @@ h3{
   z-index: 0;
   pointer-events: none;
   background:
-    linear-gradient(135deg, rgba(var(--c-emerald-rgb), 0.12), transparent 34%),
-    linear-gradient(rgba(var(--c-border-rgb), 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(var(--c-border-rgb), 0.03) 1px, transparent 1px);
-  background-size: auto, 42px 42px, 42px 42px;
-  mask-image: linear-gradient(145deg, black, rgba(0, 0, 0, 0.58) 54%, transparent 118%);
-  opacity: 0.52;
+    linear-gradient(rgba(var(--c-border-rgb), 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--c-border-rgb), 0.035) 1px, transparent 1px);
+  background-size: 42px 42px, 42px 42px;
+  mask-image: linear-gradient(180deg, black 40%, rgba(0, 0, 0, 0.45) 100%);
+  opacity: 0.6;
 }
 
 .game-card::after {
@@ -1440,10 +1438,9 @@ h3{
 }
 
 .game-card-compact:hover {
-  border-color: rgba(var(--c-emerald-rgb), 0.3);
+  border-color: rgba(var(--c-emerald-rgb), 0.28);
   background:
-    radial-gradient(circle at 20% 0%, rgba(var(--c-emerald-soft-rgb), 0.14), transparent 32%),
-    linear-gradient(145deg, rgba(9, 27, 23, 0.98), rgba(var(--c-bg-rgb), 0.98));
+    linear-gradient(160deg, rgba(var(--c-surface-2-rgb), 0.99), rgba(var(--c-surface-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
 }
 
 .game-card-compact:hover::after {
@@ -1455,25 +1452,22 @@ h3{
 }
 
 .game-card-selected {
-  border-color: rgba(var(--c-emerald-rgb), 0.36);
+  border-color: rgba(var(--c-emerald-rgb), 0.32);
   background:
-    radial-gradient(circle at 14% 6%, rgba(var(--c-emerald-soft-rgb), 0.2), transparent 28%),
-    radial-gradient(circle at 82% 0%, rgba(var(--c-emerald-rgb), 0.12), transparent 32%),
-    linear-gradient(145deg, rgba(8, 26, 22, 0.98), rgba(var(--c-surface-rgb), 0.96) 46%, rgba(var(--c-bg-rgb), 0.98));
+    linear-gradient(160deg, rgba(var(--c-surface-2-rgb), 0.99), rgba(var(--c-surface-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
   box-shadow:
-    0 0 0 1px rgba(var(--c-emerald-rgb), 0.16),
+    0 0 0 1px rgba(var(--c-emerald-rgb), 0.14),
     0 22px 70px rgba(0, 0, 0, 0.38),
-    0 0 48px rgba(var(--c-emerald-rgb), 0.08);
+    0 0 48px rgba(var(--c-emerald-rgb), 0.06);
 }
 
 .game-card-selected::before {
   background:
-    radial-gradient(circle at 28% 12%, rgba(var(--c-emerald-soft-rgb), 0.18), transparent 24%),
-    linear-gradient(135deg, rgba(var(--c-emerald-rgb), 0.16), transparent 42%),
-    linear-gradient(rgba(var(--c-border-rgb), 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(var(--c-border-rgb), 0.04) 1px, transparent 1px);
-  background-size: auto, auto, 36px 36px, 36px 36px;
-  opacity: 0.72;
+    linear-gradient(rgba(var(--c-border-rgb), 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--c-border-rgb), 0.05) 1px, transparent 1px);
+  background-size: 36px 36px, 36px 36px;
+  mask-image: linear-gradient(180deg, black 50%, rgba(0, 0, 0, 0.4) 100%);
+  opacity: 0.75;
 }
 
 .game-card-selected::after {

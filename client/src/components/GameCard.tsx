@@ -524,9 +524,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         <FaChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform ${partnerStoresExpanded ? 'rotate-180' : ''}`} />
       </button>
 
-      <p className="text-xs leading-relaxed text-slate-500">
-        Some store links may be affiliate links and help support GameFinder at no extra cost.
-      </p>
     </div>
   );
 
@@ -742,28 +739,20 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </div>
               )}
 
-              <div className="relative">
+              <div>
                 <p className={`text-sm leading-relaxed text-slate-300 ${isSelected && !synopsisExpanded ? 'line-clamp-3' : !isSelected ? 'line-clamp-2' : ''}`}>
                   {synopsis}
                 </p>
-                {isSelected && !synopsisExpanded && (
+                {isSelected && (
                   <button
-                    onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(true); }}
-                    className="absolute bottom-0 right-0 pl-8 text-xs text-emerald-400 hover:text-emerald-300"
-                    style={{ background: 'linear-gradient(to right, transparent, #07110f 40%)' }}
+                    onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(v => !v); }}
+                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-md py-1.5 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/5 transition-colors"
                   >
-                    Read more
+                    {synopsisExpanded ? 'Read less' : 'Read more'}
+                    <FaChevronDown className={`h-2.5 w-2.5 transition-transform ${synopsisExpanded ? 'rotate-180' : ''}`} />
                   </button>
                 )}
               </div>
-              {isSelected && synopsisExpanded && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(false); }}
-                  className="text-xs text-emerald-400 hover:text-emerald-300"
-                >
-                  Read less
-                </button>
-              )}
 
               {isSelected && (
                 <div className="grid gap-4 pt-1">
@@ -841,7 +830,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                                   {officialStoreLinks}
                                 </div>
                               ) : (
-                                <span className="game-card-empty-state rounded-lg border px-3 py-2 text-xs leading-relaxed">
+                                <span className="game-card-empty-state px-1 text-xs leading-relaxed">
                                   No official links found. This game may be too old, delisted, or missing current store links.
                                 </span>
                               )}
