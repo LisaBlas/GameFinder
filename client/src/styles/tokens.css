@@ -34,6 +34,11 @@
   --c-violet-rgb: 167, 139, 250;
   --c-violet-soft: #c4b5fd;
 
+  /* purple accent (rarity tier) */
+  --c-purple:      #a335ee;
+  --c-purple-rgb:  163, 53, 238;
+  --c-purple-soft: #c472fa;
+
   /* danger */
   --c-danger:     #ff5f68;
   --c-danger-rgb: 255, 95, 104;

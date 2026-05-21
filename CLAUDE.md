@@ -58,7 +58,7 @@ Desktop:
 - Mobile switches between Build and Results tabs; Search auto-switches to Results.
 - `FilterSidebar` is no longer part of the active split layout.
 - `Hero` is not part of the active home layout, though the component still exists.
-- `KeywordSection` uses a hierarchical category/subcategory rail plus detail panel on desktop, and mobile shows keyword search, category-grouped expandable shelves with subcategory drill-in, then a compact Popular Combos shelf.
+- `KeywordSection` uses a hierarchical category/subcategory rail plus detail panel on desktop, and mobile shows Roll/Uniques discovery cards, keyword search, and category-grouped expandable shelves with subcategory drill-in.
 - `SelectedFilters` appears in both desktop and mobile action areas.
 - `BottomBar` is mobile-only, fixed, and behaves as an expandable drawer.
 
@@ -89,12 +89,15 @@ Analytics: CTA clicks fire a `seo_open_app` GA event with `page_slug` via inline
 
 ## Active Product Flows
 1. **Keyword UX** - make keyword selection feel fun and rewarding. Keywords are curated and sorted intentionally; preserve their order and meaning.
-2. **Game/keyword search** - `KeywordSearch` queries both `/api/games/suggest` and `/api/keywords/search`.
-3. **Find similar** - selecting a game suggestion clears filters, sets `seedGame`, fetches `/api/games/:id/similar-seed`, then seeds up to 3 keywords plus one genre and one theme.
-4. **YouTube video embeds** - expanded game cards fetch `/api/games/:id/videos` and embed the first IGDB video in a YouTube iframe. If none exists, show cover-backed fallback and a gameplay search link.
-5. **Affiliate partner stores** - game cards show official store links plus rotated partner alternatives for GamersGate, Instant Gaming, Eneba, Kinguin, and G2A. Kinguin uses a first-click cookie-setting redirect flow.
-6. **Saved games** - users can save/unsave games from cards and open the saved-games panel from mobile and desktop headers.
-7. **Quality filters** - `FilterBar` exposes `Has studio` (`requireDeveloper`, default true) and `Has rating` (`requireRating`, default false).
+2. **Homepage discovery cards** - `KeywordSection` has Roll and Uniques sections as the new "wow" feature above manual browsing. Roll gives quick starts for a random keyword, a common crafted combination, Most Popular, and User Crafts. Uniques gives limited daily reveals for rare discovery: Unique Key and Crafted.
+3. **Unique reveal limits** - Uniques currently uses client-side `localStorage` under `gamefinder_unique_limits`; the limits are 3 unique keywords and 1 unique combo per day. This is an engagement mechanic, not a durable account system yet.
+4. **Future community search memory** - planned evolution: save user searches/keyword combinations and their result counts so the app can surface strong discoveries to other users. Most Popular should come from high-use/high-engagement combinations. User Crafts should highlight community-found combinations, especially "best crafts": keyword/filter combinations that return a low amount of results, because low result count is a proxy for unique/niche games.
+5. **Game/keyword search** - `KeywordSearch` queries both `/api/games/suggest` and `/api/keywords/search`.
+6. **Find similar** - selecting a game suggestion clears filters, sets `seedGame`, fetches `/api/games/:id/similar-seed`, then seeds up to 3 keywords plus one genre and one theme.
+7. **YouTube video embeds** - expanded game cards fetch `/api/games/:id/videos` and embed the first IGDB video in a YouTube iframe. If none exists, show cover-backed fallback and a gameplay search link.
+8. **Affiliate partner stores** - game cards show official store links plus rotated partner alternatives for GamersGate, Instant Gaming, Eneba, Kinguin, and G2A. Kinguin uses a first-click cookie-setting redirect flow.
+9. **Saved games** - users can save/unsave games from cards and open the saved-games panel from mobile and desktop headers.
+10. **Quality filters** - `FilterBar` exposes `Has studio` (`requireDeveloper`, default true) and `Has rating` (`requireRating`, default false).
 
 ## API And Search Data Flow
 - `POST /api/games/search`
@@ -157,7 +160,7 @@ Use Tailwind for layout, spacing, and one-off styles. Use the CSS classes above 
 - Deep forest is the main neutral color system; emerald (`#10b981`) is the primary accent. Keep brand consistent.
 - Keywords are curated with intent; do not reorder or auto-generate them.
 - Do not add unnecessary dependencies.
-- No price fetching; there is no infrastructure to fetch real-time prices from affiliate sites.
+- Steam prices are fetched via `GET /api/steam-price?appId=X` (proxies Steam's unofficial store API, in-memory cache with 6h TTL). Displayed on the Steam official store button and as a reference anchor above the Marketplaces section. Affiliate marketplace prices (Eneba, G2A, Kinguin, Instant Gaming) are not available — those stores have no public pricing API.
 - Do not take screenshots to check visual work unless explicitly requested by the user.
 
 ## Include And Exclude Filters

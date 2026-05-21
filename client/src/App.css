@@ -2403,52 +2403,52 @@ svg.filter-caret.expanded {
 
 /* ── Mobile Roll / Uniques button variants ───────────────────── */
 
-/* Random keyword — muted green, utilitarian, low glow */
+/* Random keyword — neutral grey, lowest rarity tier */
 .qs-card.qs-card-rnd-kw {
-  background: rgba(var(--c-emerald-rgb), 0.026);
-  border-color: rgba(var(--c-emerald-rgb), 0.085);
+  background: rgba(255, 255, 255, 0.025);
+  border-color: rgba(255, 255, 255, 0.07);
   color: var(--c-dim);
 }
 
 .qs-card.qs-card-rnd-kw svg {
-  color: rgba(var(--c-emerald-soft-rgb), 0.5);
+  color: rgba(180, 196, 193, 0.45);
 }
 
 .qs-card.qs-card-rnd-kw .qs-card-action-label {
-  color: rgba(var(--c-emerald-soft-rgb), 0.58);
+  color: rgba(180, 196, 193, 0.52);
 }
 
 .qs-card.qs-card-rnd-kw .qs-card-state-line {
   color: var(--c-muted);
-  opacity: 0.55;
+  opacity: 0.52;
 }
 
 .qs-card.qs-card-rnd-kw:hover {
-  background: rgba(var(--c-emerald-rgb), 0.065);
-  border-color: rgba(var(--c-emerald-rgb), 0.15);
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.12);
   color: var(--c-muted);
-  box-shadow: 0 0 7px rgba(var(--c-emerald-rgb), 0.05);
+  box-shadow: 0 0 7px rgba(255, 255, 255, 0.03);
 }
 
-/* Random combo — cyan/blue, alchemical glow, floating particles */
+/* Common combo — emerald green, second rarity tier */
 .qs-card.qs-card-rnd-combo {
   position: relative;
   overflow: hidden;
-  background: rgba(var(--c-cyan-rgb), 0.045);
-  border-color: rgba(var(--c-cyan-rgb), 0.18);
-  color: rgba(var(--c-cyan-rgb), 0.75);
+  background: rgba(var(--c-emerald-rgb), 0.045);
+  border-color: rgba(var(--c-emerald-rgb), 0.18);
+  color: rgba(var(--c-emerald-rgb), 0.75);
 }
 
 .qs-card.qs-card-rnd-combo svg {
-  color: rgba(var(--c-cyan-rgb), 0.76);
+  color: rgba(var(--c-emerald-rgb), 0.76);
 }
 
 .qs-card.qs-card-rnd-combo .qs-card-action-label {
-  color: var(--c-cyan-soft);
+  color: var(--c-emerald-soft);
 }
 
 .qs-card.qs-card-rnd-combo .qs-card-state-line {
-  color: rgba(var(--c-cyan-rgb), 0.8);
+  color: rgba(var(--c-emerald-rgb), 0.8);
   opacity: 0.78;
 }
 
@@ -2461,16 +2461,20 @@ svg.filter-caret.expanded {
 }
 
 .qs-card-rnd-kw.qs-card-has-result .qs-card-state-line {
-  color: rgba(var(--c-emerald-soft-rgb), 0.78);
+  color: rgba(180, 196, 193, 0.85);
+}
+
+.qs-card-rnd-combo.qs-card-has-result .qs-card-state-line {
+  color: rgba(var(--c-emerald-soft-rgb), 0.85);
 }
 
 .qs-card.qs-card-rnd-combo:hover {
-  background: rgba(var(--c-cyan-rgb), 0.085);
-  border-color: rgba(var(--c-cyan-rgb), 0.28);
-  color: var(--c-cyan-soft);
+  background: rgba(var(--c-emerald-rgb), 0.085);
+  border-color: rgba(var(--c-emerald-rgb), 0.28);
+  color: var(--c-emerald-soft);
   box-shadow:
-    0 0 14px rgba(var(--c-cyan-rgb), 0.13),
-    inset 0 0 10px rgba(var(--c-cyan-rgb), 0.045);
+    0 0 14px rgba(var(--c-emerald-rgb), 0.13),
+    inset 0 0 10px rgba(var(--c-emerald-rgb), 0.045);
 }
 
 /* Particle dots — two floating specks via pseudo-elements */
@@ -2479,7 +2483,7 @@ svg.filter-caret.expanded {
   content: '';
   position: absolute;
   border-radius: 50%;
-  background: rgba(var(--c-cyan-rgb), 0.55);
+  background: rgba(var(--c-emerald-rgb), 0.55);
   pointer-events: none;
 }
 
@@ -2497,7 +2501,7 @@ svg.filter-caret.expanded {
   height: 2px;
   bottom: 24%;
   left: 20%;
-  background: rgba(var(--c-cyan-rgb), 0.4);
+  background: rgba(var(--c-emerald-rgb), 0.4);
   animation: qs-particle-b 3.5s ease-in-out infinite;
 }
 
@@ -2701,6 +2705,83 @@ svg.filter-caret.expanded {
 }
 
 /* ── end Roll / Uniques variants ────────────────────────────── */
+
+/* ── Purple tier: Most Popular + User Crafts ─────────────────── */
+
+/* Most Popular — cyan/blue, rare tier */
+.qs-card.qs-card-popular {
+  background: rgba(var(--c-cyan-rgb), 0.04);
+  border-color: rgba(var(--c-cyan-rgb), 0.14);
+  color: var(--c-dim);
+}
+
+.qs-card.qs-card-popular svg {
+  color: rgba(var(--c-cyan-rgb), 0.55);
+}
+
+.qs-card.qs-card-popular .qs-card-action-label {
+  color: rgba(var(--c-cyan-rgb), 0.72);
+}
+
+.qs-card.qs-card-popular .qs-card-state-line {
+  color: var(--c-cyan-soft);
+  opacity: 0.52;
+}
+
+.qs-card.qs-card-popular:hover {
+  background: rgba(var(--c-cyan-rgb), 0.08);
+  border-color: rgba(var(--c-cyan-rgb), 0.26);
+  color: var(--c-cyan-soft);
+  box-shadow: 0 0 8px rgba(var(--c-cyan-rgb), 0.08);
+}
+
+/* User Crafts — stronger purple, soft glow, floating speck */
+.qs-card.qs-card-user-crafts {
+  position: relative;
+  overflow: hidden;
+  background: rgba(var(--c-purple-rgb), 0.07);
+  border-color: rgba(var(--c-purple-rgb), 0.22);
+  color: rgba(var(--c-purple-rgb), 0.78);
+}
+
+.qs-card.qs-card-user-crafts svg {
+  color: rgba(var(--c-purple-rgb), 0.78);
+}
+
+.qs-card.qs-card-user-crafts .qs-card-action-label {
+  color: var(--c-purple-soft);
+}
+
+.qs-card.qs-card-user-crafts .qs-card-state-line {
+  color: rgba(var(--c-purple-rgb), 0.82);
+  opacity: 0.75;
+}
+
+.qs-card.qs-card-user-crafts:hover {
+  background: rgba(var(--c-purple-rgb), 0.12);
+  border-color: rgba(var(--c-purple-rgb), 0.36);
+  color: var(--c-purple-soft);
+  box-shadow:
+    0 0 14px rgba(var(--c-purple-rgb), 0.14),
+    inset 0 0 10px rgba(var(--c-purple-rgb), 0.04);
+}
+
+/* Floating speck on user crafts */
+.qs-card.qs-card-user-crafts::before {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  top: 30%;
+  right: 20%;
+  background: rgba(var(--c-purple-rgb), 0.5);
+  pointer-events: none;
+  animation: qs-particle-a 3.1s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+
+/* ── end Purple tier ─────────────────────────────────────────── */
 
 .mobile-keyword-search-wrap {
   margin-bottom: 0.15rem;
@@ -2978,7 +3059,7 @@ svg.filter-caret.expanded {
   min-width: 0;
   align-items: baseline;
   gap: 0.5rem;
-  color: var(--c-text);
+  color: var(--c-muted);
   font-size: 0.94rem;
   font-weight: 820;
   line-height: 1.2;

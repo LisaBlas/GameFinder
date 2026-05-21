@@ -138,6 +138,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
+  const [steamPrice, setSteamPrice] = useState<{ price: string | null; originalPrice: string | null; discount: number | null; isFree: boolean } | null>(null);
+  const [hasLoadedSteamPrice, setHasLoadedSteamPrice] = useState(false);
   const [mediaHeight, setMediaHeight] = useState<number | null>(null);
   const [isMediaSyncedLayout, setIsMediaSyncedLayout] = useState(false);
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
@@ -166,6 +168,25 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   }, [game.involved_companies]);
 
   const affiliateLinks = getAffiliateLinks(game.name);
+
+  useEffect(() => {
+    const fetchSteamPrice = async () => {
+      if (!isSelected || hasLoadedSteamPrice) return;
+      const steamEntry = game.external_games?.find(eg => eg.external_game_source === 1);
+      if (!steamEntry?.url) { setHasLoadedSteamPrice(true); return; }
+      const match = steamEntry.url.match(/\/app\/(\d+)/);
+      if (!match) { setHasLoadedSteamPrice(true); return; }
+      try {
+        const resp = await fetch(`/api/steam-price?appId=${match[1]}`);
+        if (resp.ok) setSteamPrice(await resp.json());
+      } catch {
+        // silently fail — price is non-critical
+      } finally {
+        setHasLoadedSteamPrice(true);
+      }
+    };
+    fetchSteamPrice();
+  }, [game.external_games, game.id, hasLoadedSteamPrice, isSelected]);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -353,6 +374,15 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const officialStoreLinks = (
     <>
       {renderableOfficialStores.map((store) => {
+        const isSteam = store.external_game_source === 1;
+        const priceLabel = isSteam && steamPrice
+          ? steamPrice.isFree
+            ? 'Free to Play'
+            : steamPrice.price
+          : null;
+        const originalLabel = isSteam && steamPrice?.originalPrice ? steamPrice.originalPrice : null;
+        const discountPct = isSteam && steamPrice?.discount ? steamPrice.discount : null;
+
         return (
           <a
             key={store.id}
@@ -360,13 +390,26 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => { e.stopPropagation(); trackExternalClick(store.storeName, 'official', game.name); }}
-            className={storeButtonClass}
+            className={`${storeButtonClass} ${isSteam && priceLabel ? 'justify-between' : ''}`}
             title={store.storeName}
           >
-            <span className={storeIconClass}>
-              {React.cloneElement(store.icon, { className: 'w-5 h-5' })}
+            <span className="flex items-center gap-2 min-w-0">
+              <span className={storeIconClass}>
+                {React.cloneElement(store.icon, { className: 'w-5 h-5' })}
+              </span>
+              <span className="truncate">{store.storeName}</span>
             </span>
-            <span className="truncate">{store.storeName}</span>
+            {priceLabel && (
+              <span className="flex items-center gap-1.5 flex-shrink-0 ml-3">
+                {originalLabel && (
+                  <span className="text-xs text-slate-500 line-through">{originalLabel}</span>
+                )}
+                {discountPct && (
+                  <span className="text-xs font-bold text-[var(--c-emerald)] bg-[rgba(var(--c-emerald-rgb),0.12)] px-1 py-0.5 rounded">-{discountPct}%</span>
+                )}
+                <span className={`text-sm font-semibold ${discountPct ? 'text-[var(--c-emerald)]' : 'text-slate-200'}`}>{priceLabel}</span>
+              </span>
+            )}
           </a>
         );
       })}
@@ -393,35 +436,35 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     {
       key: 'gamersgate',
       name: affiliateLinks.gamersgate.name,
-      label: 'Open GamersGate',
+      descriptor: 'Licensed retailer · since 2004',
       icon: <GamersGateIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate')
     },
     {
       key: 'instantGaming',
       name: affiliateLinks.instantGaming.name,
-      label: 'Open Instant Gaming',
+      descriptor: 'Keys marketplace · protection included',
       icon: <InstantGamingIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate')
     },
     {
       key: 'eneba',
       name: affiliateLinks.eneba.name,
-      label: 'Open Eneba',
+      descriptor: 'Keys marketplace · buyer protection',
       icon: <EnebaIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate')
     },
     {
       key: 'kinguin',
       name: affiliateLinks.kinguin.name,
-      label: 'Open Kinguin',
+      descriptor: 'Keys marketplace · KinguinX protection',
       icon: <KinguinIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.kinguin.url, 'Kinguin', 'affiliate')
     },
     {
       key: 'g2a',
       name: affiliateLinks.g2a.name,
-      label: 'Open G2A',
+      descriptor: 'Resale marketplace · enable buyer protection',
       icon: <G2AIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate')
     }
@@ -443,8 +486,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           className={storeButtonClass}
           title={primaryPartnerStore.name}
         >
-          <span className={storeIconClass}>{primaryPartnerStore.icon}</span>
-          <span className="truncate">{primaryPartnerStore.name}</span>
+          <span className={`${storeIconClass} self-start mt-0.5`}>{primaryPartnerStore.icon}</span>
+          <span className="flex flex-col min-w-0 gap-0">
+            <span className="truncate leading-tight">{primaryPartnerStore.name}</span>
+            <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{primaryPartnerStore.descriptor}</span>
+          </span>
         </button>
       </div>
 
@@ -468,8 +514,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
               className={storeButtonClass}
               title={store.name}
             >
-              <span className={storeIconClass}>{store.icon}</span>
-              <span className="truncate">{store.name}</span>
+              <span className={`${storeIconClass} self-start mt-0.5`}>{store.icon}</span>
+              <span className="flex flex-col min-w-0 gap-0">
+                <span className="truncate leading-tight">{store.name}</span>
+                <span className="truncate text-[10px] font-normal text-slate-500 leading-snug">{store.descriptor}</span>
+              </span>
             </button>
           ))}
         </div>
@@ -773,7 +822,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                             </div>
                           </div>
                           <div className="min-w-0">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Marketplaces</span>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Marketplaces</span>
+                              {steamPrice?.price && !steamPrice.isFree && (
+                                <span className="text-[10px] text-slate-500">keys often cheaper than Steam's {steamPrice.price}</span>
+                              )}
+                            </div>
                             <div className="mt-2">
                               {partnerStoreLinks}
                             </div>

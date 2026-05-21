@@ -8,6 +8,18 @@ import { SEO_PAGE_MAP } from "./seoPages";
 import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
 import { db } from "./db";
 import { seoPageCache } from "../shared/schema";
+import axios from "axios";
+
+interface SteamPriceResult {
+  price: string | null;
+  originalPrice: string | null;
+  discount: number | null;
+  isFree: boolean;
+  fetchedAt: number;
+}
+
+const steamPriceCache = new Map<string, SteamPriceResult>();
+const STEAM_PRICE_TTL = 6 * 60 * 60 * 1000; // 6 hours
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize IGDB service
@@ -191,6 +203,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: 'Failed to fetch filters',
         error: error.message 
       });
+    }
+  });
+
+  // Steam price endpoint — proxies Steam store API with in-memory cache
+  app.get('/api/steam-price', async (req, res) => {
+    try {
+      const appId = String(req.query.appId ?? '').trim();
+      if (!appId || !/^\d+$/.test(appId)) {
+        return res.status(400).json({ message: 'Invalid appId' });
+      }
+
+      const cached = steamPriceCache.get(appId);
+      if (cached && Date.now() - cached.fetchedAt < STEAM_PRICE_TTL) {
+        const { fetchedAt: _ft, ...data } = cached;
+        return res.json(data);
+      }
+
+      const steamRes = await axios.get(
+        `https://store.steampowered.com/api/appdetails?appids=${appId}&filters=price_overview&cc=us`,
+        { timeout: 5000 }
+      );
+
+      const appData = steamRes.data?.[appId];
+      let result: Omit<SteamPriceResult, 'fetchedAt'>;
+
+      if (!appData?.success) {
+        result = { price: null, originalPrice: null, discount: null, isFree: false };
+      } else if (!appData.data?.price_overview) {
+        // No price_overview on a successful response = free to play
+        result = { price: 'Free to Play', originalPrice: null, discount: null, isFree: true };
+      } else {
+        const p = appData.data.price_overview;
+        result = {
+          price: p.final_formatted,
+          originalPrice: p.discount_percent > 0 ? p.initial_formatted : null,
+          discount: p.discount_percent > 0 ? p.discount_percent : null,
+          isFree: false,
+        };
+      }
+
+      steamPriceCache.set(appId, { ...result, fetchedAt: Date.now() });
+      res.json(result);
+    } catch (error: any) {
+      console.error('[routes] Steam price fetch failed:', error?.message);
+      res.json({ price: null, originalPrice: null, discount: null, isFree: false });
     }
   });
 

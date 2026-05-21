@@ -25,6 +25,13 @@ This repo is the local GameFinder workspace. Treat `CLAUDE.md` as durable projec
 - Do not add a light mode toggle unless explicitly requested.
 - Prefer revenue-relevant improvements: affiliate flows, conversion clarity, SEO, and recommendation quality.
 
+## Homepage Discovery Features
+- The homepage `KeywordSection` now has "Roll" and "Uniques" discovery sections above manual keyword browsing.
+- Roll includes quick entry cards for a random keyword, a common crafted combination, Most Popular, and User Crafts.
+- Uniques includes limited daily reveals for rare/low-result discovery: Unique Key and Crafted. Current limits are local-only via `localStorage` (`gamefinder_unique_limits`): 3 unique keywords and 1 unique combo per day.
+- Future intent: save user searches/keyword combinations so strong community discoveries can feed Most Popular and User Crafts.
+- "Best crafts" means keyword/filter combinations that return a low number of results; low result count is treated as a signal for a more unique/niche game discovery path.
+
 ## SEO Pages
 Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. Game listings (top 10 per page) are cached in Neon (`seo_page_cache`) and injected at render time — refresh via `npm run seo:refresh-cache` on the VPS. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See the SEO Architecture section in `CLAUDE.md` for full details.
 

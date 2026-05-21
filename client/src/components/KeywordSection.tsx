@@ -42,7 +42,7 @@ const _randomKeywordPool: RawKw[] = (() => {
 
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
 type UtilityPanel = "intro" | "qs-keyword" | "qs-combo";
-type RevealCard = "common-keyword" | "rare-combo" | "unique-keyword" | "unique-combo";
+type RevealCard = "common-keyword" | "rare-combo" | "unique-keyword" | "unique-combo" | "popular" | "user-crafts";
 
 interface KeywordComboSuggestion {
   title: string;
@@ -115,6 +115,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [activeUniqueComboIndex, setActiveUniqueComboIndex] = useState(0);
   const [commonKeywordRevealed, setCommonKeywordRevealed] = useState<{ name: string } | null>(null);
   const [rareComboRevealed, setRareComboRevealed] = useState<{ title: string } | null>(null);
+  const [popularRevealed, setPopularRevealed] = useState(false);
+  const [userCraftsRevealed, setUserCraftsRevealed] = useState(false);
   const [activeRevealCard, setActiveRevealCard] = useState<RevealCard | null>(null);
   const [uniqueLimits, setUniqueLimits] = useState<UniqueLimitsStore>(() => ({ date: new Date().toISOString().split('T')[0], kwUsed: 0, comboUsed: 0 }));
   const [kwExhaustedTapped, setKwExhaustedTapped] = useState(false);
@@ -285,10 +287,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     },
   ];
 
-  const commonKeywordLabel = "Common key";
+  const commonKeywordLabel = "Random";
   const commonKeywordState = "Random keyword";
-  const rareComboLabel = "Rare craft";
-  const rareComboState = "Curated combo";
+  const rareComboLabel = "Common";
+  const rareComboState = "Common crafted combination";
   const isCommonKeywordRevealed = !!commonKeywordRevealed;
   const isRareComboRevealed = !!rareComboRevealed;
 
@@ -380,6 +382,21 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     saveUniqueLimits(newLimits);
     setUniqueLimits(newLimits);
     setActiveUniqueComboIndex(i => (i + 1) % uniqueComboSuggestions.length);
+  };
+
+  const applyPopular = () => {
+    triggerCardReveal("popular");
+    clearAllFilters();
+    addFilter({ id: 41781, name: "Action Roguelike", category, mode: "include" });
+    setPopularRevealed(true);
+  };
+
+  const applyUserCrafts = () => {
+    triggerCardReveal("user-crafts");
+    clearAllFilters();
+    addFilter({ id: 2379, name: "Cosmic Horror", category, mode: "include" });
+    addFilter({ id: 32, name: "Indie", category: "genres" });
+    setUserCraftsRevealed(true);
   };
 
   useEffect(() => {
@@ -816,231 +833,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  const renderDesktopExplorer = () => {
-    const openSubcategories = activeMainCategory ? getAvailableSubcategories(activeMainCategory) : [];
-    const selectedSubcategory = (activeUtilityPanel === "qs-combo" || activeUtilityPanel === "qs-keyword")
-      ? undefined
-      : activeSubcategory && openSubcategories.includes(activeSubcategory)
-        ? activeSubcategory
-        : openSubcategories[0];
-
-    return (
-      <div className="hidden flex-1 min-h-0 overflow-hidden rounded-xl border border-border bg-background/40 lg:grid lg:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.55fr)]">
-        <div className="flex min-h-0 flex-col border-r border-border bg-card/45">
-          <div className="flex min-h-[6.5rem] items-center border-b border-border px-4">
-            <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
-          </div>
-          <div className="flex-1 overflow-y-auto p-2.5">
-            <div className="grid gap-3">
-              {mainCategoryOrder.map((mainCat) => {
-                const subcategories = getAvailableSubcategories(mainCat);
-                const isOpen = activeMainCategory === mainCat;
-                if (subcategories.length === 0) return null;
-
-                return (
-                  <section key={mainCat} className="grid gap-2">
-                    <button
-                      type="button"
-                      onClick={() => selectMainCategory(mainCat)}
-                      aria-expanded={isOpen}
-                      className={`flex min-h-[2.5rem] w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left transition-colors ${
-                        isOpen
-                          ? "bg-white/[0.035] text-foreground"
-                          : "text-muted-foreground hover:bg-white/[0.025] hover:text-foreground"
-                      }`}
-                    >
-                      <span className={`shrink-0 rounded-md p-1.5 ${isOpen ? "bg-background/45 text-muted-foreground" : "text-muted-foreground"}`}>
-                        {getCategoryIcon(mainCat)}
-                      </span>
-                      <span className="min-w-0 flex-1 truncate text-sm font-bold">{mainCat}</span>
-                      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? "rotate-180 text-foreground" : "text-muted-foreground"}`} />
-                    </button>
-
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          key={mainCat}
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                          className="overflow-hidden"
-                        >
-                          <div className="grid gap-1 pl-2 pt-1">
-                            {subcategories.map((subCategoryName) => {
-                              const keywords = getKeywordsForSubcategory(subCategoryName);
-                              const isActive = selectedSubcategory === subCategoryName;
-                              const description = getSubcategoryDescription(mainCat, subCategoryName);
-
-                              return (
-                                <Tooltip key={subCategoryName} content={description}>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setActiveMainCategory(mainCat);
-                                      setActiveSubcategory(subCategoryName);
-                                      setActiveUtilityPanel("intro");
-                                    }}
-                                    className={`relative flex min-h-[2.65rem] w-full items-center gap-2.5 rounded-lg px-3 py-2 pl-4 text-left text-sm font-semibold transition-colors duration-200 ${
-                                      isActive
-                                        ? "bg-primary/15 text-foreground"
-                                        : "bg-transparent text-muted-foreground hover:bg-white/[0.035] hover:text-foreground"
-                                    }`}
-                                  >
-                                    {isActive && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary" />}
-                                    {getSubcategoryIcon(subCategoryName, `w-4 h-4 shrink-0 ${isActive ? "text-primary" : "text-muted-foreground"}`)}
-                                    <span className="min-w-0 flex-1 truncate">{subCategoryName}</span>
-                                    <span className="shrink-0 text-xs font-medium text-muted-foreground/75">{keywords.length}</span>
-                                  </button>
-                                </Tooltip>
-                              );
-                            })}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </section>
-                );
-              })}
-
-              <section className="grid gap-3 border-t border-border/70 pt-3">
-                {/* Roll sub-group */}
-                <div className="grid gap-1.5">
-                  <div className="qs-section-label">
-                    <Dices className="w-3 h-3" />
-                    Roll
-                  </div>
-                  <div className="qs-cards-grid">
-                    <button
-                      type="button"
-                      onClick={applyCommonKeyword}
-                      className={getCardClassName('qs-card-rnd-kw', 'common-keyword', isCommonKeywordRevealed)}
-                    >
-                      <span className="qs-card-shine" aria-hidden="true" />
-                      <KeyRound className="w-3.5 h-3.5" />
-                      {!isCommonKeywordRevealed && (
-                        <span className="qs-card-action-label">{commonKeywordLabel}</span>
-                      )}
-                      <span className="qs-card-state-line">{getCommonKeywordState()}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={applyRareCombo}
-                      className={getCardClassName('qs-card-rnd-combo', 'rare-combo', isRareComboRevealed)}
-                    >
-                      <span className="qs-card-shine" aria-hidden="true" />
-                      <Hammer className="w-3.5 h-3.5" />
-                      {!isRareComboRevealed && (
-                        <span className="qs-card-action-label">{rareComboLabel}</span>
-                      )}
-                      <span className="qs-card-state-line">{getRareComboState()}</span>
-                    </button>
-                  </div>
-                </div>
-                {/* Uniques sub-group */}
-                <div className="grid gap-1.5">
-                  <div className="qs-section-label">
-                    <Star className="w-3 h-3" />
-                    Uniques
-                  </div>
-                  <div className="qs-cards-grid">
-                    <div className="qs-unique-wrap">
-                      <button
-                        type="button"
-                        onClick={isKwExhausted ? undefined : (kwLeft > 0 ? applyUniqueKeyword : () => setKwExhaustedTapped(true))}
-                        disabled={isKwExhausted}
-                        className={[getCardClassName('qs-card-unique-kw', 'unique-keyword', isKwRevealedState), isKwExhausted ? 'qs-card-unique-exhausted' : ''].filter(Boolean).join(' ')}
-                      >
-                        <span className="qs-card-shine" aria-hidden="true" />
-                        {isKwExhausted ? <Lock className="w-3.5 h-3.5" /> : <KeyRound className="w-3.5 h-3.5" />}
-                        {!isKwRevealedState && (
-                          <span className="qs-card-action-label">
-                            {isKwExhausted ? 'No keys left' : 'Unique Key'}
-                          </span>
-                        )}
-                        <span className="qs-card-state-line">
-                          {getUniqueKeywordState()}
-                        </span>
-                      </button>
-                    </div>
-                    <div className="qs-unique-wrap">
-                      <button
-                        type="button"
-                        onClick={isComboExhausted ? undefined : (comboLeft > 0 ? applyUniqueCombo : () => setComboExhaustedTapped(true))}
-                        disabled={isComboExhausted}
-                        className={[getCardClassName('qs-card-unique-combo', 'unique-combo', isComboRevealedState), isComboExhausted ? 'qs-card-unique-exhausted' : ''].filter(Boolean).join(' ')}
-                      >
-                        <span className="qs-card-shine" aria-hidden="true" />
-                        {isComboExhausted ? <Lock className="w-3.5 h-3.5" /> : <Hammer className="w-3.5 h-3.5" />}
-                        {!isComboRevealedState && (
-                          <span className="qs-card-action-label">
-                            {isComboExhausted ? 'No crafts left' : 'Unique Craft'}
-                          </span>
-                        )}
-                        <span className="qs-card-state-line">
-                          {getUniqueComboState()}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-
-        <div className="min-h-0 min-w-0">
-          <AnimatePresence mode="wait">
-            {selectedSubcategory ? (
-              <motion.div
-                key={selectedSubcategory}
-                className="h-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                {renderKeywordPanel(selectedSubcategory, "desktop")}
-              </motion.div>
-            ) : activeUtilityPanel === "qs-combo" ? (
-              <motion.div
-                key="qs-combo-panel"
-                className="h-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                {renderQsComboPanel()}
-              </motion.div>
-            ) : activeUtilityPanel === "qs-keyword" ? (
-              <motion.div
-                key="qs-keyword-panel"
-                className="h-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                {renderQsKeywordPanel()}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="empty-state"
-                className="h-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                {renderKeywordIntro()}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    );
-  };
+  const renderDesktopExplorer = () => null;
 
   const renderMobileSubcategoryDetail = () => {
     if (!mobileSubcategoryView || !activeSubcategory) return null;
@@ -1049,7 +842,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <motion.div
         key={activeSubcategory}
-        className="lg:hidden fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
+        className="fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
         style={activeMainCategory ? getCategoryAccentVars(activeMainCategory) : {}}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -1115,7 +908,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <motion.div
         key={activeMainCategory + '-category-detail'}
-        className="lg:hidden fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
+        className="fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
         style={getCategoryAccentVars(activeMainCategory)}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -1192,7 +985,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <motion.div
         key={`mobile-qs-${mobileQsView}`}
-        className="lg:hidden fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
+        className="fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -1224,7 +1017,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const renderMobileShelves = () => {
     const inlineKwData = activeSubcategory ? getKeywordPanelData(activeSubcategory) : null;
     return (
-      <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
+      <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto">
           <div className="grid gap-4">
             <section className="grid gap-3 mx-1">
@@ -1237,15 +1030,17 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 <div className="qs-cards-grid">
                   <button
                     type="button"
-                    onClick={applyCommonKeyword}
-                    className={getCardClassName('qs-card-rnd-kw', 'common-keyword', isCommonKeywordRevealed)}
+                    onClick={applyPopular}
+                    className={getCardClassName('qs-card-rnd-kw', 'popular', popularRevealed)}
                   >
                     <span className="qs-card-shine" aria-hidden="true" />
-                    <KeyRound className="w-3.5 h-3.5" />
-                    {!isCommonKeywordRevealed && (
-                      <span className="qs-card-action-label">{commonKeywordLabel}</span>
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    {!popularRevealed && (
+                      <span className="qs-card-action-label">Most Popular</span>
                     )}
-                    <span className="qs-card-state-line">{getCommonKeywordState()}</span>
+                    <span className="qs-card-state-line">
+                      {popularRevealed ? "Action Roguelike" : "Top picks this week"}
+                    </span>
                   </button>
                   <button
                     type="button"
@@ -1258,6 +1053,32 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       <span className="qs-card-action-label">{rareComboLabel}</span>
                     )}
                     <span className="qs-card-state-line">{getRareComboState()}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={applyCommonKeyword}
+                    className={getCardClassName('qs-card-popular', 'common-keyword', isCommonKeywordRevealed)}
+                  >
+                    <span className="qs-card-shine" aria-hidden="true" />
+                    <KeyRound className="w-3.5 h-3.5" />
+                    {!isCommonKeywordRevealed && (
+                      <span className="qs-card-action-label">{commonKeywordLabel}</span>
+                    )}
+                    <span className="qs-card-state-line">{getCommonKeywordState()}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={applyUserCrafts}
+                    className={getCardClassName('qs-card-user-crafts', 'user-crafts', userCraftsRevealed)}
+                  >
+                    <span className="qs-card-shine" aria-hidden="true" />
+                    <Users className="w-3.5 h-3.5" />
+                    {!userCraftsRevealed && (
+                      <span className="qs-card-action-label">User Crafts</span>
+                    )}
+                    <span className="qs-card-state-line">
+                      {userCraftsRevealed ? "Eldritch Indie" : "Community combos"}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -1299,7 +1120,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       {isComboExhausted ? <Lock className="w-3.5 h-3.5" /> : <Hammer className="w-3.5 h-3.5" />}
                       {!isComboRevealedState && (
                         <span className="qs-card-action-label">
-                          {isComboExhausted ? 'No crafts left' : 'Unique Craft'}
+                          {isComboExhausted ? 'No crafts left' : 'Crafted'}
                         </span>
                       )}
                       <span className="qs-card-state-line">
@@ -1474,7 +1295,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 p-3 lg:p-6">
+      <div className="flex-1 min-h-0 p-3">
         <div className="flex h-full min-h-0 flex-col gap-5">
           {renderDesktopExplorer()}
           {renderMobileShelves()}
