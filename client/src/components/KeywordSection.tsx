@@ -184,14 +184,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       ],
     },
     {
-      title: "Cozy Horror Fishing",
-      filters: [
-        { id: 509, name: "Fishing", category },
-        { id: 2379, name: "Cosmic Horror", category },
-        { id: 72, name: "Exploration", category },
-      ],
-    },
-    {
       title: "Sushi Dive Management",
       filters: [
         { id: 509, name: "Fishing", category },
@@ -200,27 +192,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       ],
     },
     {
-      title: "Cult Base Roguelike",
-      filters: [
-        { id: 2498, name: "Cult", category },
-        { id: 41781, name: "Action Roguelike", category },
-        { id: 1905, name: "Base Building", category },
-      ],
-    },
-    {
       title: "Roadtrip Survival",
       filters: [
         { id: 778, name: "Driving", category },
         { id: 21, name: "Survival", category: "themes" },
         { id: 1, name: "First person", category: "Perspective" },
-      ],
-    },
-    {
-      title: "Card-Based FPS Parkour",
-      filters: [
-        { id: 4214, name: "Card Based Combat", category },
-        { id: 453, name: "First Person Shooter", category },
-        { id: 390, name: "Parkour", category },
       ],
     },
     {
@@ -286,38 +262,38 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   const uniqueComboSuggestions: KeywordComboSuggestion[] = [
     {
-      title: "Solarpunk Village",
+      title: "Hiking Exploration",
       filters: [
-        { id: 38428, name: "Solarpunk", category },
-        { id: 3533,  name: "City Builder", category },
+        { id: 41980, name: "Hiking", category },
+        { id: 72,    name: "Exploration", category },
       ],
     },
     {
-      title: "Cosmic Heist",
+      title: "Bank Robbery Shooter",
       filters: [
         { id: 41907, name: "Bank Robbery", category },
-        { id: 2379,  name: "Cosmic Horror", category },
+        { id: 5,     name: "Shooter", category: "genres" },
       ],
     },
     {
-      title: "K-Pop Rhythm",
+      title: "Solarpunk Strategy",
       filters: [
-        { id: 38661, name: "K-Pop", category },
-        { id: 43110, name: "Rhythm", category },
+        { id: 38428, name: "Solarpunk", category },
+        { id: 15,    name: "Strategy", category: "genres" },
       ],
     },
     {
-      title: "Stargazer Trail",
+      title: "Astronomy Simulator",
       filters: [
         { id: 44092, name: "Astronomy", category },
-        { id: 41980, name: "Hiking", category },
+        { id: 13,    name: "Simulator", category: "genres" },
       ],
     },
     {
-      title: "Avant Horror",
+      title: "Air Traffic Sim",
       filters: [
-        { id: 38817, name: "Avant Garde", category },
-        { id: 131,   name: "Psychological Horror", category },
+        { id: 41829, name: "Air Traffic Control", category },
+        { id: 13,    name: "Simulator", category: "genres" },
       ],
     },
   ];
