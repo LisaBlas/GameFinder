@@ -820,7 +820,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                     </div>
 
                     <div
-                      className="game-card-panel flex min-h-0 flex-col rounded-lg border px-4 pb-4 pt-2.5"
+                      className="game-card-panel game-card-panel-stores flex min-h-0 flex-col rounded-lg border px-4 pb-4 pt-2.5"
                       style={mediaHeight && isMediaSyncedLayout ? { height: `${mediaHeight}px` } : undefined}
                     >
                       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
@@ -850,7 +850,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                     </div>
                   </div>
 
-                  <div ref={tagsRef} className="game-card-panel rounded-lg border px-4 pb-4 pt-2.5">
+                  <div ref={tagsRef} className="game-card-panel game-card-panel-keywords rounded-lg border px-4 pb-4 pt-2.5">
                     <div>
                       {tagGroups.length > 0 ? (
                         <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
