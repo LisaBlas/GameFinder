@@ -687,11 +687,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-slate-400 mt-1">
-                    {developerName && <span className="text-slate-300">{developerName}</span>}
-                    {developerName && releaseYear && <span className="px-1.5 text-slate-600">/</span>}
-                    <span>{releaseYear}</span>
-                  </div>
                 </div>
 
                 <div className={`flex items-center gap-1 flex-shrink-0 ${fullscreen ? 'hidden md:flex' : ''}`}>
@@ -742,19 +737,27 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </div>
               )}
 
-              <div>
-                <p className={`text-sm leading-relaxed text-slate-300 ${isSelected && !synopsisExpanded ? 'line-clamp-3' : !isSelected ? 'line-clamp-2' : ''}`}>
-                  {synopsis}
-                </p>
-                {isSelected && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(v => !v); }}
-                    className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-md py-1.5 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/5 transition-colors"
-                  >
-                    {synopsisExpanded ? 'Read less' : 'Read more'}
-                    <FaChevronDown className={`h-2.5 w-2.5 transition-transform ${synopsisExpanded ? 'rotate-180' : ''}`} />
-                  </button>
-                )}
+              <div className={isSelected ? 'game-card-summary-panel rounded-lg px-4 py-3' : ''}>
+                <div className="text-xs text-slate-400">
+                  {developerName && <span className="text-slate-300">{developerName}</span>}
+                  {developerName && releaseYear && <span className="px-1.5 text-slate-600">/</span>}
+                  <span>{releaseYear}</span>
+                </div>
+
+                <div className={isSelected ? 'mt-2' : 'mt-1'}>
+                  <p className={`text-sm leading-relaxed text-slate-300 ${isSelected && !synopsisExpanded ? 'line-clamp-3' : !isSelected ? 'line-clamp-2' : ''}`}>
+                    {synopsis}
+                  </p>
+                  {isSelected && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(v => !v); }}
+                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-md py-1.5 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/5 transition-colors"
+                    >
+                      {synopsisExpanded ? 'Read less' : 'Read more'}
+                      <FaChevronDown className={`h-2.5 w-2.5 transition-transform ${synopsisExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                  )}
+                </div>
               </div>
 
               {isSelected && (

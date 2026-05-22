@@ -1595,10 +1595,6 @@ h3{
     inset 0 0 30px rgba(0, 0, 0, 0.46),
     0 0 0 1px rgba(0, 0, 0, 0.92);
   background:
-    linear-gradient(to right, rgba(255, 248, 214, 0.25), transparent) left 9px top 9px / 44px 1px no-repeat,
-    linear-gradient(to bottom, rgba(255, 248, 214, 0.17), transparent) left 9px top 9px / 1px 44px no-repeat,
-    linear-gradient(to left, rgba(255, 216, 137, 0.18), transparent) right 9px top 9px / 34px 1px no-repeat,
-    linear-gradient(to bottom, rgba(255, 216, 137, 0.11), transparent) right 9px top 9px / 1px 34px no-repeat,
     linear-gradient(to right, rgba(0, 0, 0, 0.46), transparent) left 9px bottom 9px / 36px 1px no-repeat,
     linear-gradient(to top, rgba(0, 0, 0, 0.50), transparent) left 9px bottom 9px / 1px 36px no-repeat,
     linear-gradient(to left, rgba(0, 0, 0, 0.56), transparent) right 9px bottom 9px / 44px 1px no-repeat,
@@ -1645,6 +1641,38 @@ h3{
   .game-card-fullscreen {
     border-radius: 8px;
   }
+}
+
+.game-card-summary-panel {
+  position: relative;
+  overflow: visible;
+  background: transparent;
+}
+
+.game-card-summary-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at left top, rgba(0, 0, 0, 0.16), transparent 32px) left top / 52px 52px no-repeat,
+    radial-gradient(circle at right top, rgba(0, 0, 0, 0.16), transparent 32px) right top / 52px 52px no-repeat,
+    radial-gradient(circle at left bottom, rgba(0, 0, 0, 0.16), transparent 32px) left bottom / 52px 52px no-repeat,
+    radial-gradient(circle at right bottom, rgba(0, 0, 0, 0.16), transparent 32px) right bottom / 52px 52px no-repeat,
+    linear-gradient(to right, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) left top / 44px 1px no-repeat,
+    linear-gradient(to bottom, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) left top / 1px 44px no-repeat,
+    linear-gradient(to left, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) right top / 44px 1px no-repeat,
+    linear-gradient(to bottom, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) right top / 1px 44px no-repeat,
+    linear-gradient(to right, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) left bottom / 44px 1px no-repeat,
+    linear-gradient(to top, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) left bottom / 1px 44px no-repeat,
+    linear-gradient(to left, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) right bottom / 44px 1px no-repeat,
+    linear-gradient(to top, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) right bottom / 1px 44px no-repeat;
+}
+
+.game-card-summary-panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .game-card-rating {
