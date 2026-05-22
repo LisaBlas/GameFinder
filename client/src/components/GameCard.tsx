@@ -371,7 +371,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       icon: getStoreIcon(store.external_game_source),
       storeName: getStoreName(store.external_game_source),
     }))
-    .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null);
+    .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null)
+    .sort((a, b) => Number(b.external_game_source === 1) - Number(a.external_game_source === 1));
   const synopsis = game.summary || 'No synopsis available yet.';
   const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
   const storeButtonClass = "game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm font-semibold transition-colors";
@@ -387,6 +388,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           : null;
         const originalLabel = isSteam && steamPrice?.originalPrice ? steamPrice.originalPrice : null;
         const discountPct = isSteam && steamPrice?.discount ? steamPrice.discount : null;
+        const fallbackLabel = priceLabel ? null : 'Check retail price';
 
         return (
           <a
@@ -409,6 +411,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   {discountPct && <span className="text-[10px] font-bold text-[var(--c-emerald)] bg-[rgba(var(--c-emerald-rgb),0.12)] px-1 rounded">-{discountPct}%</span>}
                   <span className={`text-[10px] font-semibold ${discountPct ? 'text-[var(--c-emerald)]' : 'text-slate-400'}`}>{priceLabel}</span>
                 </span>
+              )}
+              {fallbackLabel && (
+                <span className="truncate text-[10px] font-medium leading-tight text-slate-500">{fallbackLabel}</span>
               )}
             </span>
             <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
@@ -441,35 +446,35 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     {
       key: 'gamersgate',
       name: affiliateLinks.gamersgate.name,
-      descriptor: 'Licensed retailer · since 2004',
+      descriptor: 'Check DRM and current deal',
       icon: <GamersGateIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate')
     },
     {
       key: 'instantGaming',
       name: affiliateLinks.instantGaming.name,
-      descriptor: 'Keys marketplace · protection included',
+      descriptor: 'Check region and current deal',
       icon: <InstantGamingIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate')
     },
     {
       key: 'eneba',
       name: affiliateLinks.eneba.name,
-      descriptor: 'Keys marketplace · buyer protection',
+      descriptor: 'Compare sellers and region lock',
       icon: <EnebaIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate')
     },
     {
       key: 'kinguin',
       name: affiliateLinks.kinguin.name,
-      descriptor: 'Keys marketplace · KinguinX protection',
+      descriptor: 'Compare keys and seller ratings',
       icon: <KinguinIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.kinguin.url, 'Kinguin', 'affiliate')
     },
     {
       key: 'g2a',
       name: affiliateLinks.g2a.name,
-      descriptor: 'Resale marketplace · enable buyer protection',
+      descriptor: 'Compare sellers and activation region',
       icon: <G2AIcon />,
       onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate')
     }
@@ -493,6 +498,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         <span className={storeIconClass}>{primaryPartnerStore.icon}</span>
         <span className="flex flex-1 min-w-0 flex-col gap-0">
           <span className="truncate leading-tight">{primaryPartnerStore.name}</span>
+          <span className="truncate text-[10px] font-medium leading-tight text-slate-500">{primaryPartnerStore.descriptor}</span>
         </span>
         <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
       </button>
@@ -507,6 +513,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           <span className={storeIconClass}>{store.icon}</span>
           <span className="flex flex-1 min-w-0 flex-col gap-0">
             <span className="truncate leading-tight">{store.name}</span>
+            <span className="truncate text-[10px] font-medium leading-tight text-slate-500">{store.descriptor}</span>
           </span>
           <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
         </button>
@@ -562,9 +569,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   };
 
   return (
-    <div className={`relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'widescreen:col-span-2' : ''}`}>
+    <div className={`game-card-shell relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'game-card-shell-fullscreen pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'game-card-shell-selected widescreen:col-span-2' : ''}`}>
       {fullscreen && (
-        <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-slate-700/40 bg-[#0b1815]/95 px-3 py-2 backdrop-blur-sm md:hidden">
+        <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-slate-700/40 bg-[#111312]/95 px-3 py-2 backdrop-blur-sm md:hidden">
           <h2 className="min-w-0 flex-1 truncate pr-1 text-sm font-semibold text-white">{game.name}</h2>
           <div className="flex flex-shrink-0 items-center gap-0.5">
             <button
@@ -609,12 +616,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       )}
 
       <article
-        className={`game-card ${!fullscreen && !isSelected ? 'h-full' : ''} ${isSelected ? 'game-card-selected' : 'game-card-compact'} ${fullscreen ? 'game-card-fullscreen bg-[#0b1815]' : 'bg-slate-900/95'} transition-all duration-300 cursor-pointer ${
+        className={`game-card ${!fullscreen && !isSelected ? 'h-full' : ''} ${isSelected ? 'game-card-selected' : 'game-card-compact'} ${fullscreen ? 'game-card-fullscreen bg-[#111312]' : 'bg-slate-900/95'} transition-all duration-300 cursor-pointer ${
           fullscreen && isSelected
-            ? 'rounded-none shadow-none md:rounded-lg md:shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
+            ? 'rounded-none shadow-none md:rounded-lg md:shadow-[0_0_0_1px_rgba(112,124,116,0.18),0_22px_70px_rgba(0,0,0,0.36)]'
             : isSelected
-              ? 'shadow-[0_0_0_1px_rgba(251,191,36,0.16),0_22px_70px_rgba(0,0,0,0.36)]'
-              : 'shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 hover:bg-slate-900 hover:shadow-[0_0_0_1px_rgba(251,191,36,0.10),0_18px_55px_rgba(0,0,0,0.32)]'
+              ? 'shadow-[0_0_0_1px_rgba(112,124,116,0.18),0_22px_70px_rgba(0,0,0,0.36)]'
+              : 'shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:bg-slate-900 hover:shadow-[0_0_0_1px_rgba(112,124,116,0.14),0_18px_55px_rgba(0,0,0,0.32)]'
         }`}
         onClick={onSelect}
         role="button"
@@ -628,7 +635,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         }}
       >
         <div className={`flex flex-col md:flex-row ${!fullscreen && !isSelected ? 'h-full' : ''}`}>
-          <div className={`relative w-full h-56 md:w-40 lg:w-44 md:h-auto md:min-h-[230px] self-stretch flex-shrink-0 overflow-hidden bg-slate-950 ${isSelected ? 'hidden' : ''}`}>
+          <div className={`game-card-cover relative w-full h-56 md:w-40 lg:w-44 md:h-auto md:min-h-[230px] self-stretch flex-shrink-0 overflow-hidden bg-slate-950 ${isSelected ? 'hidden' : ''}`}>
             <img
               src={imageUrl}
               alt={`${game.name} cover`}

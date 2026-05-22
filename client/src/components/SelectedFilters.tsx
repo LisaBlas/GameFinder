@@ -142,10 +142,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
             <Plus className="w-5 h-5" />
           </div>
           <div ref={includeLaneRef} className="selected-filter-lane-scroll" onWheel={handleLaneWheel}>
-            {includedFilters.length > 0
-              ? includedFilters.map(renderLanePill)
-              : <span className="selected-filter-empty">No included keywords</span>
-            }
+            {includedFilters.map(renderLanePill)}
           </div>
         </div>
         <div className="selected-filter-lane">
@@ -153,10 +150,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({ variant = "wra
             <Ban className="w-5 h-5" />
           </div>
           <div ref={excludeLaneRef} className="selected-filter-lane-scroll" onWheel={handleLaneWheel}>
-            {excludedFilters.length > 0
-              ? excludedFilters.map(renderLanePill)
-              : <span className="selected-filter-empty">No excluded keywords</span>
-            }
+            {excludedFilters.map(renderLanePill)}
           </div>
         </div>
       </div>
