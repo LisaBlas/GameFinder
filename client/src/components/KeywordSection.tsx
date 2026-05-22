@@ -15,7 +15,6 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
-import Tooltip from "./Tooltip";
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters } from '../context/FilterContext';
 import Navbar from './Navbar';
@@ -118,6 +117,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const category = 'Keywords';
   const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh, gameResults, totalCount } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
+  const hasDesktopActionItems = selectedFilters.length > 0;
   const [shareCopied, setShareCopied] = useState(false);
   const [shareShineActive, setShareShineActive] = useState(false);
 
@@ -128,8 +128,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [mobileCategoryView, setMobileCategoryView] = useState(false);
   const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
   const [mobileQsView, setMobileQsView] = useState<"keyword" | "combo" | null>(null);
-  const [revealedExtended, setRevealedExtended] = useState<KeywordItem[]>([]);
-  const [animBatchStart, setAnimBatchStart] = useState(0);
+  const [animBatchStart] = useState(0);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [activeQsKeywordIndex, setActiveQsKeywordIndex] = useState(0);
   const [activeUniqueKeywordIndex, setActiveUniqueKeywordIndex] = useState(0);
@@ -152,8 +151,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const comboRevealed = uniqueLimits.comboUsed > 0 ? { title: uniqueLimits.lastComboTitle ?? '' } : null;
   const isKwRevealedState = !!kwRevealed;
   const isComboRevealedState = !!comboRevealed;
-  const EXTENDED_PAGE_SIZE = 20;
-
   const popularSuggestions = [
     { id: 41781, name: "Action Roguelike" },
     { id: 17326, name: "Souls-like" },
@@ -425,11 +422,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   useEffect(() => {
-    setRevealedExtended([]);
-    setAnimBatchStart(0);
-  }, [activeSubcategory]);
-
-  useEffect(() => {
     const handlePopState = () => {
       if (mobileSubcategoryView) {
         setMobileSubcategoryView(false);
@@ -485,15 +477,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     setActiveUtilityPanel("intro");
     setMobileCategoryView(false);
     setMobileSubcategoryView(false);
-    setRevealedExtended([]);
-    setAnimBatchStart(0);
   };
 
   const drillIntoCategory = (cat: MainCategory) => {
     setActiveMainCategory(cat);
     setActiveSubcategory(null);
-    setRevealedExtended([]);
-    setAnimBatchStart(0);
   };
 
   const drillIntoSubcategory = (mainCat: MainCategory, subCategoryName: string) => {
@@ -503,8 +491,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     setActiveUtilityPanel("intro");
     setMobileCategoryView(true);
     setMobileSubcategoryView(true);
-    setRevealedExtended([]);
-    setAnimBatchStart(0);
   };
 
   const getCategoryIcon = (mainCat: MainCategory, size = "w-5 h-5") => {
@@ -574,6 +560,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (extendedKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
   };
 
+  const getKeywordCountForSubcategory = (subCategoryName: string): number =>
+    getKeywordsForSubcategory(subCategoryName).length + getExtendedKeywordsForSubcategory(subCategoryName).length;
+
   const getAvailableSubcategories = (mainCat: MainCategory): string[] =>
     getSubcategories(mainCat).filter(subCat => getKeywordsForSubcategory(subCat).length > 0);
 
@@ -589,26 +578,16 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const getKeywordPanelData = (subCategoryName: string) => {
     const topKeywords = getKeywordsForSubcategory(subCategoryName);
     const extendedKeywords = getExtendedKeywordsForSubcategory(subCategoryName);
-    const usedIds = new Set(revealedExtended.map(keyword => keyword.id));
-    const unseenExtended = extendedKeywords.filter(keyword => !usedIds.has(keyword.id));
-    const displayedKeywords = [...topKeywords, ...revealedExtended];
+    const displayedKeywords = [...topKeywords, ...extendedKeywords];
     const mainCat = getSubcategoryParent(subCategoryName);
 
     return {
       topKeywords,
       extendedKeywords,
-      unseenExtended,
       displayedKeywords,
-      totalKeywords: topKeywords.length + extendedKeywords.length,
+      totalKeywords: displayedKeywords.length,
       description: mainCat ? getSubcategoryDescription(mainCat, subCategoryName) : "",
-      isModified: revealedExtended.length > 0,
-      moreAvailable: unseenExtended.length,
     };
-  };
-
-  const revealMoreKeywords = (displayedCount: number, unseenExtended: KeywordItem[]) => {
-    setAnimBatchStart(displayedCount);
-    setRevealedExtended(prev => [...prev, ...unseenExtended.slice(0, EXTENDED_PAGE_SIZE)]);
   };
 
   const renderKeywordPill = (keyword: KeywordItem, index: number, batchStart = 0) => (
@@ -743,7 +722,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   );
 
   const renderKeywordPanel = (subCategoryName: string, variant: "desktop" | "mobile") => {
-    const { extendedKeywords, displayedKeywords, totalKeywords, description, moreAvailable, unseenExtended } = getKeywordPanelData(subCategoryName);
+    const { displayedKeywords, totalKeywords, description } = getKeywordPanelData(subCategoryName);
 
     return (
       <div className={variant === "desktop" ? "flex h-full min-h-0 flex-col" : "grid gap-3"}>
@@ -758,21 +737,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   {subCategoryName}
                 </span>
                 <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">
-                  {displayedKeywords.length}{extendedKeywords.length > 0 ? ` of ${totalKeywords}` : ""} keywords
+                  {totalKeywords} keywords
                 </span>
               </div>
               <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
             </div>
-            <Tooltip content={moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more keywords"}>
-              <button
-                onClick={() => revealMoreKeywords(displayedKeywords.length, unseenExtended)}
-                disabled={moreAvailable === 0}
-                className="shrink-0 flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:pointer-events-none"
-              >
-                <ChevronDown className="w-3.5 h-3.5" />
-                {moreAvailable > 0 ? `Show ${Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more` : "No more"}
-              </button>
-            </Tooltip>
           </div>
         )}
 
@@ -875,7 +844,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   const renderMobileSubcategoryDetail = () => {
     if (!mobileSubcategoryView || !activeSubcategory) return null;
-    const { displayedKeywords, description, extendedKeywords, totalKeywords, moreAvailable, unseenExtended } = getKeywordPanelData(activeSubcategory);
+    const { displayedKeywords, description, totalKeywords } = getKeywordPanelData(activeSubcategory);
 
     return (
       <motion.div
@@ -907,7 +876,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full"
             style={{ background: 'rgba(var(--cat-accent-rgb), 0.12)', color: 'var(--cat-accent-soft)' }}
           >
-            {displayedKeywords.length}{extendedKeywords.length > 0 ? ` of ${totalKeywords}` : ""}
+            {totalKeywords}
           </span>
         </div>
 
@@ -920,18 +889,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
           <div className="keyword-inline-list">
             {displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
-            {moreAvailable > 0 && (
-              <div className="keyword-inline-item" style={{ animationDelay: `${Math.min(Math.max(displayedKeywords.length - animBatchStart, 0) * 25, 400)}ms` }}>
-                <button
-                  type="button"
-                  onClick={() => revealMoreKeywords(displayedKeywords.length, unseenExtended)}
-                  className="mb-2 inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background/70 px-3 text-xs font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
-                >
-                  <ChevronDown className="w-3.5 h-3.5" />
-                  Show {Math.min(moreAvailable, EXTENDED_PAGE_SIZE)} more
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </motion.div>
@@ -986,7 +943,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         <div className="flex-1 overflow-y-auto overscroll-contain">
           <div className="mobile-subcategory-list">
             {subcategories.map((subCategoryName) => {
-              const keywords = getKeywordsForSubcategory(subCategoryName);
+              const keywordCount = getKeywordCountForSubcategory(subCategoryName);
               const description = getSubcategoryDescription(activeMainCategory, subCategoryName);
 
               return (
@@ -1002,7 +959,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     <span className="mobile-subcategory-copy">
                       <span className="mobile-subcategory-heading">
                         <span>{subCategoryName}</span>
-                        <span>{keywords.length}</span>
+                        <span>{keywordCount}</span>
                       </span>
                       <span className="mobile-subcategory-description">{description}</span>
                     </span>
@@ -1113,7 +1070,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           <div className="mobile-inline-kw-header">
                             <button
                               type="button"
-                              onClick={() => { setActiveSubcategory(null); setRevealedExtended([]); setAnimBatchStart(0); }}
+                              onClick={() => setActiveSubcategory(null)}
                               className="mobile-inline-back-btn"
                               aria-label="Back"
                             >
@@ -1126,30 +1083,18 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           </div>
                           <div className="keyword-inline-list mobile-inline-kw-list">
                             {inlineKwData.displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
-                            {inlineKwData.moreAvailable > 0 && (
-                              <div className="keyword-inline-item" style={{ animationDelay: `${Math.min(Math.max(inlineKwData.displayedKeywords.length - animBatchStart, 0) * 25, 400)}ms` }}>
-                                <button
-                                  type="button"
-                                  onClick={() => revealMoreKeywords(inlineKwData.displayedKeywords.length, inlineKwData.unseenExtended)}
-                                  className="mb-2 inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background/70 px-3 text-xs font-bold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
-                                >
-                                  <ChevronDown className="w-3.5 h-3.5" />
-                                  Show {Math.min(inlineKwData.moreAvailable, EXTENDED_PAGE_SIZE)} more
-                                </button>
-                              </div>
-                            )}
                           </div>
                         </>
                       ) : (
                         <div className="mobile-subcategory-list">
                           {getAvailableSubcategories(activeMainCategory).map((subCategoryName) => {
-                            const keywords = getKeywordsForSubcategory(subCategoryName);
+                            const keywordCount = getKeywordCountForSubcategory(subCategoryName);
                             const description = getSubcategoryDescription(activeMainCategory, subCategoryName);
                             return (
                               <section key={subCategoryName} className="mobile-subcategory-row">
                                 <button
                                   type="button"
-                                  onClick={() => { setActiveSubcategory(subCategoryName); setRevealedExtended([]); setAnimBatchStart(0); }}
+                                  onClick={() => setActiveSubcategory(subCategoryName)}
                                   className="mobile-subcategory-button"
                                 >
                                   <span className="mobile-subcategory-icon">
@@ -1158,7 +1103,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                                   <span className="mobile-subcategory-copy">
                                     <span className="mobile-subcategory-heading">
                                       <span>{subCategoryName}</span>
-                                      <span>{keywords.length}</span>
+                                      <span>{keywordCount}</span>
                                     </span>
                                     <span className="mobile-subcategory-description">{description}</span>
                                   </span>
@@ -1346,7 +1291,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <AnimatePresence>{renderMobileQsDetail()}</AnimatePresence>
       <Navbar />
 
-      <div className="desktop-action-bar hidden lg:grid border-b border-border">
+      <div className={`desktop-action-bar ${hasDesktopActionItems ? 'desktop-action-bar-visible' : 'desktop-action-bar-empty'} hidden lg:grid border-b border-border`}>
         <div className="user-selection">
           <SelectedFilters variant="lanes" />
         </div>
