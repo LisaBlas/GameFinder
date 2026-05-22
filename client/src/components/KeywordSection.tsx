@@ -138,7 +138,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [activeUniqueComboIndex, setActiveUniqueComboIndex] = useState(0);
   const [commonKeywordRevealed, setCommonKeywordRevealed] = useState<{ name: string } | null>(null);
   const [rareComboRevealed, setRareComboRevealed] = useState<{ title: string } | null>(null);
-  const [popularRevealed, setPopularRevealed] = useState(false);
+  const [popularRevealed, setPopularRevealed] = useState<{ name: string } | null>(null);
+  const [activePopularIndex, setActivePopularIndex] = useState(0);
   const [userCraftsRevealed, setUserCraftsRevealed] = useState(false);
   const [activeRevealCard, setActiveRevealCard] = useState<RevealCard | null>(null);
   // Rarity reveal — tracks which card was last tapped and its post-search result count
@@ -161,7 +162,19 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const isComboRevealedState = !!comboRevealed && !comboExhaustedTapped;
   const EXTENDED_PAGE_SIZE = 20;
 
+  const popularSuggestions = [
+    { id: 41781, name: "Action Roguelike" },
+    { id: 17326, name: "Souls-like" },
+  ];
+
   const keywordComboSuggestions: KeywordComboSuggestion[] = [
+    {
+      title: "Memory Loss Horror",
+      filters: [
+        { id: 694, name: "Memory Loss", category },
+        { id: 19, name: "Horror", category: "themes" },
+      ],
+    },
     {
       title: "Poker Roguelike",
       filters: [
@@ -319,8 +332,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   const commonKeywordLabel = "Random";
   const commonKeywordState = "Random keyword";
-  const rareComboLabel = "Common";
-  const rareComboState = "Common crafted combination";
+  const rareComboLabel = "Crafted";
+  const rareComboState = "Crafted Combos";
   const isCommonKeywordRevealed = !!commonKeywordRevealed;
   const isRareComboRevealed = !!rareComboRevealed;
 
@@ -426,8 +439,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const applyPopular = () => {
     activateDiscoveryCard("popular");
     clearAllFilters();
-    addFilter({ id: 41781, name: "Action Roguelike", category, mode: "include" });
-    setPopularRevealed(true);
+    const kw = popularSuggestions[activePopularIndex];
+    addFilter({ id: kw.id, name: kw.name, category, mode: "include" });
+    setPopularRevealed({ name: kw.name });
+    setActivePopularIndex(i => (i + 1) % popularSuggestions.length);
   };
 
   const applyUserCrafts = () => {
@@ -1200,16 +1215,16 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           type="button"
                           onClick={applyPopular}
                           onMouseLeave={() => setPostClickCardId(null)}
-                          className={getCardClassName('qs-card-rnd-kw', 'popular', popularRevealed)}
+                          className={getCardClassName('qs-card-rnd-kw', 'popular', !!popularRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
                           {getActiveRarity('popular') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('popular')}</span>
                           )}
-                          <TrendingUp className="w-3.5 h-3.5" />
-                          <span className="qs-card-action-label">Most Popular</span>
-                          <span className="qs-state-initial qs-card-state-line">Top picks this week</span>
-                          <span className="qs-state-revealed qs-card-state-line">Action Roguelike</span>
+                          <KeyRound className="w-3.5 h-3.5" />
+                          <span className="qs-card-action-label">Popular</span>
+                          <span className="qs-state-initial qs-card-state-line">Top key this week</span>
+                          <span className="qs-state-revealed qs-card-state-line">{popularRevealed?.name ?? ''}</span>
                         </button>
                       </div>
                       <div className={getCardWrapClass('rare-combo')}>
@@ -1257,8 +1272,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           {getActiveRarity('user-crafts') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('user-crafts')}</span>
                           )}
-                          <Users className="w-3.5 h-3.5" />
-                          <span className="qs-card-action-label">User Crafts</span>
+                          <Hammer className="w-3.5 h-3.5" />
+                          <span className="qs-card-action-label">User crafted</span>
                           <span className="qs-state-initial qs-card-state-line">Community combos</span>
                           <span className="qs-state-revealed qs-card-state-line">Eldritch Indie</span>
                         </button>
