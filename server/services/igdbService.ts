@@ -426,6 +426,93 @@ export class IGDBService {
   }
 
   /**
+   * Count total matching games for a search (up to cap+1 to detect overflow).
+   * Uses the same where clause as searchGames but fetches lightweight fields only.
+   * Post-applies the same exclusion logic so the count reflects what the user sees.
+   */
+  async countGames(
+    filters: any,
+    excludeKeywords: number[] = [],
+    requireDeveloper: boolean = false,
+    requireRating: boolean = false,
+    excludeFilters: Record<string, number[]> = {},
+    cap: number = 250
+  ): Promise<{ count: number; capped: boolean }> {
+    const filterConditions: string[] = [];
+
+    Object.entries(filters).forEach(([category, values]) => {
+      const items = values as any[];
+      const normalizedCategory = category.toLowerCase().replace(/\s+/g, '_');
+      if (!items || items.length === 0) return;
+      const validIds = items
+        .filter(item => item.id && !isNaN(Number(item.id)))
+        .map(item => Number(item.id));
+      if (validIds.length === 0) return;
+      switch (normalizedCategory) {
+        case 'platforms': filterConditions.push(`platforms = [${validIds.join(',')}]`); break;
+        case 'genres':    filterConditions.push(`genres = [${validIds.join(',')}]`); break;
+        case 'themes':    filterConditions.push(`themes = [${validIds.join(',')}]`); break;
+        case 'game_mode': filterConditions.push(`game_modes = [${validIds.join(',')}]`); break;
+        case 'keywords':  filterConditions.push(`keywords = [${validIds.join(',')}]`); break;
+        case 'perspective': filterConditions.push(`player_perspectives = [${validIds.join(',')}]`); break;
+      }
+    });
+
+    if (requireRating) filterConditions.push('rating != null');
+    if (requireDeveloper) filterConditions.push('involved_companies.developer = true');
+
+    const whereClause = filterConditions.length > 0 ? filterConditions.join(' & ') : 'id != null';
+
+    const needsExtraFields = excludeKeywords.length > 0 || Object.keys(excludeFilters).length > 0 || requireDeveloper;
+    const fields = needsExtraFields
+      ? 'id, keywords.id, genres.id, themes.id, game_modes.id, player_perspectives.id, involved_companies.developer, involved_companies.company.name'
+      : 'id';
+
+    const query = `
+      fields ${fields};
+      where ${whereClause};
+      sort rating desc;
+      limit ${cap + 1};
+    `.trim();
+
+    const results = await this.makeRequest('games', query);
+
+    let filtered: any[] = results;
+
+    if (excludeKeywords.length > 0) {
+      filtered = filtered.filter((g: any) =>
+        !g.keywords?.some((kw: any) => excludeKeywords.includes(kw.id))
+      );
+    }
+
+    const excludeFieldMap: Record<string, string> = {
+      platforms: 'platforms',
+      genres: 'genres',
+      themes: 'themes',
+      game_mode: 'game_modes',
+      perspective: 'player_perspectives',
+    };
+
+    Object.entries(excludeFilters).forEach(([category, ids]) => {
+      if (!ids || ids.length === 0) return;
+      const field = excludeFieldMap[category];
+      if (!field) return;
+      filtered = filtered.filter((g: any) =>
+        !g[field]?.some((item: any) => ids.includes(item.id))
+      );
+    });
+
+    if (requireDeveloper) {
+      filtered = filtered.filter((g: any) =>
+        g.involved_companies?.some((ic: any) => ic.developer && ic.company?.name?.trim())
+      );
+    }
+
+    const count = filtered.length;
+    return { count: Math.min(count, cap), capped: count > cap };
+  }
+
+  /**
    * Debug function to explore store endpoint
    */
   async debugStores() {

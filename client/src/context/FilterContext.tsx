@@ -69,6 +69,8 @@ interface FilterContextType {
   searchGames: () => Promise<void>;
   searchFresh: boolean;
   hasMore: boolean;
+  totalCount: number | null;
+  countIsCapped: boolean;
   loadMoreGames: () => Promise<void>;
   retryLoadMore: () => Promise<void>;
   seedGame: { id: number; name: string } | null;
@@ -129,13 +131,15 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     setSortByRaw(sort);
   }, []);
   const [hasMore, setHasMore] = useState<boolean>(false);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+  const [countIsCapped, setCountIsCapped] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [pageCache, setPageCache] = useState<Record<number, any[]>>({});
   const [pendingRequests, setPendingRequests] = useState<Record<number, Promise<any>>>({});
   const [retryCount, setRetryCount] = useState<Record<number, number>>({});
   const [lastError, setLastError] = useState<{page: number, error: any} | null>(null);
   const MAX_RETRIES = 3;
-  const RESULTS_PER_PAGE = 30;
+  const RESULTS_PER_PAGE = 50;
   
   // Filter management functions
   const addFilter = useCallback((filter: Filter) => {
@@ -293,10 +297,14 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     setError(null);
     setPage(1);
+    setGameResults([]);
+    setHasMore(false);
     setPageCache({}); // Clear cache on new search
     setPendingRequests({}); // Clear pending requests
     setRetryCount({}); // Clear retry counts
     setLastError(null); // Clear last error
+    setTotalCount(null);
+    setCountIsCapped(false);
     console.log('[FilterContext] Reset page to 1, cleared cache and errors');
     
     try {
@@ -333,11 +341,13 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         requireDeveloper,
         requireRating
       });
-      
-      const processedResults = response.data.map((game: any) => {
+
+      const { games: rawGames, totalCount: tc, countIsCapped: cap, hasMore: serverHasMore } = response.data;
+
+      const processedResults = rawGames.map((game: any) => {
         const matched: Filter[] = [];
         const missing: Filter[] = [];
-        
+
         searchableFilters
           .filter(filter => !filter.isParentOnly)
           .forEach(filter => {
@@ -348,7 +358,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
               missing.push(filter);
             }
           });
-        
+
         return {
           ...game,
           _filterMatches: {
@@ -357,16 +367,18 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
           }
         };
       });
-      
+
       // Cache the first page results
       setPageCache(prev => ({
         ...prev,
         1: processedResults
       }));
-      
+
       setGameResults(processedResults);
       setLastSearchedFilters(filtersSnapshot);
-      setHasMore(response.data.length >= RESULTS_PER_PAGE);
+      setTotalCount(tc ?? null);
+      setCountIsCapped(cap ?? false);
+      setHasMore(serverHasMore ?? processedResults.length >= RESULTS_PER_PAGE);
     } catch (err: any) {
       console.error("Error searching games:", err);
       setError(err.response?.data?.message || "Failed to search games. Please try again.");
@@ -449,16 +461,17 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       }));
       
       const response = await request;
+      const { games: rawGames, hasMore: serverHasMore } = response.data;
       console.log(`[FilterContext] Received response:`, {
         page: nextPage,
-        newCount: response.data.length,
+        newCount: rawGames.length,
         excludeCount: excludeIds.length
       });
-      
-      const processedResults = response.data.map((game: any) => {
+
+      const processedResults = rawGames.map((game: any) => {
         const matched: Filter[] = [];
         const missing: Filter[] = [];
-        
+
         searchableFilters
           .filter(filter => !filter.isParentOnly)
           .forEach(filter => {
@@ -469,7 +482,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
               missing.push(filter);
             }
           });
-        
+
         return {
           ...game,
           _filterMatches: {
@@ -514,7 +527,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
         return updatedResults;
       });
       
-      setHasMore(response.data.length >= RESULTS_PER_PAGE);
+      setHasMore(serverHasMore ?? processedResults.length >= RESULTS_PER_PAGE);
       setPage(nextPage);
       setLastError(null);
     } catch (err: any) {
@@ -686,6 +699,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     searchGames,
     searchFresh,
     hasMore,
+    totalCount,
+    countIsCapped,
     loadMoreGames,
     retryLoadMore,
     seedGame,

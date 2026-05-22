@@ -93,13 +93,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         excludeCount: excludeIds.length
       });
 
-      // Get games from IGDB API based on filters
-      const games = await igdbService.searchGames(filters, sort, page, excludeIds, excludeKeywords, requireDeveloper, requireRating, excludeFilters);
-      
+      // On page 1 run count in parallel; subsequent pages reuse the client-cached total
+      const searchPromise = igdbService.searchGames(filters, sort, page, excludeIds, excludeKeywords, requireDeveloper, requireRating, excludeFilters);
+      const countPromise = page === 1
+        ? igdbService.countGames(filters, excludeKeywords, requireDeveloper, requireRating, excludeFilters)
+        : Promise.resolve(null);
+
+      const [games, countResult] = await Promise.all([searchPromise, countPromise]);
+
       console.log('[routes] Search completed:', {
         resultCount: games.length,
         page,
-        excludeCount: excludeIds.length
+        excludeCount: excludeIds.length,
+        totalCount: countResult?.count ?? null,
+        capped: countResult?.capped ?? null,
       });
 
       // Store search in history (optional)
@@ -110,7 +117,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         exclude_count: excludeIds.length
       });
 
-      res.json(games);
+      res.json({
+        games,
+        totalCount: countResult?.count ?? null,
+        countIsCapped: countResult?.capped ?? null,
+        hasMore: games.length >= 50,
+      });
     } catch (error: any) {
       console.error('[routes] Error searching games:', {
         error: error.message,

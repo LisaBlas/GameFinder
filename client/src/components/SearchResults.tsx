@@ -37,7 +37,7 @@ const RARITY_TEXT: Record<RarityTier, string> = {
 };
 
 const SearchResults: React.FC = () => {
-  const { gameResults, isLoading, error, sortBy, setSortBy, hasMore, seedGame, lastSearchedFilters } = useFilters();
+  const { gameResults, isLoading, error, sortBy, setSortBy, seedGame, lastSearchedFilters, totalCount, countIsCapped } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
   const [hideMobileControls, setHideMobileControls] = useState(false);
@@ -139,7 +139,8 @@ const SearchResults: React.FC = () => {
     }
 
     if (gameResults.length > 0) {
-      const rarity = getRarity(gameResults.length);
+      const displayCount = totalCount ?? gameResults.length;
+      const rarity = getRarity(displayCount);
       const rgbVar = rarity ? RARITY_RGB[rarity] : '--c-border-rgb';
       const textVar = rarity ? RARITY_TEXT[rarity] : '--c-muted';
       const includedFilters = lastSearchedFilters.filter((f: Filter) => f.mode !== 'exclude');
@@ -159,7 +160,7 @@ const SearchResults: React.FC = () => {
                }}>
             <span className="shrink-0 font-heading text-sm font-semibold"
                   style={{ color: `var(${textVar})` }}>
-              {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
+              {countIsCapped ? `More than ${displayCount}` : displayCount} {displayCount === 1 && !countIsCapped ? 'Result' : 'Results'}
             </span>
             {rarity && rarity !== 'common' && (
               <span className="shrink-0 font-bold uppercase tracking-wider rounded border px-1.5 py-0.5"

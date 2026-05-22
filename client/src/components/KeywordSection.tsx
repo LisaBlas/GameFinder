@@ -118,7 +118,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const category = 'Keywords';
-  const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh, gameResults } = useFilters();
+  const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh, gameResults, totalCount } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
   const [shareCopied, setShareCopied] = useState(false);
   const [shareShineActive, setShareShineActive] = useState(false);
@@ -496,7 +496,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   useEffect(() => {
     if (searchFresh && !isLoading && activeDiscoveryCardIdRef.current !== null && !resultCapturedRef.current) {
       if (gameResults.length > 0) {
-        setActiveCardResultCount(gameResults.length);
+        setActiveCardResultCount(totalCount ?? gameResults.length);
       }
       resultCapturedRef.current = true;
     }

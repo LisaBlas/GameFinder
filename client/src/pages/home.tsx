@@ -21,7 +21,7 @@ const homepageSeoLinks = [
 ];
 
 const HomeContent: React.FC = () => {
-  const { gameResults } = useFilters();
+  const { gameResults, totalCount, countIsCapped } = useFilters();
   const { savedGames } = useSavedGames();
   const [activeTab, setActiveTab] = useState<'build' | 'results'>('build');
   const [panelOpen, setPanelOpen] = useState(false);
@@ -135,7 +135,7 @@ const HomeContent: React.FC = () => {
           Results
           {gameResults.length > 0 && (
             <span className="ml-1.5 text-xs bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">
-              {gameResults.length}
+              {countIsCapped ? `${totalCount}+` : (totalCount ?? gameResults.length)}
             </span>
           )}
           {activeTab === 'results' && (
