@@ -2272,6 +2272,70 @@ svg.filter-caret.expanded {
   text-transform: uppercase;
 }
 
+.qs-discovery-matrix {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+}
+
+.qs-discovery-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  padding: 0 0.25rem;
+}
+
+.qs-discovery-columns span,
+.qs-matrix-row-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--c-dim);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.qs-discovery-columns span {
+  justify-content: center;
+  min-height: 1.05rem;
+}
+
+.qs-matrix-row-label {
+  padding: 0.35rem 0.25rem 0.05rem;
+}
+
+.qs-matrix-row-label--unique {
+  color: rgba(var(--c-gold-rgb), 0.72);
+  padding-top: 0.7rem;
+}
+
+.qs-uniques-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  color: rgba(var(--c-gold-rgb), 0.72);
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  line-height: 1;
+  padding: 0.82rem 0.25rem 0.12rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.qs-uniques-divider::before,
+.qs-uniques-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  max-width: 5.5rem;
+  background: rgba(var(--c-gold-rgb), 0.16);
+}
+
 .keyword-browse-card {
   position: relative;
   overflow: hidden;
@@ -2348,6 +2412,10 @@ svg.filter-caret.expanded {
   gap: 0.4rem;
 }
 
+.qs-cards-grid--matrix {
+  align-items: stretch;
+}
+
 .qs-card {
   position: relative;
   overflow: hidden;
@@ -2419,6 +2487,19 @@ svg.filter-caret.expanded {
   opacity: 0.6;
   letter-spacing: 0.01em;
   transition: opacity 0.18s ease;
+}
+
+.qs-card-state-line-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.14rem;
+}
+
+.qs-step-icon {
+  width: 0.62rem;
+  height: 0.62rem;
+  stroke-width: 2.4;
 }
 
 /* Wrapper shared by all 6 discovery cards — allows diamond pseudo-element to
@@ -2818,6 +2899,11 @@ svg.filter-caret.expanded {
 .qs-card-has-result:hover .qs-card-action-label { display: block; }
 .qs-card-has-result:hover .qs-state-initial      { display: block; }
 .qs-card-has-result:hover .qs-state-revealed     { display: none; }
+
+.qs-card-has-result:hover .qs-state-initial.qs-card-state-line-icon {
+  display: inline-flex;
+  white-space: nowrap;
+}
 
 /* Initial state line uses the base qs-card-state-line sizing, not the revealed sizing */
 .qs-card-has-result:hover .qs-state-initial {

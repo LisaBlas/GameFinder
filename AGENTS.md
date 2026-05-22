@@ -28,7 +28,7 @@ This repo is the local GameFinder workspace. Treat `CLAUDE.md` as durable projec
 ## Homepage Discovery Features
 - The homepage `KeywordSection` now has "Roll" and "Uniques" discovery sections above manual keyword browsing.
 - Roll includes quick entry cards for a random keyword, a common crafted combination, Most Popular, and User Crafts.
-- Uniques includes limited daily reveals for rare/low-result discovery: Unique Key and Crafted. Current limits are local-only via `localStorage` (`gamefinder_unique_limits`): 3 unique keywords and 1 unique combo per day.
+- Uniques cycles through rare/low-result discovery sequences for Unique Key and Crafted. Cards show sequence steps like `1/5` instead of remaining-count copy, and wrap back to the first item instead of locking.
 - Future intent: save user searches/keyword combinations so strong community discoveries can feed Most Popular and User Crafts.
 - "Best crafts" means keyword/filter combinations that return a low number of results; low result count is treated as a signal for a more unique/niche game discovery path.
 

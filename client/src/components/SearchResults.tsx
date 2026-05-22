@@ -160,7 +160,7 @@ const SearchResults: React.FC = () => {
                }}>
             <span className="shrink-0 font-heading text-sm font-semibold"
                   style={{ color: `var(${textVar})` }}>
-              {countIsCapped ? `More than ${displayCount}` : displayCount} {displayCount === 1 && !countIsCapped ? 'Result' : 'Results'}
+              {countIsCapped ? `${displayCount}+` : displayCount} {displayCount === 1 && !countIsCapped ? 'Result' : 'Results'}
             </span>
             {rarity && rarity !== 'common' && (
               <span className="shrink-0 font-bold uppercase tracking-wider rounded border px-1.5 py-0.5"
