@@ -159,6 +159,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     ? new Date(game.first_release_date * 1000).getFullYear()
     : 'Unknown';
 
+  const isNewRelease = !!game.first_release_date &&
+    (Date.now() / 1000 - game.first_release_date) < 60 * 60 * 24 * 183;
+
   const rating = game.rating ? Math.round(game.rating) / 10 : null;
 
   const developerName = React.useMemo(() => {
@@ -748,6 +751,25 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   <p className={`text-sm leading-relaxed text-slate-300 ${isSelected && !synopsisExpanded ? 'line-clamp-3' : !isSelected ? 'line-clamp-2' : ''}`}>
                     {synopsis}
                   </p>
+                  {!isSelected && (steamPrice?.isFree || (steamPrice?.discount ?? 0) > 0 || isNewRelease) && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {steamPrice?.isFree && (
+                        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
+                          Free
+                        </span>
+                      )}
+                      {!steamPrice?.isFree && (steamPrice?.discount ?? 0) > 0 && (
+                        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
+                          -{steamPrice!.discount}% on Steam
+                        </span>
+                      )}
+                      {isNewRelease && (
+                        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
+                          New
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {isSelected && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(v => !v); }}

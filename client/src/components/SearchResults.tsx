@@ -157,21 +157,28 @@ const SearchResults: React.FC = () => {
                  borderColor: `rgba(var(${rgbVar}), 0.2)`,
                  background: `rgba(var(${rgbVar}), 0.04)`,
                }}>
+            <span className="shrink-0 font-heading text-sm font-semibold"
+                  style={{ color: `var(${textVar})` }}>
+              {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
+            </span>
             {rarity && rarity !== 'common' && (
               <span className="shrink-0 font-bold uppercase tracking-wider rounded border px-1.5 py-0.5"
                     style={{ fontSize: '0.58rem', color: `var(${textVar})`, borderColor: `rgba(var(${rgbVar}), 0.3)` }}>
                 {rarity}
               </span>
             )}
+            {(includedFilters.length > 0 || excludedFilters.length > 0) && (
+              <span style={{ color: 'var(--c-dim)' }}>&middot;</span>
+            )}
             {includedFilters.map((f, i) => (
               <React.Fragment key={`${f.id}-${f.category}`}>
-                {i > 0 && <span style={{ color: 'var(--c-dim)' }}>·</span>}
+                {i > 0 && <span style={{ color: 'var(--c-dim)' }}>&middot;</span>}
                 <span style={{ color: `var(${textVar})` }}>{f.name}</span>
               </React.Fragment>
             ))}
             {excludedFilters.map(f => (
               <React.Fragment key={`excl-${f.id}-${f.category}`}>
-                <span style={{ color: 'var(--c-dim)' }}>·</span>
+                <span style={{ color: 'var(--c-dim)' }}>&middot;</span>
                 <span className="line-through" style={{ color: 'var(--c-dim)' }}>{f.name}</span>
               </React.Fragment>
             ))}
@@ -232,11 +239,7 @@ const SearchResults: React.FC = () => {
     </AnimatePresence>
     <section ref={sectionRef} className="flex min-h-0 flex-1 flex-col w-full mx-auto">
       <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'} ${hideMobileControls ? 'results-sticky-header-mobile-hidden' : ''}`}>
-        <div className="flex w-full items-center justify-end lg:justify-between gap-3">
-          <h2 className="hidden lg:block shrink-0 text-2xl font-heading font-semibold text-slate-200/55">
-            {gameResults.length}{hasMore ? '+' : ''} {gameResults.length === 1 ? 'Result' : 'Results'}
-          </h2>
-
+        <div className="flex w-full items-center justify-end gap-3">
           <div className="flex min-w-0 items-center gap-2">
             <span className="lg:hidden"><MobileFilterSheet /></span>
             <span className="hidden lg:contents"><FilterBar /></span>
