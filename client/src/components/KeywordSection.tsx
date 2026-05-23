@@ -339,19 +339,43 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   /** Call instead of triggerCardReveal for all 6 discovery cards. Marks the card
    *  as active so the rarity class can be applied once results arrive.
-   *  Clears only this card's rarity (shows "Unidentified" while searching);
-   *  other cards keep their previously revealed rarity. */
+   *  - Clears only the clicked card's rarity (shows "Unidentified" while searching).
+   *  - Resets the revealed label of every OTHER card that does not yet have a
+   *    confirmed rarity tier, so unresolved reveals don't persist across card taps. */
   const activateDiscoveryCard = (card: RevealCard) => {
     triggerCardReveal(card);
     activeDiscoveryCardIdRef.current = card;
     resultCapturedRef.current = false;
     setPostClickCardId(card);
-    // Reset only the clicked card so it shows "Unidentified" until new results arrive
+
+    // Clear the clicked card's rarity so it shows "Unidentified" until new results arrive
     setCardRarities(prev => {
       const next = { ...prev };
       delete next[card];
       return next;
     });
+
+    // Reset revealed labels of other cards that have no confirmed rarity tier.
+    // cardRarities[c] != null is true only when a RarityTier string is stored
+    // (undefined = never searched / pending; null = searched, 0 results — both reset).
+    const allCards: RevealCard[] = ['popular', 'rare-combo', 'common-keyword', 'user-crafts', 'unique-keyword', 'unique-combo'];
+    for (const c of allCards) {
+      if (c === card || cardRarities[c] != null) continue;
+      if (c === 'popular')         setPopularRevealed(null);
+      else if (c === 'rare-combo') setRareComboRevealed(null);
+      else if (c === 'common-keyword') setCommonKeywordRevealed(null);
+      else if (c === 'user-crafts')    setUserCraftsRevealed(false);
+    }
+    // Handle the two unique-card fields in a single setState to avoid stomping
+    const resetKw    = card !== 'unique-keyword' && cardRarities['unique-keyword'] == null;
+    const resetCombo = card !== 'unique-combo'   && cardRarities['unique-combo']   == null;
+    if (resetKw || resetCombo) {
+      setUniqueLimits(prev => ({
+        ...prev,
+        ...(resetKw    ? { kwUsed: 0 }    : {}),
+        ...(resetCombo ? { comboUsed: 0 } : {}),
+      }));
+    }
   };
 
   /** Rarity for the given card — non-null only after its search has returned results. */
