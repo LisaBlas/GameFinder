@@ -317,16 +317,16 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
     <h1>${titleEsc}</h1>
     <p class="intro">${introEsc}</p>
 
+    <a href="${appUrl}" class="cta-button" onclick="trackCtaClick()" aria-label="${ctaLabelEsc} on GameFinder">
+      ${ctaLabelEsc} ->
+    </a>
+
     ${gameListHtml}
 
     <p class="section-label">Active filters</p>
     <div class="chips-wrap" aria-label="Selected filters">
       ${filterChips}
     </div>
-
-    <a href="${appUrl}" class="cta-button" onclick="trackCtaClick()" aria-label="${ctaLabelEsc} on GameFinder">
-      ${ctaLabelEsc} ->
-    </a>
 
     <hr class="divider" />
 
