@@ -2440,12 +2440,7 @@ svg.filter-caret.expanded {
 .qs-card {
   position: relative;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0;
   min-height: 9rem;
-  padding: 1.1rem 0.78rem 0;
   border-radius: 8px;
   /* Unified neutral base — all 6 discovery cards share this at rest */
   background: rgba(var(--c-surface-rgb), 0.68);
@@ -2518,14 +2513,13 @@ svg.filter-caret.expanded {
 }
 
 .qs-card-main {
-  flex: 1;
-  min-height: 2.5rem;
+  position: absolute;
+  inset: 0;
+  padding: 1.1rem 0.78rem 1.5rem;
   display: flex;
-  min-width: 0;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding-bottom: 1.6rem;
 }
 
 .qs-card-footer {
