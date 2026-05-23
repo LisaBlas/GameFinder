@@ -2483,7 +2483,11 @@ svg.filter-caret.expanded {
   color: rgba(var(--c-emerald-rgb), 0.32);
   pointer-events: none;
   flex-shrink: 0;
+  opacity: 0;
 }
+.qs-card-has-result .qs-card-type-icon                        { opacity: 1; }
+.qs-card-has-result:hover .qs-card-type-icon                  { opacity: 0; }
+.qs-card-has-result.qs-card-post-click:hover .qs-card-type-icon { opacity: 1; }
 
 .qs-card:hover .qs-card-footer {
   opacity: 0.38;
