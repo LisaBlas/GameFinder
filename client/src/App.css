@@ -2460,11 +2460,15 @@ svg.filter-caret.expanded {
   }
 }
 
-.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label):not(.qs-card-unlock-label),
-.qs-card-topline,
+.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label):not(.qs-card-unlock-label):not(.qs-card-main):not(.qs-card-footer),
+.qs-card-topline {
+  position: relative;
+  z-index: 2;
+}
+
+/* qs-card-main and qs-card-footer are absolutely positioned — z-index only */
 .qs-card-main,
 .qs-card-footer {
-  position: relative;
   z-index: 2;
 }
 
