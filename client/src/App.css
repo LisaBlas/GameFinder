@@ -2671,6 +2671,7 @@ svg.filter-caret.expanded {
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 9rem;
 }
 
 .qs-card-wrap > .qs-card {
@@ -2682,10 +2683,18 @@ svg.filter-caret.expanded {
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 9rem;
 }
 
 .qs-unique-wrap > .qs-card {
   flex: 1;
+}
+
+@media (max-width: 1023px) {
+  .qs-card-wrap,
+  .qs-unique-wrap {
+    height: 4rem;
+  }
 }
 
 /* Diamond ornament — only appears when the revealed result is Unique-tier */
