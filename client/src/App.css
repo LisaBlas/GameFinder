@@ -2440,8 +2440,8 @@ svg.filter-caret.expanded {
 .qs-card {
   position: relative;
   overflow: hidden;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
   align-items: stretch;
   gap: 0.42rem;
   min-height: 9rem;
@@ -2518,6 +2518,8 @@ svg.filter-caret.expanded {
 }
 
 .qs-card-main {
+  flex: 1;
+  min-height: 0;
   display: flex;
   min-width: 0;
   align-items: center;
@@ -3057,14 +3059,11 @@ svg.filter-caret.expanded {
 .qs-card-has-result .qs-card-action-label { display: none; }
 .qs-card-has-result .qs-state-initial      { display: none; }
 .qs-card-has-result .qs-state-revealed     { display: block; }
-/* Recreate the visual gap the icon+gap provided above the action-label text */
-.qs-card-has-result .qs-card-main { padding-top: 1.5rem; }
 
 /* Hover on a revealed card: flip back to initial appearance */
 .qs-card-has-result:hover .qs-card-action-label { display: block; }
 .qs-card-has-result:hover .qs-state-initial      { display: block; }
 .qs-card-has-result:hover .qs-state-revealed     { display: none; }
-.qs-card-has-result:hover .qs-card-main          { padding-top: 0; }
 
 .qs-card-has-result:hover .qs-card-action-label {
   display: inline-flex;
