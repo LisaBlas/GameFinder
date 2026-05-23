@@ -1222,9 +1222,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                             <span className="qs-state-revealed qs-card-state-line">{commonKeywordRevealed?.name ?? ''}</span>
                           </span>
                           <span className="qs-card-footer">
-                            <span className="qs-state-initial qs-card-state-line qs-card-state-line-icon">
-                              {commonKeywordState} &middot; <InfinityIcon className="qs-step-icon" aria-label="infinite" />
-                            </span>
+                            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">{commonKeywordState}</span>
+                            <span className="qs-card-meta"><InfinityIcon className="qs-step-icon" aria-label="infinite" /></span>
                           </span>
                         </button>
                       </div>
