@@ -139,9 +139,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [activePopularIndex, setActivePopularIndex] = useState(0);
   const [userCraftsRevealed, setUserCraftsRevealed] = useState(false);
   const [activeRevealCard, setActiveRevealCard] = useState<RevealCard | null>(null);
-  // Rarity reveal — tracks which card was last tapped and its post-search result count
-  const [activeDiscoveryCardId, setActiveDiscoveryCardId] = useState<RevealCard | null>(null);
-  const [activeCardResultCount, setActiveCardResultCount] = useState<number | null>(null);
+  // Rarity reveal — tracks per-card rarity so revealed labels persist when other cards are tapped
+  const [cardRarities, setCardRarities] = useState<Partial<Record<RevealCard, RarityTier | null>>>({});
   const activeDiscoveryCardIdRef = useRef<RevealCard | null>(null);
   const resultCapturedRef = useRef(false);
   const [postClickCardId, setPostClickCardId] = useState<RevealCard | null>(null);
@@ -339,21 +338,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   /** Call instead of triggerCardReveal for all 6 discovery cards. Marks the card
-   *  as active so the rarity class can be applied once results arrive. */
+   *  as active so the rarity class can be applied once results arrive.
+   *  Clears only this card's rarity (shows "Unidentified" while searching);
+   *  other cards keep their previously revealed rarity. */
   const activateDiscoveryCard = (card: RevealCard) => {
     triggerCardReveal(card);
-    setActiveDiscoveryCardId(card);
     activeDiscoveryCardIdRef.current = card;
-    setActiveCardResultCount(null);
     resultCapturedRef.current = false;
     setPostClickCardId(card);
+    // Reset only the clicked card so it shows "Unidentified" until new results arrive
+    setCardRarities(prev => {
+      const next = { ...prev };
+      delete next[card];
+      return next;
+    });
   };
 
   /** Rarity for the given card — non-null only after its search has returned results. */
   const getActiveRarity = (card: RevealCard): RarityTier | null =>
-    card === activeDiscoveryCardId && activeCardResultCount !== null
-      ? getRarity(activeCardResultCount)
-      : null;
+    cardRarities[card] ?? null;
 
   const getCardClassName = (baseClass: string, card: RevealCard, hasResult = false) => {
     const rarity = getActiveRarity(card);
@@ -479,9 +482,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchFresh && !isLoading && activeDiscoveryCardIdRef.current !== null && !resultCapturedRef.current) {
-      if (gameResults.length > 0) {
-        setActiveCardResultCount(totalCount ?? gameResults.length);
-      }
+      const cardId = activeDiscoveryCardIdRef.current;
+      const rarity = gameResults.length > 0 ? getRarity(totalCount ?? gameResults.length) : null;
+      setCardRarities(prev => ({ ...prev, [cardId]: rarity }));
       resultCapturedRef.current = true;
     }
   }, [searchFresh, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
