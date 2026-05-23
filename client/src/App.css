@@ -2445,7 +2445,7 @@ svg.filter-caret.expanded {
   align-items: stretch;
   gap: 0.42rem;
   min-height: 9rem;
-  padding: 0.72rem 0.78rem 0.68rem;
+  padding: 1.1rem 0.78rem 0.68rem;
   border-radius: 8px;
   /* Unified neutral base — all 6 discovery cards share this at rest */
   background: rgba(var(--c-surface-rgb), 0.68);
@@ -2576,7 +2576,7 @@ svg.filter-caret.expanded {
   font-weight: 850;
   line-height: 1.12;
   overflow-wrap: anywhere;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .qs-card-action-icon {
