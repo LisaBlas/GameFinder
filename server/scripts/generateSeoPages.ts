@@ -238,7 +238,7 @@ function pickRelated(category: TemplateCategory, selfSlug: string, index: number
   for (let i = 0; i < 3; i++) {
     results.push(pool[(index + i) % pool.length]);
   }
-  return [...new Set(results)].slice(0, 3);
+  return Array.from(new Set(results)).slice(0, 3);
 }
 
 function fill(template: string, keyword: string): string {
@@ -248,6 +248,19 @@ function fill(template: string, keyword: string): string {
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+
+type GeneratedSeoPage = {
+  slug: string;
+  title: string;
+  description: string;
+  intro: string;
+  filters: Array<{ category: 'Keywords'; id: number; name: string }>;
+  relatedSlugs: string[];
+  searchLabel: string;
+};
+
+const isGeneratedSeoPage = (page: GeneratedSeoPage | null): page is GeneratedSeoPage =>
+  page !== null;
 
 // Generate pages
 const pages = KEYWORD_CONFIGS
@@ -274,7 +287,7 @@ const pages = KEYWORD_CONFIGS
 
     return page;
   })
-  .filter(Boolean);
+  .filter(isGeneratedSeoPage);
 
 // Serialize to TypeScript
 function serializePage(p: NonNullable<typeof pages[number]>): string {
@@ -301,7 +314,7 @@ ${filters},
 const output = `// AUTO-GENERATED — run \`npm run seo:generate-pages\` to regenerate.
 // Review before committing. Edit seoKeywords.ts or generateSeoPages.ts to change output.
 
-import type { SeoPage } from '../seoPages.js';
+import type { SeoPage } from './seoPages.js';
 
 export const GENERATED_SEO_PAGES: SeoPage[] = [
 ${pages.map(serializePage).join(',\n')}

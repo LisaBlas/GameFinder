@@ -1,4 +1,25 @@
-import { users, type User, type InsertUser, tokens, type Token, type InsertToken, searches, type Search, type InsertSearch } from "@shared/schema";
+import type { User, InsertUser } from "@shared/schema";
+
+export type Token = {
+  id: number;
+  access_token: string;
+  expires_in: number;
+  expires_at: Date;
+  token_type: string;
+};
+
+export type InsertToken = Omit<Token, "id">;
+
+export type Search = {
+  id: number;
+  filters: unknown;
+  results_count: number;
+  page: number;
+  exclude_count: number;
+  created_at: Date;
+};
+
+export type InsertSearch = Omit<Search, "id" | "created_at">;
 
 // modify the interface with any CRUD methods
 // you might need

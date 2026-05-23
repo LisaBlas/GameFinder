@@ -135,7 +135,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   const [countIsCapped, setCountIsCapped] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [pageCache, setPageCache] = useState<Record<number, any[]>>({});
-  const [pendingRequests, setPendingRequests] = useState<Record<number, Promise<any>>>({});
+  const [pendingRequests, setPendingRequests] = useState<Partial<Record<number, Promise<any>>>>({});
   const [retryCount, setRetryCount] = useState<Record<number, number>>({});
   const [lastError, setLastError] = useState<{page: number, error: any} | null>(null);
   const MAX_RETRIES = 3;

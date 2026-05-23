@@ -1020,7 +1020,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             ? <KeyRound className="h-4 w-4 text-primary" />
             : <Hammer className="h-4 w-4 text-primary" />}
           <span className="font-bold text-foreground">
-            {isKeyword ? commonKeywordLabel : rareComboLabel}
+            {isKeyword ? commonKeywordState : rareComboState}
           </span>
         </div>
         <div className="flex-1 min-h-0">

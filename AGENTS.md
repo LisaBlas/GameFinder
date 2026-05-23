@@ -11,7 +11,7 @@ This repo is the local GameFinder workspace. Treat `CLAUDE.md` as durable projec
 
 ## Workflow
 - Read the current code before changing behavior; this project moves quickly and docs can lag.
-- Prefer targeted verification because full `npm run check` currently has known baseline TypeScript debt documented in `CLAUDE.md`.
+- `npm run check` (full tsc) is expected to pass — treat new failures as regressions.
 - Do not take screenshots for visual checks unless the user explicitly asks.
 - Ask before installing dependencies.
 - Ask before touching secrets, credentials, auth files, or production data.
@@ -27,7 +27,7 @@ This repo is the local GameFinder workspace. Treat `CLAUDE.md` as durable projec
 
 ## Homepage Discovery Features
 - The homepage `KeywordSection` now has "Roll" and "Uniques" discovery sections above manual keyword browsing.
-- Roll includes quick entry cards for a random keyword, a common crafted combination, Most Popular, and User Crafts.
+- Roll has four cards: **Popular** (cycles through curated popular keys, e.g. Action Roguelike → Souls-like), **Crafted** (curated combos; was "Common"), **Random** (single random keyword, infinite), **User crafted** (community combos; was "User Crafts").
 - Uniques cycles through rare/low-result discovery sequences for Unique Key and Crafted. Cards show sequence steps like `1/5` instead of remaining-count copy, and wrap back to the first item instead of locking.
 - Future intent: save user searches/keyword combinations so strong community discoveries can feed Most Popular and User Crafts.
 - "Best crafts" means keyword/filter combinations that return a low number of results; low result count is treated as a signal for a more unique/niche game discovery path.
@@ -38,4 +38,4 @@ Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/se
 ## Verification Defaults
 - Documentation-only changes: re-read edited files and run lightweight presence/readability checks.
 - UI/behavior changes: run the smallest relevant build/test/check first, then broaden only when the touched surface warrants it.
-- Full `npm run check` is useful as a baseline signal but is not currently clean.
+- `npm run check` passes cleanly; run it as a baseline signal and treat failures as regressions.

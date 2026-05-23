@@ -19,20 +19,12 @@ npm run start               # production
 npm run db:push             # push schema to Neon
 npm run db:seed             # seed database
 npm run seo:refresh-cache   # repopulate seo_page_cache from IGDB (run on VPS, needs env vars)
-npm run check               # TypeScript check; currently has known baseline failures
+npm run check               # TypeScript check; expected to pass
 ```
 
 Windows gotcha: `npm run build` currently completes the Vite client build and esbuild server bundle, then fails at the final Unix `cp -r client/src/assets dist/` step. Use Git Bash/WSL for the full build or replace that copy step with a cross-platform command before relying on it locally.
 
-Typecheck gotcha: `npm run check` runs root `tsc` against the whole app and currently fails on pre-existing project-wide issues:
-- `client/src/components/GameCard_DiscountedStores_Backup.tsx` - archived JSX fragment with missing local symbols
-- `client/src/pages/api/keywords/search.ts` - stale Next.js API route in a Vite app without `next` installed
-- `server/storage.ts` - imports token/search schema exports that no longer exist
-- `client/src/components/ui/sidebar.tsx` - imports `useIsMobile`, but the hook exports `useMobile`
-- `client/src/context/FilterContext.tsx` - `pendingRequests[nextPage]` condition is typed as always true
-- `server/vite.ts` - Vite `allowedHosts` type mismatch
-
-Treat full `tsc` failures as baseline debt unless a change touches those files; prefer targeted verification for the edited surface until the baseline is cleaned up.
+Typecheck baseline: `npm run check` runs root `tsc` against the whole app and is expected to pass. Treat new failures as regressions, not background debt.
 
 ## Current Architecture
 Split workspace layout (`client/src/pages/home.tsx`):
@@ -89,19 +81,22 @@ Analytics: CTA clicks fire a `seo_open_app` GA event with `page_slug` via inline
 
 ## Active Product Flows
 1. **Keyword UX** - make keyword selection feel fun and rewarding. Keywords are curated and sorted intentionally; preserve their order and meaning.
-2. **Homepage discovery cards** - `KeywordSection` has Roll and Uniques sections as the new "wow" feature above manual browsing. Roll gives quick starts for a random keyword, a common crafted combination, Most Popular, and User Crafts. Uniques cycles through rare discovery sequences for Unique Key and Crafted.
+2. **Homepage discovery cards** - `KeywordSection` has Roll and Uniques sections as the new "wow" feature above manual browsing. Roll has four cards: **Popular** (cycles through a curated sequence of popular keys, e.g. Action Roguelike → Souls-like; label "Top key this week"), **Crafted** (curated combos, first entry is Memory Loss + Horror theme; formerly "Common"), **Random** (random single keyword, infinite), and **User crafted** (community combos; formerly "User Crafts"). Uniques cycles through rare discovery sequences for Unique Key and Crafted.
 3. **Discovery card steps** - Roll and Uniques cards show sequence progress like `1/5` instead of remaining-count copy. Finite sequences wrap back to the first item instead of locking; Random uses the infinity icon. `gamefinder_unique_limits` is still used to persist the last Unique reveal label, not as a hard daily limit.
 4. **Future community search memory** - planned evolution: save user searches/keyword combinations and their result counts so the app can surface strong discoveries to other users. Most Popular should come from high-use/high-engagement combinations. User Crafts should highlight community-found combinations, especially "best crafts": keyword/filter combinations that return a low amount of results, because low result count is a proxy for unique/niche games.
 5. **Game/keyword search** - `KeywordSearch` queries both `/api/games/suggest` and `/api/keywords/search`.
 6. **Find similar** - selecting a game suggestion clears filters, sets `seedGame`, fetches `/api/games/:id/similar-seed`, then seeds up to 3 keywords plus one genre and one theme.
-7. **YouTube video embeds** - expanded game cards fetch `/api/games/:id/videos` and embed the first IGDB video in a YouTube iframe. If none exists, show cover-backed fallback and a gameplay search link.
+7. **YouTube video embeds** - expanded game cards fetch `/api/games/:id/videos` and show a cinematic thumbnail with a floating play button. The YouTube iframe only mounts on click (lazy — avoids loading YouTube scripts on card expand). If no video exists, show cover-backed fallback and a gameplay search link.
 8. **Affiliate partner stores** - game cards show official store links plus rotated partner alternatives for GamersGate, Instant Gaming, Eneba, Kinguin, and G2A. Kinguin uses a first-click cookie-setting redirect flow.
 9. **Saved games** - users can save/unsave games from cards and open the saved-games panel from mobile and desktop headers.
 10. **Quality filters** - `FilterBar` exposes `Has studio` (`requireDeveloper`, default true) and `Has rating` (`requireRating`, default false).
+11. **Game card status badges** - compact (non-expanded) cards show inline amber badges below the synopsis: `Free` (Steam price), `-X% on Steam` (discount), and `New` (released within 6 months / 183 days). Badges only appear when the Steam price data is loaded and the condition is met.
+12. **Result count** - `FilterContext` exposes `totalCount` and `countIsCapped`. On page 1 the server runs `igdbService.countGames()` in parallel with the search; count is capped at 250 and returns `capped: true` when exceeded. The results header shows "N Results" or "N+ Results". Page size is 50 (changed from 30).
 
 ## API And Search Data Flow
 - `POST /api/games/search`
   - Receives grouped include filters, `sort`, `page`, `excludeIds`, `excludeKeywords`, `excludeFilters`, `requireDeveloper`, and `requireRating`.
+  - Returns `{ games, totalCount, countIsCapped, hasMore }` — not a bare array. `totalCount` is only populated on page 1 (run in parallel via `countGames()`); subsequent pages return `null` and the client reuses the cached total. `countIsCapped` is true when the result set exceeds 250. `hasMore` is `games.length >= 50`.
   - `excludeIds` is used to avoid duplicates and exclude the seed game.
   - Include filters become IGDB Apicalypse conditions.
   - `requireRating` adds `rating != null`.

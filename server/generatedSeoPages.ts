@@ -1,7 +1,7 @@
 // AUTO-GENERATED — run `npm run seo:generate-pages` to regenerate.
 // Review before committing. Edit seoKeywords.ts or generateSeoPages.ts to change output.
 
-import type { SeoPage } from '../seoPages.js';
+import type { SeoPage } from './seoPages.js';
 
 export const GENERATED_SEO_PAGES: SeoPage[] = [
   {
