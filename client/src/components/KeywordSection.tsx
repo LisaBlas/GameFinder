@@ -1160,7 +1160,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-rnd-kw', 'popular', !!popularRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
-
+                          <KeyRound className="qs-card-type-icon" aria-hidden="true" />
                           {getActiveRarity('popular') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('popular')}</span>
                           )}
@@ -1185,7 +1185,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-rnd-combo', 'rare-combo', isRareComboRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
-
+                          <Hammer className="qs-card-type-icon" aria-hidden="true" />
                           {getActiveRarity('rare-combo') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('rare-combo')}</span>
                           )}
@@ -1210,7 +1210,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-popular', 'common-keyword', isCommonKeywordRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
-
+                          <KeyRound className="qs-card-type-icon" aria-hidden="true" />
                           {getActiveRarity('common-keyword') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('common-keyword')}</span>
                           )}
@@ -1235,7 +1235,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-user-crafts', 'user-crafts', userCraftsRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
-
+                          <Hammer className="qs-card-type-icon" aria-hidden="true" />
                           {getActiveRarity('user-crafts') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('user-crafts')}</span>
                           )}
@@ -1267,7 +1267,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-unique-kw', 'unique-keyword', isKwRevealedState)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
-
+                          <KeyRound className="qs-card-type-icon" aria-hidden="true" />
                           {getActiveRarity('unique-keyword') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('unique-keyword')}</span>
                           )}
@@ -1299,7 +1299,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-unique-combo', 'unique-combo', isComboRevealedState)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
-
+                          <Hammer className="qs-card-type-icon" aria-hidden="true" />
                           {getActiveRarity('unique-combo') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('unique-combo')}</span>
                           )}

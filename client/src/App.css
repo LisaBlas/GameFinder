@@ -2460,7 +2460,7 @@ svg.filter-caret.expanded {
   }
 }
 
-.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label):not(.qs-card-unlock-label):not(.qs-card-main):not(.qs-card-footer),
+.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label):not(.qs-card-main):not(.qs-card-footer),
 .qs-card-topline {
   position: relative;
   z-index: 2;
@@ -2472,26 +2472,17 @@ svg.filter-caret.expanded {
   z-index: 2;
 }
 
-.qs-card > .qs-card-unlock-label {
+/* Card-type indicator icon — top-left, mirrors rarity-label placement */
+.qs-card-type-icon {
   position: absolute;
-  left: 50%;
-  bottom: 0;
+  top: 0.55rem;
+  left: 0.6rem;
   z-index: 3;
-  color: rgba(var(--c-emerald-rgb), 0.42);
-  font-size: 0.5rem;
-  font-weight: 900;
-  line-height: 1;
-  text-transform: uppercase;
-  opacity: 0;
+  width: 0.72rem;
+  height: 0.72rem;
+  color: rgba(var(--c-emerald-rgb), 0.32);
   pointer-events: none;
-  transform: translate(-50%, 1rem);
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  white-space: nowrap;
-}
-
-.qs-card:hover > .qs-card-unlock-label {
-  opacity: 0.72;
-  transform: translate(-50%, 0);
+  flex-shrink: 0;
 }
 
 .qs-card:hover .qs-card-footer {
