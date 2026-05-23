@@ -2460,7 +2460,7 @@ svg.filter-caret.expanded {
   }
 }
 
-.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label):not(.qs-card-main):not(.qs-card-footer),
+.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label):not(.qs-card-unidentified-label):not(.qs-card-main):not(.qs-card-footer),
 .qs-card-topline {
   position: relative;
   z-index: 2;
@@ -2755,6 +2755,38 @@ svg.filter-caret.expanded {
   z-index: 3;
   pointer-events: none;
   /* color inherited from the parent rarity class */
+}
+
+/* Unidentified pill — shown when revealed but search hasn't run yet (no rarity assigned) */
+.qs-card-unidentified-label {
+  display: none;
+  position: absolute;
+  top: 0.52rem;
+  right: 0.58rem;
+  font-size: 0.48rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.28rem 0.42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(var(--c-bg-rgb), 0.64);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 12px rgba(0, 0, 0, 0.22);
+  color: var(--c-muted);
+  opacity: 0.92;
+  z-index: 3;
+  pointer-events: none;
+}
+/* Show when revealed but no rarity class yet */
+.qs-card-has-result:not([class*="qs-card-rarity-"]) .qs-card-unidentified-label {
+  display: block;
+}
+/* Hide on regular hover (card flips to initial state) */
+.qs-card-has-result:not([class*="qs-card-rarity-"]):not(.qs-card-post-click):hover .qs-card-unidentified-label {
+  display: none;
 }
 
 .qs-card:hover {

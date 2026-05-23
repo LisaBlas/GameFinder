@@ -1164,6 +1164,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           {getActiveRarity('popular') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('popular')}</span>
                           )}
+                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
                           <span className="qs-card-main">
                             <span className="qs-card-action-label">
                               <Dices className="qs-card-action-icon" />
@@ -1189,6 +1190,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           {getActiveRarity('rare-combo') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('rare-combo')}</span>
                           )}
+                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
                           <span className="qs-card-main">
                             <span className="qs-card-action-label">
                               <Wand2 className="qs-card-action-icon" />
@@ -1214,6 +1216,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           {getActiveRarity('common-keyword') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('common-keyword')}</span>
                           )}
+                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
                           <span className="qs-card-main">
                             <span className="qs-card-action-label">
                               <Shuffle className="qs-card-action-icon" />
@@ -1239,6 +1242,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           {getActiveRarity('user-crafts') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('user-crafts')}</span>
                           )}
+                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
                           <span className="qs-card-main">
                             <span className="qs-card-action-label">
                               <Users className="qs-card-action-icon" />
@@ -1271,6 +1275,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           {getActiveRarity('unique-keyword') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('unique-keyword')}</span>
                           )}
+                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
                           <span className="qs-card-main">
                             <span className="qs-card-action-label">
                               <Sparkles className="qs-card-action-icon" />
@@ -1303,6 +1308,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           {getActiveRarity('unique-combo') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('unique-combo')}</span>
                           )}
+                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
                           <span className="qs-card-main">
                             <span className="qs-card-action-label">
                               <Wand2 className="qs-card-action-icon" />
