@@ -2440,29 +2440,93 @@ svg.filter-caret.expanded {
 .qs-card {
   position: relative;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  min-height: 5rem;
-  padding: 0.7rem 0.5rem;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 0.42rem;
+  min-height: 9rem;
+  padding: 0.72rem 0.78rem 0.68rem;
   border-radius: 8px;
   /* Unified neutral base — all 6 discovery cards share this at rest */
-  background: rgba(var(--c-surface-rgb), 0.55);
+  background: rgba(var(--c-surface-rgb), 0.68);
   border: 1px solid rgba(var(--c-border-rgb), 0.1);
   color: var(--c-dim);
   font-size: 0.71rem;
   font-weight: 700;
   line-height: 1.2;
-  text-align: center;
-  transition: background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  transition: background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
 }
 
-.qs-card > svg,
-.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label) {
+.qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label):not(.qs-card-unlock-label),
+.qs-card-topline,
+.qs-card-main,
+.qs-card-footer {
   position: relative;
   z-index: 2;
+}
+
+.qs-card > .qs-card-unlock-label {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 3;
+  color: rgba(var(--c-emerald-rgb), 0.42);
+  font-size: 0.5rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 1rem);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  white-space: nowrap;
+}
+
+.qs-card:hover > .qs-card-unlock-label {
+  opacity: 0.72;
+  transform: translate(-50%, 0);
+}
+
+.qs-card:hover .qs-card-footer {
+  opacity: 0.38;
+}
+
+.qs-card-topline {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.36rem;
+  color: rgba(156, 174, 170, 0.7);
+  font-size: 0.56rem;
+  font-weight: 850;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.qs-card-topline svg {
+  flex: 0 0 auto;
+  color: rgba(var(--c-emerald-rgb), 0.58);
+  stroke-width: 2.2;
+}
+
+.qs-card-main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.qs-card-footer {
+  display: flex;
+  min-width: 0;
+  min-height: 1.15rem;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: rgba(156, 174, 170, 0.68);
 }
 
 .qs-card-shine {
@@ -2496,17 +2560,32 @@ svg.filter-caret.expanded {
 }
 
 .qs-card-action-label {
-  font-size: 0.71rem;
-  font-weight: 800;
-  line-height: 1.2;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38rem;
+  color: var(--c-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.qs-card-action-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: rgba(var(--c-emerald-rgb), 0.72);
+  stroke-width: 2.1;
 }
 
 .qs-card-state-line {
-  font-size: 0.59rem;
-  font-weight: 500;
+  font-size: 0.58rem;
+  font-weight: 650;
   line-height: 1;
   opacity: 0.6;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
   transition: opacity 0.18s ease;
 }
 
@@ -2521,6 +2600,53 @@ svg.filter-caret.expanded {
   width: 0.62rem;
   height: 0.62rem;
   stroke-width: 2.4;
+}
+
+.qs-card-footer-sequence {
+  align-items: end;
+}
+
+.qs-sequence-track {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.38rem;
+}
+
+.qs-sequence-pips {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+}
+
+.qs-sequence-pip {
+  width: 0.24rem;
+  height: 0.24rem;
+  border-radius: 999px;
+  background: rgba(var(--c-gold-rgb), 0.22);
+  box-shadow: 0 0 0 1px rgba(var(--c-gold-rgb), 0.08);
+}
+
+.qs-sequence-pip-active {
+  width: 0.62rem;
+  background: rgba(var(--c-gold-rgb), 0.82);
+  box-shadow: 0 0 8px rgba(var(--c-gold-rgb), 0.28);
+}
+
+.qs-sequence-count {
+  color: rgba(var(--c-gold-rgb), 0.72);
+  font-size: 0.55rem;
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.qs-card-meta {
+  color: rgba(var(--c-gold-rgb), 0.72);
+  font-size: 0.55rem;
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 /* Wrapper shared by all 6 discovery cards — allows diamond pseudo-element to
@@ -2591,30 +2717,35 @@ svg.filter-caret.expanded {
 /* Rarity label — tiny pill shown top-right of a card after reveal */
 .qs-card-rarity-label {
   position: absolute;
-  top: 4px;
-  right: 5px;
-  font-size: 0.42rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  top: 0.52rem;
+  right: 0.58rem;
+  font-size: 0.48rem;
+  font-weight: 850;
+  letter-spacing: 0;
   text-transform: uppercase;
   line-height: 1;
-  padding: 0.18em 0.42em;
-  border-radius: 2px;
-  border: 1px solid currentColor;
-  opacity: 0.68;
+  padding: 0.28rem 0.42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(var(--c-bg-rgb), 0.64);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 12px rgba(0, 0, 0, 0.22);
+  opacity: 0.92;
   z-index: 3;
   pointer-events: none;
   /* color inherited from the parent rarity class */
 }
 
 .qs-card:hover {
-  background: rgba(var(--c-emerald-rgb), 0.09);
+  background: rgba(var(--c-surface-rgb), 0.82);
   border-color: rgba(var(--c-emerald-rgb), 0.24);
   color: var(--c-muted);
+  transform: translateY(-1px);
 }
 
 .qs-card.active {
-  background: rgba(var(--c-emerald-rgb), 0.13);
+  background: rgba(var(--c-emerald-rgb), 0.11);
   border-color: rgba(var(--c-emerald-rgb), 0.38);
   color: var(--c-emerald-soft);
   box-shadow: 0 0 14px rgba(var(--c-emerald-rgb), 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -2921,6 +3052,10 @@ svg.filter-caret.expanded {
 .qs-card-has-result:hover .qs-state-initial      { display: block; }
 .qs-card-has-result:hover .qs-state-revealed     { display: none; }
 
+.qs-card-has-result:hover .qs-card-action-label {
+  display: inline-flex;
+}
+
 .qs-card-has-result:hover .qs-state-initial.qs-card-state-line-icon {
   display: inline-flex;
   white-space: nowrap;
@@ -2939,7 +3074,7 @@ svg.filter-caret.expanded {
 .qs-card-has-result.qs-card-post-click:hover .qs-state-revealed     { display: block; }
 
 /* Hover-to-initial on a rarity card: reset child colors to neutral; bg/border handled by per-card hover rules */
-.qs-card-has-result[class*="qs-card-rarity-"]:not(.qs-card-post-click):hover > svg,
+.qs-card-has-result[class*="qs-card-rarity-"]:not(.qs-card-post-click):hover .qs-card-topline svg,
 .qs-card-has-result[class*="qs-card-rarity-"]:not(.qs-card-post-click):hover .qs-card-state-line,
 .qs-card-has-result[class*="qs-card-rarity-"]:not(.qs-card-post-click):hover .qs-card-action-label {
   color: var(--c-muted);
@@ -3098,7 +3233,7 @@ svg.filter-caret.expanded {
 .qs-card.qs-card-rnd-combo:hover,
 .qs-card.qs-card-popular:hover,
 .qs-card.qs-card-user-crafts:hover {
-  background: rgba(var(--c-emerald-rgb), 0.07);
+  background: rgba(var(--c-emerald-rgb), 0.08);
   border-color: rgba(var(--c-emerald-rgb), 0.22);
   color: var(--c-muted);
   box-shadow: 0 0 9px rgba(var(--c-emerald-rgb), 0.08);
@@ -3148,14 +3283,14 @@ svg.filter-caret.expanded {
 
 /* Uncommon: moderate result count — soft emerald lift */
 .qs-card.qs-card-rarity-uncommon {
-  background: rgba(var(--c-emerald-rgb), 0.06);
+  background: rgba(var(--c-emerald-rgb), 0.075);
   border-color: rgba(var(--c-emerald-rgb), 0.28);
   color: var(--c-emerald-soft);
   box-shadow: 0 0 8px rgba(var(--c-emerald-rgb), 0.08);
   transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
 }
 
-.qs-card.qs-card-rarity-uncommon > svg {
+.qs-card.qs-card-rarity-uncommon .qs-card-topline svg {
   color: rgba(var(--c-emerald-rgb), 0.7);
 }
 
@@ -3171,7 +3306,7 @@ svg.filter-caret.expanded {
 
 /* Rare: low result count — blue accent */
 .qs-card.qs-card-rarity-rare {
-  background: rgba(var(--c-rare-blue-rgb), 0.07);
+  background: rgba(var(--c-rare-blue-rgb), 0.085);
   border-color: rgba(var(--c-rare-blue-rgb), 0.36);
   color: var(--c-rare-blue-soft);
   box-shadow:
@@ -3180,7 +3315,7 @@ svg.filter-caret.expanded {
   transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
 }
 
-.qs-card.qs-card-rarity-rare > svg {
+.qs-card.qs-card-rarity-rare .qs-card-topline svg {
   color: rgba(var(--c-rare-blue-rgb), 0.8);
 }
 
@@ -3196,7 +3331,7 @@ svg.filter-caret.expanded {
 
 /* Epic: very low result count — purple accent */
 .qs-card.qs-card-rarity-epic {
-  background: rgba(var(--c-purple-rgb), 0.1);
+  background: rgba(var(--c-purple-rgb), 0.12);
   border-color: rgba(var(--c-purple-rgb), 0.44);
   color: var(--c-purple-soft);
   box-shadow:
@@ -3205,7 +3340,7 @@ svg.filter-caret.expanded {
   transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
 }
 
-.qs-card.qs-card-rarity-epic > svg {
+.qs-card.qs-card-rarity-epic .qs-card-topline svg {
   color: rgba(var(--c-purple-rgb), 0.85);
 }
 
@@ -3221,15 +3356,7 @@ svg.filter-caret.expanded {
 
 /* Unique: extremely low non-zero result count — orange + diamond via wrapper */
 .qs-card.qs-card-rarity-unique {
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(var(--c-unique-rgb), 0.045) 3px,
-      rgba(var(--c-unique-rgb), 0.045) 4px
-    ),
-    rgba(var(--c-unique-rgb), 0.08);
+  background: rgba(var(--c-unique-rgb), 0.08);
   border-color: rgba(var(--c-unique-rgb), 0.48);
   color: var(--c-unique-soft);
   box-shadow:
@@ -3239,18 +3366,10 @@ svg.filter-caret.expanded {
 }
 
 .qs-card.qs-card-rarity-unique.qs-card-post-click:hover {
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(var(--c-unique-rgb), 0.055) 3px,
-      rgba(var(--c-unique-rgb), 0.055) 4px
-    ),
-    rgba(var(--c-unique-rgb), 0.1);
+  background: rgba(var(--c-unique-rgb), 0.1);
 }
 
-.qs-card.qs-card-rarity-unique > svg {
+.qs-card.qs-card-rarity-unique .qs-card-topline svg {
   color: rgba(var(--c-unique-rgb), 0.88);
 }
 

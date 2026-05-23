@@ -158,14 +158,14 @@ const HomeContent: React.FC = () => {
       >
         {/* Build panel - mobile: cross-fade, desktop: left 40% */}
         <div
-          className={`absolute inset-0 lg:static bg-card flex flex-col overflow-y-auto lg:w-2/5 lg:border-r lg:border-border transition-opacity duration-200 ${
+          className={`absolute inset-0 lg:static bg-card flex flex-col overflow-y-auto lg:w-2/5 lg:max-h-full lg:self-start lg:border-r lg:border-b lg:border-border transition-opacity duration-200 ${
             activeTab === 'build'
               ? 'opacity-100 pointer-events-auto z-10'
               : 'opacity-0 pointer-events-none z-0 lg:opacity-100 lg:pointer-events-auto'
           }`}
         >
           {/* Keyword builder */}
-          <div className="flex-1">
+          <div className="flex-1 lg:flex-none">
             <KeywordSection
               expanded={true}
               setActiveSection={() => {}}

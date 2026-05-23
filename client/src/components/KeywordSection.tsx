@@ -295,17 +295,38 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     },
   ];
 
-  const commonKeywordLabel = "Random";
   const commonKeywordState = "Random keyword";
-  const rareComboLabel = "Curated";
   const rareComboState = "GameFinder combo";
   const isCommonKeywordRevealed = !!commonKeywordRevealed;
   const isRareComboRevealed = !!rareComboRevealed;
   const getStepLabel = (index: number, total: number) => `${index + 1}/${total}`;
+  const getPaddedStepLabel = (index: number, total: number) =>
+    `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+  const renderSequencePips = (index: number, total: number) => {
+    const pipCount = Math.min(5, total);
+    const activePip = Math.min(pipCount - 1, Math.floor((index / Math.max(total - 1, 1)) * pipCount));
+
+    return (
+      <span className="qs-sequence-pips" aria-hidden="true">
+        {Array.from({ length: pipCount }, (_, pipIndex) => (
+          <span
+            key={pipIndex}
+            className={`qs-sequence-pip${pipIndex === activePip ? ' qs-sequence-pip-active' : ''}`}
+          />
+        ))}
+      </span>
+    );
+  };
   const popularStep = getStepLabel(activePopularIndex, popularSuggestions.length);
   const craftedStep = getStepLabel(activeSuggestionIndex, keywordComboSuggestions.length);
-  const uniqueKeywordStep = getStepLabel(activeUniqueKeywordIndex, uniqueKeywords.length);
-  const uniqueComboStep = getStepLabel(activeUniqueComboIndex, uniqueComboSuggestions.length);
+  const uniqueKeywordDisplayIndex = isKwRevealedState
+    ? Math.max(0, Math.min(uniqueLimits.kwUsed - 1, uniqueKeywords.length - 1))
+    : activeUniqueKeywordIndex;
+  const uniqueComboDisplayIndex = isComboRevealedState
+    ? Math.max(0, Math.min(uniqueLimits.comboUsed - 1, uniqueComboSuggestions.length - 1))
+    : activeUniqueComboIndex;
+  const uniqueKeywordDisplayStep = getPaddedStepLabel(uniqueKeywordDisplayIndex, uniqueKeywords.length);
+  const uniqueComboDisplayStep = getPaddedStepLabel(uniqueComboDisplayIndex, uniqueComboSuggestions.length);
 
   const triggerCardReveal = (card: RevealCard) => {
     if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
@@ -1012,8 +1033,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const renderMobileShelves = () => {
     const inlineKwData = activeSubcategory ? getKeywordPanelData(activeSubcategory) : null;
     return (
-      <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto">
+      <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:flex-none lg:overflow-visible">
+        <div className="flex-1 overflow-y-auto lg:flex-none lg:overflow-visible">
           <div className="grid gap-4">
             <div className="mobile-keyword-search-wrap">
               <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
@@ -1139,13 +1160,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-rnd-kw', 'popular', !!popularRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
+                          <span className="qs-card-unlock-label" aria-hidden="true">Unlock</span>
                           {getActiveRarity('popular') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('popular')}</span>
                           )}
-                          <KeyRound className="w-3.5 h-3.5" />
-                          <span className="qs-card-action-label">Popular</span>
-                          <span className="qs-state-initial qs-card-state-line">Top key this week &middot; {popularStep}</span>
-                          <span className="qs-state-revealed qs-card-state-line">{popularRevealed?.name ?? ''}</span>
+                          <span className="qs-card-topline">
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>Key</span>
+                          </span>
+                          <span className="qs-card-main">
+                            <span className="qs-card-action-label">
+                              <Dices className="qs-card-action-icon" />
+                              Roll popular
+                            </span>
+                            <span className="qs-state-revealed qs-card-state-line">{popularRevealed?.name ?? ''}</span>
+                          </span>
+                          <span className="qs-card-footer">
+                            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">Top key this week</span>
+                            <span className="qs-card-meta">{popularStep}</span>
+                          </span>
                         </button>
                       </div>
                       <div className={getCardWrapClass('rare-combo')}>
@@ -1156,13 +1189,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-rnd-combo', 'rare-combo', isRareComboRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
+                          <span className="qs-card-unlock-label" aria-hidden="true">Unlock</span>
                           {getActiveRarity('rare-combo') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('rare-combo')}</span>
                           )}
-                          <Hammer className="w-3.5 h-3.5" />
-                          <span className="qs-card-action-label">{rareComboLabel}</span>
-                          <span className="qs-state-initial qs-card-state-line">{rareComboState} &middot; {craftedStep}</span>
-                          <span className="qs-state-revealed qs-card-state-line">{rareComboRevealed?.title ?? ''}</span>
+                          <span className="qs-card-topline">
+                            <Hammer className="w-3.5 h-3.5" />
+                            <span>Craft</span>
+                          </span>
+                          <span className="qs-card-main">
+                            <span className="qs-card-action-label">
+                              <Wand2 className="qs-card-action-icon" />
+                              Craft curated
+                            </span>
+                            <span className="qs-state-revealed qs-card-state-line">{rareComboRevealed?.title ?? ''}</span>
+                          </span>
+                          <span className="qs-card-footer">
+                            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">{rareComboState}</span>
+                            <span className="qs-card-meta">{craftedStep}</span>
+                          </span>
                         </button>
                       </div>
                       <div className={getCardWrapClass('common-keyword')}>
@@ -1173,15 +1218,26 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-popular', 'common-keyword', isCommonKeywordRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
+                          <span className="qs-card-unlock-label" aria-hidden="true">Unlock</span>
                           {getActiveRarity('common-keyword') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('common-keyword')}</span>
                           )}
-                          <KeyRound className="w-3.5 h-3.5" />
-                          <span className="qs-card-action-label">{commonKeywordLabel}</span>
-                          <span className="qs-state-initial qs-card-state-line qs-card-state-line-icon">
-                            {commonKeywordState} &middot; <InfinityIcon className="qs-step-icon" aria-label="infinite" />
+                          <span className="qs-card-topline">
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>Key</span>
                           </span>
-                          <span className="qs-state-revealed qs-card-state-line">{commonKeywordRevealed?.name ?? ''}</span>
+                          <span className="qs-card-main">
+                            <span className="qs-card-action-label">
+                              <Shuffle className="qs-card-action-icon" />
+                              Roll random
+                            </span>
+                            <span className="qs-state-revealed qs-card-state-line">{commonKeywordRevealed?.name ?? ''}</span>
+                          </span>
+                          <span className="qs-card-footer">
+                            <span className="qs-state-initial qs-card-state-line qs-card-state-line-icon">
+                              {commonKeywordState} &middot; <InfinityIcon className="qs-step-icon" aria-label="infinite" />
+                            </span>
+                          </span>
                         </button>
                       </div>
                       <div className={getCardWrapClass('user-crafts')}>
@@ -1192,13 +1248,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-user-crafts', 'user-crafts', userCraftsRevealed)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
+                          <span className="qs-card-unlock-label" aria-hidden="true">Unlock</span>
                           {getActiveRarity('user-crafts') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('user-crafts')}</span>
                           )}
-                          <Hammer className="w-3.5 h-3.5" />
-                          <span className="qs-card-action-label">Community</span>
-                          <span className="qs-state-initial qs-card-state-line">Community combo &middot; 1/1</span>
-                          <span className="qs-state-revealed qs-card-state-line">Eldritch Indie</span>
+                          <span className="qs-card-topline">
+                            <Hammer className="w-3.5 h-3.5" />
+                            <span>Craft</span>
+                          </span>
+                          <span className="qs-card-main">
+                            <span className="qs-card-action-label">
+                              <Users className="qs-card-action-icon" />
+                              Try community
+                            </span>
+                            <span className="qs-state-revealed qs-card-state-line">Eldritch Indie</span>
+                          </span>
+                          <span className="qs-card-footer">
+                            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">Community combo</span>
+                            <span className="qs-card-meta">1/1</span>
+                          </span>
                         </button>
                       </div>
                     </div>
@@ -1216,18 +1284,31 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-unique-kw', 'unique-keyword', isKwRevealedState)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
+                          <span className="qs-card-unlock-label" aria-hidden="true">Unlock</span>
                           {getActiveRarity('unique-keyword') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('unique-keyword')}</span>
                           )}
-                          <KeyRound className="w-3.5 h-3.5" />
-                          <span className="qs-card-action-label">
-                            Unique
+                          <span className="qs-card-topline">
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>Unique Key</span>
                           </span>
-                          <span className="qs-state-initial qs-card-state-line">
-                            &lt;5 results &middot; {uniqueKeywordStep}
+                          <span className="qs-card-main">
+                            <span className="qs-card-action-label">
+                              <Sparkles className="qs-card-action-icon" />
+                              Discover unique
+                            </span>
+                            <span className="qs-state-revealed qs-card-state-line">
+                              {kwRevealed?.name ?? ''}
+                            </span>
                           </span>
-                          <span className="qs-state-revealed qs-card-state-line">
-                            {kwRevealed?.name ?? ''}
+                          <span className="qs-card-footer qs-card-footer-sequence">
+                            <span className="qs-state-initial qs-card-state-line">
+                              &lt;5 results
+                            </span>
+                            <span className="qs-sequence-track">
+                              {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
+                              <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
+                            </span>
                           </span>
                         </button>
                       </div>
@@ -1239,18 +1320,31 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                           className={getCardClassName('qs-card-unique-combo', 'unique-combo', isComboRevealedState)}
                         >
                           <span className="qs-card-shine" aria-hidden="true" />
+                          <span className="qs-card-unlock-label" aria-hidden="true">Unlock</span>
                           {getActiveRarity('unique-combo') && (
                             <span className="qs-card-rarity-label">{getActiveRarity('unique-combo')}</span>
                           )}
-                          <Hammer className="w-3.5 h-3.5" />
-                          <span className="qs-card-action-label">
-                            Unique
+                          <span className="qs-card-topline">
+                            <Hammer className="w-3.5 h-3.5" />
+                            <span>Unique Craft</span>
                           </span>
-                          <span className="qs-state-initial qs-card-state-line">
-                            &lt;5 results &middot; {uniqueComboStep}
+                          <span className="qs-card-main">
+                            <span className="qs-card-action-label">
+                              <Wand2 className="qs-card-action-icon" />
+                              Craft unique
+                            </span>
+                            <span className="qs-state-revealed qs-card-state-line">
+                              {comboRevealed?.title ?? ''}
+                            </span>
                           </span>
-                          <span className="qs-state-revealed qs-card-state-line">
-                            {comboRevealed?.title ?? ''}
+                          <span className="qs-card-footer qs-card-footer-sequence">
+                            <span className="qs-state-initial qs-card-state-line">
+                              &lt;5 results
+                            </span>
+                            <span className="qs-sequence-track">
+                              {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
+                              <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
+                            </span>
                           </span>
                         </button>
                       </div>
@@ -1285,7 +1379,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   return (
-    <div className="keyword-section relative w-full h-full flex flex-col transition-all duration-500">
+    <div className="keyword-section relative w-full h-full lg:h-auto flex flex-col transition-all duration-500">
       <AnimatePresence>{renderMobileCategoryDetail()}</AnimatePresence>
       <AnimatePresence>{renderMobileSubcategoryDetail()}</AnimatePresence>
       <AnimatePresence>{renderMobileQsDetail()}</AnimatePresence>
@@ -1335,8 +1429,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 p-3">
-        <div className="flex h-full min-h-0 flex-col gap-5">
+      <div className="flex-1 min-h-0 p-3 lg:flex-none">
+        <div className="flex h-full min-h-0 flex-col gap-5 lg:h-auto">
           {renderDesktopExplorer()}
           {renderMobileShelves()}
         </div>
