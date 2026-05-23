@@ -386,61 +386,9 @@
 }
 
 @media (max-width: 1023px) {
+  /* Sticky header is desktop-only; mobile uses .mobile-controls-bar */
   .results-sticky-header {
-    min-height: 2.85rem;
-    margin: 0 -1rem 0.75rem;
-    padding: 0.35rem 1rem 0.4rem;
-    border-bottom-color: transparent;
-    background: linear-gradient(
-      to bottom,
-      rgba(var(--c-bg-rgb), 0.92),
-      rgba(var(--c-bg-rgb), 0.62)
-    );
-    box-shadow: none;
-    overflow: hidden;
-    transition:
-      min-height 0.2s ease,
-      margin 0.2s ease,
-      padding 0.2s ease,
-      opacity 0.16s ease,
-      transform 0.2s ease;
-  }
-
-  .results-sticky-header .flex {
-    gap: 0.4rem;
-  }
-
-  .results-sort-select {
-    height: 2.1rem;
-    border-color: transparent;
-    background: transparent;
-    color: var(--c-dim);
-    padding: 0 2rem 0 0.45rem;
-    font-size: 0.82rem;
-    font-weight: 700;
-  }
-
-  .results-sort-control::after {
-    right: 0.65rem;
-    border-color: rgba(156, 174, 170, 0.56);
-  }
-
-  .results-sort-select:hover,
-  .results-sort-select:focus {
-    border-color: rgba(var(--c-emerald-rgb), 0.16);
-    background: rgba(var(--c-emerald-rgb), 0.06);
-    color: var(--c-muted);
-  }
-
-  .results-sticky-header-mobile-hidden {
-    min-height: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    border-bottom-color: transparent;
-    opacity: 0;
-    transform: translateY(-0.75rem);
-    pointer-events: none;
+    display: none;
   }
 }
 
@@ -728,6 +676,90 @@
   font-size: 0.62rem;
   font-weight: 800;
   line-height: 1;
+}
+
+/* ── Mobile floating controls bar ───────────────────────────────── */
+/* Visible only on mobile (< lg). Desktop uses .results-sticky-header. */
+.mobile-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  /* Sticky — floats directly above the results cards */
+  position: sticky;
+  top: 0;
+  z-index: 30;
+
+  /* Sizing & spacing */
+  min-height: 2.85rem;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 12px;
+
+  /* Glass blur */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(var(--c-bg-rgb), 0.76);
+
+  /* Engraved border — top highlight + bottom shadow + outer glow */
+  border: 1px solid rgba(var(--c-border-rgb), 0.2);
+  box-shadow:
+    inset 0  1px 0 rgba(255, 255, 255, 0.045),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.32),
+    inset  1px 0 0 rgba(255, 255, 255, 0.018),
+    inset -1px 0 0 rgba(0, 0, 0, 0.18),
+    0 4px 18px rgba(0, 0, 0, 0.28);
+
+  overflow: hidden;
+  transition:
+    min-height 0.22s ease,
+    margin-bottom 0.22s ease,
+    padding-top 0.22s ease,
+    padding-bottom 0.22s ease,
+    opacity 0.16s ease,
+    transform 0.22s ease;
+}
+
+.mobile-controls-bar-hidden {
+  min-height: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  transform: translateY(-0.75rem);
+  pointer-events: none;
+}
+
+/* Hide the controls bar on desktop — desktop uses .results-sticky-header */
+@media (min-width: 1024px) {
+  .mobile-controls-bar {
+    display: none;
+  }
+}
+
+/* Tune the sort select inside the controls bar for the glass bg */
+.mobile-controls-bar .results-sort-select {
+  height: 2.1rem;
+  border-color: rgba(var(--c-border-rgb), 0.15);
+  background: rgba(var(--c-surface-rgb), 0.55);
+  color: var(--c-muted);
+  padding: 0 2rem 0 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.mobile-controls-bar .results-sort-control::after {
+  right: 0.65rem;
+  border-color: rgba(156, 174, 170, 0.56);
+}
+
+.mobile-controls-bar .results-sort-select:hover,
+.mobile-controls-bar .results-sort-select:focus {
+  border-color: rgba(var(--c-emerald-rgb), 0.22);
+  background: rgba(var(--c-emerald-rgb), 0.08);
+  color: var(--c-muted);
 }
 
 .results {

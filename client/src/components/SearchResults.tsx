@@ -185,6 +185,24 @@ const SearchResults: React.FC = () => {
             ))}
           </div>
 
+          {/* Mobile floating controls bar — sticky, directly above cards */}
+          <div className={`mobile-controls-bar ${hideMobileControls ? 'mobile-controls-bar-hidden' : ''}`}>
+            <MobileFilterSheet />
+            <div className="results-sort-control">
+              <select
+                className="results-sort-select"
+                value={sortBy}
+                onChange={handleSortChange}
+                aria-label="Sort results"
+              >
+                <option value="relevance">Relevance</option>
+                <option value="rating">Rating</option>
+                <option value="release">Release Date</option>
+                <option value="name">Name</option>
+              </select>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
             {gameResults.map((game, index) => (
               <motion.div
@@ -239,12 +257,11 @@ const SearchResults: React.FC = () => {
       )}
     </AnimatePresence>
     <section ref={sectionRef} className="flex min-h-0 flex-1 flex-col w-full mx-auto">
-      <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'} ${hideMobileControls ? 'results-sticky-header-mobile-hidden' : ''}`}>
+      {/* Desktop-only sticky header — hidden on mobile via CSS */}
+      <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'}`}>
         <div className="flex w-full items-center justify-end gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="lg:hidden"><MobileFilterSheet /></span>
-            <span className="hidden lg:contents"><FilterBar /></span>
-
+            <FilterBar />
             <div className="results-sort-control">
               <select
                 className="results-sort-select"
