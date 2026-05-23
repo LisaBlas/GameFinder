@@ -2459,6 +2459,12 @@ svg.filter-caret.expanded {
   transition: background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
 }
 
+@media (max-width: 1023px) {
+  .qs-card {
+    min-height: 4rem;
+  }
+}
+
 .qs-card > span:not(.qs-card-shine):not(.qs-card-rarity-label):not(.qs-card-unlock-label),
 .qs-card-topline,
 .qs-card-main,
@@ -2586,6 +2592,7 @@ svg.filter-caret.expanded {
   line-height: 1;
   opacity: 0.6;
   letter-spacing: 0;
+  text-transform: none;
   transition: opacity 0.18s ease;
 }
 
@@ -3040,7 +3047,7 @@ svg.filter-caret.expanded {
 /* ── Initial / revealed state toggle ────────────────────────── */
 
 /* Revealed span is hidden until the card has a result */
-.qs-state-revealed { display: none; }
+.qs-state-revealed { display: none; text-transform: uppercase; letter-spacing: 0.06em; }
 
 /* Post-reveal at rest: hide action label + initial, show revealed */
 .qs-card-has-result .qs-card-action-label { display: none; }
