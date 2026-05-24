@@ -2542,17 +2542,30 @@ svg.filter-caret.expanded {
    an empty WoW inventory slot with a faint stamp of what it might hold.      */
 
 .qs-card:not(.qs-card-has-result) .qs-card-action-icon {
-  color: rgba(160, 168, 165, 0.22);               /* desaturated, near-invisible */
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.85)); /* carving depth */
-  stroke-width: 1.7;                               /* slightly thinner stroke = etched */
+  color: rgba(160, 168, 165, 0.22);
+  stroke-width: 1.7;
+  /* Etched SVG: two opposing drop-shadows at 0px blur, 1px offset.
+     CSS has no inset text-shadow, so deboss is faked with:
+       - dark shadow toward the light source (groove wall casts shadow over carved shape)
+       - faint light shadow away from it (base of the groove catching ambient light) */
+  filter:
+    drop-shadow(0 -1px 0px rgba(0, 0, 0, 0.55))
+    drop-shadow(0  1px 0px rgba(255, 255, 255, 0.05));
 }
 
 .qs-card:not(.qs-card-has-result) .qs-card-action-label {
-  color: rgba(155, 163, 160, 0.28);               /* stone-tone, barely readable */
+  color: rgba(155, 163, 160, 0.28);
+  /* Same deboss technique for text — text-shadow does apply here */
+  text-shadow:
+    0 -1px 0px rgba(0, 0, 0, 0.50),
+    0  1px 0px rgba(255, 255, 255, 0.05);
 }
 
 .qs-card:not(.qs-card-has-result) .qs-card-footer {
-  color: rgba(140, 150, 148, 0.20);               /* almost invisible footer copy */
+  color: rgba(140, 150, 148, 0.20);
+  text-shadow:
+    0 -1px 0px rgba(0, 0, 0, 0.45),
+    0  1px 0px rgba(255, 255, 255, 0.04);
 }
 
 /* Hover on idle slot: slot "activates" — icon and labels snap to normal */
@@ -2564,10 +2577,12 @@ svg.filter-caret.expanded {
 
 .qs-card:not(.qs-card-has-result):hover .qs-card-action-label {
   color: var(--c-muted);
+  text-shadow: none;
 }
 
 .qs-card:not(.qs-card-has-result):hover .qs-card-footer {
   color: rgba(156, 174, 170, 0.68);
+  text-shadow: none;
 }
 
 .qs-card:hover .qs-card-footer {
