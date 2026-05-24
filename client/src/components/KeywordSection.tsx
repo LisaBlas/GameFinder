@@ -318,44 +318,32 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   /** Call instead of triggerCardReveal for all 6 discovery cards. Marks the card
-   *  as active so the rarity class can be applied once results arrive.
-   *  - Clears only the clicked card's rarity (shows "Unidentified" while searching).
-   *  - Resets the revealed label of every OTHER card that does not yet have a
-   *    confirmed rarity tier, so unresolved reveals don't persist across card taps. */
+   *  as active so the rarity class can be applied once results arrive, and makes
+   *  this the only revealed discovery card. */
   const activateDiscoveryCard = (card: RevealCard) => {
     triggerCardReveal(card);
     activeDiscoveryCardIdRef.current = card;
     resultCapturedRef.current = false;
     setPostClickCardId(card);
 
-    // Clear the clicked card's rarity so it shows "Unidentified" until new results arrive
-    setCardRarities(prev => {
-      const next = { ...prev };
-      delete next[card];
+    // Clear all rarity badges so the clicked card shows "Unidentified" until new results arrive.
+    setCardRarities({});
+
+    // Reset revealed labels on every non-clicked card, including prior rarity reveals.
+    if (card !== 'popular') setPopularRevealed(null);
+    if (card !== 'rare-combo') setRareComboRevealed(null);
+    if (card !== 'common-keyword') setCommonKeywordRevealed(null);
+    if (card !== 'user-crafts') setUserCraftsRevealed(false);
+    // Handle the two unique-card fields in a single setState to avoid stomping.
+    setUniqueLimits(prev => {
+      const next: UniqueLimitsStore = {
+        ...prev,
+        ...(card !== 'unique-keyword' ? { kwUsed: 0, lastKwName: undefined, lastKwEmoji: undefined } : {}),
+        ...(card !== 'unique-combo' ? { comboUsed: 0, lastComboTitle: undefined } : {}),
+      };
+      saveUniqueLimits(next);
       return next;
     });
-
-    // Reset revealed labels of other cards that have no confirmed rarity tier.
-    // cardRarities[c] != null is true only when a RarityTier string is stored
-    // (undefined = never searched / pending; null = searched, 0 results — both reset).
-    const allCards: RevealCard[] = ['popular', 'rare-combo', 'common-keyword', 'user-crafts', 'unique-keyword', 'unique-combo'];
-    for (const c of allCards) {
-      if (c === card || cardRarities[c] != null) continue;
-      if (c === 'popular')         setPopularRevealed(null);
-      else if (c === 'rare-combo') setRareComboRevealed(null);
-      else if (c === 'common-keyword') setCommonKeywordRevealed(null);
-      else if (c === 'user-crafts')    setUserCraftsRevealed(false);
-    }
-    // Handle the two unique-card fields in a single setState to avoid stomping
-    const resetKw    = card !== 'unique-keyword' && cardRarities['unique-keyword'] == null;
-    const resetCombo = card !== 'unique-combo'   && cardRarities['unique-combo']   == null;
-    if (resetKw || resetCombo) {
-      setUniqueLimits(prev => ({
-        ...prev,
-        ...(resetKw    ? { kwUsed: 0 }    : {}),
-        ...(resetCombo ? { comboUsed: 0 } : {}),
-      }));
-    }
   };
 
   /** Rarity for the given card — non-null only after its search has returned results. */
@@ -392,7 +380,14 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     clearAllFilters();
     const kw = uniqueKeywords[activeUniqueKeywordIndex];
     addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
-    const newLimits: UniqueLimitsStore = { ...uniqueLimits, kwUsed: activeUniqueKeywordIndex + 1, lastKwName: kw.name, lastKwEmoji: kw.emoji };
+    const newLimits: UniqueLimitsStore = {
+      ...uniqueLimits,
+      kwUsed: activeUniqueKeywordIndex + 1,
+      comboUsed: 0,
+      lastKwName: kw.name,
+      lastKwEmoji: kw.emoji,
+      lastComboTitle: undefined,
+    };
     saveUniqueLimits(newLimits);
     setUniqueLimits(newLimits);
     setActiveUniqueKeywordIndex(i => (i + 1) % uniqueKeywords.length);
@@ -410,7 +405,14 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         mode: filter.category === category ? filter.mode || "include" : undefined,
       });
     });
-    const newLimits: UniqueLimitsStore = { ...uniqueLimits, comboUsed: activeUniqueComboIndex + 1, lastComboTitle: suggestion.title };
+    const newLimits: UniqueLimitsStore = {
+      ...uniqueLimits,
+      kwUsed: 0,
+      comboUsed: activeUniqueComboIndex + 1,
+      lastKwName: undefined,
+      lastKwEmoji: undefined,
+      lastComboTitle: suggestion.title,
+    };
     saveUniqueLimits(newLimits);
     setUniqueLimits(newLimits);
     setActiveUniqueComboIndex(i => (i + 1) % uniqueComboSuggestions.length);
