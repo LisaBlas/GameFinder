@@ -26,11 +26,14 @@ This repo is the local GameFinder workspace. Treat `CLAUDE.md` as durable projec
 - Prefer revenue-relevant improvements: affiliate flows, conversion clarity, SEO, and recommendation quality.
 
 ## Homepage Discovery Features
-- The homepage `KeywordSection` now has "Roll" and "Uniques" discovery sections above manual keyword browsing.
-- Roll has four cards: **Popular** (cycles through curated popular keys, e.g. Action Roguelike → Souls-like), **Crafted** (curated combos; was "Common"), **Random** (single random keyword, infinite), **User crafted** (community combos; was "User Crafts").
-- Uniques cycles through rare/low-result discovery sequences for Unique Key and Crafted. Cards show sequence steps like `1/5` instead of remaining-count copy, and wrap back to the first item instead of locking.
-- Future intent: save user searches/keyword combinations so strong community discoveries can feed Most Popular and User Crafts.
-- "Best crafts" means keyword/filter combinations that return a low number of results; low result count is treated as a signal for a more unique/niche game discovery path.
+- The homepage `KeywordSection` has "Roll" and "Uniques" discovery sections above manual keyword browsing.
+- Roll has four cards: **Popular** (curated popular keys, e.g. Action Roguelike → Souls-like), **Crafted** (hand-picked combos), **Random** (single random keyword, infinite), **User Crafted** (community combos).
+- Uniques has two cards: **Unique Key** and **Unique Combo** — rare/low-result discovery sequences. Cards show step progress like `1/5` and wrap back to the first item instead of locking.
+- **Card system architecture:** all 6 cards are rendered via the reusable `DiscoveryCard` component (`client/src/components/DiscoveryCard.tsx`). Canonical card names and section membership live in `DISCOVERY_CARD_META` (`client/src/lib/discoveryCards.ts`). Types `RevealCard`, `RarityTier`, and `getRarity()` are exported from that lib — do not redefine them inline in `KeywordSection`.
+- **Adding a 7th card:** add its ID to `RevealCard` + an entry in `DISCOVERY_CARD_META`, write `applyXxx()` in `KeywordSection`, drop one `<DiscoveryCard>` into the grid.
+- **Card states:** `idle` (never pressed) → `unidentified` (pressed, search running, "Unidentified" overlay shows) → `revealed` (search done, rarity badge + content shown).
+- Future intent: save user searches/keyword combinations so strong community discoveries can feed Popular and User Crafted.
+- "Best crafts": keyword/filter combos with a low result count — treated as a signal for niche/unique game discovery.
 
 ## SEO Pages
 Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. Game listings (top 10 per page) are cached in Neon (`seo_page_cache`) and injected at render time — refresh via `npm run seo:refresh-cache` on the VPS. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See the SEO Architecture section in `CLAUDE.md` for full details.

@@ -18,6 +18,9 @@ import KeywordSearch from './KeywordSearch';
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters } from '../context/FilterContext';
 import Navbar from './Navbar';
+import { DiscoveryCard } from './DiscoveryCard';
+import { DISCOVERY_CARD_META, getRarity } from '../lib/discoveryCards';
+import type { RevealCard, RarityTier } from '../lib/discoveryCards';
 
 interface KeywordItem {
   id: number;
@@ -42,30 +45,7 @@ const _randomKeywordPool: RawKw[] = (() => {
 
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
 type UtilityPanel = "intro" | "qs-keyword" | "qs-combo";
-type RevealCard = "common-keyword" | "rare-combo" | "unique-keyword" | "unique-combo" | "popular" | "user-crafts";
-type RarityTier = "common" | "uncommon" | "rare" | "epic" | "unique";
-
-/** Shared model for each of the 6 discovery cards. */
-interface DiscoveryCard {
-  id: RevealCard;
-  label: string;
-  defaultText: string;
-  icon: React.ComponentType<{ className?: string }>;
-  apply: () => void;
-  revealedName?: string;
-  lastResultCount?: number;
-  rarity?: RarityTier | null;
-}
-
-/** Return rarity tier based on search result count. Thresholds are tuned here. */
-function getRarity(count: number): RarityTier | null {
-  if (count <= 0)   return null;
-  if (count <= 5)   return "unique";
-  if (count <= 20)  return "epic";
-  if (count <= 50)  return "rare";
-  if (count <= 150) return "uncommon";
-  return "common";
-}
+// RevealCard, RarityTier, and getRarity are imported from ../lib/discoveryCards
 
 interface KeywordComboSuggestion {
   title: string;
@@ -381,22 +361,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   /** Rarity for the given card — non-null only after its search has returned results. */
   const getActiveRarity = (card: RevealCard): RarityTier | null =>
     cardRarities[card] ?? null;
-
-  const getCardClassName = (baseClass: string, card: RevealCard, hasResult = false) => {
-    const rarity = getActiveRarity(card);
-    return [
-      'qs-card',
-      baseClass,
-      hasResult ? 'qs-card-has-result' : '',
-      activeRevealCard === card ? 'qs-card-reveal-pulse' : '',
-      rarity ? `qs-card-rarity-${rarity}` : '',
-      postClickCardId === card ? 'qs-card-post-click' : '',
-    ].filter(Boolean).join(' ');
-  };
-
-  /** Wrapper class for a discovery card — adds --unique modifier when unique-tier. */
-  const getCardWrapClass = (card: RevealCard): string =>
-    getActiveRarity(card) === "unique" ? "qs-card-wrap qs-card-wrap--unique" : "qs-card-wrap";
 
   const applyCommonKeyword = () => {
     activateDiscoveryCard("common-keyword");
@@ -1179,110 +1143,78 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       </span>
                     </div>
                     <div className="qs-cards-grid qs-cards-grid--matrix">
-                      <div className={getCardWrapClass('popular')}>
-                        <button
-                          type="button"
-                          onClick={applyPopular}
-                          onMouseLeave={() => setPostClickCardId(null)}
-                          className={getCardClassName('qs-card-rnd-kw', 'popular', !!popularRevealed)}
-                        >
-                          <span className="qs-card-shine" aria-hidden="true" />
-                          <KeyRound className="qs-card-type-icon" aria-hidden="true" />
-                          {getActiveRarity('popular') && (
-                            <span className="qs-card-rarity-label">{getActiveRarity('popular')}</span>
-                          )}
-                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
-                          <span className="qs-card-main">
-                            <span className="qs-card-action-label">
-                              <Dices className="qs-card-action-icon" />
-                              Roll popular
-                            </span>
-                            <span className="qs-state-revealed qs-card-state-line">{popularRevealed?.name ?? ''}</span>
-                          </span>
-                          <span className="qs-card-footer">
-                            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">Top key this week</span>
-                            <span className="qs-card-meta">{popularStep}</span>
-                          </span>
-                        </button>
-                      </div>
-                      <div className={getCardWrapClass('rare-combo')}>
-                        <button
-                          type="button"
-                          onClick={applyRareCombo}
-                          onMouseLeave={() => setPostClickCardId(null)}
-                          className={getCardClassName('qs-card-rnd-combo', 'rare-combo', isRareComboRevealed)}
-                        >
-                          <span className="qs-card-shine" aria-hidden="true" />
-                          <Hammer className="qs-card-type-icon" aria-hidden="true" />
-                          {getActiveRarity('rare-combo') && (
-                            <span className="qs-card-rarity-label">{getActiveRarity('rare-combo')}</span>
-                          )}
-                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
-                          <span className="qs-card-main">
-                            <span className="qs-card-action-label">
-                              <Wand2 className="qs-card-action-icon" />
-                              Craft curated
-                            </span>
-                            <span className="qs-state-revealed qs-card-state-line">{rareComboRevealed?.title ?? ''}</span>
-                          </span>
-                          <span className="qs-card-footer">
-                            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">{rareComboState}</span>
-                            <span className="qs-card-meta">{craftedStep}</span>
-                          </span>
-                        </button>
-                      </div>
-                      <div className={getCardWrapClass('common-keyword')}>
-                        <button
-                          type="button"
-                          onClick={applyCommonKeyword}
-                          onMouseLeave={() => setPostClickCardId(null)}
-                          className={getCardClassName('qs-card-popular', 'common-keyword', isCommonKeywordRevealed)}
-                        >
-                          <span className="qs-card-shine" aria-hidden="true" />
-                          <KeyRound className="qs-card-type-icon" aria-hidden="true" />
-                          {getActiveRarity('common-keyword') && (
-                            <span className="qs-card-rarity-label">{getActiveRarity('common-keyword')}</span>
-                          )}
-                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
-                          <span className="qs-card-main">
-                            <span className="qs-card-action-label">
-                              <Shuffle className="qs-card-action-icon" />
-                              Roll random
-                            </span>
-                            <span className="qs-state-revealed qs-card-state-line">{commonKeywordRevealed?.name ?? ''}</span>
-                          </span>
-                          <span className="qs-card-footer">
-                            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">{commonKeywordState}</span>
-                            <span className="qs-card-meta"><InfinityIcon className="qs-step-icon" aria-label="infinite" /></span>
-                          </span>
-                        </button>
-                      </div>
-                      <div className={getCardWrapClass('user-crafts')}>
-                        <button
-                          type="button"
-                          onClick={applyUserCrafts}
-                          onMouseLeave={() => setPostClickCardId(null)}
-                          className={getCardClassName('qs-card-user-crafts', 'user-crafts', userCraftsRevealed)}
-                        >
-                          <span className="qs-card-shine" aria-hidden="true" />
-                          <Hammer className="qs-card-type-icon" aria-hidden="true" />
-                          {getActiveRarity('user-crafts') && (
-                            <span className="qs-card-rarity-label">{getActiveRarity('user-crafts')}</span>
-                          )}
-                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
-                          <span className="qs-card-main">
-                            <span className="qs-card-action-label">
-                              <Users className="qs-card-action-icon" />
-                              Try community
-                            </span>
-                            <span className="qs-state-revealed qs-card-state-line">Eldritch Indie</span>
-                          </span>
-                          <span className="qs-card-footer">
-                            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">Community combo</span>
-                            <span className="qs-card-meta">1/1</span>
-                          </span>
-                        </button>
-                      </div>
+                      {/* Popular — cycles curated high-use keywords */}
+                      <DiscoveryCard
+                        name={DISCOVERY_CARD_META['popular'].name}
+                        id="popular"
+                        variantClass="qs-card-rnd-kw"
+                        isPulsing={activeRevealCard === 'popular'}
+                        isPostClick={postClickCardId === 'popular'}
+                        activeRarity={cardRarities['popular']}
+                        hasResult={!!popularRevealed}
+                        typeIcon={KeyRound}
+                        actionIcon={Dices}
+                        actionLabel="Roll popular"
+                        revealedContent={popularRevealed?.name ?? ''}
+                        idleFooterCopy="Top key this week"
+                        footerMeta={popularStep}
+                        onClick={applyPopular}
+                        onMouseLeave={() => setPostClickCardId(null)}
+                      />
+                      {/* Crafted — hand-picked keyword+filter combos */}
+                      <DiscoveryCard
+                        name={DISCOVERY_CARD_META['rare-combo'].name}
+                        id="rare-combo"
+                        variantClass="qs-card-rnd-combo"
+                        isPulsing={activeRevealCard === 'rare-combo'}
+                        isPostClick={postClickCardId === 'rare-combo'}
+                        activeRarity={cardRarities['rare-combo']}
+                        hasResult={isRareComboRevealed}
+                        typeIcon={Hammer}
+                        actionIcon={Wand2}
+                        actionLabel="Craft curated"
+                        revealedContent={rareComboRevealed?.title ?? ''}
+                        idleFooterCopy={rareComboState}
+                        footerMeta={craftedStep}
+                        onClick={applyRareCombo}
+                        onMouseLeave={() => setPostClickCardId(null)}
+                      />
+                      {/* Random — draws a random keyword from the full pool, infinite */}
+                      <DiscoveryCard
+                        name={DISCOVERY_CARD_META['common-keyword'].name}
+                        id="common-keyword"
+                        variantClass="qs-card-popular"
+                        isPulsing={activeRevealCard === 'common-keyword'}
+                        isPostClick={postClickCardId === 'common-keyword'}
+                        activeRarity={cardRarities['common-keyword']}
+                        hasResult={isCommonKeywordRevealed}
+                        typeIcon={KeyRound}
+                        actionIcon={Shuffle}
+                        actionLabel="Roll random"
+                        revealedContent={commonKeywordRevealed?.name ?? ''}
+                        idleFooterCopy={commonKeywordState}
+                        footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
+                        onClick={applyCommonKeyword}
+                        onMouseLeave={() => setPostClickCardId(null)}
+                      />
+                      {/* User Crafted — community-discovered combos */}
+                      <DiscoveryCard
+                        name={DISCOVERY_CARD_META['user-crafts'].name}
+                        id="user-crafts"
+                        variantClass="qs-card-user-crafts"
+                        isPulsing={activeRevealCard === 'user-crafts'}
+                        isPostClick={postClickCardId === 'user-crafts'}
+                        activeRarity={cardRarities['user-crafts']}
+                        hasResult={userCraftsRevealed}
+                        typeIcon={Hammer}
+                        actionIcon={Users}
+                        actionLabel="Try community"
+                        revealedContent="Eldritch Indie"
+                        idleFooterCopy="Community combo"
+                        footerMeta="1/1"
+                        onClick={applyUserCrafts}
+                        onMouseLeave={() => setPostClickCardId(null)}
+                      />
                     </div>
 
                     <div className="qs-uniques-divider">
@@ -1290,72 +1222,56 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                       Uniques
                     </div>
                     <div className="qs-cards-grid qs-cards-grid--matrix">
-                      <div className={`qs-unique-wrap ${getCardWrapClass('unique-keyword')}`}>
-                        <button
-                          type="button"
-                          onClick={applyUniqueKeyword}
-                          onMouseLeave={() => setPostClickCardId(null)}
-                          className={getCardClassName('qs-card-unique-kw', 'unique-keyword', isKwRevealedState)}
-                        >
-                          <span className="qs-card-shine" aria-hidden="true" />
-                          <KeyRound className="qs-card-type-icon" aria-hidden="true" />
-                          {getActiveRarity('unique-keyword') && (
-                            <span className="qs-card-rarity-label">{getActiveRarity('unique-keyword')}</span>
-                          )}
-                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
-                          <span className="qs-card-main">
-                            <span className="qs-card-action-label">
-                              <Sparkles className="qs-card-action-icon" />
-                              Discover unique
-                            </span>
-                            <span className="qs-state-revealed qs-card-state-line">
-                              {kwRevealed?.name ?? ''}
-                            </span>
+                      {/* Unique Key — rare single keywords, tends to surface <5 results */}
+                      <DiscoveryCard
+                        name={DISCOVERY_CARD_META['unique-keyword'].name}
+                        id="unique-keyword"
+                        variantClass="qs-card-unique-kw"
+                        extraWrapClass="qs-unique-wrap"
+                        isPulsing={activeRevealCard === 'unique-keyword'}
+                        isPostClick={postClickCardId === 'unique-keyword'}
+                        activeRarity={cardRarities['unique-keyword']}
+                        hasResult={isKwRevealedState}
+                        typeIcon={KeyRound}
+                        actionIcon={Sparkles}
+                        actionLabel="Discover unique"
+                        revealedContent={kwRevealed?.name ?? ''}
+                        idleFooterCopy="<5 results"
+                        footerMeta={
+                          <span className="qs-sequence-track">
+                            {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
+                            <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
                           </span>
-                          <span className="qs-card-footer qs-card-footer-sequence">
-                            <span className="qs-state-initial qs-card-state-line">
-                              &lt;5 results
-                            </span>
-                            <span className="qs-sequence-track">
-                              {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
-                              <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
-                            </span>
+                        }
+                        isSequence
+                        onClick={applyUniqueKeyword}
+                        onMouseLeave={() => setPostClickCardId(null)}
+                      />
+                      {/* Unique Combo — rare keyword+filter combos, tends to surface <5 results */}
+                      <DiscoveryCard
+                        name={DISCOVERY_CARD_META['unique-combo'].name}
+                        id="unique-combo"
+                        variantClass="qs-card-unique-combo"
+                        extraWrapClass="qs-unique-wrap"
+                        isPulsing={activeRevealCard === 'unique-combo'}
+                        isPostClick={postClickCardId === 'unique-combo'}
+                        activeRarity={cardRarities['unique-combo']}
+                        hasResult={isComboRevealedState}
+                        typeIcon={Hammer}
+                        actionIcon={Wand2}
+                        actionLabel="Craft unique"
+                        revealedContent={comboRevealed?.title ?? ''}
+                        idleFooterCopy="<5 results"
+                        footerMeta={
+                          <span className="qs-sequence-track">
+                            {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
+                            <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
                           </span>
-                        </button>
-                      </div>
-                      <div className={`qs-unique-wrap ${getCardWrapClass('unique-combo')}`}>
-                        <button
-                          type="button"
-                          onClick={applyUniqueCombo}
-                          onMouseLeave={() => setPostClickCardId(null)}
-                          className={getCardClassName('qs-card-unique-combo', 'unique-combo', isComboRevealedState)}
-                        >
-                          <span className="qs-card-shine" aria-hidden="true" />
-                          <Hammer className="qs-card-type-icon" aria-hidden="true" />
-                          {getActiveRarity('unique-combo') && (
-                            <span className="qs-card-rarity-label">{getActiveRarity('unique-combo')}</span>
-                          )}
-                          <span className="qs-card-unidentified-label" aria-hidden="true">Unidentified</span>
-                          <span className="qs-card-main">
-                            <span className="qs-card-action-label">
-                              <Wand2 className="qs-card-action-icon" />
-                              Craft unique
-                            </span>
-                            <span className="qs-state-revealed qs-card-state-line">
-                              {comboRevealed?.title ?? ''}
-                            </span>
-                          </span>
-                          <span className="qs-card-footer qs-card-footer-sequence">
-                            <span className="qs-state-initial qs-card-state-line">
-                              &lt;5 results
-                            </span>
-                            <span className="qs-sequence-track">
-                              {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
-                              <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
-                            </span>
-                          </span>
-                        </button>
-                      </div>
+                        }
+                        isSequence
+                        onClick={applyUniqueCombo}
+                        onMouseLeave={() => setPostClickCardId(null)}
+                      />
                     </div>
                   </div>
                 </>
