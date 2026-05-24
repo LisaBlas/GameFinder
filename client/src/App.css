@@ -2762,6 +2762,30 @@ svg.filter-caret.expanded {
   flex: 1;
 }
 
+/* Corner-bracket overlay — sits on the wrap so it escapes the card's overflow:hidden.
+   Eight gradient segments draw two L-shaped brackets at each of the four corners.
+   Opacity is 0 at rest; only animated during the unidentified state via :has(). */
+.qs-card-wrap::before,
+.qs-unique-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 10px;           /* 2px larger than card's 8px border-radius */
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  --cc: rgba(var(--c-emerald-rgb), 0.65);
+  background:
+    linear-gradient(var(--cc), var(--cc)) top    left  / 9px 1.5px no-repeat,  /* TL ─ */
+    linear-gradient(var(--cc), var(--cc)) top    left  / 1.5px 9px no-repeat,  /* TL | */
+    linear-gradient(var(--cc), var(--cc)) top    right / 9px 1.5px no-repeat,  /* TR ─ */
+    linear-gradient(var(--cc), var(--cc)) top    right / 1.5px 9px no-repeat,  /* TR | */
+    linear-gradient(var(--cc), var(--cc)) bottom right / 9px 1.5px no-repeat,  /* BR ─ */
+    linear-gradient(var(--cc), var(--cc)) bottom right / 1.5px 9px no-repeat,  /* BR | */
+    linear-gradient(var(--cc), var(--cc)) bottom left  / 9px 1.5px no-repeat,  /* BL ─ */
+    linear-gradient(var(--cc), var(--cc)) bottom left  / 1.5px 9px no-repeat;  /* BL | */
+}
+
 @media (max-width: 1023px) {
   .qs-card-wrap,
   .qs-unique-wrap {
@@ -2864,6 +2888,34 @@ svg.filter-caret.expanded {
 /* Hide on regular hover (card flips to initial state) */
 .qs-card-has-result:not([class*="qs-card-rarity-"]):not(.qs-card-post-click):hover .qs-card-unidentified-label {
   display: none;
+}
+
+/* ── Unidentified state ──────────────────────────────────────────────────────
+   Active when: hasResult=true (keyword applied instantly on click) +
+   isPostClick=true + no rarity class (search still running).
+   Physical metaphor: the slot is PRESSED IN — the stone sinks under the
+   user's tap, darkness floods the recess, corners light up and pulse.       */
+
+.qs-card-has-result.qs-card-post-click:not([class*="qs-card-rarity-"]) {
+  transform: translateY(1px);                     /* slot physically pressed down */
+  border-color: rgba(255, 255, 255, 0.03);        /* border fades — slot walls close in */
+  box-shadow:
+    inset 0 4px 12px rgba(0, 0, 0, 0.72),         /* deep top-press shadow */
+    inset 0 0 24px rgba(0, 0, 0, 0.38),           /* ambient inner darkness */
+    inset 0 -1px 0 rgba(255, 255, 255, 0.02);     /* barely-there base catch-light */
+}
+
+/* Pulse the corner brackets while any child card is unidentified.
+   Uses :has() — opacity-only animation, GPU composited, safe fallback (just no glow). */
+.qs-card-wrap:has(.qs-card-has-result.qs-card-post-click:not([class*="qs-card-rarity-"]))::before,
+.qs-unique-wrap:has(.qs-card-has-result.qs-card-post-click:not([class*="qs-card-rarity-"]))::before {
+  animation: qs-corner-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes qs-corner-pulse {
+  0%   { opacity: 0.08; }
+  50%  { opacity: 0.60; }
+  100% { opacity: 0.08; }
 }
 
 .qs-card:hover {
