@@ -2768,7 +2768,7 @@ svg.filter-caret.expanded {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 11rem;
+  height: 9rem;
 }
 
 .qs-card-wrap > .qs-card {
@@ -2780,7 +2780,7 @@ svg.filter-caret.expanded {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 11rem;
+  height: 9rem;
 }
 
 .qs-unique-wrap > .qs-card {
