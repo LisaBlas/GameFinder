@@ -3238,6 +3238,16 @@ svg.filter-caret.expanded {
   color: var(--c-muted);
 }
 
+/* Deboss on revealed keyword / combo text — same two-shadow technique as
+   the idle icon/label. Applies to both unidentified and rarity states since
+   .qs-card-has-result is set in both. Dark shadow reads as carved regardless
+   of text color; light shadow is too faint to conflict with rarity colours. */
+.qs-card-has-result .qs-state-revealed {
+  text-shadow:
+    0 -1px 0px rgba(0, 0, 0, 0.50),
+    0  1px 0px rgba(255, 255, 255, 0.05);
+}
+
 /* ── Initial / revealed state toggle ────────────────────────── */
 
 /* Revealed span is hidden until the card has a result */
