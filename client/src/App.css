@@ -2795,7 +2795,7 @@ svg.filter-caret.expanded {
 .qs-unique-wrap::before {
   content: '';
   position: absolute;
-  inset: -2px;
+  inset: 0;
   border-radius: 0;              /* no rounding — backgrounds reach the exact geometric corners */
   pointer-events: none;
   z-index: 10;
