@@ -2473,7 +2473,7 @@ svg.filter-caret.expanded {
   position: relative;
   overflow: hidden;
   min-height: 9rem;
-  border-radius: 8px;
+  border-radius: 3px;
   /* Idle: matte dark stone surface — solid, no green tint, no transparency.
      Three-layer stack simulates ambient light on stone:
      1. Light catch  — upper-left highlight, reads as the lit face of the stone
@@ -2800,16 +2800,27 @@ svg.filter-caret.expanded {
   pointer-events: none;
   z-index: 10;
   opacity: 0;
-  --cc: rgba(var(--c-emerald-rgb), 0.65);
+  --cc: rgba(var(--c-emerald-rgb), 0.72);
+  /* Metal corner-plaque brackets: each corner has a solid 4×4px rivet square
+     plus two thin 1.5px arms extending 13px along each edge.
+     The square + arms overlap at the corner, reading as a riveted mounting plate. */
   background:
-    linear-gradient(var(--cc), var(--cc)) top    left  / 9px 1.5px no-repeat,  /* TL ─ */
-    linear-gradient(var(--cc), var(--cc)) top    left  / 1.5px 9px no-repeat,  /* TL | */
-    linear-gradient(var(--cc), var(--cc)) top    right / 9px 1.5px no-repeat,  /* TR ─ */
-    linear-gradient(var(--cc), var(--cc)) top    right / 1.5px 9px no-repeat,  /* TR | */
-    linear-gradient(var(--cc), var(--cc)) bottom right / 9px 1.5px no-repeat,  /* BR ─ */
-    linear-gradient(var(--cc), var(--cc)) bottom right / 1.5px 9px no-repeat,  /* BR | */
-    linear-gradient(var(--cc), var(--cc)) bottom left  / 9px 1.5px no-repeat,  /* BL ─ */
-    linear-gradient(var(--cc), var(--cc)) bottom left  / 1.5px 9px no-repeat;  /* BL | */
+    /* TL plaque */
+    linear-gradient(var(--cc), var(--cc)) top    left  / 4px   4px   no-repeat,  /* TL rivet */
+    linear-gradient(var(--cc), var(--cc)) top    left  / 13px  1.5px no-repeat,  /* TL ─ */
+    linear-gradient(var(--cc), var(--cc)) top    left  / 1.5px 13px  no-repeat,  /* TL | */
+    /* TR plaque */
+    linear-gradient(var(--cc), var(--cc)) top    right / 4px   4px   no-repeat,  /* TR rivet */
+    linear-gradient(var(--cc), var(--cc)) top    right / 13px  1.5px no-repeat,  /* TR ─ */
+    linear-gradient(var(--cc), var(--cc)) top    right / 1.5px 13px  no-repeat,  /* TR | */
+    /* BR plaque */
+    linear-gradient(var(--cc), var(--cc)) bottom right / 4px   4px   no-repeat,  /* BR rivet */
+    linear-gradient(var(--cc), var(--cc)) bottom right / 13px  1.5px no-repeat,  /* BR ─ */
+    linear-gradient(var(--cc), var(--cc)) bottom right / 1.5px 13px  no-repeat,  /* BR | */
+    /* BL plaque */
+    linear-gradient(var(--cc), var(--cc)) bottom left  / 4px   4px   no-repeat,  /* BL rivet */
+    linear-gradient(var(--cc), var(--cc)) bottom left  / 13px  1.5px no-repeat,  /* BL ─ */
+    linear-gradient(var(--cc), var(--cc)) bottom left  / 1.5px 13px  no-repeat;  /* BL | */
 }
 
 @media (max-width: 1023px) {
@@ -3379,7 +3390,7 @@ svg.filter-caret.expanded {
   content: '';
   position: absolute;
   inset: -1px;
-  border-radius: 9px;
+  border-radius: 4px;
   pointer-events: none;
   animation: unique-combo-aura 3.4s ease-in-out infinite;
 }
