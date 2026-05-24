@@ -1159,7 +1159,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         idleFooterCopy="Top key this week"
                         footerMeta={popularStep}
                         onClick={applyPopular}
-                        onMouseLeave={() => setPostClickCardId(null)}
                       />
                       {/* Crafted — hand-picked keyword+filter combos */}
                       <DiscoveryCard
@@ -1177,7 +1176,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         idleFooterCopy={rareComboState}
                         footerMeta={craftedStep}
                         onClick={applyRareCombo}
-                        onMouseLeave={() => setPostClickCardId(null)}
                       />
                       {/* Random — draws a random keyword from the full pool, infinite */}
                       <DiscoveryCard
@@ -1195,7 +1193,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         idleFooterCopy={commonKeywordState}
                         footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
                         onClick={applyCommonKeyword}
-                        onMouseLeave={() => setPostClickCardId(null)}
                       />
                       {/* User Crafted — community-discovered combos */}
                       <DiscoveryCard
@@ -1213,7 +1210,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         idleFooterCopy="Community combo"
                         footerMeta="1/1"
                         onClick={applyUserCrafts}
-                        onMouseLeave={() => setPostClickCardId(null)}
                       />
                     </div>
 
@@ -1245,7 +1241,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         }
                         isSequence
                         onClick={applyUniqueKeyword}
-                        onMouseLeave={() => setPostClickCardId(null)}
                       />
                       {/* Unique Combo — rare keyword+filter combos, tends to surface <5 results */}
                       <DiscoveryCard
@@ -1270,7 +1265,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         }
                         isSequence
                         onClick={applyUniqueCombo}
-                        onMouseLeave={() => setPostClickCardId(null)}
                       />
                     </div>
                   </div>

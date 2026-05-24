@@ -2474,29 +2474,28 @@ svg.filter-caret.expanded {
   overflow: hidden;
   min-height: 9rem;
   border-radius: 3px;
-  /* Idle: matte dark stone surface — solid, no green tint, no transparency.
-     Three-layer stack simulates ambient light on stone:
-     1. Light catch  — upper-left highlight, reads as the lit face of the stone
-     2. Depth sink   — lower-right darkness, pulls the eye into the recess
-     3. Base ramp    — diagonal tonal gradient for overall stone depth */
+  /* Idle: carved forest-stone surface. Fine mineral grain, faint fissures,
+     worn edges, and a deep green-black slate base keep it out of flat grey. */
   background:
-    radial-gradient(ellipse at 32% 28%, rgba(255, 255, 255, 0.13) 0%, transparent 58%),
-    radial-gradient(ellipse at 80% 82%, rgba(0, 0, 0, 0.22) 0%, transparent 52%),
-    linear-gradient(145deg, #252826 0%, #111312 48%, #0b0c0b 100%);
-  /* Engraved border: a barely-visible bright rim that contrasts the inner recess */
-  border: 1px solid rgba(255, 255, 255, 0.055);
+    linear-gradient(145deg, rgba(232, 249, 238, 0.045), transparent 24% 62%, rgba(0, 0, 0, 0.34)),
+    radial-gradient(ellipse at 22% 18%, rgba(var(--c-emerald-rgb), 0.055), transparent 44%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.42), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #1a211e 0%, #101714 42%, #070c0a 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
+  /* Engraved border: a cold emerald catch-light around the stone edge. */
+  border: 1px solid rgba(var(--c-border-rgb), 0.105);
   color: var(--c-dim);
   font-size: 0.71rem;
   font-weight: 700;
   line-height: 1.2;
   text-align: left;
-  /* Three-layer shadow stack:
-     1. deep inset top-shadow  → simulates the slot being recessed into the surface
-     2. faint inset bottom     → ambient catch-light at the slot base
-     3. outer drop             → the stone tile sitting on the UI surface */
+  /* Recessed shadow stack: top bite, low edge light, and surface drop. */
   box-shadow:
-    inset 0 2px 6px rgba(0, 0, 0, 0.62),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 1px 0 rgba(233, 255, 242, 0.045),
+    inset 0 2px 9px rgba(0, 0, 0, 0.68),
+    inset 0 -1px 0 rgba(var(--c-emerald-rgb), 0.035),
     0 1px 3px rgba(0, 0, 0, 0.45);
   transition: background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
 }
@@ -2959,7 +2958,14 @@ svg.filter-caret.expanded {
 }
 
 .qs-card:hover {
-  background: rgba(var(--c-surface-rgb), 0.82);
+  background:
+    linear-gradient(145deg, rgba(230, 255, 239, 0.065), transparent 24% 60%, rgba(0, 0, 0, 0.28)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-emerald-rgb), 0.085), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.36), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.13) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #1d2823 0%, #11201b 44%, #09100e 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
   border-color: rgba(var(--c-emerald-rgb), 0.24);
   color: var(--c-muted);
   transform: translateY(-1px);
@@ -3366,7 +3372,14 @@ svg.filter-caret.expanded {
 }
 
 .qs-card.qs-card-unique-kw:hover {
-  background: rgba(var(--c-gold-rgb), 0.08);
+  background:
+    linear-gradient(145deg, rgba(255, 231, 169, 0.075), transparent 24% 60%, rgba(0, 0, 0, 0.28)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-gold-rgb), 0.12), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.36), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.13) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #27241a 0%, #1b1710 44%, #0e0b07 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
   border-color: rgba(var(--c-gold-rgb), 0.3);
   color: var(--c-gold);
   box-shadow: 0 0 9px rgba(var(--c-gold-rgb), 0.09);
@@ -3403,7 +3416,14 @@ svg.filter-caret.expanded {
 }
 
 .qs-card.qs-card-unique-combo:hover {
-  background: rgba(var(--c-gold-rgb), 0.09);
+  background:
+    linear-gradient(145deg, rgba(255, 231, 169, 0.08), transparent 24% 60%, rgba(0, 0, 0, 0.30)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-gold-rgb), 0.13), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.36), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.024) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.13) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #29251a 0%, #1c1710 44%, #0e0b07 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
   border-color: rgba(var(--c-gold-rgb), 0.38);
   color: var(--c-gold);
   box-shadow:
@@ -3464,7 +3484,14 @@ svg.filter-caret.expanded {
 .qs-card.qs-card-rnd-combo:hover,
 .qs-card.qs-card-popular:hover,
 .qs-card.qs-card-user-crafts:hover {
-  background: rgba(var(--c-emerald-rgb), 0.08);
+  background:
+    linear-gradient(145deg, rgba(230, 255, 239, 0.065), transparent 24% 60%, rgba(0, 0, 0, 0.28)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-emerald-rgb), 0.09), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.36), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.13) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #1d2823 0%, #11201b 44%, #09100e 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
   border-color: rgba(var(--c-emerald-rgb), 0.22);
   color: var(--c-muted);
   box-shadow: 0 0 9px rgba(var(--c-emerald-rgb), 0.08);
@@ -3505,7 +3532,7 @@ svg.filter-caret.expanded {
 /* Common: high result count — neutral base, label only */
 .qs-card.qs-card-rarity-common {
   /* no background or border change — the label does the work */
-  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+  transition: background 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
 }
 
 .qs-card.qs-card-rarity-common .qs-card-rarity-label {
@@ -3514,11 +3541,18 @@ svg.filter-caret.expanded {
 
 /* Uncommon: moderate result count — soft emerald lift */
 .qs-card.qs-card-rarity-uncommon {
-  background: rgba(var(--c-emerald-rgb), 0.075);
+  background:
+    linear-gradient(145deg, rgba(230, 255, 239, 0.075), transparent 24% 60%, rgba(0, 0, 0, 0.28)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-emerald-rgb), 0.12), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.34), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.13) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #1d2823 0%, #11201b 44%, #09100e 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
   border-color: rgba(var(--c-emerald-rgb), 0.28);
   color: var(--c-emerald-soft);
   box-shadow: 0 0 8px rgba(var(--c-emerald-rgb), 0.08);
-  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+  transition: background 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
 }
 
 .qs-card.qs-card-rarity-uncommon .qs-card-topline svg {
@@ -3537,13 +3571,20 @@ svg.filter-caret.expanded {
 
 /* Rare: low result count — blue accent */
 .qs-card.qs-card-rarity-rare {
-  background: rgba(var(--c-rare-blue-rgb), 0.085);
+  background:
+    linear-gradient(145deg, rgba(195, 224, 255, 0.07), transparent 24% 60%, rgba(0, 0, 0, 0.30)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-rare-blue-rgb), 0.13), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.36), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.13) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #18232a 0%, #0e1820 44%, #070c10 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
   border-color: rgba(var(--c-rare-blue-rgb), 0.36);
   color: var(--c-rare-blue-soft);
   box-shadow:
     0 0 12px rgba(var(--c-rare-blue-rgb), 0.13),
     inset 0 0 8px rgba(var(--c-rare-blue-rgb), 0.05);
-  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+  transition: background 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
 }
 
 .qs-card.qs-card-rarity-rare .qs-card-topline svg {
@@ -3562,13 +3603,20 @@ svg.filter-caret.expanded {
 
 /* Epic: very low result count — purple accent */
 .qs-card.qs-card-rarity-epic {
-  background: rgba(var(--c-purple-rgb), 0.12);
+  background:
+    linear-gradient(145deg, rgba(225, 211, 255, 0.075), transparent 24% 60%, rgba(0, 0, 0, 0.30)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-purple-rgb), 0.15), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.36), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.023) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.13) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #211a29 0%, #17101f 44%, #0d0811 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
   border-color: rgba(var(--c-purple-rgb), 0.44);
   color: var(--c-purple-soft);
   box-shadow:
     0 0 16px rgba(var(--c-purple-rgb), 0.18),
     inset 0 0 10px rgba(var(--c-purple-rgb), 0.06);
-  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+  transition: background 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
 }
 
 .qs-card.qs-card-rarity-epic .qs-card-topline svg {
@@ -3587,17 +3635,31 @@ svg.filter-caret.expanded {
 
 /* Unique: extremely low non-zero result count — orange + diamond via wrapper */
 .qs-card.qs-card-rarity-unique {
-  background: rgba(var(--c-unique-rgb), 0.08);
+  background:
+    linear-gradient(145deg, rgba(255, 224, 178, 0.08), transparent 24% 60%, rgba(0, 0, 0, 0.31)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-unique-rgb), 0.15), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.37), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.024) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.14) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #2a1f13 0%, #1b120a 44%, #0f0905 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
   border-color: rgba(var(--c-unique-rgb), 0.48);
   color: var(--c-unique-soft);
   box-shadow:
     0 0 20px rgba(var(--c-unique-rgb), 0.2),
     inset 0 0 12px rgba(var(--c-unique-rgb), 0.07);
-  transition: background-color 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
+  transition: background 0.35s, border-color 0.35s, color 0.35s, box-shadow 0.35s;
 }
 
 .qs-card.qs-card-rarity-unique.qs-card-post-click:hover {
-  background: rgba(var(--c-unique-rgb), 0.1);
+  background:
+    linear-gradient(145deg, rgba(255, 224, 178, 0.095), transparent 24% 60%, rgba(0, 0, 0, 0.29)),
+    radial-gradient(ellipse at 24% 18%, rgba(var(--c-unique-rgb), 0.18), transparent 46%),
+    radial-gradient(ellipse at 78% 84%, rgba(0, 0, 0, 0.35), transparent 56%),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.024) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(103deg, rgba(0, 0, 0, 0.14) 0 1px, transparent 1px 11px),
+    linear-gradient(156deg, #2d2114 0%, #1d130b 44%, #100905 100%);
+  background-blend-mode: screen, screen, multiply, overlay, multiply, normal;
 }
 
 .qs-card.qs-card-rarity-unique .qs-card-topline svg {

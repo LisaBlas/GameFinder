@@ -33,7 +33,7 @@ export interface DiscoveryCardProps {
   // ── State ────────────────────────────────────────────────────────────────
   /** True while the reveal-pulse animation fires (brief, auto-clears). */
   isPulsing: boolean;
-  /** True from click until the next mouseLeave — drives the post-click glow. */
+  /** True while this is the selected discovery card after a click. */
   isPostClick: boolean;
   /**
    * Rarity once a search completes.
@@ -73,7 +73,6 @@ export interface DiscoveryCardProps {
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   onClick: () => void;
-  onMouseLeave: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +95,6 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
   footerMeta,
   isSequence,
   onClick,
-  onMouseLeave,
 }) => {
   // Wrapper: grows the unique glow ring when rarity === "unique"
   const wrapClass = [
@@ -124,7 +122,6 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
       <button
         type="button"
         onClick={onClick}
-        onMouseLeave={onMouseLeave}
         className={buttonClass}
         aria-label={name}
       >
