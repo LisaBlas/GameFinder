@@ -2770,7 +2770,7 @@ svg.filter-caret.expanded {
   content: '';
   position: absolute;
   inset: -2px;
-  border-radius: 10px;           /* 2px larger than card's 8px border-radius */
+  border-radius: 0;              /* no rounding — backgrounds reach the exact geometric corners */
   pointer-events: none;
   z-index: 10;
   opacity: 0;
@@ -2898,24 +2898,25 @@ svg.filter-caret.expanded {
 
 .qs-card-has-result.qs-card-post-click:not([class*="qs-card-rarity-"]) {
   transform: translateY(1px);                     /* slot physically pressed down */
-  border-color: rgba(255, 255, 255, 0.03);        /* border fades — slot walls close in */
   box-shadow:
     inset 0 4px 12px rgba(0, 0, 0, 0.72),         /* deep top-press shadow */
     inset 0 0 24px rgba(0, 0, 0, 0.38),           /* ambient inner darkness */
     inset 0 -1px 0 rgba(255, 255, 255, 0.02);     /* barely-there base catch-light */
+  /* Border pulses on the full perimeter — animation overrides the transition */
+  animation: qs-border-pulse 1.5s ease-in-out infinite;
 }
 
-/* Pulse the corner brackets while any child card is unidentified.
-   Uses :has() — opacity-only animation, GPU composited, safe fallback (just no glow). */
+@keyframes qs-border-pulse {
+  0%   { border-color: rgba(var(--c-emerald-rgb), 0.10); }
+  50%  { border-color: rgba(var(--c-emerald-rgb), 0.55); }
+  100% { border-color: rgba(var(--c-emerald-rgb), 0.10); }
+}
+
+/* Corner brackets hold at a fixed opacity while the child card is unidentified —
+   they frame the slot without competing with the border pulse animation. */
 .qs-card-wrap:has(.qs-card-has-result.qs-card-post-click:not([class*="qs-card-rarity-"]))::before,
 .qs-unique-wrap:has(.qs-card-has-result.qs-card-post-click:not([class*="qs-card-rarity-"]))::before {
-  animation: qs-corner-pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes qs-corner-pulse {
-  0%   { opacity: 0.08; }
-  50%  { opacity: 0.60; }
-  100% { opacity: 0.08; }
+  opacity: 0.45;
 }
 
 .qs-card:hover {
