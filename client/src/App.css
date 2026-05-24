@@ -2727,33 +2727,40 @@ svg.filter-caret.expanded {
   width: 0.24rem;
   height: 0.24rem;
   border-radius: 999px;
-  background: rgba(var(--c-gold-rgb), 0.22);
-  box-shadow: 0 0 0 1px rgba(var(--c-gold-rgb), 0.08);
+  background: rgba(162, 167, 165, 0.18);
+  /* Tiny deboss — pip reads as pressed into the stone */
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
 .qs-sequence-pip-active {
-  width: 0.62rem;
-  background: rgba(var(--c-gold-rgb), 0.82);
-  box-shadow: 0 0 8px rgba(var(--c-gold-rgb), 0.28);
+  width: 0.62rem;          /* wider shape still distinguishes active from inactive */
+  background: rgba(175, 180, 178, 0.52);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.25);
 }
 
 .qs-sequence-count {
-  color: rgba(var(--c-gold-rgb), 0.72);
+  color: rgba(162, 167, 165, 0.38);
   font-size: 0.55rem;
   font-weight: 850;
   line-height: 1;
   white-space: nowrap;
+  text-shadow:
+    0 -1px 0px rgba(0, 0, 0, 0.40),
+    0  1px 0px rgba(255, 255, 255, 0.04);
 }
 
 .qs-card-meta {
   margin-left: auto;
   display: inline-flex;
   align-items: center;
-  color: rgba(var(--c-emerald-rgb), 0.72);
+  color: rgba(162, 167, 165, 0.38);
   font-size: 0.55rem;
   font-weight: 850;
   line-height: 1;
   white-space: nowrap;
+  text-shadow:
+    0 -1px 0px rgba(0, 0, 0, 0.40),
+    0  1px 0px rgba(255, 255, 255, 0.04);
 }
 
 /* Wrapper shared by all 6 discovery cards — allows diamond pseudo-element to
