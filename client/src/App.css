@@ -2795,9 +2795,9 @@ svg.filter-caret.expanded {
 .qs-unique-wrap::before {
   content: '';
   position: absolute;
-  inset: 1px;                    /* sit just inside the 1px card border */
+  inset: 0;                      /* align to the card's outer border face */
   border-radius: 0;              /* backgrounds reach the pseudo-element's own corners */
-  clip-path: inset(0 round 2px); /* clip to inner card shape (3px outer radius − 1px border = 2px) */
+  clip-path: inset(0 round 3px); /* clip to card's outer border-radius so rivet corners don't overflow */
   pointer-events: none;
   z-index: 10;
   opacity: 0;
@@ -2955,6 +2955,7 @@ svg.filter-caret.expanded {
 .qs-card-wrap:has(.qs-card-has-result.qs-card-post-click:not([class*="qs-card-rarity-"]))::before,
 .qs-unique-wrap:has(.qs-card-has-result.qs-card-post-click:not([class*="qs-card-rarity-"]))::before {
   opacity: 0.45;
+  transform: translateY(1px); /* mirror the card's depression transform so brackets stay flush */
 }
 
 .qs-card:hover {
