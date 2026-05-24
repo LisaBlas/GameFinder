@@ -2475,10 +2475,14 @@ svg.filter-caret.expanded {
   min-height: 9rem;
   border-radius: 8px;
   /* Idle: matte dark stone surface — solid, no green tint, no transparency.
-     Subtle gradient fakes ambient light catch on the upper-left face of the stone. */
+     Three-layer stack simulates ambient light on stone:
+     1. Light catch  — upper-left highlight, reads as the lit face of the stone
+     2. Depth sink   — lower-right darkness, pulls the eye into the recess
+     3. Base ramp    — diagonal tonal gradient for overall stone depth */
   background:
-    radial-gradient(ellipse at 38% 30%, rgba(255, 255, 255, 0.018) 0%, transparent 55%),
-    linear-gradient(160deg, #161817 0%, #111212 50%, #0d0e0d 100%);
+    radial-gradient(ellipse at 32% 28%, rgba(255, 255, 255, 0.07) 0%, transparent 58%),
+    radial-gradient(ellipse at 80% 82%, rgba(0, 0, 0, 0.32) 0%, transparent 52%),
+    linear-gradient(145deg, #1e201f 0%, #111312 48%, #0b0c0b 100%);
   /* Engraved border: a barely-visible bright rim that contrasts the inner recess */
   border: 1px solid rgba(255, 255, 255, 0.055);
   color: var(--c-dim);
