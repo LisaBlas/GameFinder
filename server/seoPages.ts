@@ -724,6 +724,241 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
     relatedSlugs: ["parry-games", "melee-games", "martial-arts-games"],
     searchLabel: "Find dueling games",
   },
+
+  // --- Vibe / Mood / Niche Pages (targeting long-tail discovery queries) ---
+  {
+    slug: "cat-games",
+    title: "Best Cat Games - Play as a Cat, See the World Differently",
+    description:
+      "Find the best games where you play as a cat. From cozy exploration to platformers and life sims, discover games that let you see the world through feline eyes.",
+    intro:
+      "Cats move through the world on their own terms - curious, unhurried, entirely unbothered. The best cat games capture that feeling: tight spaces to squeeze through, high ledges to claim, and a world that's been rebuilt to fit a smaller, weirder perspective. Whether you're a street cat navigating a neon city or a magical familiar with its own agenda, these are games that understand what it means to be feline.",
+    filters: [
+      { category: "Keywords", id: 570, name: "cats" },
+      { category: "Keywords", id: 1697, name: "Atmospheric" },
+      { category: "genres", id: 32, name: "Indie" },
+    ],
+    relatedSlugs: ["animal-games", "cute-wholesome-games", "cozy-games", "peaceful-exploration-games"],
+    searchLabel: "Find cat games",
+  },
+  {
+    slug: "no-combat-games",
+    title: "Best Games With No Combat - Explore, Create, and Just Be",
+    description:
+      "Find the best games with no combat: peaceful, stress-free titles focused on exploration, creativity, and atmosphere. No fighting, no death — just a world worth inhabiting.",
+    intro:
+      "Not every game needs an enemy. The best no-combat games prove that tension, stakes, and satisfaction can come from something other than fighting - a puzzle that won't resolve, a world that keeps revealing itself, a relationship that takes time to build. These are games that ask you to slow down and pay attention instead of react.",
+    filters: [
+      { category: "Keywords", id: 2084, name: "Relaxing" },
+      { category: "Keywords", id: 23931, name: "Wholesome" },
+      { category: "Keywords", id: 72, name: "Exploration" },
+      { category: "genres", id: 32, name: "Indie" },
+    ],
+    relatedSlugs: ["peaceful-exploration-games", "cozy-games", "calming-games-for-anxiety", "relaxing-simulation-games"],
+    searchLabel: "Find no-combat games",
+  },
+  {
+    slug: "cooking-games",
+    title: "Best Cooking Games - Chop, Season, and Plate to Perfection",
+    description:
+      "Discover the best cooking games: frantic kitchen sims, cozy recipe crafters, and culinary adventures. Find games where food is the mechanic, not just the backdrop.",
+    intro:
+      "Cooking games are about reading systems under pressure - or at your own pace. At one end, the ticket is already burning and three more just came in. At the other, you're harvesting ingredients at dusk and experimenting with recipes that feel genuinely yours. Both are satisfying in ways that reach beyond the screen.",
+    filters: [
+      { category: "Keywords", id: 758, name: "cooking" },
+      { category: "Keywords", id: 994, name: "management" },
+    ],
+    relatedSlugs: ["shopkeeper-games", "village-life-games", "cozy-farming-games", "relaxing-simulation-games"],
+    searchLabel: "Find cooking games",
+  },
+  {
+    slug: "calming-games-for-anxiety",
+    title: "Best Calming Games for Anxiety - Low Stakes, High Peace",
+    description:
+      "Find the best calming games for anxiety: slow-paced, wholesome, and stress-free titles that help you decompress. Curated by mood, not just genre.",
+    intro:
+      "Some games are made to wind you down. No punishing difficulty, no dread, no pressure to perform - just a world that runs at a pace you can breathe inside. These games treat calmness as a design principle: gentle audio, forgiving mechanics, and environments that feel like a deep exhale. Good for anxiety, good for tired evenings, good for any moment that needs to slow down.",
+    filters: [
+      { category: "Keywords", id: 24685, name: "cozy" },
+      { category: "Keywords", id: 23931, name: "Wholesome" },
+      { category: "Keywords", id: 2084, name: "Relaxing" },
+      { category: "Keywords", id: 1697, name: "Atmospheric" },
+    ],
+    relatedSlugs: ["cozy-games", "no-combat-games", "relaxing-simulation-games", "cute-wholesome-games"],
+    searchLabel: "Find calming games",
+  },
+  {
+    slug: "animal-games",
+    title: "Best Games Where You Play as an Animal",
+    description:
+      "Discover the best games where you play as an animal. From cats and foxes to birds and deer, find games that put you inside a creature's perspective and make it mean something.",
+    intro:
+      "Playing as an animal reframes everything. The scale of the world shifts, the rules of movement change, and the things that matter — warmth, territory, instinct — are different. The best animal protagonist games don't just put you in a smaller body; they build an experience that couldn't work any other way.",
+    filters: [
+      { category: "Keywords", id: 153, name: "animals" },
+      { category: "Keywords", id: 1115, name: "animal-based" },
+      { category: "genres", id: 32, name: "Indie" },
+    ],
+    relatedSlugs: ["cat-games", "cute-wholesome-games", "peaceful-exploration-games", "cozy-games"],
+    searchLabel: "Find animal games",
+  },
+  {
+    slug: "gardening-games",
+    title: "Best Gardening Games - Grow, Tend, and Watch Things Bloom",
+    description:
+      "Find the best gardening games: cozy sims where planting, nurturing, and watching things grow is the core loop. From zen garden builders to farming hybrids with a green thumb.",
+    intro:
+      "Gardening games understand a particular kind of satisfaction - the one that comes from patience rewarded. You plant something, tend it over time, and eventually something beautiful exists that wasn't there before. These games are built for players who want to feel productive without pressure, and creative without stakes.",
+    filters: [
+      { category: "Keywords", id: 976, name: "gardening" },
+      { category: "Keywords", id: 24685, name: "cozy" },
+      { category: "Keywords", id: 2084, name: "Relaxing" },
+      { category: "genres", id: 13, name: "Simulator" },
+    ],
+    relatedSlugs: ["cozy-farming-games", "village-life-games", "relaxing-simulation-games", "no-combat-games"],
+    searchLabel: "Find gardening games",
+  },
+  {
+    slug: "witch-games",
+    title: "Best Witch Games - Cast Spells, Brew Potions, Bend Reality",
+    description:
+      "Discover the best witch games: magical RPGs, cozy potion crafters, and dark fantasy tales where you're the one with the power. Filter by tone, setting, and spell system.",
+    intro:
+      "Witch games sit at an interesting intersection: they can be cozy or terrifying, playful or deeply serious. What connects them is agency - the specific kind that comes from knowing how the world's hidden rules work and choosing how to use them. Whether you're running an apothecary in a sleepy village or reshaping reality itself, these are games about power on your own terms.",
+    filters: [
+      { category: "Keywords", id: 1180, name: "witches" },
+      { category: "Keywords", id: 226, name: "Magic" },
+      { category: "genres", id: 12, name: "Role-playing (RPG)" },
+      { category: "themes", id: 17, name: "Fantasy" },
+    ],
+    relatedSlugs: ["fantasy-rpg-games", "cozy-horror-games", "dark-fantasy-rpg-games", "shopkeeper-games"],
+    searchLabel: "Find witch games",
+  },
+  {
+    slug: "ghost-games",
+    title: "Best Ghost Games - Haunt, Possess, and Unravel the Afterlife",
+    description:
+      "Find the best ghost games: atmospheric titles where you play as, interact with, or investigate ghosts. From spooky puzzles to narrative hauntings, discover games built around the spirit world.",
+    intro:
+      "Ghost games occupy a space between horror and melancholy. At their best, they use the premise to explore loss, unfinished business, and what it feels like to inhabit a world you no longer fully belong to. Whether you're the ghost doing the haunting or the person trying to understand one, these games use the supernatural to say something real.",
+    filters: [
+      { category: "Keywords", id: 16, name: "ghosts" },
+      { category: "Keywords", id: 1697, name: "Atmospheric" },
+      { category: "themes", id: 19, name: "Horror" },
+    ],
+    relatedSlugs: ["horror-games", "atmospheric-horror-games", "cozy-horror-games", "story-rich-narrative-games"],
+    searchLabel: "Find ghost games",
+  },
+  {
+    slug: "village-life-games",
+    title: "Best Village Life Games - Small Town, Slower Pace, Big Heart",
+    description:
+      "Discover the best village life games: cozy sims where you build relationships, tend to a community, and find meaning in small-town rhythms. No combat, just life.",
+    intro:
+      "Village life games are about the texture of ordinary things. The baker who remembers your order, the seasons that change how your day feels, the sense that the place you're in has a history you're slowly becoming part of. These games find drama in domesticity - and for the right player, nothing is more compelling.",
+    filters: [
+      { category: "Keywords", id: 1151, name: "village" },
+      { category: "Keywords", id: 43, name: "life simulation" },
+      { category: "Keywords", id: 24685, name: "cozy" },
+      { category: "genres", id: 13, name: "Simulator" },
+    ],
+    relatedSlugs: ["cozy-farming-games", "relaxing-simulation-games", "gardening-games", "shopkeeper-games"],
+    searchLabel: "Find village life games",
+  },
+  {
+    slug: "dragon-games",
+    title: "Best Dragon Games - Fly, Breathe Fire, and Rule the Skies",
+    description:
+      "Find the best dragon games: fly as a dragon, raise one, or face them in battle. From open-world flight to dark fantasy epics, discover games where dragons are more than backdrop.",
+    intro:
+      "Dragons are one of gaming's oldest obsessions - and the best dragon games earn that obsession by making the creature feel real. Whether you're the dragon yourself (flight mechanics, fire breath, the terrifying scale of your own wingspan) or a rider in a world defined by them, these games understand that a dragon isn't just a boss. It's an entire world logic.",
+    filters: [
+      { category: "Keywords", id: 332, name: "dragons" },
+      { category: "Keywords", id: 1065, name: "dragon" },
+      { category: "Keywords", id: 226, name: "Magic" },
+      { category: "themes", id: 17, name: "Fantasy" },
+    ],
+    relatedSlugs: ["fantasy-rpg-games", "dark-fantasy-rpg-games", "medieval-rpg-games", "open-world-exploration-games"],
+    searchLabel: "Find dragon games",
+  },
+  {
+    slug: "pirate-games",
+    title: "Best Pirate Games - Sail the Seas and Claim What's Yours",
+    description:
+      "Discover the best pirate games: naval combat, treasure hunting, open-world seafaring, and swashbuckling adventure. Filter by tone, setting, and depth to find your perfect pirate tale.",
+    intro:
+      "Pirate games are built on freedom - the kind that comes from having a ship, a crew, and no fixed route. The best ones understand that the open ocean is a design challenge as much as a setting: it has to feel alive, full of consequence, and genuinely threatening. From naval warfare simulators to lighthearted adventure, the best pirate games make the sea feel worth crossing.",
+    filters: [
+      { category: "Keywords", id: 4, name: "pirates" },
+      { category: "Keywords", id: 72, name: "Exploration" },
+      { category: "genres", id: 31, name: "Adventure" },
+    ],
+    relatedSlugs: ["open-world-exploration-games", "space-exploration-games", "story-rich-narrative-games"],
+    searchLabel: "Find pirate games",
+  },
+  {
+    slug: "life-sim-games",
+    title: "Best Life Simulation Games - Live Another Life, Your Way",
+    description:
+      "Find the best life simulation games. Build routines, form relationships, manage time, and inhabit a life that runs on its own logic. Life sims are about the long game.",
+    intro:
+      "Life sims are slow games that ask big questions. What do you do when you have no quest marker? What does a well-lived virtual day look like? The best life simulation games don't fill every moment with content - they give you a world with enough texture that you fill it yourself, and somehow that feels like the most meaningful thing you've done all week.",
+    filters: [
+      { category: "Keywords", id: 43, name: "life simulation" },
+      { category: "Keywords", id: 2084, name: "Relaxing" },
+      { category: "Keywords", id: 1697, name: "Atmospheric" },
+      { category: "genres", id: 13, name: "Simulator" },
+    ],
+    relatedSlugs: ["village-life-games", "cozy-farming-games", "relaxing-simulation-games", "cute-wholesome-games"],
+    searchLabel: "Find life sim games",
+  },
+  {
+    slug: "shopkeeper-games",
+    title: "Best Shopkeeper Games - Run Your Shop, Serve the World",
+    description:
+      "Discover the best shopkeeper games: manage a store, serve customers, price your wares, and build a business from the ground up. Cozy capitalism at its most satisfying.",
+    intro:
+      "Shopkeeper games understand a specific kind of pleasure: the moment a customer wants exactly what you have, the satisfaction of a well-stocked shelf, the slow growth of a reputation you built yourself. These games put you on the other side of the counter and make the business of running something feel like its own adventure.",
+    filters: [
+      { category: "Keywords", id: 994, name: "management" },
+      { category: "Keywords", id: 1151, name: "village" },
+      { category: "Keywords", id: 24685, name: "cozy" },
+      { category: "genres", id: 32, name: "Indie" },
+    ],
+    relatedSlugs: ["village-life-games", "cooking-games", "cozy-farming-games", "witch-games"],
+    searchLabel: "Find shopkeeper games",
+  },
+  {
+    slug: "peaceful-exploration-games",
+    title: "Best Peaceful Exploration Games - Wonder Without Combat",
+    description:
+      "Find the best peaceful exploration games: atmospheric, open-ended worlds designed to be walked through and wondered at. No enemies, no pressure — just discovery.",
+    intro:
+      "Peaceful exploration games give you a world and then trust you with it. No enemy encounter to interrupt a vista, no threat to keep you from following that path into the fog. The best ones understand that curiosity is a mechanic - the desire to see what's over the next hill, or through that doorway, or just around one more bend.",
+    filters: [
+      { category: "Keywords", id: 72, name: "Exploration" },
+      { category: "Keywords", id: 2084, name: "Relaxing" },
+      { category: "Keywords", id: 1697, name: "Atmospheric" },
+      { category: "Keywords", id: 23931, name: "Wholesome" },
+    ],
+    relatedSlugs: ["no-combat-games", "open-world-exploration-games", "calming-games-for-anxiety", "cozy-games"],
+    searchLabel: "Find peaceful exploration games",
+  },
+  {
+    slug: "viking-games",
+    title: "Best Viking Games - Raid, Survive, and Forge Norse Legends",
+    description:
+      "Discover the best Viking games. From brutal Norse survival to mythological epics and open-world raids, find games that capture the savage poetry of the Viking age.",
+    intro:
+      "Viking games earn their setting when they understand what made the Norse world compelling: fatalism, ferocity, and a mythology that treats death as another beginning. The best ones don't just use longships and horned helmets as aesthetics — they build a world with the specific weight of a culture that named its storms and believed their gods would eventually lose.",
+    filters: [
+      { category: "Keywords", id: 1095, name: "vikings" },
+      { category: "Keywords", id: 367, name: "norse mythology" },
+      { category: "themes", id: 17, name: "Fantasy" },
+    ],
+    relatedSlugs: ["dark-fantasy-rpg-games", "medieval-rpg-games", "survival-crafting-games", "open-world-exploration-games"],
+    searchLabel: "Find viking games",
+  },
 ];
 
 export const SEO_PAGES: SeoPage[] = [...MANUAL_SEO_PAGES, ...GENERATED_SEO_PAGES];
