@@ -161,9 +161,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [partnerStoresExpanded, setPartnerStoresExpanded] = useState(false);
   const [gameCopied, setGameCopied] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
-  // Mobile fullscreen only: gates the heavy panels (video, stores, tags)
-  // until after the opening animation's first painted frame.
-  const [detailsReady, setDetailsReady] = useState(false);
   const [seedData, setSeedData] = useState<SeedData | null>(null);
   const [isFindingSimilar, setIsFindingSimilar] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
@@ -235,23 +232,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   useEffect(() => {
     if (!isSelected) setVideoPlaying(false);
   }, [isSelected]);
-
-  // Defer the heavy panels on mobile fullscreen so the overlay's opacity
-  // animation can paint its first frame before React commits ~200 DOM nodes.
-  // Two RAFs ≈ 32 ms — enough for the browser to flush one painted frame.
-  // On desktop (fullscreen=false) detailsReady is never gated, so the
-  // in-place expansion renders immediately as before.
-  useEffect(() => {
-    if (!fullscreen || !isSelected) {
-      setDetailsReady(false);
-      return;
-    }
-    let r1: number, r2: number;
-    r1 = requestAnimationFrame(() => {
-      r2 = requestAnimationFrame(() => setDetailsReady(true));
-    });
-    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
-  }, [fullscreen, isSelected]);
 
   // Fetch similar-seed data when the card opens in fullscreen mode.
   // Resets on game change so stale data never shows for a different title.
@@ -869,15 +849,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
               {isSelected && (
                 <div className="grid gap-4 pt-1">
-                  {fullscreen && !detailsReady ? (
-                    /* Lightweight skeleton — lets the overlay animation paint
-                       its first frame before the real panels are mounted. */
-                    <>
-                      <div className="aspect-video w-full animate-pulse rounded-lg bg-slate-800" />
-                      <div className="h-52 w-full animate-pulse rounded-lg bg-slate-800/60" />
-                      <div className="h-32 w-full animate-pulse rounded-lg bg-slate-800/60" />
-                    </>
-                  ) : (<>
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)]">
                     <div ref={mediaRef} className="aspect-video overflow-hidden rounded-lg bg-black">
                       {isVideoLoading && (
@@ -1050,7 +1021,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                       </div>
                     )}
                   </div>}
-                  </>)}
                 </div>
               )}
             </div>
