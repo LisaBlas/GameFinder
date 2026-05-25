@@ -204,15 +204,15 @@ const SearchResults: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
-            {gameResults.map((game, index) => (
+            {gameResults.map((game) => (
               <motion.div
                 key={`game-${game.id}`}
                 className={selectedGameId === game.id ? 'widescreen:col-span-2' : 'h-full'}
                 initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '0px 0px -40px 0px' }}
                 transition={{
-                  duration: 0.35,
-                  delay: Math.min(index * 0.07, 0.45),
+                  duration: 0.32,
                   ease: [0.4, 0, 0.2, 1],
                 }}
               >
