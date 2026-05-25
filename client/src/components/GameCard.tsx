@@ -1055,4 +1055,15 @@ const getStoreName = (category: number): string => {
   }
 };
 
-export default GameCard;
+// onSelect and onOpenSimilar are intentionally excluded from the comparator.
+// They are inline arrow functions recreated on every parent render, but their
+// logic is always equivalent (toggle/open by game.id). Skipping them prevents
+// cascading re-renders from SearchResults state changes (e.g. hideMobileControls
+// toggling on scroll direction change) from reaching all 50+ mounted cards.
+const areEqual = (prev: GameCardProps, next: GameCardProps): boolean =>
+  prev.game === next.game &&
+  prev.isSelected === next.isSelected &&
+  prev.fullscreen === next.fullscreen &&
+  (prev.highlightFilters ?? false) === (next.highlightFilters ?? false);
+
+export default React.memo(GameCard, areEqual);
