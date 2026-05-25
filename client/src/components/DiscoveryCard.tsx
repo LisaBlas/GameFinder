@@ -128,45 +128,44 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({
         {/* Hover/reveal shine overlay */}
         <span className="qs-card-shine" aria-hidden="true" />
 
-        {/* Column type icon (Key / Craft) */}
-        <TypeIcon className="qs-card-type-icon" aria-hidden />
-
-        {/* Rarity badge — only once a search result is captured */}
-        {activeRarity && (
-          <span className="qs-card-rarity-label">{activeRarity}</span>
-        )}
-
-        {/* "Unidentified" label — shown during the searching state via CSS */}
-        <span className="qs-card-unidentified-label" aria-hidden="true">
-          Unidentified
-        </span>
-
-        {/* Main body: action label (idle) ↔ revealed content (revealed) */}
-        <span className="qs-card-main">
+        {/* Persistent card action + sequence metadata */}
+        <span className="qs-card-header">
           <span className="qs-card-action-label">
             <ActionIcon className="qs-card-action-icon" aria-hidden />
             {actionLabel}
           </span>
-          <span className="qs-state-revealed qs-card-state-line">
-            {revealedContent}
+          <span className="qs-card-header-meta">{footerMeta}</span>
+        </span>
+
+        {/* Artifact slot: empty, unidentified, or revealed with rarity */}
+        <span className="qs-card-main">
+          <span className="qs-card-artifact">
+            <TypeIcon className="qs-card-type-icon" aria-hidden />
+            <span className="qs-artifact-empty" aria-hidden="true" />
+            <span className="qs-card-unidentified-label" aria-hidden="true">
+              Unidentified
+            </span>
+            <span className="qs-state-revealed qs-card-state-line qs-artifact-content">
+              {revealedContent}
+            </span>
+            {activeRarity && (
+              <span className="qs-card-rarity-label">{activeRarity}</span>
+            )}
           </span>
         </span>
 
-        {/* Footer: differs between Roll cards and Unique (sequence) cards */}
+        {/* Context footer */}
         {isSequence ? (
           <span className="qs-card-footer qs-card-footer-sequence">
-            <span className="qs-state-initial qs-card-state-line">
+            <span className="qs-card-state-line qs-card-footer-copy">
               {idleFooterCopy}
             </span>
-            {/* footerMeta is the full qs-sequence-track node for Unique cards */}
-            {footerMeta}
           </span>
         ) : (
           <span className="qs-card-footer">
-            <span className="qs-state-initial qs-card-state-line qs-card-footer-copy">
+            <span className="qs-card-state-line qs-card-footer-copy">
               {idleFooterCopy}
             </span>
-            <span className="qs-card-meta">{footerMeta}</span>
           </span>
         )}
       </button>
