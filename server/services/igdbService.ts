@@ -1,5 +1,19 @@
 import axios from 'axios';
 import { storage } from '../storage.js';
+import gameFiltersRaw from '../../client/src/assets/game-filters.json' with { type: 'json' };
+
+// Build a Set of curated keyword IDs from game-filters.json at startup.
+// Only keywords that exist here get passed back as similarity signals — this
+// prevents obscure/noisy IGDB tags from polluting the seed.
+const gf = gameFiltersRaw as Record<string, Array<{ id: number | string; name: string; isParentOnly?: boolean; children?: Array<{ id: number; name: string }> }>>;
+const CURATED_KEYWORD_IDS = new Set<number>();
+for (const item of (gf['Keywords'] ?? [])) {
+  if (item.children) {
+    for (const child of item.children) CURATED_KEYWORD_IDS.add(Number(child.id));
+  } else if (!item.isParentOnly) {
+    CURATED_KEYWORD_IDS.add(Number(item.id));
+  }
+}
 
 interface Game {
   id: number;
@@ -413,16 +427,58 @@ export class IGDBService {
   }
 
   /**
-   * Fetch a game's genres, themes, and keywords to seed a similarity search
+   * Fetch a game's genres, themes, curated keywords, and IGDB similar_games
+   * to power the "Find games like this" feature.
+   *
+   * Keywords are filtered against the curated set in game-filters.json so only
+   * validated, search-friendly tags are returned — raw IGDB keyword lists are
+   * too noisy to use directly.
    */
-  async getGameSeedData(gameId: number): Promise<{ id: number; name: string; genres: Array<{ id: number; name: string }>; themes: Array<{ id: number; name: string }>; keywords: Array<{ id: number; name: string }> } | null> {
+  async getGameSeedData(gameId: number): Promise<{
+    id: number;
+    name: string;
+    genres: Array<{ id: number; name: string }>;
+    themes: Array<{ id: number; name: string }>;
+    keywords: Array<{ id: number; name: string }>;
+    similar_games: Array<{ id: number; name: string; cover: { url: string } | null; rating: number | null }>;
+  } | null> {
     const query = `
-      fields id, name, genres.id, genres.name, themes.id, themes.name, keywords.id, keywords.name;
+      fields id, name,
+        genres.id, genres.name,
+        themes.id, themes.name,
+        keywords.id, keywords.name,
+        similar_games.id, similar_games.name, similar_games.cover.url, similar_games.rating;
       where id = ${gameId};
       limit 1;
     `.trim();
     const results = await this.makeRequest('games', query);
-    return results[0] ?? null;
+    const game = results[0] ?? null;
+    if (!game) return null;
+
+    // Only pass back keywords that exist in our curated set.
+    const filteredKeywords = ((game.keywords ?? []) as Array<{ id: number; name: string }>)
+      .filter(kw => CURATED_KEYWORD_IDS.has(kw.id));
+
+    // Normalise cover URLs and cap at 8 results.
+    const similarGames = ((game.similar_games ?? []) as Array<any>)
+      .slice(0, 8)
+      .map(g => ({
+        id: g.id,
+        name: g.name,
+        cover: g.cover?.url
+          ? { url: (g.cover.url as string).replace('/t_thumb/', '/t_cover_small/').replace(/^\/\//, 'https://') }
+          : null,
+        rating: g.rating != null ? Math.round(g.rating) / 10 : null,
+      }));
+
+    return {
+      id: game.id,
+      name: game.name,
+      genres: game.genres ?? [],
+      themes: game.themes ?? [],
+      keywords: filteredKeywords,
+      similar_games: similarGames,
+    };
   }
 
   /**

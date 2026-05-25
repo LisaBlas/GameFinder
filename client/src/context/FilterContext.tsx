@@ -81,6 +81,7 @@ interface FilterContextType {
   requireRating: boolean;
   setRequireRating: (value: boolean) => void;
   applyFiltersAndSearch: (filters: Filter[]) => void;
+  seedAndSearch: (seed: { id: number; name: string }, filters: Filter[]) => void;
   lastSearchedFilters: Filter[];
 }
 
@@ -571,6 +572,16 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     autoSearchRef.current = true;
   }, []);
 
+  // Set a seed game + pre-built filters simultaneously, then trigger a search.
+  // Used by the "Find games like this" button in GameCard — unlike
+  // applyFiltersAndSearch, this preserves the seed game so the results header
+  // can show "Showing games similar to X".
+  const seedAndSearch = useCallback((seed: { id: number; name: string }, filters: Filter[]) => {
+    setSelectedFilters(filters);
+    setSeedGame(seed);
+    autoSearchRef.current = true;
+  }, []);
+
   const retryLoadMore = useCallback(async () => {
     if (lastError) {
       setRetryCount(prev => ({
@@ -711,6 +722,7 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     requireRating,
     setRequireRating,
     applyFiltersAndSearch,
+    seedAndSearch,
     lastSearchedFilters,
   };
   

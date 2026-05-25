@@ -60,12 +60,27 @@ interface Game {
   }>;
 }
 
+interface SimilarGame {
+  id: number;
+  name: string;
+  cover: { url: string } | null;
+  rating: number | null;
+}
+
+interface SeedData {
+  genres: Array<{ id: number; name: string }>;
+  themes: Array<{ id: number; name: string }>;
+  keywords: Array<{ id: number; name: string }>;
+  similar_games: SimilarGame[];
+}
+
 interface GameCardProps {
   game: Game;
   isSelected: boolean;
   onSelect: () => void;
   fullscreen?: boolean;
   highlightFilters?: boolean;
+  onOpenSimilar?: (id: number) => void;
 }
 
 const encodeGameTitle = (title: string): string => {
@@ -134,7 +149,7 @@ const getAffiliateLinks = (gameTitle: string) => {
 };
 
 
-const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false, onOpenSimilar }) => {
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
@@ -146,9 +161,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [partnerStoresExpanded, setPartnerStoresExpanded] = useState(false);
   const [gameCopied, setGameCopied] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [seedData, setSeedData] = useState<SeedData | null>(null);
+  const [isFindingSimilar, setIsFindingSimilar] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const tagsRef = useRef<HTMLDivElement | null>(null);
-  const { addFilter, removeFilter, isFilterSelected, selectedFilters } = useFilters();
+  const { addFilter, removeFilter, isFilterSelected, selectedFilters, seedAndSearch } = useFilters();
   const { isSaved, toggleSaved } = useSavedGames();
 
   const imageUrl = game.cover?.url
@@ -215,6 +232,41 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   useEffect(() => {
     if (!isSelected) setVideoPlaying(false);
   }, [isSelected]);
+
+  // Fetch similar-seed data when the card opens in fullscreen mode.
+  // Resets on game change so stale data never shows for a different title.
+  useEffect(() => {
+    if (!isSelected || !fullscreen) return;
+    setSeedData(null);
+    fetch(`/api/games/${game.id}/similar-seed`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => { if (data) setSeedData(data as SeedData); })
+      .catch(() => {});
+  }, [game.id, isSelected, fullscreen]);
+
+  const handleFindSimilar = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!seedData) return;
+    setIsFindingSimilar(true);
+    try {
+      const filters: import('../context/FilterContext').Filter[] = [];
+      if (seedData.genres[0]) {
+        const g = seedData.genres[0];
+        filters.push({ id: g.id, name: g.name, category: 'genres', mode: 'include', compositeId: `genres-${g.id}` });
+      }
+      if (seedData.themes[0]) {
+        const t = seedData.themes[0];
+        filters.push({ id: t.id, name: t.name, category: 'themes', mode: 'include', compositeId: `themes-${t.id}` });
+      }
+      seedData.keywords.slice(0, 2).forEach(kw => {
+        filters.push({ id: kw.id, name: kw.name, category: 'Keywords', mode: 'include', compositeId: `Keywords-${kw.id}` });
+      });
+      seedAndSearch({ id: game.id, name: game.name }, filters);
+      onSelect(); // close the modal
+    } finally {
+      setIsFindingSimilar(false);
+    }
+  };
 
   useEffect(() => {
     if (!highlightFilters || !isSelected) return;
@@ -895,6 +947,67 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                       )}
                     </div>
                   </div>
+
+                  {/* ── Similar games panel — modal only ── */}
+                  {fullscreen && <div className="game-card-panel rounded-lg border px-4 pb-4 pt-3">
+                    {/* "Find games like this" CTA */}
+                    <button
+                      type="button"
+                      onClick={handleFindSimilar}
+                      disabled={!seedData || isFindingSimilar}
+                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-[rgba(var(--c-emerald-rgb),0.25)] bg-[rgba(var(--c-emerald-rgb),0.08)] px-4 py-3 text-sm font-semibold text-[var(--c-emerald)] transition-all hover:bg-[rgba(var(--c-emerald-rgb),0.15)] disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <Gamepad2 className="h-4 w-4 flex-shrink-0" />
+                      {isFindingSimilar ? 'Finding…' : `Find games like ${game.name}`}
+                    </button>
+
+                    {/* "More like this" carousel — IGDB curated similar_games */}
+                    {seedData && seedData.similar_games.length > 0 && (
+                      <div className="mt-4">
+                        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">More like this</span>
+                        <div className="mt-2 flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                          {seedData.similar_games.map(sg => (
+                            <button
+                              key={sg.id}
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); onOpenSimilar?.(sg.id); }}
+                              className="group/sim w-[72px] flex-shrink-0 text-left"
+                            >
+                              <div className="h-[96px] w-[72px] overflow-hidden rounded-md bg-slate-800 ring-1 ring-white/5 transition-all group-hover/sim:ring-[rgba(var(--c-emerald-rgb),0.4)]">
+                                {sg.cover ? (
+                                  <img
+                                    src={sg.cover.url}
+                                    alt={sg.name}
+                                    className="h-full w-full object-cover transition-transform duration-200 group-hover/sim:scale-105"
+                                    loading="lazy"
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center text-slate-600">
+                                    <Gamepad2 className="h-5 w-5" />
+                                  </div>
+                                )}
+                              </div>
+                              <p className="mt-1 line-clamp-2 text-[10px] leading-tight text-slate-500 transition-colors group-hover/sim:text-slate-300">
+                                {sg.name}
+                              </p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Skeleton state while seed data loads */}
+                    {!seedData && (
+                      <div className="mt-4">
+                        <div className="h-2.5 w-24 animate-pulse rounded bg-slate-800" />
+                        <div className="mt-2 flex gap-2.5">
+                          {[0, 1, 2, 3].map(i => (
+                            <div key={i} className="h-[96px] w-[72px] flex-shrink-0 animate-pulse rounded-md bg-slate-800" />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>}
                 </div>
               )}
             </div>

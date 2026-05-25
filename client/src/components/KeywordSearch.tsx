@@ -181,7 +181,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
                           <div className="font-medium text-sm truncate">{game.name}</div>
                           {year && <div className="text-xs text-muted-foreground">{year}</div>}
                         </div>
-                        <span className="text-xs text-primary/80 whitespace-nowrap flex-shrink-0">Find similar →</span>
+                        <span className="text-xs text-primary/80 whitespace-nowrap flex-shrink-0">View game</span>
                       </div>
                     );
                   })}
