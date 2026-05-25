@@ -671,7 +671,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       )}
 
       <article
-        className={`game-card ${!fullscreen && !isSelected ? 'h-full' : ''} ${isSelected ? 'game-card-selected' : 'game-card-compact'} ${fullscreen ? 'game-card-fullscreen bg-[#111312]' : 'bg-slate-900/95'} transition-all duration-300 cursor-pointer ${
+        className={`game-card ${!fullscreen && !isSelected ? 'h-full' : ''} ${isSelected ? 'game-card-selected' : 'game-card-compact'} ${fullscreen ? 'game-card-fullscreen bg-[#111312]' : 'bg-slate-900/95'} transition-[background-color,box-shadow] duration-300 cursor-pointer ${
           fullscreen && isSelected
             ? 'rounded-none shadow-none md:rounded-lg md:shadow-[0_0_0_1px_rgba(112,124,116,0.18),0_22px_70px_rgba(0,0,0,0.36)]'
             : isSelected
