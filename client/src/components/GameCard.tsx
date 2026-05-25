@@ -188,7 +188,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     return game.involved_companies[0]?.company?.name;
   }, [game.involved_companies]);
 
-  const affiliateLinks = getAffiliateLinks(game.name);
+  const affiliateLinks = React.useMemo(() => getAffiliateLinks(game.name), [game.name]);
 
   useEffect(() => {
     const fetchSteamPrice = async () => {
@@ -371,12 +371,15 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     window.open(url, '_blank');
   };
 
-  const selectedTagKeys = new Set(selectedFilters.map(f => `${f.category}-${f.id}`));
+  const selectedTagKeys = React.useMemo(
+    () => new Set(selectedFilters.map(f => `${f.category}-${f.id}`)),
+    [selectedFilters],
+  );
 
   const keywordCount = game.keywords?.length ?? 0;
   const platformCount = game.platforms?.length ?? 0;
 
-  const tagGroups = [
+  const tagGroups = React.useMemo(() => [
     {
       label: 'Platforms',
       tags: (game.platforms || []).map(t => ({ ...t, type: 'platform', category: 'platforms' })),
@@ -404,30 +407,40 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         }),
       emptyText: 'This game might be too recent, too obscure, or missing detailed keyword data.'
     },
-  ].filter(group => group.tags.length > 0 || group.label === 'Keywords');
+  ].filter(group => group.tags.length > 0 || group.label === 'Keywords'),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [game.platforms, game.genres, game.themes, game.game_modes, game.keywords, selectedTagKeys]);
 
-  const filteredStores = (game.external_games || []).filter((store, index, self) => {
-    if (!store.url) return false;
-    if (store.url.includes('youtube.com') || store.url.includes('youtube.gaming') || store.url.includes('amazon.com')) return false;
-    if (store.url.includes('marketplace.xbox.com')) return false;
-    const xboxSources = [11, 31, 54];
-    const isXbox = xboxSources.includes(store.external_game_source);
-    if (isXbox) {
-      const firstXboxIndex = self.findIndex(s => xboxSources.includes(s.external_game_source) && s.url && !s.url.includes('marketplace.xbox.com'));
-      return index === firstXboxIndex;
-    }
-    return index === self.findIndex(s => s.external_game_source === store.external_game_source);
-  });
+  const filteredStores = React.useMemo(() =>
+    (game.external_games || []).filter((store, index, self) => {
+      if (!store.url) return false;
+      if (store.url.includes('youtube.com') || store.url.includes('youtube.gaming') || store.url.includes('amazon.com')) return false;
+      if (store.url.includes('marketplace.xbox.com')) return false;
+      const xboxSources = [11, 31, 54];
+      const isXbox = xboxSources.includes(store.external_game_source);
+      if (isXbox) {
+        const firstXboxIndex = self.findIndex(s => xboxSources.includes(s.external_game_source) && s.url && !s.url.includes('marketplace.xbox.com'));
+        return index === firstXboxIndex;
+      }
+      return index === self.findIndex(s => s.external_game_source === store.external_game_source);
+    }),
+  [game.external_games]);
 
-  const officialWebsites = (game.websites || []).filter(w => w.category === 1 && !w.url.includes('youtube.com'));
-  const renderableOfficialStores = filteredStores
-    .map((store) => ({
-      ...store,
-      icon: getStoreIcon(store.external_game_source),
-      storeName: getStoreName(store.external_game_source),
-    }))
-    .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null)
-    .sort((a, b) => Number(b.external_game_source === 1) - Number(a.external_game_source === 1));
+  const officialWebsites = React.useMemo(
+    () => (game.websites || []).filter(w => w.category === 1 && !w.url.includes('youtube.com')),
+    [game.websites],
+  );
+
+  const renderableOfficialStores = React.useMemo(() =>
+    filteredStores
+      .map((store) => ({
+        ...store,
+        icon: getStoreIcon(store.external_game_source),
+        storeName: getStoreName(store.external_game_source),
+      }))
+      .filter((store): store is typeof store & { icon: React.ReactElement } => store.icon !== null)
+      .sort((a, b) => Number(b.external_game_source === 1) - Number(a.external_game_source === 1)),
+  [filteredStores]);
   const synopsis = game.summary || 'No synopsis available yet.';
   const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
   const storeButtonClass = "game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm font-semibold transition-colors";
