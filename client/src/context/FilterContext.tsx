@@ -46,6 +46,25 @@ export interface Filter {
   isChild?: boolean;
 }
 
+// Slim context consumed by GameCard — only the selection slice.
+// Kept separate so changes to gameResults / isLoading / sortBy etc.
+// do NOT re-render the 50+ mounted game cards.
+interface FilterSelectionContextType {
+  selectedFilters: Filter[];
+  addFilter: (filter: Filter) => void;
+  removeFilter: (id: string | number, category: string, endpoint?: string) => void;
+  isFilterSelected: (id: string | number, category: string, endpoint?: string) => boolean;
+  seedAndSearch: (seed: { id: number; name: string }, filters: Filter[]) => void;
+}
+
+const FilterSelectionContext = createContext<FilterSelectionContextType | undefined>(undefined);
+
+export const useFilterSelection = () => {
+  const ctx = useContext(FilterSelectionContext);
+  if (!ctx) throw new Error('useFilterSelection must be used within a FilterProvider');
+  return ctx;
+};
+
 // Define the shape of our context
 interface FilterContextType {
   selectedFilters: Filter[];
@@ -687,6 +706,17 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilters]);
 
+  // Selection-only value — memoized independently so that changes to
+  // gameResults / isLoading / etc. don't invalidate this object and
+  // don't re-render GameCard instances via their useFilterSelection() call.
+  const selectionValue = React.useMemo<FilterSelectionContextType>(() => ({
+    selectedFilters,
+    addFilter,
+    removeFilter,
+    isFilterSelected,
+    seedAndSearch,
+  }), [selectedFilters, addFilter, removeFilter, isFilterSelected, seedAndSearch]);
+
   // Provide all our values and functions through the context
   const value = {
     selectedFilters,
@@ -727,8 +757,10 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
   };
   
   return (
-    <FilterContext.Provider value={value}>
-      {children}
-    </FilterContext.Provider>
+    <FilterSelectionContext.Provider value={selectionValue}>
+      <FilterContext.Provider value={value}>
+        {children}
+      </FilterContext.Provider>
+    </FilterSelectionContext.Provider>
   );
 };

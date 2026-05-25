@@ -4,7 +4,7 @@ declare const gtag: any;
 import { SiAppstore, SiEpicgames, SiGogdotcom, SiGoogleplay, SiItchdotio, SiPlaystation, SiSteam } from 'react-icons/si';
 import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGlobe, FaHeart, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
 import { Share2, Check, Gamepad2, KeyRound } from 'lucide-react';
-import { useFilters } from '../context/FilterContext';
+import { useFilterSelection } from '../context/FilterContext';
 import { useSavedGames } from '../context/SavedGamesContext';
 import EnebaIconImg from '../assets/icons/eneba.png';
 import G2AIconImg from '../assets/icons/g2a.png';
@@ -165,7 +165,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [isFindingSimilar, setIsFindingSimilar] = useState(false);
   const mediaRef = useRef<HTMLDivElement | null>(null);
   const tagsRef = useRef<HTMLDivElement | null>(null);
-  const { addFilter, removeFilter, isFilterSelected, selectedFilters, seedAndSearch } = useFilters();
+  const { addFilter, removeFilter, isFilterSelected, selectedFilters, seedAndSearch } = useFilterSelection();
   const { isSaved, toggleSaved } = useSavedGames();
 
   const imageUrl = game.cover?.url
