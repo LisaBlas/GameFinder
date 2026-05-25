@@ -1436,6 +1436,21 @@ h3{
   color: rgba(var(--c-danger-rgb), 0.9);
 }
 
+@keyframes card-appear {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.game-card-appear {
+  animation: card-appear 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 /* Game Results Styling */
 .results-grid {
   display: grid;

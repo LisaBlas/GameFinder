@@ -205,23 +205,16 @@ const SearchResults: React.FC = () => {
 
           <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
             {gameResults.map((game) => (
-              <motion.div
+              <div
                 key={`game-${game.id}`}
-                className={selectedGameId === game.id ? 'widescreen:col-span-2' : 'h-full'}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '0px 0px -40px 0px' }}
-                transition={{
-                  duration: 0.32,
-                  ease: [0.4, 0, 0.2, 1],
-                }}
+                className={`game-card-appear ${selectedGameId === game.id ? 'widescreen:col-span-2' : 'h-full'}`}
               >
                 <GameCard
                   game={game}
                   isSelected={selectedGameId === game.id}
                   onSelect={() => setSelectedGameId(current => current === game.id ? null : game.id)}
                 />
-              </motion.div>
+              </div>
             ))}
           </div>
 
