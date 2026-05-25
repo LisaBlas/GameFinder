@@ -89,6 +89,42 @@
   pointer-events: none;
 }
 
+.etched-placeholder-title,
+.etched-placeholder-subtitle {
+  color: rgba(70, 116, 99, 0.46);
+  text-shadow:
+    0 -2px 1px rgba(0, 0, 0, 0.95),
+    0 -1px 0 rgba(0, 0, 0, 0.95),
+    0 1px 0 rgba(226, 255, 240, 0.18),
+    0 2px 1px rgba(95, 132, 116, 0.12),
+    0 4px 5px rgba(0, 0, 0, 0.72);
+}
+
+.etched-placeholder-title {
+  filter:
+    drop-shadow(0 1px 0 rgba(226, 255, 240, 0.10))
+    drop-shadow(0 -2px 1px rgba(0, 0, 0, 0.85));
+}
+
+.etched-placeholder-subtitle {
+  color: rgba(132, 154, 146, 0.46);
+  text-shadow:
+    0 -2px 1px rgba(0, 0, 0, 0.92),
+    0 -1px 0 rgba(0, 0, 0, 0.92),
+    0 1px 0 rgba(236, 250, 243, 0.15),
+    0 3px 4px rgba(0, 0, 0, 0.64);
+}
+
+.etched-placeholder-icon {
+  color: rgba(70, 116, 99, 0.40);
+  stroke-width: 1.45;
+  filter:
+    drop-shadow(0 -2px 1px rgba(0, 0, 0, 0.92))
+    drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.92))
+    drop-shadow(0 1px 0 rgba(226, 255, 240, 0.16))
+    drop-shadow(0 4px 5px rgba(0, 0, 0, 0.68));
+}
+
 /* Filter Pill Styles */
 .filter-pill {
   @apply inline-flex rounded-full px-3 py-1.5 text-sm font-medium cursor-pointer border transition-colors;
