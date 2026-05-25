@@ -81,7 +81,7 @@ function buildJsonLd(page: SeoPage, appUrl: string, games?: CachedGame[]): strin
     "@type": "WebApplication",
     name: "GameFinder",
     url: BASE_URL,
-    description: "Discover your next favorite game with ultra-specific keyword and filter search.",
+    description: "Taste-first game discovery curated by what actually matters - mood, mechanics, setting, style, and smart keyword combinations.",
     applicationCategory: "GameApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -336,7 +336,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
     </div>
 
     <p class="footer-note">
-      Results are curated by <a href="${BASE_URL}/">GameFinder</a> - discover games by what actually matters to you.
+      Results are curated by <a href="${BASE_URL}/">GameFinder</a> - taste-first game discovery, not a database dump.
     </p>
   </div>
 </body>

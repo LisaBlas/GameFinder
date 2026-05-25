@@ -98,6 +98,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh, gameResults, totalCount } = useFilters();
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
   const hasDesktopActionItems = selectedFilters.length > 0;
+  const showTasteStory = selectedFilters.length === 0 && !searchFresh;
   const [shareCopied, setShareCopied] = useState(false);
   const [shareShineActive, setShareShineActive] = useState(false);
 
@@ -735,6 +736,22 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     </div>
   );
 
+  const renderTasteStory = () => (
+    <section className="taste-story-card" aria-label="GameFinder taste curation">
+      <span className="taste-story-icon">
+        <BookOpen className="w-4 h-4" />
+      </span>
+      <span className="taste-story-copy">
+        <span className="taste-story-title">
+          Curated by what actually matters - not a database dump.
+        </span>
+        <span className="taste-story-body">
+          Keywords are chosen for playable taste: mechanics, mood, setting, style, and combinations that reveal games generic genre lists miss.
+        </span>
+      </span>
+    </section>
+  );
+
   const renderKeywordPanel = (subCategoryName: string, variant: "desktop" | "mobile") => {
     const { displayedKeywords, totalKeywords, description } = getKeywordPanelData(subCategoryName);
 
@@ -1269,6 +1286,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         onClick={applyUniqueCombo}
                       />
                     </div>
+
+                    {showTasteStory && renderTasteStory()}
                   </div>
                 </>
               )}

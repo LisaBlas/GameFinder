@@ -85,7 +85,7 @@ const HomeContent: React.FC = () => {
             <h1 className="brand-wordmark font-brand text-[1.08rem] font-normal tracking-[0.075em]">
               GameFinder
             </h1>
-            <span className="font-cinzel text-[0.55rem] tracking-[0.2em] uppercase text-muted-foreground/70">Search by vibe, not just genre</span>
+            <span className="font-cinzel text-[0.55rem] tracking-[0.2em] uppercase text-muted-foreground/70">Taste-first game discovery</span>
           </div>
           <button
             type="button"

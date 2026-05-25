@@ -174,8 +174,9 @@ How it works end-to-end:
 
 ## Competitive Context
 - Main competitors: WhatOPlay, Boredgame.lol, GamesFinder.gg
-- Differentiator: "based on what actually matters" - curated keywords + smart filtering, not database dumps
+- Differentiator: taste-first discovery "curated by what actually matters - not a database dump" via intentional keywords + smart filtering.
 - Mood/vibe angle is underserved and aligns with the keyword approach
+- Brand story should explain keyword curation as editorial judgment: mechanics, mood, setting, style, and useful combinations that reveal games generic genre lists miss. Avoid weak "why X but not Y" examples unless the distinction teaches a real search/use-case difference.
 
 ## Workflow
 - From Slack, mention `@bot projects/GameFinder <task>` to start a session here.
