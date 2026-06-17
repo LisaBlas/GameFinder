@@ -412,18 +412,16 @@ export class IGDBService {
   async suggestGames(q: string): Promise<Array<{ id: number; name: string; cover?: { url: string }; first_release_date?: number }>> {
     // Strip characters that would break the Apicalypse wildcard query
     const safe = q.replace(/"/g, '').replace(/\*/g, '');
+    // Exclude DLC/addons (1), mods (5), episodes (6), seasons (7) at the IGDB level
+    // so high-follow DLCs can't crowd out the main game before we slice.
     const query = `
       fields id, name, cover.url, first_release_date, category;
-      where name ~ *"${safe}"*;
+      where name ~ *"${safe}"* & category != (1,5,6,7);
       sort follows desc;
       limit 8;
     `.trim();
     const results = await this.makeRequest('games', query);
-    // Post-filter: exclude DLC/addons (1), episodes (6), seasons (7), mods (5)
-    const EXCLUDED_CATEGORIES = new Set([1, 5, 6, 7]);
-    return results
-      .filter((g: any) => !EXCLUDED_CATEGORIES.has(g.category))
-      .slice(0, 5);
+    return results.slice(0, 5);
   }
 
   /**
