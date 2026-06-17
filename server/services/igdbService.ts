@@ -416,7 +416,7 @@ export class IGDBService {
     // so high-follow DLCs can't crowd out the main game before we slice.
     const query = `
       fields id, name, cover.url, first_release_date, category;
-      where name ~ *"${safe}"* & category != (1,5,6,7);
+      where name ~ *"${safe}"* & category != 1 & category != 5 & category != 6 & category != 7;
       sort follows desc;
       limit 8;
     `.trim();
