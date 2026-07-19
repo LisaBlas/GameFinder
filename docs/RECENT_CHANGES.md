@@ -3,6 +3,10 @@
 Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
+## 2026-07-19
+- Discovery section: Random roll card label "Roll random" → "Roll any key"
+  (copy-only, `KeywordSection.tsx`). Trello pipeline-test card.
+
 ## 2026-07-16
 - Resumed this log (had gone dormant since the 2026-07-14 docs cleanup below).
 

@@ -1207,7 +1207,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         hasResult={isCommonKeywordRevealed}
                         typeIcon={KeyRound}
                         actionIcon={Shuffle}
-                        actionLabel="Roll random"
+                        actionLabel="Roll any key"
                         revealedContent={commonKeywordRevealed?.name ?? ''}
                         idleFooterCopy={commonKeywordState}
                         footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
