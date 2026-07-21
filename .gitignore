@@ -1,6 +1,15 @@
 # Dependencies
 node_modules/
 
+# Local venv for the pre-commit framework (lint tooling itself is Node/eslint)
+.venv/
+
+# UX review persona's local Playwright venv + scratch workspace
+# (company/employees/gamefinder_ux.yaml) — isolated from the app's own npm
+# deps, not part of the production build
+.ux_review_venv/
+.ux_review_scratch/
+
 # Production build
 dist/
 build/

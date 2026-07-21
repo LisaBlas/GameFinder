@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 async function getAccessToken() {
     const response = await axios.post('https://id.twitch.tv/oauth2/token', null, {

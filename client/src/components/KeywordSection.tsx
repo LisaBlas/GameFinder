@@ -470,7 +470,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   // Capture result count once per fresh search completion for rarity reveal.
   // Intentionally excludes gameResults from deps: we want exactly one capture per
   // fresh search, not a re-fire on every loadMore batch.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (searchFresh && !isLoading && activeDiscoveryCardIdRef.current !== null && !resultCapturedRef.current) {
       const cardId = activeDiscoveryCardIdRef.current;

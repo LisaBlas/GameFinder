@@ -46,13 +46,6 @@ interface Game {
   }>;
 }
 
-interface Store {
-  id: number;
-  name: string;
-  category: number;
-  url: string;
-}
-
 export class IGDBService {
   private baseUrl = 'https://api.igdb.com/v4';
   private clientId = process.env.TWITCH_CLIENT_ID;
@@ -106,7 +99,7 @@ export class IGDBService {
       return access_token;
     } catch (error) {
       console.error('Error getting Twitch access token:', error);
-      throw new Error('Failed to authenticate with Twitch API');
+      throw new Error('Failed to authenticate with Twitch API', { cause: error });
     }
   }
 
@@ -149,10 +142,10 @@ export class IGDBService {
       });
       
       if (error.response?.data) {
-        throw new Error(`IGDB API error: ${JSON.stringify(error.response.data)}`);
+        throw new Error(`IGDB API error: ${JSON.stringify(error.response.data)}`, { cause: error });
       }
-      
-      throw new Error(`IGDB API request failed: ${error.message}`);
+
+      throw new Error(`IGDB API request failed: ${error.message}`, { cause: error });
     }
   }
 
@@ -225,7 +218,7 @@ export class IGDBService {
       }
 
       // Convert filter conditions to where clause
-      let whereClause = filterConditions.length > 0
+      const whereClause = filterConditions.length > 0
         ? filterConditions.join(' & ') + excludeClause
         : 'id != null' + excludeClause;
 
@@ -338,7 +331,7 @@ export class IGDBService {
         page,
         excludeCount: excludeIds.length
       });
-      throw new Error(`Failed to search games: ${error.message}`);
+      throw new Error(`Failed to search games: ${error.message}`, { cause: error });
     }
   }
 

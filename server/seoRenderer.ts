@@ -92,7 +92,6 @@ function buildJsonLd(page: SeoPage, appUrl: string, games?: CachedGame[]): strin
 
 export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
   const appUrl = buildAppUrl(page.filters);
-  const fullAppUrl = `${BASE_URL}${appUrl}`;
   const canonicalUrl = `${BASE_URL}/best/${page.slug}`;
   const searchLabel = page.searchLabel ?? "Find these games";
 

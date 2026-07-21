@@ -245,10 +245,6 @@ function fill(template: string, keyword: string): string {
   return template.replace(/\{keyword\}/g, keyword);
 }
 
-function capitalize(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
 type GeneratedSeoPage = {
   slug: string;
   title: string;

@@ -408,7 +408,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       emptyText: 'This game might be too recent, too obscure, or missing detailed keyword data.'
     },
   ].filter(group => group.tags.length > 0 || group.label === 'Keywords'),
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   [game.platforms, game.genres, game.themes, game.game_modes, game.keywords, selectedTagKeys]);
 
   const filteredStores = React.useMemo(() =>

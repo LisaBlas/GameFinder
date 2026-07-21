@@ -1,0 +1,3 @@
+# Local development tooling only (pre-commit framework itself).
+# Actual lint (eslint) is a Node devDependency in package.json.
+pre-commit==4.6.0

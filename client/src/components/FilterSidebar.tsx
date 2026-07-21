@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { FilterCategory } from './FilterCategory';
 import { Filter } from './Filter';
 import filterData from '../lib/filters';

@@ -1,6 +1,3 @@
-import { db } from "./index";
-import * as schema from "@shared/schema";
-
 async function seed() {
   try {
     // seed data here
