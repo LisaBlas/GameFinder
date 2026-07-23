@@ -2,11 +2,13 @@
 
 Hard rules that must not be violated without a deliberate, explicit decision.
 
-## Windows build
-`npm run build` completes the Vite client build and esbuild server bundle,
-then fails at the final Unix `cp -r client/src/assets dist/` step on Windows.
-Use Git Bash/WSL for the full build, or replace that copy step with a
-cross-platform command before relying on it locally.
+## `npm run build` is mutating and shell-sensitive
+`npm run build` is not a pure verification command. It currently runs
+`npm install --include=dev` first, then the Vite client build and esbuild
+server bundle, then a Unix `cp -r client/src/assets dist/` step. On Windows
+shells that final copy step fails; on any platform the command can also
+mutate the install state before the build even starts. Do not treat
+`npm run build` as a clean read-only check.
 
 ## Typecheck baseline
 `npm run check` (root `tsc` against the whole app) is expected to pass.
@@ -36,6 +38,19 @@ must be enforced in application code after fetching, in
 `client/public/sitemap.xml` is ignored in production. The real sitemap is
 generated dynamically from `SEO_PAGES` in `server/seoRenderer.ts`. Do not edit
 the static file expecting it to take effect.
+
+## Pre-commit hook requires Node >=20.12
+The `pre-commit` hook (added 2026-07-23) runs ESLint 10.7, which calls
+`util.styleText` — only available in Node >=20.12. Under Node 18.x (the
+current VPS default for this project as of 2026-07-23) every commit fails
+at the `eslint` hook stage with `TypeError: util.styleText is not a
+function`, regardless of what changed. This blocks *all* commits, not just
+ones touching lintable files. Confirmed via `git stash` that the failure
+reproduces against the unmodified tree too — it's an environment/tooling
+mismatch, not a code regression. Do not work around it with
+`git commit --no-verify` without asking first; either pin/upgrade the
+project's Node version or downgrade `eslint` to a Node-18-compatible
+release.
 
 ## Discovery card CSS class logic lives in one place
 `DiscoveryCard.tsx` owns the construction of `.qs-card-*` state classes

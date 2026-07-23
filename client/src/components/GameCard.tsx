@@ -24,6 +24,22 @@ const trackExternalClick = (storeName: string, storeType: 'official' | 'affiliat
   }
 };
 
+const trackAffiliateClick = (
+  partner: string,
+  gameId: number,
+  gameTitle: string,
+  linkPosition: 'primary' | 'alternate',
+) => {
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'affiliate_outbound_click', {
+      affiliate_partner: partner,
+      game_id: gameId,
+      game_name: gameTitle,
+      link_position: linkPosition,
+    });
+  }
+};
+
 interface Game {
   id: number;
   name: string;
@@ -87,6 +103,15 @@ const encodeGameTitle = (title: string): string => {
   return encodeURIComponent(title.trim().toLowerCase());
 };
 
+const withAffiliateTracking = (url: string, partner: string): string => {
+  const trackedUrl = new URL(url);
+  trackedUrl.searchParams.set('utm_source', 'gamefinder');
+  trackedUrl.searchParams.set('utm_medium', 'affiliate');
+  trackedUrl.searchParams.set('utm_campaign', 'game-card');
+  trackedUrl.searchParams.set('utm_content', partner);
+  return trackedUrl.toString();
+};
+
 const getStablePartnerOffset = (gameId: number, gameTitle: string, partnerCount: number): number => {
   if (partnerCount <= 0) return 0;
   const source = `${gameId}-${gameTitle}`;
@@ -121,27 +146,27 @@ const getAffiliateLinks = (gameTitle: string) => {
   const encodedTitle = encodeGameTitle(gameTitle);
   return {
     kinguin: {
-      url: `https://kinguin.net/catalogsearch/result/index/?q=${encodedTitle}&r=6821d3b3a5047`,
+      url: withAffiliateTracking(`https://kinguin.net/catalogsearch/result/index/?q=${encodedTitle}&r=6821d3b3a5047`, 'kinguin'),
       name: 'Kinguin',
       icon: KinguinIcon
     },
     gamersgate: {
-      url: `https://www.gamersgate.com/games/?query=${encodedTitle}&aff=101cb522a80aa651def97a459c07ed80bea7a27d`,
+      url: withAffiliateTracking(`https://www.gamersgate.com/games/?query=${encodedTitle}&aff=101cb522a80aa651def97a459c07ed80bea7a27d`, 'gamersgate'),
       name: 'GamersGate',
       icon: GamersGateIcon
     },
     eneba: {
-      url: `https://www.eneba.com/fr/store/all?text=${encodedTitle}&af_id=Lisa_Blas`,
+      url: withAffiliateTracking(`https://www.eneba.com/fr/store/all?text=${encodedTitle}&af_id=Lisa_Blas`, 'eneba'),
       name: 'Eneba',
       icon: EnebaIcon
     },
     g2a: {
-      url: `https://www.g2a.com/search?query=${encodedTitle}&reflink=eb3730e215`,
+      url: withAffiliateTracking(`https://www.g2a.com/search?query=${encodedTitle}&reflink=eb3730e215`, 'g2a'),
       name: 'G2A',
       icon: G2AIcon
     },
     instantGaming: {
-      url: `https://www.instant-gaming.com/fr/rechercher/?q=${encodedTitle}&igr=gamefinder-link`,
+      url: withAffiliateTracking(`https://www.instant-gaming.com/fr/rechercher/?q=${encodedTitle}&igr=gamefinder-link`, 'instant-gaming'),
       name: 'Instant Gaming',
       icon: InstantGamingIcon
     }
@@ -364,10 +389,20 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     }
   };
 
-  const handleLinkClick = (e: React.MouseEvent, url: string, storeName: string, storeType: 'official' | 'affiliate' = 'official') => {
+  const handleLinkClick = (
+    e: React.MouseEvent,
+    url: string,
+    storeName: string,
+    storeType: 'official' | 'affiliate' = 'official',
+    linkPosition?: 'primary' | 'alternate',
+  ) => {
     e.preventDefault();
     e.stopPropagation();
-    trackExternalClick(storeName, storeType, game.name);
+    if (storeType === 'affiliate') {
+      trackAffiliateClick(storeName, game.id, game.name, linkPosition ?? 'primary');
+    } else {
+      trackExternalClick(storeName, storeType, game.name);
+    }
     window.open(url, '_blank');
   };
 
@@ -515,35 +550,35 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       name: affiliateLinks.gamersgate.name,
       descriptor: 'Check DRM and current deal',
       icon: <GamersGateIcon />,
-      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate')
+      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(e, affiliateLinks.gamersgate.url, 'GamersGate', 'affiliate', linkPosition)
     },
     {
       key: 'instantGaming',
       name: affiliateLinks.instantGaming.name,
       descriptor: 'Check region and current deal',
       icon: <InstantGamingIcon />,
-      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate')
+      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(e, affiliateLinks.instantGaming.url, 'Instant Gaming', 'affiliate', linkPosition)
     },
     {
       key: 'eneba',
       name: affiliateLinks.eneba.name,
       descriptor: 'Compare sellers and region lock',
       icon: <EnebaIcon />,
-      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate')
+      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(e, affiliateLinks.eneba.url, 'Eneba', 'affiliate', linkPosition)
     },
     {
       key: 'kinguin',
       name: affiliateLinks.kinguin.name,
       descriptor: 'Compare keys and seller ratings',
       icon: <KinguinIcon />,
-      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.kinguin.url, 'Kinguin', 'affiliate')
+      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(e, affiliateLinks.kinguin.url, 'Kinguin', 'affiliate', linkPosition)
     },
     {
       key: 'g2a',
       name: affiliateLinks.g2a.name,
       descriptor: 'Compare sellers and activation region',
       icon: <G2AIcon />,
-      onClick: (e: React.MouseEvent) => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate')
+      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(e, affiliateLinks.g2a.url, 'G2A', 'affiliate', linkPosition)
     }
   ];
   const partnerStoreOffset = getStablePartnerOffset(game.id, game.name, partnerStores.length);
@@ -558,7 +593,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     <div className="flex flex-col gap-1.5">
       <button
         type="button"
-        onClick={primaryPartnerStore.onClick}
+        onClick={(e) => primaryPartnerStore.onClick(e, 'primary')}
         className={storeButtonClass}
         title={primaryPartnerStore.name}
       >
@@ -573,7 +608,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         <button
           key={store.key}
           type="button"
-          onClick={store.onClick}
+          onClick={(e) => store.onClick(e, 'alternate')}
           className={storeButtonClass}
           title={store.name}
         >

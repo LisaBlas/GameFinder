@@ -13,9 +13,13 @@ Durable decisions and context not derivable from source alone.
    (curated sequence of popular keys, e.g. Action Roguelike → Souls-like;
    label "Top key this week"), **Crafted** (hand-picked combos, first entry is
    Memory Loss + Horror theme), **Random** (random single keyword from the
-   full pool, infinite), and **User Crafted** (community combos). Uniques has
-   two cards: **Unique Key** and **Unique Combo** — rare discovery sequences
-   that tend to surface very few results.
+   full pool, infinite), and **Hidden Gem** (id `user-crafts`; fixed
+   editorial reveal — Cosmic Horror + Indie — labeled/iconed as a curated
+   niche pick, not real community-fed data; renamed from "User Crafted"
+   2026-07-23 — the old name plus a `Users` icon and "community" copy implied
+   live community data that doesn't exist, see item 4 below).
+   Uniques has two cards: **Unique Key** and **Unique Combo** — rare discovery
+   sequences that tend to surface very few results.
 3. **Discovery card steps** — Roll and Uniques cards show sequence progress
    like `1/5` instead of remaining-count copy. Finite sequences wrap back to
    the first item instead of locking; Random uses the infinity icon.
@@ -27,10 +31,13 @@ Durable decisions and context not derivable from source alone.
 4. **Future community search memory (planned)** — save user searches/keyword
    combinations and their result counts so the app can surface strong
    discoveries to other users. Most Popular should come from high-use/
-   high-engagement combinations. User Crafts should highlight
-   community-found combinations, especially "best crafts": keyword/filter
-   combinations that return a low amount of results, because low result count
-   is a proxy for unique/niche games.
+   high-engagement combinations. Hidden Gem should eventually highlight
+   community-found combinations, especially low-result "best crafts", because
+   low result count is a proxy for unique/niche games. That pipeline is not
+   live yet: searches are only written to volatile in-memory `MemStorage`
+   (capped at 100 entries, wiped on every restart/deploy) — not enough to
+   back a "live community data" claim, which is why the card was relabeled
+   from "User Crafted" to "Hidden Gem" (2026-07-23) rather than wired to it.
 5. **Game/keyword search** — `KeywordSearch` queries both
    `/api/games/suggest` and `/api/keywords/search`.
 6. **Find similar** — selecting a game suggestion clears filters, sets
@@ -43,7 +50,10 @@ Durable decisions and context not derivable from source alone.
    search link.
 8. **Affiliate partner stores** — game cards show official store links plus
    rotated partner alternatives for GamersGate, Instant Gaming, Eneba,
-   Kinguin, and G2A. Kinguin uses a first-click cookie-setting redirect flow.
+   Kinguin, and G2A. Each outbound affiliate link preserves its partner ID,
+   adds GameFinder campaign UTM parameters, and fires the GA4
+   `affiliate_outbound_click` event. Kinguin uses a direct affiliate search
+   link rather than a cookie-setting redirect flow.
 9. **Saved games** — users can save/unsave games from cards and open the
    saved-games panel from mobile and desktop headers.
 10. **Quality filters** — `FilterBar` exposes `Has studio`

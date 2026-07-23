@@ -9,7 +9,7 @@ import {
   Sword, Mountain, Crosshair, Zap, Layers, TrendingUp, Flame, Gamepad2,
   Coins, Sparkles, Wand2, LayoutGrid, Target, Trophy, Dices, Brain,
   Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
-  Paintbrush, Eye, Wind, Volume2, BookOpen, type LucideIcon,
+  Paintbrush, Eye, Wind, Volume2, BookOpen, Gem, type LucideIcon,
   X, Search, Share2, Check, ChevronDown, ChevronLeft, ChevronRight,
   Shuffle, Star, KeyRound, Hammer,
   Infinity as InfinityIcon,
@@ -1212,7 +1212,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
                         onClick={applyCommonKeyword}
                       />
-                      {/* User Crafted — community-discovered combos */}
+                      {/* Hidden Gem — fixed editorial pick, not live community data */}
                       <DiscoveryCard
                         name={DISCOVERY_CARD_META['user-crafts'].name}
                         id="user-crafts"
@@ -1222,10 +1222,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         activeRarity={cardRarities['user-crafts']}
                         hasResult={userCraftsRevealed}
                         typeIcon={Hammer}
-                        actionIcon={Users}
-                        actionLabel="Try community"
-                        revealedContent="Eldritch Indie"
-                        idleFooterCopy="Community combo"
+                        actionIcon={Gem}
+                        actionLabel="Reveal gem"
+                        revealedContent="Cosmic Horror + Indie"
+                        idleFooterCopy="Niche pick"
                         footerMeta="1/1"
                         onClick={applyUserCrafts}
                       />

@@ -66,7 +66,10 @@ Keywords use slugs (`toSlug(name)`); other filters use integer IDs.
 `buildAppUrl()` in `seoPages.ts` builds these from a page's filter config.
 
 Analytics: CTA clicks fire a `seo_open_app` GA event with `page_slug` via
-inline `gtag()` call in the rendered HTML.
+inline `gtag()` call in the rendered HTML. Affiliate marketplace buttons in
+`GameCard.tsx` fire `affiliate_outbound_click` with partner, game, and
+primary/alternate-placement dimensions; this is the GA4 event to mark as a
+key event for affiliate-click conversion reporting.
 
 ## API And Search Data Flow
 - `POST /api/games/search`
@@ -85,6 +88,10 @@ inline `gtag()` call in the rendered HTML.
   - `excludeKeywords` and `excludeFilters` are enforced by application
     post-filtering (see `docs/SYSTEM_INVARIANTS.md` — IGDB `!=` doesn't work
     for array exclusion).
+  - Side effect: each search is also written through `storage.saveSearch()`,
+    but `server/storage.ts` is currently in-process `MemStorage` only. Search
+    history is volatile and is not yet wired into discovery-card/community
+    features.
 - `GET /api/games/suggest` — lightweight IGDB name autocomplete for the
   find-similar flow.
 - `GET /api/games/:id/similar-seed` — returns genres, themes, and keywords for

@@ -3,7 +3,7 @@
  * Single source of truth for the 6 homepage discovery cards.
  *
  * Card names (per CLAUDE.md):
- *   Roll section   → Popular | Crafted | Random | User Crafted
+ *   Roll section   → Popular | Crafted | Random | Hidden Gem
  *   Uniques section → Unique Key | Unique Combo
  */
 
@@ -63,8 +63,8 @@ export const DISCOVERY_CARD_META = {
   "rare-combo":      { name: "Crafted",      section: "roll"    },
   /** Draws a random single keyword from the full pool. Infinite. */
   "common-keyword":  { name: "Random",       section: "roll"    },
-  /** Community-discovered combos. Low result count = niche find. */
-  "user-crafts":     { name: "User Crafted", section: "roll"    },
+  /** Fixed editorial pick (single combo, not live user/community data). Low result count = niche find. */
+  "user-crafts":     { name: "Hidden Gem",   section: "roll"    },
   /** Rare single keywords that tend to surface very few games. */
   "unique-keyword":  { name: "Unique Key",   section: "uniques" },
   /** Rare keyword+filter combos that surface very few games. */
