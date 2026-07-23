@@ -27,6 +27,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeModalGameId, setActiveModalGameId] = useState<number | null>(null);
+  const [activeModalGame, setActiveModalGame] = useState<SuggestedGame | null>(null);
   const searchTimeout = useRef<NodeJS.Timeout>();
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const { addFilter } = useFilters();
@@ -114,6 +115,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
     setGameSuggestions([]);
     setKeywordSuggestions([]);
     setShowSuggestions(false);
+    setActiveModalGame(game);
     setActiveModalGameId(game.id);
   };
 
@@ -214,8 +216,12 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
     </div>
     <GameCardModal
       gameId={activeModalGameId}
+      initialGame={activeModalGame}
       highlightFilters
-      onClose={() => setActiveModalGameId(null)}
+      onClose={() => {
+        setActiveModalGameId(null);
+        setActiveModalGame(null);
+      }}
     />
     </>
   );

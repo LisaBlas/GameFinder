@@ -12,6 +12,7 @@ interface SavedGamesPanelProps {
 const SavedGamesPanel: React.FC<SavedGamesPanelProps> = ({ open, onOpenChange }) => {
   const { savedGames, removeSaved } = useSavedGames();
   const [activeGameId, setActiveGameId] = useState<number | null>(null);
+  const activeGame = savedGames.find(game => game.id === activeGameId) ?? null;
 
   return (
     <>
@@ -91,7 +92,11 @@ const SavedGamesPanel: React.FC<SavedGamesPanelProps> = ({ open, onOpenChange })
         </SheetContent>
       </Sheet>
 
-      <GameCardModal gameId={activeGameId} onClose={() => setActiveGameId(null)} />
+      <GameCardModal
+        gameId={activeGameId}
+        initialGame={activeGame}
+        onClose={() => setActiveGameId(null)}
+      />
     </>
   );
 };

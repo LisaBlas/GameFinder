@@ -6,35 +6,58 @@ interface GameCardModalProps {
   gameId: number | null;
   onClose: () => void;
   highlightFilters?: boolean;
+  // Card data already known from the click that opened the modal (search
+  // result, saved game, suggestion, ...). Lets the detail shell render
+  // instantly instead of a blank spinner while /api/games/:id fills in the
+  // rest of the fields underneath.
+  initialGame?: any;
 }
 
-const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose, highlightFilters = false }) => {
+const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose, highlightFilters = false, initialGame }) => {
   // currentGameId allows in-modal navigation when the user clicks a "More like
   // this" cover — the modal swaps to that game without closing and reopening.
   const [currentGameId, setCurrentGameId] = useState<number | null>(gameId);
-  const [game, setGame] = useState<any>(null);
+  const [game, setGame] = useState<any>(gameId !== null && initialGame?.id === gameId ? initialGame : null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   // Keep currentGameId in sync when the parent changes the prop (new search result click).
+  // Seed the shell from initialGame when it matches the newly opened game, otherwise
+  // clear stale data from whatever was previously open — this only runs on a genuine
+  // new open (gameId prop change), not on in-modal "more like this" navigation, so it
+  // can't undo the no-clear behavior the currentGameId effect below relies on.
   useEffect(() => {
     setCurrentGameId(gameId);
+    if (gameId === null) return;
+    setGame(gameId === initialGame?.id ? initialGame : null);
+    setError(false);
   }, [gameId]);
 
+  // Deliberately does not clear `game` before fetching: keeping the previous/seeded
+  // card visible avoids a blank spinner flash on open and during in-modal
+  // "more like this" navigation. AbortController guards against an in-flight
+  // request from a stale currentGameId overwriting a newer one's result.
   useEffect(() => {
     if (!currentGameId) return;
-    setGame(null);
     setError(false);
     setLoading(true);
 
-    fetch(`/api/games/${currentGameId}`)
+    const controller = new AbortController();
+
+    fetch(`/api/games/${currentGameId}`, { signal: controller.signal })
       .then(r => {
         if (!r.ok) throw new Error('Not found');
         return r.json();
       })
       .then(data => setGame(data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .catch(err => {
+        if (err.name !== 'AbortError') setError(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
   }, [currentGameId]);
 
   useEffect(() => {
@@ -65,12 +88,12 @@ const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose, highligh
             className="p-3 md:w-full md:max-w-2xl md:max-h-[88vh] md:overflow-y-auto md:rounded-xl md:p-0 md:shadow-2xl"
             onClick={e => e.stopPropagation()}
           >
-            {loading && (
+            {loading && !game && (
               <div className="flex items-center justify-center py-20">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
               </div>
             )}
-            {error && (
+            {error && !game && (
               <div className="py-16 text-center text-sm text-slate-400">
                 Failed to load game details.
               </div>

@@ -4,6 +4,9 @@ Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
 ## 2026-07-23
+- Game detail modals now render the clicked search suggestion or saved-game
+  card immediately while full details load; stale detail requests are aborted
+  during rapid navigation, avoiding blank spinners and wrong-card flashes.
 - Affiliate marketplace buttons now add GameFinder UTMs and emit the dedicated
   `affiliate_outbound_click` GA4 event with partner, game, and placement.
 - Renamed the "User Crafted" discovery card to "Hidden Gem" and replaced its
