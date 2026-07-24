@@ -25,14 +25,18 @@ const HomeContent: React.FC = () => {
   const { savedGames } = useSavedGames();
   const [activeTab, setActiveTab] = useState<'build' | 'results'>('build');
   const [panelOpen, setPanelOpen] = useState(false);
+  // Single detail-view entry point: normal keyword/Roll/Uniques result taps
+  // and `?game=` deep links both end up here, feeding the one GameCardModal.
+  const [activeGameId, setActiveGameId] = useState<number | null>(null);
 
   useEffect(() => {
     const handlePopState = () => {
       if (panelOpen) setPanelOpen(false);
+      if (activeGameId !== null) setActiveGameId(null);
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [panelOpen]);
+  }, [panelOpen, activeGameId]);
 
   const handlePanelOpenChange = (open: boolean) => {
     if (open) {
@@ -42,7 +46,19 @@ const HomeContent: React.FC = () => {
     }
     setPanelOpen(open);
   };
-  const [deepLinkGameId, setDeepLinkGameId] = useState<number | null>(null);
+
+  // Pushes a history entry so the back button closes the modal, same as the
+  // saved-games panel above — matches the affordance the keyword-tap path
+  // already had before unification.
+  const openGameModal = (id: number) => {
+    window.history.pushState({ gamefinder: 'game-modal' }, '');
+    setActiveGameId(id);
+  };
+
+  const closeGameModal = () => {
+    if (activeGameId !== null) window.history.back();
+  };
+
   const resultsSectionRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -66,12 +82,12 @@ const HomeContent: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     const gameId = params.get('game');
     if (!gameId) return;
-    setDeepLinkGameId(Number(gameId));
     params.delete('game');
     const newUrl = params.toString()
       ? `${window.location.pathname}?${params}`
       : window.location.pathname;
     window.history.replaceState(null, '', newUrl);
+    openGameModal(Number(gameId));
   }, []);
 
   return (
@@ -104,7 +120,7 @@ const HomeContent: React.FC = () => {
       </div>
 
       <SavedGamesPanel open={panelOpen} onOpenChange={handlePanelOpenChange} />
-      <GameCardModal gameId={deepLinkGameId} onClose={() => setDeepLinkGameId(null)} />
+      <GameCardModal gameId={activeGameId} onClose={closeGameModal} />
 
       {/* Mobile Tab Bar */}
       <div className="lg:hidden flex shrink-0 border-b border-border bg-background/80 backdrop-blur-sm">
@@ -186,6 +202,7 @@ const HomeContent: React.FC = () => {
           <ResultsSection
             setActiveSection={() => {}}
             resultsSectionRef={resultsSectionRef}
+            onOpenGame={openGameModal}
           />
         </div>
       </motion.div>

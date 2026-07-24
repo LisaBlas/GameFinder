@@ -39,11 +39,17 @@ Everything is unstaged — want me to commit these changes?
 ## Update — 2026-07-23 23:02 UTC
 You've hit your weekly limit · resets 2pm (UTC)
 
+---
+## Update — 2026-07-24 09:18 UTC
+I inspected the interrupted state first: `git status` showed the Trello copy audit was already partially implemented in the worktree, `git diff` confirmed the substantive fixes were present, and the worksheet trail showed one completed indexed worksheet plus two duplicate untracked resume copies. I preserved those valid in-progress changes and only finished the remaining task-scoped inconsistency: the stale inline comment above the User Crafted card in [KeywordSection.tsx](/home/blas/projects/GameFinder/client/src/components/KeywordSection.tsx:1215) now matches the actual “featured hardcoded combo” behavior.
+
+Verification ran clean. `npm run check` passed, and a targeted grep found no remaining `Top key this week`, `Try community`, `Community combo`, or `community-discovered combos` strings in the discovery-card source. The duplicate untracked worksheet files are still present; I left them alone because this repo’s rules require asking before deleting files.
+
 ## Plan
 (not yet broken into steps)
 
 ## Log
-- 2026-07-24 09:16 UTC — created
+- 2026-07-24 09:21 UTC — created
 
 ## Handoff
 (none — still in progress)

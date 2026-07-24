@@ -21,8 +21,13 @@ const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose, highligh
     setCurrentGameId(gameId);
   }, [gameId]);
 
+  // Now that this modal is the shared detail view for every entry point (not
+  // just deep links), a game switch can fire before the previous fetch
+  // resolves — guard against an in-flight response for a game the user has
+  // since navigated away from overwriting the current one.
   useEffect(() => {
     if (!currentGameId) return;
+    let cancelled = false;
     setGame(null);
     setError(false);
     setLoading(true);
@@ -32,9 +37,11 @@ const GameCardModal: React.FC<GameCardModalProps> = ({ gameId, onClose, highligh
         if (!r.ok) throw new Error('Not found');
         return r.json();
       })
-      .then(data => setGame(data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .then(data => { if (!cancelled) setGame(data); })
+      .catch(() => { if (!cancelled) setError(true); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
   }, [currentGameId]);
 
   useEffect(() => {

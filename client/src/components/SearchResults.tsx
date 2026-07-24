@@ -7,7 +7,6 @@ import LoadMoreButton from './LoadMoreButton';
 import FilterBar from './FilterBar';
 import MobileFilterSheet from './MobileFilterSheet';
 import SearchPlaceholder from './SearchPlaceholder';
-import { motion, AnimatePresence } from 'framer-motion';
 
 type RarityTier = "common" | "uncommon" | "rare" | "epic" | "unique";
 
@@ -36,10 +35,13 @@ const RARITY_TEXT: Record<RarityTier, string> = {
   unique:   '--c-unique-soft',
 };
 
-const SearchResults: React.FC = () => {
+interface SearchResultsProps {
+  onOpenGame: (id: number) => void;
+}
+
+const SearchResults: React.FC<SearchResultsProps> = ({ onOpenGame }) => {
   const { gameResults, isLoading, error, sortBy, setSortBy, seedGame, lastSearchedFilters, totalCount, countIsCapped } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
-  const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
   const [hideMobileControls, setHideMobileControls] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
 
@@ -49,26 +51,6 @@ const SearchResults: React.FC = () => {
       setHasSearched(true);
     }
   }, [isLoading]);
-
-  const selectedGame = gameResults.find(g => g.id === selectedGameId) ?? null;
-
-  useEffect(() => {
-    if (selectedGameId !== null) {
-      document.body.style.overflow = 'hidden';
-      window.history.pushState({ gamefinder: 'game-card' }, '');
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [selectedGameId]);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (selectedGameId !== null) setSelectedGameId(null);
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [selectedGameId]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -90,7 +72,7 @@ const SearchResults: React.FC = () => {
       : scrollParent.scrollTop;
 
     const handleScroll = () => {
-      if (!window.matchMedia('(max-width: 1023px)').matches || selectedGameId) {
+      if (!window.matchMedia('(max-width: 1023px)').matches) {
         setHideMobileControls(false);
         return;
       }
@@ -118,7 +100,7 @@ const SearchResults: React.FC = () => {
       scrollParent.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
-  }, [selectedGameId]);
+  }, []);
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
@@ -205,14 +187,11 @@ const SearchResults: React.FC = () => {
 
           <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
             {gameResults.map((game) => (
-              <div
-                key={`game-${game.id}`}
-                className={`game-card-appear ${selectedGameId === game.id ? 'widescreen:col-span-2' : 'h-full'}`}
-              >
+              <div key={`game-${game.id}`} className="game-card-appear h-full">
                 <GameCard
                   game={game}
-                  isSelected={selectedGameId === game.id}
-                  onSelect={() => setSelectedGameId(current => current === game.id ? null : game.id)}
+                  isSelected={false}
+                  onSelect={() => onOpenGame(game.id)}
                 />
               </div>
             ))}
@@ -227,28 +206,6 @@ const SearchResults: React.FC = () => {
   };
 
   return (
-    <>
-    <AnimatePresence>
-      {selectedGame && (
-        <motion.div
-          key="mobile-fullscreen"
-          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-slate-950 lg:hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="p-3">
-            <GameCard
-              game={selectedGame}
-              isSelected={true}
-              fullscreen={true}
-              onSelect={() => setSelectedGameId(null)}
-            />
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
     <section ref={sectionRef} className="flex min-h-0 flex-1 flex-col w-full mx-auto">
       {/* Desktop-only sticky header — hidden on mobile via CSS */}
       <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'}`}>
@@ -280,7 +237,6 @@ const SearchResults: React.FC = () => {
       
       {renderContent()}
     </section>
-    </>
   );
 };
 

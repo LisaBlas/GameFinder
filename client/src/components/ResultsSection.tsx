@@ -4,16 +4,17 @@ import SearchResults from './SearchResults';
 interface ResultsSectionProps {
   setActiveSection: (section: 'keywords' | 'results') => void;
   resultsSectionRef: React.RefObject<HTMLDivElement>;
+  onOpenGame: (id: number) => void;
 }
 
-const ResultsSection: React.FC<ResultsSectionProps> = ({ resultsSectionRef }) => {
+const ResultsSection: React.FC<ResultsSectionProps> = ({ resultsSectionRef, onOpenGame }) => {
   return (
     <div
       ref={resultsSectionRef}
       className="game-results w-full px-6 pb-6 flex flex-col min-h-0 transition-all"
     >
       <div className="w-full flex flex-1 min-h-0 flex-col">
-        <SearchResults />
+        <SearchResults onOpenGame={onOpenGame} />
       </div>
     </div>
   );

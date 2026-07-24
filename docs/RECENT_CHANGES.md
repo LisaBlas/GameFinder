@@ -4,6 +4,12 @@ Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
 ## 2026-07-24
+- Result-detail modal unification: search-result taps now open the shared
+  `GameCardModal` from `home.tsx`, so keyword/discovery result cards and
+  `?game=` deep links use the same entry point and history/back-button flow.
+  Removed the old inline/fullscreen `SearchResults` modal path and added a
+  stale-response guard in `GameCardModal` for fast game switches. `npm run
+  check` passes.
 - Docs sweep: corrected command and flow drift (`npm run build`, "Find
   similar"), noted the nested homepage `FilterProvider` in
   `docs/ARCHITECTURE.md`, and pruned this log to the 7-day retention window.
