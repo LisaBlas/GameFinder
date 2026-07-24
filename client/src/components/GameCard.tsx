@@ -74,6 +74,7 @@ interface Game {
     developer: boolean;
     publisher: boolean;
   }>;
+  _matchedFilters?: number[];
 }
 
 interface SimilarGame {
@@ -302,8 +303,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         tagsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       tagsRef.current.classList.add('tags-gold-glow');
+      const matchedTagEls = tagsRef.current.querySelectorAll('[data-matched="true"]');
+      matchedTagEls.forEach(el => el.classList.add('tag-gold-glow'));
       glowTimer = setTimeout(() => {
         tagsRef.current?.classList.remove('tags-gold-glow');
+        matchedTagEls.forEach(el => el.classList.remove('tag-gold-glow'));
       }, 3000);
     }, 350);
     return () => {
@@ -642,6 +646,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     const isSelectedTag = isFilterSelected(tag.id, tag.category);
     const existingFilter = selectedFilters.find(f => f.id === tag.id && f.category === tag.category);
     const isExcluded = existingFilter?.mode === 'exclude';
+    const isMatchedFilter = highlightFilters && (game._matchedFilters?.includes(tag.id) ?? false);
 
     let tagClass: string;
     if (isExcluded) {
@@ -657,10 +662,14 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     } else {
       tagClass = 'game-card-tag-muted';
     }
+    if (isMatchedFilter) {
+      tagClass += ' game-card-tag-matched';
+    }
 
     return (
       <button
         key={`${tag.type}-${tag.id}-${tag.name}`}
+        data-matched={isMatchedFilter ? 'true' : undefined}
         onClick={(e) => handleTagClick(tag, tag.category, e)}
         className={`game-card-tag inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${tagClass}`}
         title={isExcluded ? `Click to remove "${displayName}" exclusion` : isSelectedTag ? `Click to remove "${displayName}" filter` : `Click to add "${displayName}" to filters`}

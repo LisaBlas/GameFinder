@@ -75,6 +75,17 @@ Durable decisions and context not derivable from source alone.
     parallel with the search; count is capped at 250 and returns
     `capped: true` when exceeded. The results header shows "N Results" or
     "N+ Results". Page size is 50 (changed from 30).
+13. **Query-context highlight (`highlightFilters`)** — when a `GameCard`
+    opens with `highlightFilters` true, the tags panel flashes gold
+    (`tags-gold-glow`) and any tag whose id appears in `game._matchedFilters`
+    (set server-side per result in `igdbService.searchGames`, from the
+    filters actually used in that search) also flashes (`tag-gold-glow`) and
+    then settles into a persistent gold-tinted `game-card-tag-matched` state
+    — showing which keywords/tags drove that result. As of 2026-07-24 this is
+    wired from `SearchResults` (primary search path), `GameCardModal`, and
+    `KeywordSearch`; any new place that opens a `GameCard` for a search
+    result should pass `highlightFilters` too or matched tags won't be
+    marked.
 
 ## Competitive Context
 - Main competitors: WhatOPlay, Boredgame.lol, GamesFinder.gg

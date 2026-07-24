@@ -3,6 +3,17 @@
 Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
+## 2026-07-24
+- `SearchResults` now passes `highlightFilters` into the opened result's
+  `GameCard` (both the desktop grid card and the mobile fullscreen card) —
+  previously only `GameCardModal`/`KeywordSearch` wired it up, so this path
+  restores query-context highlighting for the primary search flow. In
+  `GameCard.tsx`, tags matching `game._matchedFilters` (server-computed in
+  `igdbService.searchGames`) now get a persistent gold-tinted
+  `game-card-tag-matched` state plus a one-time `tag-gold-glow` flash on
+  open, in addition to the existing whole-panel `tags-gold-glow` pulse.
+  `SearchResults.tsx`, `GameCard.tsx`, `App.css`.
+
 ## 2026-07-23
 - `KeywordSearch.tsx`: keyword suggestions (`/api/keywords/search`, local
   in-memory lookup) now debounce/fetch independently of game suggestions

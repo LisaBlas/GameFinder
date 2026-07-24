@@ -212,6 +212,7 @@ const SearchResults: React.FC = () => {
                 <GameCard
                   game={game}
                   isSelected={selectedGameId === game.id}
+                  highlightFilters={selectedGameId === game.id}
                   onSelect={() => setSelectedGameId(current => current === game.id ? null : game.id)}
                 />
               </div>
@@ -243,6 +244,7 @@ const SearchResults: React.FC = () => {
               game={selectedGame}
               isSelected={true}
               fullscreen={true}
+              highlightFilters={true}
               onSelect={() => setSelectedGameId(null)}
             />
           </div>
