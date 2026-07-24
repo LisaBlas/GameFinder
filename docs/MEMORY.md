@@ -5,6 +5,8 @@ Durable decisions and context not derivable from source alone.
 ## Active Product Flows
 1. **Keyword UX** — make keyword selection feel fun and rewarding. Keywords
    are curated and sorted intentionally; preserve their order and meaning.
+   Desktop always exposes the category/subcategory explorer inline; the
+   mobile-style "Browse all keywords" shelf is not a desktop prerequisite.
 2. **Homepage discovery cards** — `KeywordSection` has Roll and Uniques
    sections above manual browsing. All 6 cards render via the reusable
    `DiscoveryCard` component (`client/src/components/DiscoveryCard.tsx`); card

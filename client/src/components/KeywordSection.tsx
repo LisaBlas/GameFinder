@@ -870,7 +870,253 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  const renderDesktopExplorer = () => null;
+  const renderDesktopUtilityPanel = () => {
+    if (activeUtilityPanel === "qs-keyword") return renderQsKeywordPanel();
+    if (activeUtilityPanel === "qs-combo") return renderQsComboPanel();
+    return (
+      <div className="flex h-full flex-col gap-4 p-5">
+        {renderKeywordIntro()}
+        {renderKeywordSuggestion("desktop")}
+        {showTasteStory && renderTasteStory()}
+      </div>
+    );
+  };
+
+  const renderDesktopExplorer = () => {
+    const availableMainCategories = mainCategoryOrder.filter(
+      mainCat => getAvailableSubcategories(mainCat).length > 0
+    );
+    const resolvedMainCategory =
+      activeMainCategory && getAvailableSubcategories(activeMainCategory).length > 0
+        ? activeMainCategory
+        : availableMainCategories[0] ?? null;
+
+    if (!resolvedMainCategory) return null;
+
+    const subcategories = getAvailableSubcategories(resolvedMainCategory);
+    const descriptor = (keywordCategories[resolvedMainCategory] as unknown as { description: string }).description;
+    const isActiveSubcategoryInCategory = activeSubcategory
+      ? getSubcategoryParent(activeSubcategory) === resolvedMainCategory
+      : false;
+
+    return (
+      <section className="hidden lg:grid gap-4">
+        <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
+          <div className="flex items-start justify-between gap-6">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
+                <LayoutGrid className="h-3.5 w-3.5" />
+                Keyword Explorer
+              </div>
+              <h2 className="mt-3 text-2xl font-bold text-foreground">
+                Browse mechanics, worlds, and aesthetics before you search.
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Pick a category, drill into a subcategory, and stack keywords that describe the exact feel you want.
+              </p>
+            </div>
+            <div className="min-w-[16rem] rounded-2xl border border-border/80 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
+              <div className="font-semibold text-foreground">Curation scope</div>
+              <div className="mt-1">
+                {availableMainCategories.length} category pillars, {Object.values(topKeywordsByCategory as Record<string, KeywordItem[]>).flat().length}+ featured keywords, plus extended tags.
+              </div>
+            </div>
+          </div>
+          <div className="mt-5 max-w-2xl">
+            <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
+          </div>
+        </div>
+
+        <div className="grid min-h-[44rem] grid-cols-[17rem_24rem_minmax(0,1fr)] gap-4">
+          <aside className="rounded-[28px] border border-border bg-card/75 p-3 shadow-[0_16px_48px_rgba(0,0,0,0.18)]">
+            <div className="px-3 py-2">
+              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
+                Main Categories
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Start broad, then narrow into taste-specific keyword groups.
+              </p>
+            </div>
+            <div className="mt-2 grid gap-2">
+              {availableMainCategories.map(mainCat => {
+                const groupCount = getAvailableSubcategories(mainCat).length;
+                const isActive = mainCat === resolvedMainCategory;
+                return (
+                  <button
+                    key={mainCat}
+                    type="button"
+                    onClick={() => {
+                      setActiveMainCategory(mainCat);
+                      setActiveSubcategory(null);
+                      setActiveUtilityPanel("intro");
+                    }}
+                    className={`rounded-2xl border px-4 py-3 text-left transition-all ${
+                      isActive
+                        ? "border-primary/45 bg-primary/10 shadow-[0_10px_30px_rgba(16,185,129,0.12)]"
+                        : "border-border/80 bg-background/40 hover:border-primary/25 hover:bg-background/65"
+                    }`}
+                    style={getCategoryAccentVars(mainCat)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                        style={{
+                          background: isActive ? "rgba(var(--cat-accent-rgb), 0.16)" : "rgba(var(--cat-accent-rgb), 0.08)",
+                          color: "var(--cat-accent-soft)",
+                        }}
+                      >
+                        {getCategoryIcon(mainCat, "w-4.5 h-4.5")}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-foreground">{mainCat}</div>
+                        <div className="mt-1 text-xs text-muted-foreground">{groupCount} groups</div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+
+          <section
+            className="rounded-[28px] border border-border bg-card/75 shadow-[0_16px_48px_rgba(0,0,0,0.18)]"
+            style={getCategoryAccentVars(resolvedMainCategory)}
+          >
+            <div className="border-b border-border/80 px-5 py-5">
+              <div className="flex items-start gap-4">
+                <span
+                  className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
+                  style={{ background: "rgba(var(--cat-accent-rgb), 0.12)", color: "var(--cat-accent-soft)" }}
+                >
+                  {getCategoryIcon(resolvedMainCategory, "w-5 h-5")}
+                </span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-bold text-foreground">{resolvedMainCategory}</h3>
+                    <span
+                      className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                      style={{ background: "rgba(var(--cat-accent-rgb), 0.12)", color: "var(--cat-accent-soft)" }}
+                    >
+                      {subcategories.length} groups
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{descriptor}</p>
+                </div>
+              </div>
+            </div>
+            <div className="max-h-[36rem] overflow-y-auto px-3 py-3">
+              <div className="grid gap-2">
+                {subcategories.map(subCategoryName => {
+                  const keywordCount = getKeywordCountForSubcategory(subCategoryName);
+                  const description = getSubcategoryDescription(resolvedMainCategory, subCategoryName);
+                  const isActive = subCategoryName === activeSubcategory;
+
+                  return (
+                    <button
+                      key={subCategoryName}
+                      type="button"
+                      onClick={() => {
+                        setActiveMainCategory(resolvedMainCategory);
+                        setActiveSubcategory(subCategoryName);
+                      }}
+                      className={`rounded-2xl border px-4 py-3 text-left transition-all ${
+                        isActive
+                          ? "border-primary/45 bg-primary/10 shadow-[0_10px_30px_rgba(16,185,129,0.12)]"
+                          : "border-border/80 bg-background/35 hover:border-primary/25 hover:bg-background/60"
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span
+                          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                          style={{
+                            background: isActive ? "rgba(var(--cat-accent-rgb), 0.16)" : "rgba(var(--cat-accent-rgb), 0.08)",
+                            color: "var(--cat-accent-soft)",
+                          }}
+                        >
+                          {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="flex items-center justify-between gap-3">
+                            <span className="truncate font-semibold text-foreground">{subCategoryName}</span>
+                            <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywordCount}</span>
+                          </span>
+                          <span className="mt-1 block text-sm leading-5 text-muted-foreground">{description}</span>
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          <section className="min-w-0 overflow-hidden rounded-[28px] border border-border bg-card/75 shadow-[0_16px_48px_rgba(0,0,0,0.18)]">
+            <div className="flex items-center justify-between gap-4 border-b border-border/80 px-5 py-4">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
+                  {isActiveSubcategoryInCategory ? "Keyword Group" : "Quick Starts"}
+                </div>
+                <div className="mt-1 text-sm text-muted-foreground">
+                  {isActiveSubcategoryInCategory
+                    ? "Add keywords directly from this group."
+                    : "Use a quick angle, then return to category browsing anytime."}
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveSubcategory(null);
+                    setActiveUtilityPanel("intro");
+                  }}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    !activeSubcategory && activeUtilityPanel === "intro"
+                      ? "bg-primary/15 text-primary"
+                      : "bg-background/55 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Overview
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveSubcategory(null);
+                    setActiveUtilityPanel("qs-keyword");
+                  }}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    !activeSubcategory && activeUtilityPanel === "qs-keyword"
+                      ? "bg-primary/15 text-primary"
+                      : "bg-background/55 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Quick key
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveSubcategory(null);
+                    setActiveUtilityPanel("qs-combo");
+                  }}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    !activeSubcategory && activeUtilityPanel === "qs-combo"
+                      ? "bg-primary/15 text-primary"
+                      : "bg-background/55 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Crafted combo
+                </button>
+              </div>
+            </div>
+            <div className="h-[calc(44rem-4.5rem)] min-h-[32rem]">
+              {isActiveSubcategoryInCategory && activeSubcategory
+                ? renderKeywordPanel(activeSubcategory, "desktop")
+                : renderDesktopUtilityPanel()}
+            </div>
+          </section>
+        </div>
+      </section>
+    );
+  };
 
   const renderMobileSubcategoryDetail = () => {
     if (!mobileSubcategoryView || !activeSubcategory) return null;
@@ -1042,8 +1288,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const renderMobileShelves = () => {
     const inlineKwData = activeSubcategory ? getKeywordPanelData(activeSubcategory) : null;
     return (
-      <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:flex-none lg:overflow-visible">
-        <div className="flex-1 overflow-y-auto lg:flex-none lg:overflow-visible">
+      <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
+        <div className="flex-1 overflow-y-auto">
           <div className="grid gap-4">
             <div className="mobile-keyword-search-wrap">
               <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />

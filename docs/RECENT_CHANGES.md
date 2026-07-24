@@ -25,6 +25,13 @@ than 7 days.
   documentation, and promoted the volatile search-history/community-card fact
   into core docs.
 
+## 2026-07-24
+- Desktop keyword discovery no longer depends on opening the mobile-style
+  "Browse all keywords" shelf first: `KeywordSection.tsx` now renders an
+  always-visible desktop category explorer with main categories,
+  subcategories, inline keyword panels, desktop search, and quick-start
+  utility states.
+
 ## 2026-07-19
 - Discovery section: Random roll card label "Roll random" → "Roll any key"
   (copy-only, `KeywordSection.tsx`). Trello pipeline-test card.
