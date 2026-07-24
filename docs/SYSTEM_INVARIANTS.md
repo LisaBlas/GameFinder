@@ -3,10 +3,11 @@
 Hard rules that must not be violated without a deliberate, explicit decision.
 
 ## Windows build
-`npm run build` completes the Vite client build and esbuild server bundle,
-then fails at the final Unix `cp -r client/src/assets dist/` step on Windows.
-Use Git Bash/WSL for the full build, or replace that copy step with a
-cross-platform command before relying on it locally.
+`npm run build` currently starts with `npm install --include=dev`, then runs
+the Vite client build and esbuild server bundle, and finally fails at the Unix
+`cp -r client/src/assets dist/` step on Windows. Use Git Bash/WSL for the full
+build, or replace that copy step with a cross-platform command before relying
+on it locally. Do not assume `npm run build` is a pure build-only command.
 
 ## Typecheck baseline
 `npm run check` (root `tsc` against the whole app) is expected to pass.

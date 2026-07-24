@@ -11,9 +11,11 @@ Durable decisions and context not derivable from source alone.
    metadata lives in `DISCOVERY_CARD_META`
    (`client/src/lib/discoveryCards.ts`). Roll has four cards: **Popular**
    (curated sequence of popular keys, e.g. Action Roguelike → Souls-like;
-   label "Top key this week"), **Crafted** (hand-picked combos, first entry is
+   label "GameFinder pick"), **Crafted** (hand-picked combos, first entry is
    Memory Loss + Horror theme), **Random** (random single keyword from the
-   full pool, infinite), and **User Crafted** (community combos). Uniques has
+   full pool, infinite), and **User Crafted** (label "Featured combo" — a
+   single hardcoded example combo, Cosmic Horror + Indie; not sourced from
+   real user/community activity despite the card name). Uniques has
    two cards: **Unique Key** and **Unique Combo** — rare discovery sequences
    that tend to surface very few results.
 3. **Discovery card steps** — Roll and Uniques cards show sequence progress
@@ -33,9 +35,10 @@ Durable decisions and context not derivable from source alone.
    is a proxy for unique/niche games.
 5. **Game/keyword search** — `KeywordSearch` queries both
    `/api/games/suggest` and `/api/keywords/search`.
-6. **Find similar** — selecting a game suggestion clears filters, sets
-   `seedGame`, fetches `/api/games/:id/similar-seed`, then seeds up to 3
-   keywords plus one genre and one theme.
+6. **Find similar** — the game search suggestion opens `GameCardModal`; from
+   the fullscreen card, the similar-flow fetches `/api/games/:id/similar-seed`
+   and `seedAndSearch()` applies up to 2 keywords plus one genre and one
+   theme while preserving the source game as `seedGame`.
 7. **YouTube video embeds** — expanded game cards fetch `/api/games/:id/videos`
    and show a cinematic thumbnail with a floating play button. The YouTube
    iframe only mounts on click (lazy — avoids loading YouTube scripts on card

@@ -56,7 +56,7 @@ export interface DiscoveryCardProps {
   actionLabel: string;
   /** Content swapped in once revealed: keyword name, combo title, etc. */
   revealedContent: React.ReactNode;
-  /** Footer text shown in idle state, e.g. "Top key this week". */
+  /** Footer text shown in idle state, e.g. "GameFinder pick". */
   idleFooterCopy: React.ReactNode;
   /**
    * Footer meta area (always visible):

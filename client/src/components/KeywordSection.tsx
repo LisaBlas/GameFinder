@@ -1174,7 +1174,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         actionIcon={Dices}
                         actionLabel="Roll popular"
                         revealedContent={popularRevealed?.name ?? ''}
-                        idleFooterCopy="Top key this week"
+                        idleFooterCopy="GameFinder pick"
                         footerMeta={popularStep}
                         onClick={applyPopular}
                       />
@@ -1212,7 +1212,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
                         onClick={applyCommonKeyword}
                       />
-                      {/* User Crafted — community-discovered combos */}
+                      {/* User Crafted — featured hardcoded combo */}
                       <DiscoveryCard
                         name={DISCOVERY_CARD_META['user-crafts'].name}
                         id="user-crafts"
@@ -1223,9 +1223,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                         hasResult={userCraftsRevealed}
                         typeIcon={Hammer}
                         actionIcon={Users}
-                        actionLabel="Try community"
+                        actionLabel="Try featured"
                         revealedContent="Eldritch Indie"
-                        idleFooterCopy="Community combo"
+                        idleFooterCopy="Featured combo"
                         footerMeta="1/1"
                         onClick={applyUserCrafts}
                       />

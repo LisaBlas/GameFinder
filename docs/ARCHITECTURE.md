@@ -36,6 +36,10 @@ Desktop:
 Primary state:
 - Filter/search/result state lives in `FilterContext`
   (`client/src/context/FilterContext.tsx`).
+- The app mounts `SavedGamesProvider` and one `FilterProvider` in
+  `client/src/App.tsx`, then `client/src/pages/home.tsx` mounts a second
+  `FilterProvider` around the homepage. The active `/` route therefore uses
+  the inner provider's filter state, not the app-level one.
 - Saved game state lives in `SavedGamesContext`
   (`client/src/context/SavedGamesContext.tsx`) and persists to `localStorage`
   under `gamefinder_saved_games`.

@@ -57,13 +57,13 @@ export function getRarity(count: number): RarityTier | null {
  * Use `DISCOVERY_CARD_META[id].name` anywhere a display name is needed.
  */
 export const DISCOVERY_CARD_META = {
-  /** Cycles a curated sequence of high-use keywords ("Top key this week"). */
+  /** Cycles a curated sequence of high-use keywords ("GameFinder pick"). */
   popular:           { name: "Popular",      section: "roll"    },
   /** Curated keyword+filter combos hand-picked by the team. */
   "rare-combo":      { name: "Crafted",      section: "roll"    },
   /** Draws a random single keyword from the full pool. Infinite. */
   "common-keyword":  { name: "Random",       section: "roll"    },
-  /** Community-discovered combos. Low result count = niche find. */
+  /** Single hardcoded example combo — not sourced from real user activity. */
   "user-crafts":     { name: "User Crafted", section: "roll"    },
   /** Rare single keywords that tend to surface very few games. */
   "unique-keyword":  { name: "Unique Key",   section: "uniques" },

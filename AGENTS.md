@@ -27,7 +27,7 @@ This repo is the local GameFinder workspace. Treat `CLAUDE.md` as durable projec
 
 ## Homepage Discovery Features
 - The homepage `KeywordSection` has "Roll" and "Uniques" discovery sections above manual keyword browsing.
-- Roll has four cards: **Popular** (curated popular keys, e.g. Action Roguelike → Souls-like), **Crafted** (hand-picked combos), **Random** (single random keyword, infinite), **User Crafted** (community combos).
+- Roll has four cards: **Popular** (curated popular keys, e.g. Action Roguelike → Souls-like), **Crafted** (hand-picked combos), **Random** (single random keyword, infinite), **User Crafted** (a featured hardcoded combo; despite the legacy card name, it is not community-sourced).
 - Uniques has two cards: **Unique Key** and **Unique Combo** — rare/low-result discovery sequences. Cards show step progress like `1/5` and wrap back to the first item instead of locking.
 - **Card system architecture:** all 6 cards are rendered via the reusable `DiscoveryCard` component (`client/src/components/DiscoveryCard.tsx`). Canonical card names and section membership live in `DISCOVERY_CARD_META` (`client/src/lib/discoveryCards.ts`). Types `RevealCard`, `RarityTier`, and `getRarity()` are exported from that lib — do not redefine them inline in `KeywordSection`.
 - **Adding a 7th card:** add its ID to `RevealCard` + an entry in `DISCOVERY_CARD_META`, write `applyXxx()` in `KeywordSection`, drop one `<DiscoveryCard>` into the grid.

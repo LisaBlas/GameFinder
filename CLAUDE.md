@@ -14,7 +14,7 @@ Game recommendation SPA with growing organic Google traffic.
 ## Key Commands
 ```bash
 npm run dev                 # dev server (tsx server/index.ts)
-npm run build               # full build (client + server)
+npm run build               # runs npm install --include=dev, then client + server build
 npm run start               # production
 npm run db:push             # push schema to Neon
 npm run db:seed             # seed database
