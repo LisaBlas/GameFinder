@@ -7,6 +7,15 @@ Durable decisions and context not derivable from source alone.
    are curated and sorted intentionally; preserve their order and meaning.
    Desktop always exposes the category/subcategory explorer inline; the
    mobile-style "Browse all keywords" shelf is not a desktop prerequisite.
+   In expanded `GameCard`s, the Keywords tag group's header becomes "Why
+   this matched" (instead of "Keywords") whenever the game has keywords
+   overlapping the active search's selected `Keywords` filters — those
+   matched keywords already sort first within the group. On `fullscreen`
+   cards (mobile takeover / modal) the whole tags panel renders above the
+   video/stores block for that reason — surfacing match context before
+   media; the desktop inline-expand card (`fullscreen=false`) keeps
+   video/stores first, tags panel after. `GameCard.tsx` builds both blocks
+   as JSX variables (`tagsPanel`) and reorders by the `fullscreen` prop.
 2. **Homepage discovery cards** — `KeywordSection` has Roll and Uniques
    sections above manual browsing. All 6 cards render via the reusable
    `DiscoveryCard` component (`client/src/components/DiscoveryCard.tsx`); card

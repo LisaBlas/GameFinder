@@ -13,6 +13,12 @@ than 7 days.
   `game-card-tag-matched` state plus a one-time `tag-gold-glow` flash on
   open, in addition to the existing whole-panel `tags-gold-glow` pulse.
   `SearchResults.tsx`, `GameCard.tsx`, `App.css`.
+- Fullscreen game cards now render the tags panel above the video/stores
+  block (desktop inline-expand keeps the original order). The Keywords
+  group's header switches from "Keywords" to "Why this matched" whenever
+  the game has keywords overlapping the active search's keyword filters,
+  surfacing keyword-match context immediately instead of only after
+  scrolling past media/stores. `GameCard.tsx`.
 
 ## 2026-07-23
 - `KeywordSearch.tsx`: keyword suggestions (`/api/keywords/search`, local
