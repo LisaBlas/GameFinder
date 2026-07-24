@@ -38,8 +38,13 @@ Durable decisions and context not derivable from source alone.
    (capped at 100 entries, wiped on every restart/deploy) — not enough to
    back a "live community data" claim, which is why the card was relabeled
    from "User Crafted" to "Hidden Gem" (2026-07-23) rather than wired to it.
-5. **Game/keyword search** — `KeywordSearch` queries both
-   `/api/games/suggest` and `/api/keywords/search`.
+5. **Game/keyword search** — `KeywordSearch` queries `/api/games/suggest`
+   and `/api/keywords/search` as two independently debounced fetches, not a
+   joined request: keywords (local in-memory lookup) debounce at 120ms and
+   render as soon as they arrive, while games (IGDB-backed, slower) debounce
+   at 500ms and fill in afterward without blocking the keyword dropdown.
+   Decoupled 2026-07-23 so the instant-filter keyword path isn't held back by
+   the slower game suggestions.
 6. **Find similar** — selecting a game suggestion clears filters, sets
    `seedGame`, fetches `/api/games/:id/similar-seed`, then seeds up to 3
    keywords plus one genre and one theme.

@@ -4,6 +4,11 @@ Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
 ## 2026-07-23
+- `KeywordSearch.tsx`: keyword suggestions (`/api/keywords/search`, local
+  in-memory lookup) now debounce/fetch independently of game suggestions
+  (`/api/games/suggest`, IGDB-backed) — keyword debounce cut from 500ms to
+  120ms so keywords render immediately; games fill in afterward on their own
+  500ms timer without blocking the keyword dropdown.
 - Game detail modals now render the clicked search suggestion or saved-game
   card immediately while full details load; stale detail requests are aborted
   during rapid navigation, avoiding blank spinners and wrong-card flashes.

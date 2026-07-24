@@ -18,8 +18,6 @@ should inherit.
 - Do not take screenshots for visual checks unless the user explicitly asks.
 - Ask before installing dependencies.
 - Ask before touching secrets, credentials, auth files, or production data.
-- Ask before destructive git operations, commits, or pushes.
-- Keep commits focused when the user asks for commits.
 
 ## Product Vision
 Core use case: a user with a specific idea (e.g. "bullet hell", "vikings +
