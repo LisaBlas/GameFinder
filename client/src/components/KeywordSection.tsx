@@ -1114,6 +1114,17 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             </div>
           </section>
         </div>
+
+        <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
+            <Dices className="h-3.5 w-3.5" />
+            Roll &amp; Craft
+          </div>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Not sure where to start? Roll a key or craft a combo instead of browsing.
+          </p>
+          {renderDiscoveryDeck()}
+        </div>
       </section>
     );
   };
@@ -1285,6 +1296,150 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
+  /** Shared roll/curated discovery-card deck — same markup and order on mobile and desktop,
+   *  so both breakpoints present keyword selection first, then this deck second. */
+  const renderDiscoveryDeck = () => (
+    <div className="qs-discovery-matrix">
+      <div className="qs-discovery-columns" aria-hidden="true">
+        <span>
+          <KeyRound className="w-3 h-3" />
+          Keys
+        </span>
+        <span>
+          <Hammer className="w-3 h-3" />
+          Crafts
+        </span>
+      </div>
+      <div className="qs-cards-grid qs-cards-grid--matrix">
+        {/* Popular — cycles curated high-use keywords */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['popular'].name}
+          id="popular"
+          variantClass="qs-card-rnd-kw"
+          isPulsing={activeRevealCard === 'popular'}
+          isPostClick={postClickCardId === 'popular'}
+          activeRarity={cardRarities['popular']}
+          hasResult={!!popularRevealed}
+          typeIcon={KeyRound}
+          actionIcon={Dices}
+          actionLabel="Roll popular"
+          revealedContent={popularRevealed?.name ?? ''}
+          idleFooterCopy="Top key this week"
+          footerMeta={popularStep}
+          onClick={applyPopular}
+        />
+        {/* Crafted — hand-picked keyword+filter combos */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['rare-combo'].name}
+          id="rare-combo"
+          variantClass="qs-card-rnd-combo"
+          isPulsing={activeRevealCard === 'rare-combo'}
+          isPostClick={postClickCardId === 'rare-combo'}
+          activeRarity={cardRarities['rare-combo']}
+          hasResult={isRareComboRevealed}
+          typeIcon={Hammer}
+          actionIcon={Wand2}
+          actionLabel="Craft curated"
+          revealedContent={rareComboRevealed?.title ?? ''}
+          idleFooterCopy={rareComboState}
+          footerMeta={craftedStep}
+          onClick={applyRareCombo}
+        />
+        {/* Random — draws a random keyword from the full pool, infinite */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['common-keyword'].name}
+          id="common-keyword"
+          variantClass="qs-card-popular"
+          isPulsing={activeRevealCard === 'common-keyword'}
+          isPostClick={postClickCardId === 'common-keyword'}
+          activeRarity={cardRarities['common-keyword']}
+          hasResult={isCommonKeywordRevealed}
+          typeIcon={KeyRound}
+          actionIcon={Shuffle}
+          actionLabel="Roll any key"
+          revealedContent={commonKeywordRevealed?.name ?? ''}
+          idleFooterCopy={commonKeywordState}
+          footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
+          onClick={applyCommonKeyword}
+        />
+        {/* Hidden Gem — fixed editorial pick, not live community data */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['user-crafts'].name}
+          id="user-crafts"
+          variantClass="qs-card-user-crafts"
+          isPulsing={activeRevealCard === 'user-crafts'}
+          isPostClick={postClickCardId === 'user-crafts'}
+          activeRarity={cardRarities['user-crafts']}
+          hasResult={userCraftsRevealed}
+          typeIcon={Hammer}
+          actionIcon={Gem}
+          actionLabel="Reveal gem"
+          revealedContent="Cosmic Horror + Indie"
+          idleFooterCopy="Niche pick"
+          footerMeta="1/1"
+          onClick={applyUserCrafts}
+        />
+      </div>
+
+      <div className="qs-uniques-divider">
+        <Star className="w-3 h-3" />
+        Uniques
+      </div>
+      <div className="qs-cards-grid qs-cards-grid--matrix">
+        {/* Unique Key — rare single keywords, tends to surface <5 results */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['unique-keyword'].name}
+          id="unique-keyword"
+          variantClass="qs-card-unique-kw"
+          extraWrapClass="qs-unique-wrap"
+          isPulsing={activeRevealCard === 'unique-keyword'}
+          isPostClick={postClickCardId === 'unique-keyword'}
+          activeRarity={cardRarities['unique-keyword']}
+          hasResult={isKwRevealedState}
+          typeIcon={KeyRound}
+          actionIcon={Sparkles}
+          actionLabel="Discover unique"
+          revealedContent={kwRevealed?.name ?? ''}
+          idleFooterCopy="<5 results"
+          footerMeta={
+            <span className="qs-sequence-track">
+              {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
+              <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
+            </span>
+          }
+          isSequence
+          onClick={applyUniqueKeyword}
+        />
+        {/* Unique Combo — rare keyword+filter combos, tends to surface <5 results */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['unique-combo'].name}
+          id="unique-combo"
+          variantClass="qs-card-unique-combo"
+          extraWrapClass="qs-unique-wrap"
+          isPulsing={activeRevealCard === 'unique-combo'}
+          isPostClick={postClickCardId === 'unique-combo'}
+          activeRarity={cardRarities['unique-combo']}
+          hasResult={isComboRevealedState}
+          typeIcon={Hammer}
+          actionIcon={Wand2}
+          actionLabel="Craft unique"
+          revealedContent={comboRevealed?.title ?? ''}
+          idleFooterCopy="<5 results"
+          footerMeta={
+            <span className="qs-sequence-track">
+              {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
+              <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
+            </span>
+          }
+          isSequence
+          onClick={applyUniqueCombo}
+        />
+      </div>
+
+      {showTasteStory && renderTasteStory()}
+    </div>
+  );
+
   const renderMobileShelves = () => {
     const inlineKwData = activeSubcategory ? getKeywordPanelData(activeSubcategory) : null;
     return (
@@ -1295,7 +1450,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
             </div>
             <section className="grid gap-3 mx-1">
-              {/* Browse all keywords toggle */}
+              {/* Browse all keywords toggle — collapsed by default (progressive disclosure);
+                  the roll/curated deck below always renders regardless, so keyword selection
+                  and roll cards stay on one scrollable screen in a fixed order. */}
               <button
                 type="button"
                 onClick={() => {
@@ -1317,7 +1474,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 <ChevronDown className={`keyword-browse-chevron ${browseOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {browseOpen ? (
+              {browseOpen && (
                 <>
                   <div className="mobile-cat-segmented">
                     {mainCategoryOrder
@@ -1393,149 +1550,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     </div>
                   )}
                 </>
-              ) : (
-                <>
-                  <div className="qs-discovery-matrix">
-                    <div className="qs-discovery-columns" aria-hidden="true">
-                      <span>
-                        <KeyRound className="w-3 h-3" />
-                        Keys
-                      </span>
-                      <span>
-                        <Hammer className="w-3 h-3" />
-                        Crafts
-                      </span>
-                    </div>
-                    <div className="qs-cards-grid qs-cards-grid--matrix">
-                      {/* Popular — cycles curated high-use keywords */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['popular'].name}
-                        id="popular"
-                        variantClass="qs-card-rnd-kw"
-                        isPulsing={activeRevealCard === 'popular'}
-                        isPostClick={postClickCardId === 'popular'}
-                        activeRarity={cardRarities['popular']}
-                        hasResult={!!popularRevealed}
-                        typeIcon={KeyRound}
-                        actionIcon={Dices}
-                        actionLabel="Roll popular"
-                        revealedContent={popularRevealed?.name ?? ''}
-                        idleFooterCopy="Top key this week"
-                        footerMeta={popularStep}
-                        onClick={applyPopular}
-                      />
-                      {/* Crafted — hand-picked keyword+filter combos */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['rare-combo'].name}
-                        id="rare-combo"
-                        variantClass="qs-card-rnd-combo"
-                        isPulsing={activeRevealCard === 'rare-combo'}
-                        isPostClick={postClickCardId === 'rare-combo'}
-                        activeRarity={cardRarities['rare-combo']}
-                        hasResult={isRareComboRevealed}
-                        typeIcon={Hammer}
-                        actionIcon={Wand2}
-                        actionLabel="Craft curated"
-                        revealedContent={rareComboRevealed?.title ?? ''}
-                        idleFooterCopy={rareComboState}
-                        footerMeta={craftedStep}
-                        onClick={applyRareCombo}
-                      />
-                      {/* Random — draws a random keyword from the full pool, infinite */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['common-keyword'].name}
-                        id="common-keyword"
-                        variantClass="qs-card-popular"
-                        isPulsing={activeRevealCard === 'common-keyword'}
-                        isPostClick={postClickCardId === 'common-keyword'}
-                        activeRarity={cardRarities['common-keyword']}
-                        hasResult={isCommonKeywordRevealed}
-                        typeIcon={KeyRound}
-                        actionIcon={Shuffle}
-                        actionLabel="Roll any key"
-                        revealedContent={commonKeywordRevealed?.name ?? ''}
-                        idleFooterCopy={commonKeywordState}
-                        footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
-                        onClick={applyCommonKeyword}
-                      />
-                      {/* Hidden Gem — fixed editorial pick, not live community data */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['user-crafts'].name}
-                        id="user-crafts"
-                        variantClass="qs-card-user-crafts"
-                        isPulsing={activeRevealCard === 'user-crafts'}
-                        isPostClick={postClickCardId === 'user-crafts'}
-                        activeRarity={cardRarities['user-crafts']}
-                        hasResult={userCraftsRevealed}
-                        typeIcon={Hammer}
-                        actionIcon={Gem}
-                        actionLabel="Reveal gem"
-                        revealedContent="Cosmic Horror + Indie"
-                        idleFooterCopy="Niche pick"
-                        footerMeta="1/1"
-                        onClick={applyUserCrafts}
-                      />
-                    </div>
-
-                    <div className="qs-uniques-divider">
-                      <Star className="w-3 h-3" />
-                      Uniques
-                    </div>
-                    <div className="qs-cards-grid qs-cards-grid--matrix">
-                      {/* Unique Key — rare single keywords, tends to surface <5 results */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['unique-keyword'].name}
-                        id="unique-keyword"
-                        variantClass="qs-card-unique-kw"
-                        extraWrapClass="qs-unique-wrap"
-                        isPulsing={activeRevealCard === 'unique-keyword'}
-                        isPostClick={postClickCardId === 'unique-keyword'}
-                        activeRarity={cardRarities['unique-keyword']}
-                        hasResult={isKwRevealedState}
-                        typeIcon={KeyRound}
-                        actionIcon={Sparkles}
-                        actionLabel="Discover unique"
-                        revealedContent={kwRevealed?.name ?? ''}
-                        idleFooterCopy="<5 results"
-                        footerMeta={
-                          <span className="qs-sequence-track">
-                            {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
-                            <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
-                          </span>
-                        }
-                        isSequence
-                        onClick={applyUniqueKeyword}
-                      />
-                      {/* Unique Combo — rare keyword+filter combos, tends to surface <5 results */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['unique-combo'].name}
-                        id="unique-combo"
-                        variantClass="qs-card-unique-combo"
-                        extraWrapClass="qs-unique-wrap"
-                        isPulsing={activeRevealCard === 'unique-combo'}
-                        isPostClick={postClickCardId === 'unique-combo'}
-                        activeRarity={cardRarities['unique-combo']}
-                        hasResult={isComboRevealedState}
-                        typeIcon={Hammer}
-                        actionIcon={Wand2}
-                        actionLabel="Craft unique"
-                        revealedContent={comboRevealed?.title ?? ''}
-                        idleFooterCopy="<5 results"
-                        footerMeta={
-                          <span className="qs-sequence-track">
-                            {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
-                            <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
-                          </span>
-                        }
-                        isSequence
-                        onClick={applyUniqueCombo}
-                      />
-                    </div>
-
-                    {showTasteStory && renderTasteStory()}
-                  </div>
-                </>
               )}
+
+              {/* Roll/curated cards — keyword selection above, this deck second, same screen. */}
+              {renderDiscoveryDeck()}
             </section>
           </div>
         </div>
