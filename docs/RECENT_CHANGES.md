@@ -4,6 +4,13 @@ Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
 ## 2026-07-25
+- Simplified the desktop keyword-build panel around three clear entry points:
+  search for a game or keyword, browse a feeling, or optionally open “Need a
+  spark?” for curated discovery. Mechanics, Setting, and Aesthetics now sit
+  in the header of the explorer they control; removed the curation-scope
+  status copy, generic explorer instructions, and Browse/Overview/Quick
+  key/Crafted combo utility pills. The six existing discovery cards remain
+  available without competing with the primary browse flow.
 - Docs sweep: corrected stale architecture references, documented that
   `server/seoPages.ts` merges manual and generated SEO pages, and pruned/
   merged recent-change log noise.

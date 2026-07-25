@@ -44,9 +44,6 @@ const _randomKeywordPool: RawKw[] = (() => {
 })();
 
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
-/** Desktop explorer panel state. "browse" is the subcategory list — the default
- *  first step, mirroring mobile's category -> subcategory -> keyword drill-down. */
-type UtilityPanel = "browse" | "intro" | "qs-keyword" | "qs-combo";
 // RevealCard, RarityTier, and getRarity are imported from ../lib/discoveryCards
 
 interface KeywordComboSuggestion {
@@ -107,7 +104,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>("Mechanics & Systems");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
-  const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel>("browse");
   const [mobileCategoryView, setMobileCategoryView] = useState(false);
   const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
   const [mobileQsView, setMobileQsView] = useState<"keyword" | "combo" | null>(null);
@@ -490,7 +486,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const selectMainCategory = (cat: MainCategory) => {
     setActiveMainCategory(current => current === cat ? null : cat);
     setActiveSubcategory(null);
-    setActiveUtilityPanel("browse");
     setMobileCategoryView(false);
     setMobileSubcategoryView(false);
   };
@@ -504,7 +499,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     window.history.pushState({ gamefinder: 'subcategory' }, '');
     setActiveMainCategory(mainCat);
     setActiveSubcategory(subCategoryName);
-    setActiveUtilityPanel("browse");
     setMobileCategoryView(true);
     setMobileSubcategoryView(true);
   };
@@ -670,73 +664,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  const renderKeywordSuggestion = (variant: "desktop" | "mobile" = "desktop") => {
-    const suggestion = keywordComboSuggestions[activeSuggestionIndex];
-
-    return (
-      <div className={`keyword-combo-empty-state ${variant === "mobile" ? "keyword-combo-mobile-state" : ""}`}>
-        <div className="keyword-combo-card">
-          <div className="keyword-combo-main">
-            <div className="keyword-combo-copy">
-              <h3>{suggestion.title}</h3>
-            </div>
-            <div className="keyword-combo-kicker">
-              <Sparkles className="h-3.5 w-3.5" />
-              Hand-picked
-            </div>
-          </div>
-          <div className="keyword-combo-recipe" aria-label={`${suggestion.title} filter combination`}>
-            {suggestion.filters.map((filter, index) => (
-              <React.Fragment key={`${filter.category}-${filter.id}-${filter.mode || "include"}`}>
-                <span className={`keyword-combo-operator${filter.mode === "exclude" ? " exclude" : ""}`}>
-                  {filter.mode === "exclude" ? "-" : "+"}
-                </span>
-                {renderComboFilter(filter)}
-              </React.Fragment>
-            ))}
-          </div>
-          <div className="keyword-combo-actions">
-            <button
-              type="button"
-              className="keyword-combo-button keyword-combo-button-primary"
-              onClick={() => applySuggestion(suggestion)}
-            >
-              <Check className="h-4 w-4" />
-              Try combo
-            </button>
-            <button
-              type="button"
-              className="keyword-combo-button keyword-combo-button-secondary"
-              onClick={() => setActiveSuggestionIndex(index => (index + 1) % keywordComboSuggestions.length)}
-            >
-              <Shuffle className="h-4 w-4" />
-              Next
-              <span className="keyword-combo-button-count">
-                {activeSuggestionIndex + 1}/{keywordComboSuggestions.length}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderKeywordIntro = () => (
-    <div className="keyword-intro-empty-state">
-      <div className="keyword-intro-card">
-        <div className="keyword-intro-icon">
-          <LayoutGrid className="h-5 w-5" />
-        </div>
-        <div>
-          <h3>Pick 2–3 keywords. Describe a vibe.</h3>
-          <p>
-            Browse 5,000+ curated tags — mechanics, settings, aesthetics. Combine them to surface games that match the exact feel you're after.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-
   const renderTasteStory = () => (
     <section className="taste-story-card" aria-label="GameFinder taste curation">
       <span className="taste-story-icon">
@@ -872,18 +799,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  const renderDesktopUtilityPanel = () => {
-    if (activeUtilityPanel === "qs-keyword") return renderQsKeywordPanel();
-    if (activeUtilityPanel === "qs-combo") return renderQsComboPanel();
-    return (
-      <div className="flex h-full flex-col gap-4 p-5">
-        {renderKeywordIntro()}
-        {renderKeywordSuggestion("desktop")}
-        {showTasteStory && renderTasteStory()}
-      </div>
-    );
-  };
-
   const renderDesktopExplorer = () => {
     const availableMainCategories = mainCategoryOrder.filter(
       mainCat => getAvailableSubcategories(mainCat).length > 0
@@ -907,102 +822,47 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return (
       <section className="hidden lg:grid gap-4">
         <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
-          <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-start 2xl:justify-between 2xl:gap-6">
-            <div className="min-w-0 2xl:max-w-3xl">
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
-                <LayoutGrid className="h-3.5 w-3.5" />
-                Keyword Explorer
-              </div>
-              <h2 className="mt-3 text-2xl font-bold text-foreground">
-                Browse mechanics, worlds, and aesthetics before you search.
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Pick a category, drill into a subcategory, and stack keywords that describe the exact feel you want.
-              </p>
-            </div>
-            <div className="shrink-0 rounded-2xl border border-border/80 bg-background/60 px-4 py-3 text-sm text-muted-foreground 2xl:min-w-[16rem]">
-              <div className="font-semibold text-foreground">Curation scope</div>
-              <div className="mt-1">
-                {availableMainCategories.length} category pillars, {Object.values(topKeywordsByCategory as Record<string, KeywordItem[]>).flat().length}+ featured keywords, plus extended tags.
-              </div>
-            </div>
+          <div className="mb-2 text-sm font-semibold text-foreground">
+            Start with a game or a keyword
           </div>
-          <div className="mt-5 2xl:max-w-2xl">
+          <p className="mb-4 text-sm text-muted-foreground">
+            Search a game you love, or name the feeling you want next.
+          </p>
+          <div>
             <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
           </div>
         </div>
 
-        {/* Step 1 — pick a category. Same segmented control as mobile, so both
-            breakpoints start from the same choice rather than a wall of columns. */}
-        <div className="desktop-cat-segmented">
-          {availableMainCategories.map(mainCat => {
-            const isActive = mainCat === resolvedMainCategory;
-            // Same short labels mobile uses — the pane is too narrow for the full names.
-            const shortLabel = ({ "Mechanics & Systems": "Mechanics", "Setting & World": "Setting", "Aesthetics & Style": "Aesthetics" } as Record<MainCategory, string>)[mainCat];
-            return (
-              <button
-                key={mainCat}
-                type="button"
-                onClick={() => {
-                  setActiveMainCategory(mainCat);
-                  setActiveSubcategory(null);
-                  setActiveUtilityPanel("browse");
-                }}
-                className={`desktop-cat-segment${isActive ? ' desktop-cat-segment-active' : ''}`}
-                style={getCategoryAccentVars(mainCat)}
-              >
-                {getCategoryIcon(mainCat, "w-4 h-4")}
-                <span className="desktop-cat-segment-label">{shortLabel}</span>
-                <span className="desktop-cat-segment-count">
-                  {getAvailableSubcategories(mainCat).length}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Step 2 — one panel at a time. The keyword pane is only 40% of the
-            viewport (home.tsx `lg:w-2/5`), so the old 17rem+24rem+1fr grid could
-            never fit: its third column collapsed to ~0 and was clipped. A single
-            fluid panel with tabs fits every desktop width and keeps the same
-            drill-down order mobile uses. */}
         <section className="min-w-0 overflow-hidden rounded-[28px] border border-border bg-card/75 shadow-[0_16px_48px_rgba(0,0,0,0.18)]">
-          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/80 px-5 py-4">
-            <div className="min-w-0">
-              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
-                {showKeywordGroup ? "Keyword Group" : activeUtilityPanel === "browse" ? resolvedMainCategory : "Quick Starts"}
+          <div className="border-b border-border/80 px-5 py-4">
+            <div className="mb-4">
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
+                <LayoutGrid className="h-3.5 w-3.5" />
+                Browse by feel
               </div>
-              <div className="mt-1 text-sm text-muted-foreground">
-                {showKeywordGroup
-                  ? "Add keywords directly from this group."
-                  : activeUtilityPanel === "browse"
-                    ? descriptor
-                    : "Use a quick angle, then return to category browsing anytime."}
-              </div>
+              <h2 className="mt-2 text-lg font-bold text-foreground">What are you in the mood for?</h2>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              {([
-                ["browse", `Browse (${subcategories.length})`],
-                ["intro", "Overview"],
-                ["qs-keyword", "Quick key"],
-                ["qs-combo", "Crafted combo"],
-              ] as [UtilityPanel, string][]).map(([panel, label]) => (
+            <div className="desktop-cat-segmented">
+              {availableMainCategories.map(mainCat => {
+                const isActive = mainCat === resolvedMainCategory;
+                const shortLabel = ({ "Mechanics & Systems": "Mechanics", "Setting & World": "Setting", "Aesthetics & Style": "Aesthetics" } as Record<MainCategory, string>)[mainCat];
+                return (
                 <button
-                  key={panel}
+                  key={mainCat}
                   type="button"
                   onClick={() => {
+                    setActiveMainCategory(mainCat);
                     setActiveSubcategory(null);
-                    setActiveUtilityPanel(panel);
                   }}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    !showKeywordGroup && activeUtilityPanel === panel
-                      ? "bg-primary/15 text-primary"
-                      : "bg-background/55 text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`desktop-cat-segment${isActive ? ' desktop-cat-segment-active' : ''}`}
+                  style={getCategoryAccentVars(mainCat)}
                 >
-                  {label}
+                  {getCategoryIcon(mainCat, "w-4 h-4")}
+                  <span className="desktop-cat-segment-label">{shortLabel}</span>
+                  <span className="desktop-cat-segment-count">{getAvailableSubcategories(mainCat).length}</span>
                 </button>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -1021,8 +881,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   {renderKeywordPanel(activeSubcategory, "desktop")}
                 </div>
               </div>
-            ) : activeUtilityPanel === "browse" ? (
+            ) : (
               <div className="h-full overflow-y-auto px-3 py-3">
+                <div className="px-2 pb-3 text-sm text-muted-foreground">{descriptor}</div>
                 <div className="grid gap-2">
                   {subcategories.map(subCategoryName => {
                     const keywordCount = getKeywordCountForSubcategory(subCategoryName);
@@ -1062,22 +923,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                   })}
                 </div>
               </div>
-            ) : (
-              renderDesktopUtilityPanel()
             )}
           </div>
         </section>
 
-        <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
-          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
-            <Dices className="h-3.5 w-3.5" />
-            Roll &amp; Craft
+        <details className="group rounded-[28px] border border-border bg-card/60 px-5 shadow-[0_12px_36px_rgba(0,0,0,0.14)]">
+          <summary className="flex cursor-pointer list-none items-center gap-3 py-4 text-sm font-semibold text-foreground marker:content-none">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block">Need a spark?</span>
+              <span className="mt-0.5 block text-xs font-normal text-muted-foreground">Try a curated key, combo, or hidden gem.</span>
+            </span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="border-t border-border/80 py-4">
+            {renderDiscoveryDeck()}
           </div>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Not sure where to start? Roll a key or craft a combo instead of browsing.
-          </p>
-          {renderDiscoveryDeck()}
-        </div>
+        </details>
       </section>
     );
   };
