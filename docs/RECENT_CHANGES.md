@@ -15,10 +15,22 @@ than 7 days.
   all keywords" shelf, which is now collapsed by default and no longer
   hides the deck). Both breakpoints present keyword selection first, then
   the roll/curated cards second, and on mobile both live on one scrollable
-  screen instead of a toggle that swapped between them. Uncommitted at time
-  of writing (working-tree change from a prior session, verified via
-  `npm run check` only — visual/browser check of the desktop card grid at
-  wide viewports was not performed this session, see worksheet).
+  screen instead of a toggle that swapped between them. Shipped as
+  `c495a0d`.
+- Follow-up to the above: the desktop explorer's fixed
+  `grid-cols-[17rem_24rem_minmax(0,1fr)]` never fit the pane it lives in —
+  the home page gives the keyword panel only 40% of the viewport
+  (`lg:w-2/5`), so its two fixed columns (656px) overflowed a 565px pane at
+  1440px and the third column collapsed to 2px with its Quick Starts /
+  Keyword Group content clipped away entirely. Replaced the three
+  simultaneous columns with the same progressive drill-down mobile uses: a
+  `.desktop-cat-segmented` category selector, then a single panel showing
+  the subcategory list, a drilled-in keyword group (with a back step), or
+  the quick-start panels, switched by `activeUtilityPanel` (new `"browse"`
+  member, now the default). Header's Curation-scope box wraps below `2xl`
+  instead of forcing `16rem`. Verified via CDP at 1024/1280/1440/1920/2560:
+  pane overflow 0px at every width; mobile unchanged.
+  `KeywordSection.tsx`, `App.css`.
 
 ## 2026-07-24
 - `SearchResults` now passes `highlightFilters` into the opened result's

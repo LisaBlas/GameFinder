@@ -1,6 +1,6 @@
 # work-on-trello-card-gamefinder-reconcile — started 2026-07-24
 
-Status: open
+Status: done
 
 ## Goal
 Work on Trello card: [GameFinder] Reconcile the mobile and desktop UX so both experiences follow the same informat
@@ -28,5 +28,18 @@ The operator attached the following screenshot(s) to this card. View each one wi
 ## Log
 - 2026-07-24 15:00 UTC — created
 
+- 2026-07-25 — closed; first attempt (hit session limit). See b6472af.
+
 ## Handoff
-(none — still in progress)
+Closed 2026-07-25. The card's code change shipped as `c495a0d` (shared
+`renderDiscoveryDeck()` on both breakpoints, mobile browse-shelf collapsed by
+default) and is live on gamefinder-app.com. What neither earlier attempt
+caught — because visual verification never ran — is that the desktop explorer
+it fed the deck into does not fit its own pane: `home.tsx` gives the keyword
+panel `lg:w-2/5`, so the fixed `grid-cols-[17rem_24rem_minmax(0,1fr)]` grid
+overflowed (565px pane vs 656px of fixed columns at a 1440 viewport) and its
+third column collapsed to 2px, clipping the Quick Starts / Keyword Group
+panel out of sight. Fixed in `b6472af` by replacing the three columns with
+mobile's progressive drill-down. Recorded as a hard rule in
+`docs/SYSTEM_INVARIANTS.md` ("The desktop keyword pane is 40% of the
+viewport, not full width").

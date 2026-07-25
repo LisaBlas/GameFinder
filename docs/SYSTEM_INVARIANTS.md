@@ -52,6 +52,21 @@ mismatch, not a code regression. Do not work around it with
 project's Node version or downgrade `eslint` to a Node-18-compatible
 release.
 
+## The desktop keyword pane is 40% of the viewport, not full width
+`home.tsx` splits the desktop workspace into a keyword build panel
+(`lg:w-2/5`) and a results panel (`lg:flex-1`). Everything `KeywordSection`
+renders on desktop therefore lives in a pane of roughly **400–1000px**
+(399px at a 1024 viewport, 565px at 1440, 1013px at 2560) — never the full
+window. Do not give that subtree fixed multi-column grids or `min-w-*` boxes
+sized for a full-width page: the pane's ancestor is `overflow-x: auto`, so an
+oversized child does not throw a document-level scrollbar or fail any check
+— it silently clips, and a `minmax(0,1fr)` column collapses to ~0px with its
+content invisible. This is exactly how the
+`grid-cols-[17rem_24rem_minmax(0,1fr)]` explorer shipped broken: it needed a
+~2340px viewport to fit. Verify desktop keyword-pane layout by measuring
+`.keyword-section`'s `scrollWidth - clientWidth` at 1024/1440/1920, not by
+eyeballing one wide screenshot.
+
 ## Discovery card CSS class logic lives in one place
 `DiscoveryCard.tsx` owns the construction of `.qs-card-*` state classes
 (`qs-card-has-result`, `qs-card-rarity-*`, etc.). Do not duplicate that string
