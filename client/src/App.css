@@ -3785,6 +3785,88 @@ svg.filter-caret.expanded {
 
 /* ── end Mobile category segmented control ───────────────────── */
 
+/* ── Desktop category segmented control ──────────────────────────
+   Desktop counterpart of .mobile-cat-segmented. The keyword pane is only 40%
+   of the viewport (home.tsx `lg:w-2/5`), so the explorer cannot afford a fixed
+   multi-column layout — this row of three equal segments fits any pane width
+   and gives desktop the same "pick a category first" step mobile has. */
+
+.desktop-cat-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid rgba(var(--c-border-rgb), 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(var(--c-bg-rgb), 0.6);
+}
+
+.desktop-cat-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.8rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--c-dim);
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(var(--c-border-rgb), 0.18);
+  transition: background 0.15s, color 0.15s;
+}
+
+.desktop-cat-segment:last-child {
+  border-right: none;
+}
+
+.desktop-cat-segment svg {
+  flex-shrink: 0;
+  color: var(--c-dim);
+  transition: color 0.15s;
+}
+
+.desktop-cat-segment-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desktop-cat-segment-count {
+  flex-shrink: 0;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(var(--c-border-rgb), 0.16);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.desktop-cat-segment:hover {
+  background: rgba(var(--cat-accent-rgb), 0.08);
+  color: var(--cat-accent-soft);
+}
+
+.desktop-cat-segment:hover svg {
+  color: var(--cat-accent-soft);
+}
+
+.desktop-cat-segment-active {
+  background: rgba(var(--cat-accent-rgb), 0.12);
+  color: var(--cat-accent-soft);
+}
+
+.desktop-cat-segment-active svg {
+  color: var(--cat-accent-soft);
+}
+
+.desktop-cat-segment-active .desktop-cat-segment-count {
+  background: rgba(var(--cat-accent-rgb), 0.2);
+}
+
+/* ── end Desktop category segmented control ──────────────────── */
+
 /* ── Mobile inline category content ─────────────────────────── */
 
 .mobile-inline-cat-content {

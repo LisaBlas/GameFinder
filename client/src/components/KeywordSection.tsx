@@ -44,7 +44,9 @@ const _randomKeywordPool: RawKw[] = (() => {
 })();
 
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
-type UtilityPanel = "intro" | "qs-keyword" | "qs-combo";
+/** Desktop explorer panel state. "browse" is the subcategory list — the default
+ *  first step, mirroring mobile's category -> subcategory -> keyword drill-down. */
+type UtilityPanel = "browse" | "intro" | "qs-keyword" | "qs-combo";
 // RevealCard, RarityTier, and getRarity are imported from ../lib/discoveryCards
 
 interface KeywordComboSuggestion {
@@ -105,7 +107,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>("Mechanics & Systems");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
-  const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel>("intro");
+  const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel>("browse");
   const [mobileCategoryView, setMobileCategoryView] = useState(false);
   const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
   const [mobileQsView, setMobileQsView] = useState<"keyword" | "combo" | null>(null);
@@ -488,7 +490,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const selectMainCategory = (cat: MainCategory) => {
     setActiveMainCategory(current => current === cat ? null : cat);
     setActiveSubcategory(null);
-    setActiveUtilityPanel("intro");
+    setActiveUtilityPanel("browse");
     setMobileCategoryView(false);
     setMobileSubcategoryView(false);
   };
@@ -502,7 +504,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     window.history.pushState({ gamefinder: 'subcategory' }, '');
     setActiveMainCategory(mainCat);
     setActiveSubcategory(subCategoryName);
-    setActiveUtilityPanel("intro");
+    setActiveUtilityPanel("browse");
     setMobileCategoryView(true);
     setMobileSubcategoryView(true);
   };
@@ -898,12 +900,15 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     const isActiveSubcategoryInCategory = activeSubcategory
       ? getSubcategoryParent(activeSubcategory) === resolvedMainCategory
       : false;
+    /** Drilled into a keyword group — the deepest step, which replaces the
+     *  subcategory list rather than sitting beside it. */
+    const showKeywordGroup = isActiveSubcategoryInCategory && !!activeSubcategory;
 
     return (
       <section className="hidden lg:grid gap-4">
         <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
-          <div className="flex items-start justify-between gap-6">
-            <div className="max-w-3xl">
+          <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-start 2xl:justify-between 2xl:gap-6">
+            <div className="min-w-0 2xl:max-w-3xl">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
                 <LayoutGrid className="h-3.5 w-3.5" />
                 Keyword Explorer
@@ -915,205 +920,153 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 Pick a category, drill into a subcategory, and stack keywords that describe the exact feel you want.
               </p>
             </div>
-            <div className="min-w-[16rem] rounded-2xl border border-border/80 bg-background/60 px-4 py-3 text-sm text-muted-foreground">
+            <div className="shrink-0 rounded-2xl border border-border/80 bg-background/60 px-4 py-3 text-sm text-muted-foreground 2xl:min-w-[16rem]">
               <div className="font-semibold text-foreground">Curation scope</div>
               <div className="mt-1">
                 {availableMainCategories.length} category pillars, {Object.values(topKeywordsByCategory as Record<string, KeywordItem[]>).flat().length}+ featured keywords, plus extended tags.
               </div>
             </div>
           </div>
-          <div className="mt-5 max-w-2xl">
+          <div className="mt-5 2xl:max-w-2xl">
             <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
           </div>
         </div>
 
-        <div className="grid min-h-[44rem] grid-cols-[17rem_24rem_minmax(0,1fr)] gap-4">
-          <aside className="rounded-[28px] border border-border bg-card/75 p-3 shadow-[0_16px_48px_rgba(0,0,0,0.18)]">
-            <div className="px-3 py-2">
-              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
-                Main Categories
-              </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Start broad, then narrow into taste-specific keyword groups.
-              </p>
-            </div>
-            <div className="mt-2 grid gap-2">
-              {availableMainCategories.map(mainCat => {
-                const groupCount = getAvailableSubcategories(mainCat).length;
-                const isActive = mainCat === resolvedMainCategory;
-                return (
-                  <button
-                    key={mainCat}
-                    type="button"
-                    onClick={() => {
-                      setActiveMainCategory(mainCat);
-                      setActiveSubcategory(null);
-                      setActiveUtilityPanel("intro");
-                    }}
-                    className={`rounded-2xl border px-4 py-3 text-left transition-all ${
-                      isActive
-                        ? "border-primary/45 bg-primary/10 shadow-[0_10px_30px_rgba(16,185,129,0.12)]"
-                        : "border-border/80 bg-background/40 hover:border-primary/25 hover:bg-background/65"
-                    }`}
-                    style={getCategoryAccentVars(mainCat)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                        style={{
-                          background: isActive ? "rgba(var(--cat-accent-rgb), 0.16)" : "rgba(var(--cat-accent-rgb), 0.08)",
-                          color: "var(--cat-accent-soft)",
-                        }}
-                      >
-                        {getCategoryIcon(mainCat, "w-4.5 h-4.5")}
-                      </span>
-                      <div className="min-w-0">
-                        <div className="font-semibold text-foreground">{mainCat}</div>
-                        <div className="mt-1 text-xs text-muted-foreground">{groupCount} groups</div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </aside>
-
-          <section
-            className="rounded-[28px] border border-border bg-card/75 shadow-[0_16px_48px_rgba(0,0,0,0.18)]"
-            style={getCategoryAccentVars(resolvedMainCategory)}
-          >
-            <div className="border-b border-border/80 px-5 py-5">
-              <div className="flex items-start gap-4">
-                <span
-                  className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
-                  style={{ background: "rgba(var(--cat-accent-rgb), 0.12)", color: "var(--cat-accent-soft)" }}
-                >
-                  {getCategoryIcon(resolvedMainCategory, "w-5 h-5")}
+        {/* Step 1 — pick a category. Same segmented control as mobile, so both
+            breakpoints start from the same choice rather than a wall of columns. */}
+        <div className="desktop-cat-segmented">
+          {availableMainCategories.map(mainCat => {
+            const isActive = mainCat === resolvedMainCategory;
+            // Same short labels mobile uses — the pane is too narrow for the full names.
+            const shortLabel = ({ "Mechanics & Systems": "Mechanics", "Setting & World": "Setting", "Aesthetics & Style": "Aesthetics" } as Record<MainCategory, string>)[mainCat];
+            return (
+              <button
+                key={mainCat}
+                type="button"
+                onClick={() => {
+                  setActiveMainCategory(mainCat);
+                  setActiveSubcategory(null);
+                  setActiveUtilityPanel("browse");
+                }}
+                className={`desktop-cat-segment${isActive ? ' desktop-cat-segment-active' : ''}`}
+                style={getCategoryAccentVars(mainCat)}
+              >
+                {getCategoryIcon(mainCat, "w-4 h-4")}
+                <span className="desktop-cat-segment-label">{shortLabel}</span>
+                <span className="desktop-cat-segment-count">
+                  {getAvailableSubcategories(mainCat).length}
                 </span>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-bold text-foreground">{resolvedMainCategory}</h3>
-                    <span
-                      className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                      style={{ background: "rgba(var(--cat-accent-rgb), 0.12)", color: "var(--cat-accent-soft)" }}
-                    >
-                      {subcategories.length} groups
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{descriptor}</p>
-                </div>
-              </div>
-            </div>
-            <div className="max-h-[36rem] overflow-y-auto px-3 py-3">
-              <div className="grid gap-2">
-                {subcategories.map(subCategoryName => {
-                  const keywordCount = getKeywordCountForSubcategory(subCategoryName);
-                  const description = getSubcategoryDescription(resolvedMainCategory, subCategoryName);
-                  const isActive = subCategoryName === activeSubcategory;
-
-                  return (
-                    <button
-                      key={subCategoryName}
-                      type="button"
-                      onClick={() => {
-                        setActiveMainCategory(resolvedMainCategory);
-                        setActiveSubcategory(subCategoryName);
-                      }}
-                      className={`rounded-2xl border px-4 py-3 text-left transition-all ${
-                        isActive
-                          ? "border-primary/45 bg-primary/10 shadow-[0_10px_30px_rgba(16,185,129,0.12)]"
-                          : "border-border/80 bg-background/35 hover:border-primary/25 hover:bg-background/60"
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <span
-                          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                          style={{
-                            background: isActive ? "rgba(var(--cat-accent-rgb), 0.16)" : "rgba(var(--cat-accent-rgb), 0.08)",
-                            color: "var(--cat-accent-soft)",
-                          }}
-                        >
-                          {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="flex items-center justify-between gap-3">
-                            <span className="truncate font-semibold text-foreground">{subCategoryName}</span>
-                            <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywordCount}</span>
-                          </span>
-                          <span className="mt-1 block text-sm leading-5 text-muted-foreground">{description}</span>
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-
-          <section className="min-w-0 overflow-hidden rounded-[28px] border border-border bg-card/75 shadow-[0_16px_48px_rgba(0,0,0,0.18)]">
-            <div className="flex items-center justify-between gap-4 border-b border-border/80 px-5 py-4">
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
-                  {isActiveSubcategoryInCategory ? "Keyword Group" : "Quick Starts"}
-                </div>
-                <div className="mt-1 text-sm text-muted-foreground">
-                  {isActiveSubcategoryInCategory
-                    ? "Add keywords directly from this group."
-                    : "Use a quick angle, then return to category browsing anytime."}
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveSubcategory(null);
-                    setActiveUtilityPanel("intro");
-                  }}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    !activeSubcategory && activeUtilityPanel === "intro"
-                      ? "bg-primary/15 text-primary"
-                      : "bg-background/55 text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Overview
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveSubcategory(null);
-                    setActiveUtilityPanel("qs-keyword");
-                  }}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    !activeSubcategory && activeUtilityPanel === "qs-keyword"
-                      ? "bg-primary/15 text-primary"
-                      : "bg-background/55 text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Quick key
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveSubcategory(null);
-                    setActiveUtilityPanel("qs-combo");
-                  }}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    !activeSubcategory && activeUtilityPanel === "qs-combo"
-                      ? "bg-primary/15 text-primary"
-                      : "bg-background/55 text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Crafted combo
-                </button>
-              </div>
-            </div>
-            <div className="h-[calc(44rem-4.5rem)] min-h-[32rem]">
-              {isActiveSubcategoryInCategory && activeSubcategory
-                ? renderKeywordPanel(activeSubcategory, "desktop")
-                : renderDesktopUtilityPanel()}
-            </div>
-          </section>
+              </button>
+            );
+          })}
         </div>
+
+        {/* Step 2 — one panel at a time. The keyword pane is only 40% of the
+            viewport (home.tsx `lg:w-2/5`), so the old 17rem+24rem+1fr grid could
+            never fit: its third column collapsed to ~0 and was clipped. A single
+            fluid panel with tabs fits every desktop width and keeps the same
+            drill-down order mobile uses. */}
+        <section className="min-w-0 overflow-hidden rounded-[28px] border border-border bg-card/75 shadow-[0_16px_48px_rgba(0,0,0,0.18)]">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/80 px-5 py-4">
+            <div className="min-w-0">
+              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
+                {showKeywordGroup ? "Keyword Group" : activeUtilityPanel === "browse" ? resolvedMainCategory : "Quick Starts"}
+              </div>
+              <div className="mt-1 text-sm text-muted-foreground">
+                {showKeywordGroup
+                  ? "Add keywords directly from this group."
+                  : activeUtilityPanel === "browse"
+                    ? descriptor
+                    : "Use a quick angle, then return to category browsing anytime."}
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {([
+                ["browse", `Browse (${subcategories.length})`],
+                ["intro", "Overview"],
+                ["qs-keyword", "Quick key"],
+                ["qs-combo", "Crafted combo"],
+              ] as [UtilityPanel, string][]).map(([panel, label]) => (
+                <button
+                  key={panel}
+                  type="button"
+                  onClick={() => {
+                    setActiveSubcategory(null);
+                    setActiveUtilityPanel(panel);
+                  }}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+                    !showKeywordGroup && activeUtilityPanel === panel
+                      ? "bg-primary/15 text-primary"
+                      : "bg-background/55 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="h-[34rem]" style={getCategoryAccentVars(resolvedMainCategory)}>
+            {showKeywordGroup && activeSubcategory ? (
+              <div className="flex h-full min-h-0 flex-col">
+                <button
+                  type="button"
+                  onClick={() => setActiveSubcategory(null)}
+                  className="flex shrink-0 items-center gap-2 border-b border-border/80 px-5 py-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  All {resolvedMainCategory} groups
+                </button>
+                <div className="min-h-0 flex-1">
+                  {renderKeywordPanel(activeSubcategory, "desktop")}
+                </div>
+              </div>
+            ) : activeUtilityPanel === "browse" ? (
+              <div className="h-full overflow-y-auto px-3 py-3">
+                <div className="grid gap-2">
+                  {subcategories.map(subCategoryName => {
+                    const keywordCount = getKeywordCountForSubcategory(subCategoryName);
+                    const description = getSubcategoryDescription(resolvedMainCategory, subCategoryName);
+
+                    return (
+                      <button
+                        key={subCategoryName}
+                        type="button"
+                        onClick={() => {
+                          setActiveMainCategory(resolvedMainCategory);
+                          setActiveSubcategory(subCategoryName);
+                        }}
+                        className="rounded-2xl border border-border/80 bg-background/35 px-4 py-3 text-left transition-all hover:border-primary/25 hover:bg-background/60"
+                      >
+                        <div className="flex items-start gap-3">
+                          <span
+                            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                            style={{
+                              background: "rgba(var(--cat-accent-rgb), 0.08)",
+                              color: "var(--cat-accent-soft)",
+                            }}
+                          >
+                            {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-center justify-between gap-3">
+                              <span className="truncate font-semibold text-foreground">{subCategoryName}</span>
+                              <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywordCount}</span>
+                            </span>
+                            <span className="mt-1 block text-sm leading-5 text-muted-foreground">{description}</span>
+                          </span>
+                          <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground/70" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              renderDesktopUtilityPanel()
+            )}
+          </div>
+        </section>
 
         <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
