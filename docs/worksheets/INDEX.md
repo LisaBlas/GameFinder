@@ -14,3 +14,4 @@
 - 2026-07-23-work-on-trello-card-gamefinder-add.md
 - 2026-07-23-take-over-the-existing-trello-work-on-trello-card-gamefinder-add-initi-6a6245-branch.md
 - 2026-07-24-work-on-trello-card-gamefinder-implement.md
+- 2026-07-28-work-on-trello-card-gamefinder-smooth.md

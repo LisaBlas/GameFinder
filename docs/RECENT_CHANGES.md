@@ -78,11 +78,7 @@ than 7 days.
   (Cosmic Horror + Indie), not live community data, and was implying
   otherwise. `client/src/lib/discoveryCards.ts`, `KeywordSection.tsx`.
 
-## 2026-07-20
-- Docs sweep: pruned stale recent-change noise, corrected discovery/build
-  documentation, and promoted the volatile search-history/community-card fact
-  into core docs.
-
-## 2026-07-19
-- Discovery section: Random roll card label "Roll random" → "Roll any key"
-  (copy-only, `KeywordSection.tsx`). Trello pipeline-test card.
+## 2026-07-28
+- Search-result cards now expand over the adjacent desktop grid slot with a
+  coordinated layout transition, rather than changing grid spans and causing
+  the full results grid to visibly reflow.

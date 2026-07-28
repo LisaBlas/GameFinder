@@ -1482,6 +1482,15 @@ h3{
   animation: card-appear 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+.game-card-slot {
+  position: relative;
+  min-width: 0;
+}
+
+.game-card-slot-selected {
+  z-index: 20;
+}
+
 /* Game Results Styling */
 .results-grid {
   display: grid;
@@ -1496,6 +1505,12 @@ h3{
   --corner-highlight: rgba(240, 248, 232, 0.34);
   --corner-shadow: rgba(0, 0, 0, 0.64);
   --corner-grain: rgba(255, 255, 255, 0.07);
+  transform-origin: top center;
+  transition:
+    width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    max-width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: width, transform;
 }
 
 .game-card-shell::before {
@@ -1536,6 +1551,22 @@ h3{
 
 .game-card-shell-fullscreen::before {
   display: none;
+}
+
+@media (min-width: 1400px) {
+  .game-card-slot {
+    overflow: visible;
+  }
+
+  .game-card-shell-selected.game-card-shell-expand-right,
+  .game-card-shell-selected.game-card-shell-expand-left {
+    width: calc(200% + 1rem);
+    max-width: calc(200% + 1rem);
+  }
+
+  .game-card-shell-selected.game-card-shell-expand-left {
+    transform: translateX(calc(-100% - 1rem));
+  }
 }
 
 .game-card {

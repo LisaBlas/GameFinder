@@ -98,6 +98,7 @@ interface GameCardProps {
   fullscreen?: boolean;
   highlightFilters?: boolean;
   onOpenSimilar?: (id: number) => void;
+  desktopExpandDirection?: 'left' | 'right';
 }
 
 const encodeGameTitle = (title: string): string => {
@@ -175,7 +176,7 @@ const getAffiliateLinks = (gameTitle: string) => {
 };
 
 
-const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false, onOpenSimilar }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false, onOpenSimilar, desktopExpandDirection = 'right' }) => {
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
@@ -713,7 +714,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   );
 
   return (
-    <div className={`game-card-shell relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'game-card-shell-fullscreen pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'game-card-shell-selected widescreen:col-span-2' : ''}`}>
+    <div className={`game-card-shell relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'game-card-shell-fullscreen pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? `game-card-shell-selected game-card-shell-expand-${desktopExpandDirection}` : ''}`}>
       {fullscreen && (
         <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-slate-700/40 bg-[#111312]/95 px-3 py-2 backdrop-blur-sm md:hidden">
           <h2 className="min-w-0 flex-1 truncate pr-1 text-sm font-semibold text-white">{game.name}</h2>

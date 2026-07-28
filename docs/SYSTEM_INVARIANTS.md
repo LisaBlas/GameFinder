@@ -14,6 +14,12 @@ mutate the install state before the build even starts. Do not treat
 `npm run check` (root `tsc` against the whole app) is expected to pass.
 Treat new failures as regressions, not background debt.
 
+## Search-result expansion must not reflow the grid
+On desktop, expanding a game card must preserve the two-column grid slots.
+`SearchResults` animates the selected card's stable wrapper and `GameCard`
+expands visually over its adjacent slot; do not reintroduce a selected-card
+grid-column span, which makes every result reflow without a transition.
+
 ## Game cache requires `DATABASE_URL` in two places
 SEO pages read their game cache (`seo_page_cache`) on Render at request time,
 and the refresh script writes it on the VPS. `DATABASE_URL` must be set in
