@@ -1,10 +1,78 @@
 import React, { useEffect } from 'react';
 import '../styles/AnimatedBackground.css';
 
+const MOBILE_BREAKPOINT = 768;
+const TABLET_BREAKPOINT = 1200;
+const LOW_END_CPU_THRESHOLD = 4;
+const LOW_END_MEMORY_THRESHOLD = 4;
+const EMBER_SESSION_STORAGE_KEY = 'animated-background-ember-count';
+
+const isLowEndDevice = () => {
+  const { hardwareConcurrency, deviceMemory } = navigator as Navigator & {
+    deviceMemory?: number;
+  };
+
+  return (
+    hardwareConcurrency <= LOW_END_CPU_THRESHOLD ||
+    (deviceMemory !== undefined && deviceMemory <= LOW_END_MEMORY_THRESHOLD)
+  );
+};
+
+const getDustParticleCount = () => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return 12;
+  }
+
+  if (window.innerWidth <= MOBILE_BREAKPOINT) {
+    return isLowEndDevice() ? 18 : 24;
+  }
+
+  if (window.innerWidth <= TABLET_BREAKPOINT) {
+    return isLowEndDevice() ? 28 : 40;
+  }
+
+  return isLowEndDevice() ? 44 : 60;
+};
+
+const getMaxEmbersPerSession = () => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return 0;
+  }
+
+  if (window.innerWidth <= MOBILE_BREAKPOINT) {
+    return isLowEndDevice() ? 8 : 12;
+  }
+
+  if (window.innerWidth <= TABLET_BREAKPOINT) {
+    return isLowEndDevice() ? 12 : 18;
+  }
+
+  return isLowEndDevice() ? 18 : 28;
+};
+
+const readSessionEmberCount = () => {
+  try {
+    const value = window.sessionStorage.getItem(EMBER_SESSION_STORAGE_KEY);
+    return value ? Number.parseInt(value, 10) || 0 : 0;
+  } catch {
+    return 0;
+  }
+};
+
+const writeSessionEmberCount = (count: number) => {
+  try {
+    window.sessionStorage.setItem(EMBER_SESSION_STORAGE_KEY, String(count));
+  } catch {
+    // Ignore storage access failures; the runtime cap still applies for this mount.
+  }
+};
+
 const AnimatedBackground: React.FC = () => {
   useEffect(() => {
     const container = document.querySelector('.animated-background');
     if (!container) return;
+    const dustParticleCount = getDustParticleCount();
+    const maxEmbersPerSession = getMaxEmbersPerSession();
 
     const createDustParticle = () => {
       const particle = document.createElement('div');
@@ -21,7 +89,7 @@ const AnimatedBackground: React.FC = () => {
       return particle;
     };
 
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < dustParticleCount; i++) {
       container.appendChild(createDustParticle());
     }
 
@@ -39,22 +107,43 @@ const AnimatedBackground: React.FC = () => {
       container.appendChild(particle);
     };
 
-    let timeoutId: ReturnType<typeof setTimeout>;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let emberCount = readSessionEmberCount();
+
     const scheduleEmber = (delay?: number) => {
+      if (document.hidden || emberCount >= maxEmbersPerSession) {
+        return;
+      }
+
       timeoutId = setTimeout(() => {
+        if (document.hidden || emberCount >= maxEmbersPerSession) {
+          return;
+        }
+
         const burstSize = Math.random() < 0.12 ? 2 : 1;
-        for (let i = 0; i < burstSize; i++) {
+        const availableSlots = maxEmbersPerSession - emberCount;
+        const spawnCount = Math.min(burstSize, availableSlots);
+
+        for (let i = 0; i < spawnCount; i++) {
           createEmberParticle();
         }
-        scheduleEmber(Math.random() * 2400 + 1000);
+        emberCount += spawnCount;
+        writeSessionEmberCount(emberCount);
+
+        if (emberCount < maxEmbersPerSession) {
+          scheduleEmber(Math.random() * 2400 + 1000);
+        }
       }, delay ?? 900);
     };
-    scheduleEmber();
+
+    if (maxEmbersPerSession > 0) {
+      scheduleEmber();
+    }
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
         clearTimeout(timeoutId);
-      } else {
+      } else if (emberCount < maxEmbersPerSession) {
         scheduleEmber(Math.random() * 2400 + 1000);
       }
     };
