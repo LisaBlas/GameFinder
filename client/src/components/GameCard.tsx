@@ -74,6 +74,7 @@ interface Game {
     developer: boolean;
     publisher: boolean;
   }>;
+  _matchedFilters?: number[];
 }
 
 interface SimilarGame {
@@ -97,6 +98,7 @@ interface GameCardProps {
   fullscreen?: boolean;
   highlightFilters?: boolean;
   onOpenSimilar?: (id: number) => void;
+  desktopExpandDirection?: 'left' | 'right';
 }
 
 const encodeGameTitle = (title: string): string => {
@@ -174,7 +176,7 @@ const getAffiliateLinks = (gameTitle: string) => {
 };
 
 
-const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false, onOpenSimilar }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false, onOpenSimilar, desktopExpandDirection = 'right' }) => {
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
@@ -302,8 +304,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         tagsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       tagsRef.current.classList.add('tags-gold-glow');
+      const matchedTagEls = tagsRef.current.querySelectorAll('[data-matched="true"]');
+      matchedTagEls.forEach(el => el.classList.add('tag-gold-glow'));
       glowTimer = setTimeout(() => {
         tagsRef.current?.classList.remove('tags-gold-glow');
+        matchedTagEls.forEach(el => el.classList.remove('tag-gold-glow'));
       }, 3000);
     }, 350);
     return () => {
@@ -414,25 +419,35 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const keywordCount = game.keywords?.length ?? 0;
   const platformCount = game.platforms?.length ?? 0;
 
+  const matchedKeywordCount = React.useMemo(
+    () => (game.keywords || []).filter(k => selectedTagKeys.has(`Keywords-${k.id}`)).length,
+    [game.keywords, selectedTagKeys],
+  );
+
   const tagGroups = React.useMemo(() => [
     {
+      key: 'platforms',
       label: 'Platforms',
       tags: (game.platforms || []).map(t => ({ ...t, type: 'platform', category: 'platforms' })),
     },
     {
+      key: 'genres',
       label: 'Genres',
       tags: (game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' })),
     },
     {
+      key: 'themes',
       label: 'Themes',
       tags: (game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' })),
     },
     {
+      key: 'modes',
       label: 'Modes',
       tags: (game.game_modes || []).map(t => ({ ...t, type: 'game_mode', category: 'Game Mode' })),
     },
     {
-      label: 'Keywords',
+      key: 'keywords',
+      label: matchedKeywordCount > 0 ? 'Why this matched' : 'Keywords',
       tags: (game.keywords || [])
         .map(t => ({ ...t, type: 'keyword', category: 'Keywords' }))
         .sort((a, b) => {
@@ -442,8 +457,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         }),
       emptyText: 'This game might be too recent, too obscure, or missing detailed keyword data.'
     },
-  ].filter(group => group.tags.length > 0 || group.label === 'Keywords'),
-  [game.platforms, game.genres, game.themes, game.game_modes, game.keywords, selectedTagKeys]);
+  ].filter(group => group.tags.length > 0 || group.key === 'keywords'),
+  [game.platforms, game.genres, game.themes, game.game_modes, game.keywords, selectedTagKeys, matchedKeywordCount]);
 
   const filteredStores = React.useMemo(() =>
     (game.external_games || []).filter((store, index, self) => {
@@ -642,6 +657,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     const isSelectedTag = isFilterSelected(tag.id, tag.category);
     const existingFilter = selectedFilters.find(f => f.id === tag.id && f.category === tag.category);
     const isExcluded = existingFilter?.mode === 'exclude';
+    const isMatchedFilter = highlightFilters && (game._matchedFilters?.includes(tag.id) ?? false);
 
     let tagClass: string;
     if (isExcluded) {
@@ -657,10 +673,14 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     } else {
       tagClass = 'game-card-tag-muted';
     }
+    if (isMatchedFilter) {
+      tagClass += ' game-card-tag-matched';
+    }
 
     return (
       <button
         key={`${tag.type}-${tag.id}-${tag.name}`}
+        data-matched={isMatchedFilter ? 'true' : undefined}
         onClick={(e) => handleTagClick(tag, tag.category, e)}
         className={`game-card-tag inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${tagClass}`}
         title={isExcluded ? `Click to remove "${displayName}" exclusion` : isSelectedTag ? `Click to remove "${displayName}" filter` : `Click to add "${displayName}" to filters`}
@@ -670,8 +690,31 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     );
   };
 
+  const tagsPanel = (
+    <div ref={tagsRef} className="game-card-panel game-card-panel-keywords rounded-lg border px-4 pb-4 pt-2.5">
+      <div>
+        {tagGroups.length > 0 ? (
+          <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
+            {tagGroups.map(group => (
+              <div key={group.key} className="min-w-0">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">{group.label}</span>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {group.tags.length > 0
+                    ? group.tags.map(renderTagButton)
+                    : <span className="game-card-keyword-empty">{group.emptyText}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span className="text-xs text-slate-500">No tags found</span>
+        )}
+      </div>
+    </div>
+  );
+
   return (
-    <div className={`game-card-shell relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'game-card-shell-fullscreen pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? 'game-card-shell-selected widescreen:col-span-2' : ''}`}>
+    <div className={`game-card-shell relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'game-card-shell-fullscreen pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? `game-card-shell-selected game-card-shell-expand-${desktopExpandDirection}` : ''}`}>
       {fullscreen && (
         <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-slate-700/40 bg-[#111312]/95 px-3 py-2 backdrop-blur-sm md:hidden">
           <h2 className="min-w-0 flex-1 truncate pr-1 text-sm font-semibold text-white">{game.name}</h2>
@@ -883,6 +926,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
               {isSelected && (
                 <div className="grid gap-4 pt-1">
+                  {fullscreen && tagsPanel}
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)]">
                     <div ref={mediaRef} className="aspect-video overflow-hidden rounded-lg bg-black">
                       {isVideoLoading && (
@@ -974,26 +1018,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                     </div>
                   </div>
 
-                  <div ref={tagsRef} className="game-card-panel game-card-panel-keywords rounded-lg border px-4 pb-4 pt-2.5">
-                    <div>
-                      {tagGroups.length > 0 ? (
-                        <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
-                          {tagGroups.map(group => (
-                            <div key={group.label} className="min-w-0">
-                              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">{group.label}</span>
-                              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                                {group.tags.length > 0
-                                  ? group.tags.map(renderTagButton)
-                                  : <span className="game-card-keyword-empty">{group.emptyText}</span>}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-slate-500">No tags found</span>
-                      )}
-                    </div>
-                  </div>
+                  {!fullscreen && tagsPanel}
 
                   {/* ── Similar games panel — modal only ── */}
                   {fullscreen && <div className="game-card-panel rounded-lg border px-4 pb-4 pt-3">

@@ -27,9 +27,13 @@ Desktop:
 - `FilterSidebar` is no longer part of the active split layout.
 - `Hero` is not part of the active home layout, though the component still
   exists.
-- `KeywordSection` uses a hierarchical category/subcategory rail plus detail
-  panel on desktop, and mobile shows Roll/Uniques discovery cards, keyword
-  search, and category-grouped expandable shelves with subcategory drill-in.
+- `KeywordSection` shares one discovery-card deck (`renderDiscoveryDeck()`:
+  Popular/Crafted/Random/Hidden Gem + Uniques) between breakpoints, always
+  presented after keyword selection. Desktop: hierarchical category/
+  subcategory rail plus detail panel, then the discovery deck below.
+  Mobile: search, then a collapsible "Browse all keywords" shelf (collapsed
+  by default, category-grouped with subcategory drill-in), then the same
+  discovery deck — all on one scrollable screen.
 - `SelectedFilters` appears in both desktop and mobile action areas.
 - `BottomBar` is mobile-only, fixed, and behaves as an expandable drawer.
 
@@ -47,8 +51,11 @@ required. They are registered in `server/routes.ts` **before** the SPA
 fallback so Express handles them directly.
 
 Key files:
-- `server/seoPages.ts` — curated page configs (slug, title, description,
-  intro, filters, relatedSlugs). Add new pages here.
+- `server/seoPages.ts` — exports the final `SEO_PAGES` list and
+  `SEO_PAGE_MAP`. It merges hand-written `MANUAL_SEO_PAGES` with generated
+  entries from `server/generatedSeoPages.ts`.
+- `server/generatedSeoPages.ts` — generated SEO page configs. Regenerate with
+  `npm run seo:generate-pages`; do not hand-edit the generated file.
 - `server/seoRenderer.ts` — renders full HTML for `/best/:slug` pages.
   `renderSeoPage(page, games?)` accepts an optional `CachedGame[]` and injects
   a "Top games" section (cover, rating, summary) above the filter chips. Also
@@ -57,7 +64,7 @@ Key files:
   is unset; SEO pages degrade gracefully (render without game listings).
 - `server/scripts/refreshSeoCache.ts` — iterates all SEO pages, calls IGDB
   with each page's filters, upserts top 10 results into `seo_page_cache`. Run
-  via `npm run seo:refresh-cache`. Add to VPS nightly cron.
+  via `npm run seo:refresh-cache`.
 - `shared/schema.ts` — includes `seo_page_cache` table (slug PK, games jsonb,
   updated_at) and `CachedGame` type.
 
@@ -129,7 +136,6 @@ How it works end-to-end:
 | `client/src/App.css` | Main stylesheet: imports tokens, Tailwind directives, shadcn HSL vars, global component classes. |
 | `client/src/index.css` | Secondary Tailwind entry (Vite/Replit quirk). Contains `.filter-pill.animate-blink` and `.keyword-section` overrides. |
 | `client/src/styles/AnimatedBackground.css` | Styles for the animated canvas background only. |
-| `tailwind.config.ts` | Extends Tailwind: custom `slate` scale, `primary.*` emerald scale, `font-brand`, `font-cinzel`, `widescreen` breakpoint (1400px), token color aliases. |
 
 ### Two Token Layers
 **`--c-*` CSS vars** (defined in `tokens.css`, also mapped to Tailwind

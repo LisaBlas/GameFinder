@@ -24,11 +24,13 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
   const [searchTerm, setSearchTerm] = useState('');
   const [gameSuggestions, setGameSuggestions] = useState<SuggestedGame[]>([]);
   const [keywordSuggestions, setKeywordSuggestions] = useState<Keyword[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingKeywords, setIsLoadingKeywords] = useState(false);
+  const [isLoadingGames, setIsLoadingGames] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeModalGameId, setActiveModalGameId] = useState<number | null>(null);
   const [activeModalGame, setActiveModalGame] = useState<SuggestedGame | null>(null);
-  const searchTimeout = useRef<NodeJS.Timeout>();
+  const keywordSearchTimeout = useRef<NodeJS.Timeout>();
+  const gameSearchTimeout = useRef<NodeJS.Timeout>();
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const { addFilter } = useFilters();
 
@@ -49,29 +51,24 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
     };
   }, []);
 
+  // Keyword suggestions are served from an in-memory local lookup (see
+  // server/routes/keywords.ts), so they can use a much shorter debounce than
+  // the IGDB-backed game suggestions and render well before games arrive.
   useEffect(() => {
-    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    if (keywordSearchTimeout.current) clearTimeout(keywordSearchTimeout.current);
 
     if (!searchTerm.trim()) {
-      setGameSuggestions([]);
       setKeywordSuggestions([]);
+      setIsLoadingKeywords(false);
       return;
     }
 
-    setIsLoading(true);
+    setIsLoadingKeywords(true);
 
-    searchTimeout.current = setTimeout(async () => {
+    keywordSearchTimeout.current = setTimeout(async () => {
       try {
-        const [gameRes, keywordRes] = await Promise.all([
-          fetch(`/api/games/suggest?q=${encodeURIComponent(searchTerm)}`),
-          fetch(`/api/keywords/search?q=${encodeURIComponent(searchTerm)}`)
-        ]);
-        const [games, keywords]: [SuggestedGame[], Keyword[]] = await Promise.all([
-          gameRes.ok ? gameRes.json() : [],
-          keywordRes.ok ? keywordRes.json() : []
-        ]);
-
-        setGameSuggestions(games.slice(0, 5));
+        const keywordRes = await fetch(`/api/keywords/search?q=${encodeURIComponent(searchTerm)}`);
+        const keywords: Keyword[] = keywordRes.ok ? await keywordRes.json() : [];
 
         const q = searchTerm.toLowerCase();
         const sorted = [...keywords].sort((a, b) => {
@@ -85,14 +82,39 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
         });
         setKeywordSuggestions(sorted);
       } catch {
-        setGameSuggestions([]);
         setKeywordSuggestions([]);
       } finally {
-        setIsLoading(false);
+        setIsLoadingKeywords(false);
+      }
+    }, 120);
+
+    return () => { if (keywordSearchTimeout.current) clearTimeout(keywordSearchTimeout.current); };
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (gameSearchTimeout.current) clearTimeout(gameSearchTimeout.current);
+
+    if (!searchTerm.trim()) {
+      setGameSuggestions([]);
+      setIsLoadingGames(false);
+      return;
+    }
+
+    setIsLoadingGames(true);
+
+    gameSearchTimeout.current = setTimeout(async () => {
+      try {
+        const gameRes = await fetch(`/api/games/suggest?q=${encodeURIComponent(searchTerm)}`);
+        const games: SuggestedGame[] = gameRes.ok ? await gameRes.json() : [];
+        setGameSuggestions(games.slice(0, 5));
+      } catch {
+        setGameSuggestions([]);
+      } finally {
+        setIsLoadingGames(false);
       }
     }, 500);
 
-    return () => { if (searchTimeout.current) clearTimeout(searchTimeout.current); };
+    return () => { if (gameSearchTimeout.current) clearTimeout(gameSearchTimeout.current); };
   }, [searchTerm]);
 
   const handleKeywordClick = (keyword: Keyword) => {
@@ -120,6 +142,10 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
   };
 
   const hasSuggestions = gameSuggestions.length > 0 || keywordSuggestions.length > 0;
+  const isLoading = isLoadingKeywords || isLoadingGames;
+  // Only block the whole dropdown on the spinner before anything has arrived yet;
+  // once keywords render, games are allowed to fill in afterward without re-blocking.
+  const showSearchingState = isLoading && !hasSuggestions;
 
   return (
     <>
@@ -147,7 +173,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({ inputRef, onKeywordSelect
             [&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/70"
           onMouseDown={(e) => e.preventDefault()}
         >
-          {isLoading ? (
+          {showSearchingState ? (
             <div className="p-4 text-center text-muted-foreground">Searching...</div>
           ) : hasSuggestions ? (
             <>

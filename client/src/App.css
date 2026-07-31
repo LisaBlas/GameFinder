@@ -1482,6 +1482,15 @@ h3{
   animation: card-appear 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+.game-card-slot {
+  position: relative;
+  min-width: 0;
+}
+
+.game-card-slot-selected {
+  z-index: 20;
+}
+
 /* Game Results Styling */
 .results-grid {
   display: grid;
@@ -1496,6 +1505,12 @@ h3{
   --corner-highlight: rgba(240, 248, 232, 0.34);
   --corner-shadow: rgba(0, 0, 0, 0.64);
   --corner-grain: rgba(255, 255, 255, 0.07);
+  transform-origin: top center;
+  transition:
+    width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    max-width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: width, transform;
 }
 
 .game-card-shell::before {
@@ -1536,6 +1551,22 @@ h3{
 
 .game-card-shell-fullscreen::before {
   display: none;
+}
+
+@media (min-width: 1400px) {
+  .game-card-slot {
+    overflow: visible;
+  }
+
+  .game-card-shell-selected.game-card-shell-expand-right,
+  .game-card-shell-selected.game-card-shell-expand-left {
+    width: calc(200% + 1rem);
+    max-width: calc(200% + 1rem);
+  }
+
+  .game-card-shell-selected.game-card-shell-expand-left {
+    transform: translateX(calc(-100% - 1rem));
+  }
 }
 
 .game-card {
@@ -1953,6 +1984,11 @@ h3{
   border-color: rgba(var(--c-gold-rgb), 0.26);
   background: rgba(var(--c-gold-rgb), 0.08);
   color: #ffe2a1;
+}
+
+.game-card-tag-matched {
+  border-color: rgba(var(--c-gold-rgb), 0.55);
+  box-shadow: inset 0 0 0 1px rgba(var(--c-gold-rgb), 0.2);
 }
 
 .game-image {
@@ -3780,6 +3816,88 @@ svg.filter-caret.expanded {
 
 /* ── end Mobile category segmented control ───────────────────── */
 
+/* ── Desktop category segmented control ──────────────────────────
+   Desktop counterpart of .mobile-cat-segmented. The keyword pane is only 40%
+   of the viewport (home.tsx `lg:w-2/5`), so the explorer cannot afford a fixed
+   multi-column layout — this row of three equal segments fits any pane width
+   and gives desktop the same "pick a category first" step mobile has. */
+
+.desktop-cat-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid rgba(var(--c-border-rgb), 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(var(--c-bg-rgb), 0.6);
+}
+
+.desktop-cat-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.8rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--c-dim);
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(var(--c-border-rgb), 0.18);
+  transition: background 0.15s, color 0.15s;
+}
+
+.desktop-cat-segment:last-child {
+  border-right: none;
+}
+
+.desktop-cat-segment svg {
+  flex-shrink: 0;
+  color: var(--c-dim);
+  transition: color 0.15s;
+}
+
+.desktop-cat-segment-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desktop-cat-segment-count {
+  flex-shrink: 0;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(var(--c-border-rgb), 0.16);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.desktop-cat-segment:hover {
+  background: rgba(var(--cat-accent-rgb), 0.08);
+  color: var(--cat-accent-soft);
+}
+
+.desktop-cat-segment:hover svg {
+  color: var(--cat-accent-soft);
+}
+
+.desktop-cat-segment-active {
+  background: rgba(var(--cat-accent-rgb), 0.12);
+  color: var(--cat-accent-soft);
+}
+
+.desktop-cat-segment-active svg {
+  color: var(--cat-accent-soft);
+}
+
+.desktop-cat-segment-active .desktop-cat-segment-count {
+  background: rgba(var(--cat-accent-rgb), 0.2);
+}
+
+/* ── end Desktop category segmented control ──────────────────── */
+
 /* ── Mobile inline category content ─────────────────────────── */
 
 .mobile-inline-cat-content {
@@ -4234,4 +4352,16 @@ svg.filter-caret.expanded {
 }
 .tags-gold-glow {
   animation: tags-gold-glow 3s ease-out forwards;
+}
+
+@keyframes tag-gold-glow {
+  0%   { border-color: rgba(244,176,27,0.95); box-shadow: 0 0 0 1px rgba(244,176,27,0.5), 0 0 12px rgba(244,176,27,0.35); }
+  12%  { border-color: rgba(244,176,27,0.3);  box-shadow: none; }
+  24%  { border-color: rgba(244,176,27,0.95); box-shadow: 0 0 0 1px rgba(244,176,27,0.5), 0 0 12px rgba(244,176,27,0.35); }
+  36%  { border-color: rgba(244,176,27,0.3);  box-shadow: none; }
+  50%  { border-color: rgba(244,176,27,0.8);  box-shadow: 0 0 0 1px rgba(244,176,27,0.4), 0 0 8px rgba(244,176,27,0.25); }
+  100% { border-color: rgba(var(--c-gold-rgb), 0.55); box-shadow: inset 0 0 0 1px rgba(var(--c-gold-rgb), 0.2); }
+}
+.tag-gold-glow {
+  animation: tag-gold-glow 3s ease-out forwards;
 }

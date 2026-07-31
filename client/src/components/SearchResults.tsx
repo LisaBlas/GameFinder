@@ -36,6 +36,13 @@ const RARITY_TEXT: Record<RarityTier, string> = {
   unique:   '--c-unique-soft',
 };
 
+const CARD_LAYOUT_TRANSITION = {
+  layout: {
+    duration: 0.32,
+    ease: [0.22, 1, 0.36, 1] as const,
+  },
+};
+
 const SearchResults: React.FC = () => {
   const { gameResults, isLoading, error, sortBy, setSortBy, seedGame, lastSearchedFilters, totalCount, countIsCapped } = useFilters();
   const [hasSearched, setHasSearched] = useState(false);
@@ -204,17 +211,21 @@ const SearchResults: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
-            {gameResults.map((game) => (
-              <div
+            {gameResults.map((game, index) => (
+              <motion.div
+                layout
+                transition={CARD_LAYOUT_TRANSITION}
                 key={`game-${game.id}`}
-                className={`game-card-appear ${selectedGameId === game.id ? 'widescreen:col-span-2' : 'h-full'}`}
+                className={`game-card-appear game-card-slot ${selectedGameId === game.id ? 'game-card-slot-selected' : 'h-full'}`}
               >
                 <GameCard
                   game={game}
                   isSelected={selectedGameId === game.id}
+                  highlightFilters={selectedGameId === game.id}
+                  desktopExpandDirection={index % 2 === 0 ? 'right' : 'left'}
                   onSelect={() => setSelectedGameId(current => current === game.id ? null : game.id)}
                 />
-              </div>
+              </motion.div>
             ))}
           </div>
 
@@ -243,6 +254,7 @@ const SearchResults: React.FC = () => {
               game={selectedGame}
               isSelected={true}
               fullscreen={true}
+              highlightFilters={true}
               onSelect={() => setSelectedGameId(null)}
             />
           </div>

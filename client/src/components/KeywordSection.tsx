@@ -44,7 +44,6 @@ const _randomKeywordPool: RawKw[] = (() => {
 })();
 
 type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
-type UtilityPanel = "intro" | "qs-keyword" | "qs-combo";
 // RevealCard, RarityTier, and getRarity are imported from ../lib/discoveryCards
 
 interface KeywordComboSuggestion {
@@ -105,7 +104,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>("Mechanics & Systems");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
-  const [activeUtilityPanel, setActiveUtilityPanel] = useState<UtilityPanel>("intro");
   const [mobileCategoryView, setMobileCategoryView] = useState(false);
   const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
   const [mobileQsView, setMobileQsView] = useState<"keyword" | "combo" | null>(null);
@@ -488,7 +486,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const selectMainCategory = (cat: MainCategory) => {
     setActiveMainCategory(current => current === cat ? null : cat);
     setActiveSubcategory(null);
-    setActiveUtilityPanel("intro");
     setMobileCategoryView(false);
     setMobileSubcategoryView(false);
   };
@@ -502,7 +499,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     window.history.pushState({ gamefinder: 'subcategory' }, '');
     setActiveMainCategory(mainCat);
     setActiveSubcategory(subCategoryName);
-    setActiveUtilityPanel("intro");
     setMobileCategoryView(true);
     setMobileSubcategoryView(true);
   };
@@ -668,73 +664,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  const renderKeywordSuggestion = (variant: "desktop" | "mobile" = "desktop") => {
-    const suggestion = keywordComboSuggestions[activeSuggestionIndex];
-
-    return (
-      <div className={`keyword-combo-empty-state ${variant === "mobile" ? "keyword-combo-mobile-state" : ""}`}>
-        <div className="keyword-combo-card">
-          <div className="keyword-combo-main">
-            <div className="keyword-combo-copy">
-              <h3>{suggestion.title}</h3>
-            </div>
-            <div className="keyword-combo-kicker">
-              <Sparkles className="h-3.5 w-3.5" />
-              Hand-picked
-            </div>
-          </div>
-          <div className="keyword-combo-recipe" aria-label={`${suggestion.title} filter combination`}>
-            {suggestion.filters.map((filter, index) => (
-              <React.Fragment key={`${filter.category}-${filter.id}-${filter.mode || "include"}`}>
-                <span className={`keyword-combo-operator${filter.mode === "exclude" ? " exclude" : ""}`}>
-                  {filter.mode === "exclude" ? "-" : "+"}
-                </span>
-                {renderComboFilter(filter)}
-              </React.Fragment>
-            ))}
-          </div>
-          <div className="keyword-combo-actions">
-            <button
-              type="button"
-              className="keyword-combo-button keyword-combo-button-primary"
-              onClick={() => applySuggestion(suggestion)}
-            >
-              <Check className="h-4 w-4" />
-              Try combo
-            </button>
-            <button
-              type="button"
-              className="keyword-combo-button keyword-combo-button-secondary"
-              onClick={() => setActiveSuggestionIndex(index => (index + 1) % keywordComboSuggestions.length)}
-            >
-              <Shuffle className="h-4 w-4" />
-              Next
-              <span className="keyword-combo-button-count">
-                {activeSuggestionIndex + 1}/{keywordComboSuggestions.length}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderKeywordIntro = () => (
-    <div className="keyword-intro-empty-state">
-      <div className="keyword-intro-card">
-        <div className="keyword-intro-icon">
-          <LayoutGrid className="h-5 w-5" />
-        </div>
-        <div>
-          <h3>Pick 2–3 keywords. Describe a vibe.</h3>
-          <p>
-            Browse 5,000+ curated tags — mechanics, settings, aesthetics. Combine them to surface games that match the exact feel you're after.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-
   const renderTasteStory = () => (
     <section className="taste-story-card" aria-label="GameFinder taste curation">
       <span className="taste-story-icon">
@@ -870,7 +799,152 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  const renderDesktopExplorer = () => null;
+  const renderDesktopExplorer = () => {
+    const availableMainCategories = mainCategoryOrder.filter(
+      mainCat => getAvailableSubcategories(mainCat).length > 0
+    );
+    const resolvedMainCategory =
+      activeMainCategory && getAvailableSubcategories(activeMainCategory).length > 0
+        ? activeMainCategory
+        : availableMainCategories[0] ?? null;
+
+    if (!resolvedMainCategory) return null;
+
+    const subcategories = getAvailableSubcategories(resolvedMainCategory);
+    const descriptor = (keywordCategories[resolvedMainCategory] as unknown as { description: string }).description;
+    const isActiveSubcategoryInCategory = activeSubcategory
+      ? getSubcategoryParent(activeSubcategory) === resolvedMainCategory
+      : false;
+    /** Drilled into a keyword group — the deepest step, which replaces the
+     *  subcategory list rather than sitting beside it. */
+    const showKeywordGroup = isActiveSubcategoryInCategory && !!activeSubcategory;
+
+    return (
+      <section className="hidden lg:grid gap-4">
+        <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
+          <div className="mb-2 text-sm font-semibold text-foreground">
+            Start with a game or a keyword
+          </div>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Search a game you love, or name the feeling you want next.
+          </p>
+          <div>
+            <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
+          </div>
+        </div>
+
+        <section className="min-w-0 overflow-hidden rounded-[28px] border border-border bg-card/75 shadow-[0_16px_48px_rgba(0,0,0,0.18)]">
+          <div className="border-b border-border/80 px-5 py-4">
+            <div className="mb-4">
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
+                <LayoutGrid className="h-3.5 w-3.5" />
+                Browse by feel
+              </div>
+              <h2 className="mt-2 text-lg font-bold text-foreground">What are you in the mood for?</h2>
+            </div>
+            <div className="desktop-cat-segmented">
+              {availableMainCategories.map(mainCat => {
+                const isActive = mainCat === resolvedMainCategory;
+                const shortLabel = ({ "Mechanics & Systems": "Mechanics", "Setting & World": "Setting", "Aesthetics & Style": "Aesthetics" } as Record<MainCategory, string>)[mainCat];
+                return (
+                <button
+                  key={mainCat}
+                  type="button"
+                  onClick={() => {
+                    setActiveMainCategory(mainCat);
+                    setActiveSubcategory(null);
+                  }}
+                  className={`desktop-cat-segment${isActive ? ' desktop-cat-segment-active' : ''}`}
+                  style={getCategoryAccentVars(mainCat)}
+                >
+                  {getCategoryIcon(mainCat, "w-4 h-4")}
+                  <span className="desktop-cat-segment-label">{shortLabel}</span>
+                  <span className="desktop-cat-segment-count">{getAvailableSubcategories(mainCat).length}</span>
+                </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="h-[34rem]" style={getCategoryAccentVars(resolvedMainCategory)}>
+            {showKeywordGroup && activeSubcategory ? (
+              <div className="flex h-full min-h-0 flex-col">
+                <button
+                  type="button"
+                  onClick={() => setActiveSubcategory(null)}
+                  className="flex shrink-0 items-center gap-2 border-b border-border/80 px-5 py-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  All {resolvedMainCategory} groups
+                </button>
+                <div className="min-h-0 flex-1">
+                  {renderKeywordPanel(activeSubcategory, "desktop")}
+                </div>
+              </div>
+            ) : (
+              <div className="h-full overflow-y-auto px-3 py-3">
+                <div className="px-2 pb-3 text-sm text-muted-foreground">{descriptor}</div>
+                <div className="grid gap-2">
+                  {subcategories.map(subCategoryName => {
+                    const keywordCount = getKeywordCountForSubcategory(subCategoryName);
+                    const description = getSubcategoryDescription(resolvedMainCategory, subCategoryName);
+
+                    return (
+                      <button
+                        key={subCategoryName}
+                        type="button"
+                        onClick={() => {
+                          setActiveMainCategory(resolvedMainCategory);
+                          setActiveSubcategory(subCategoryName);
+                        }}
+                        className="rounded-2xl border border-border/80 bg-background/35 px-4 py-3 text-left transition-all hover:border-primary/25 hover:bg-background/60"
+                      >
+                        <div className="flex items-start gap-3">
+                          <span
+                            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                            style={{
+                              background: "rgba(var(--cat-accent-rgb), 0.08)",
+                              color: "var(--cat-accent-soft)",
+                            }}
+                          >
+                            {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-center justify-between gap-3">
+                              <span className="truncate font-semibold text-foreground">{subCategoryName}</span>
+                              <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywordCount}</span>
+                            </span>
+                            <span className="mt-1 block text-sm leading-5 text-muted-foreground">{description}</span>
+                          </span>
+                          <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground/70" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <details className="group rounded-[28px] border border-border bg-card/60 px-5 shadow-[0_12px_36px_rgba(0,0,0,0.14)]">
+          <summary className="flex cursor-pointer list-none items-center gap-3 py-4 text-sm font-semibold text-foreground marker:content-none">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Sparkles className="h-4 w-4" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block">Need a spark?</span>
+              <span className="mt-0.5 block text-xs font-normal text-muted-foreground">Try a curated key, combo, or hidden gem.</span>
+            </span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="border-t border-border/80 py-4">
+            {renderDiscoveryDeck()}
+          </div>
+        </details>
+      </section>
+    );
+  };
 
   const renderMobileSubcategoryDetail = () => {
     if (!mobileSubcategoryView || !activeSubcategory) return null;
@@ -1039,17 +1113,163 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
+  /** Shared roll/curated discovery-card deck — same markup and order on mobile and desktop,
+   *  so both breakpoints present keyword selection first, then this deck second. */
+  const renderDiscoveryDeck = () => (
+    <div className="qs-discovery-matrix">
+      <div className="qs-discovery-columns" aria-hidden="true">
+        <span>
+          <KeyRound className="w-3 h-3" />
+          Keys
+        </span>
+        <span>
+          <Hammer className="w-3 h-3" />
+          Crafts
+        </span>
+      </div>
+      <div className="qs-cards-grid qs-cards-grid--matrix">
+        {/* Popular — cycles curated high-use keywords */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['popular'].name}
+          id="popular"
+          variantClass="qs-card-rnd-kw"
+          isPulsing={activeRevealCard === 'popular'}
+          isPostClick={postClickCardId === 'popular'}
+          activeRarity={cardRarities['popular']}
+          hasResult={!!popularRevealed}
+          typeIcon={KeyRound}
+          actionIcon={Dices}
+          actionLabel="Roll popular"
+          revealedContent={popularRevealed?.name ?? ''}
+          idleFooterCopy="Top key this week"
+          footerMeta={popularStep}
+          onClick={applyPopular}
+        />
+        {/* Crafted — hand-picked keyword+filter combos */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['rare-combo'].name}
+          id="rare-combo"
+          variantClass="qs-card-rnd-combo"
+          isPulsing={activeRevealCard === 'rare-combo'}
+          isPostClick={postClickCardId === 'rare-combo'}
+          activeRarity={cardRarities['rare-combo']}
+          hasResult={isRareComboRevealed}
+          typeIcon={Hammer}
+          actionIcon={Wand2}
+          actionLabel="Craft curated"
+          revealedContent={rareComboRevealed?.title ?? ''}
+          idleFooterCopy={rareComboState}
+          footerMeta={craftedStep}
+          onClick={applyRareCombo}
+        />
+        {/* Random — draws a random keyword from the full pool, infinite */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['common-keyword'].name}
+          id="common-keyword"
+          variantClass="qs-card-popular"
+          isPulsing={activeRevealCard === 'common-keyword'}
+          isPostClick={postClickCardId === 'common-keyword'}
+          activeRarity={cardRarities['common-keyword']}
+          hasResult={isCommonKeywordRevealed}
+          typeIcon={KeyRound}
+          actionIcon={Shuffle}
+          actionLabel="Roll any key"
+          revealedContent={commonKeywordRevealed?.name ?? ''}
+          idleFooterCopy={commonKeywordState}
+          footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
+          onClick={applyCommonKeyword}
+        />
+        {/* Hidden Gem — fixed editorial pick, not live community data */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['user-crafts'].name}
+          id="user-crafts"
+          variantClass="qs-card-user-crafts"
+          isPulsing={activeRevealCard === 'user-crafts'}
+          isPostClick={postClickCardId === 'user-crafts'}
+          activeRarity={cardRarities['user-crafts']}
+          hasResult={userCraftsRevealed}
+          typeIcon={Hammer}
+          actionIcon={Gem}
+          actionLabel="Reveal gem"
+          revealedContent="Cosmic Horror + Indie"
+          idleFooterCopy="Niche pick"
+          footerMeta="1/1"
+          onClick={applyUserCrafts}
+        />
+      </div>
+
+      <div className="qs-uniques-divider">
+        <Star className="w-3 h-3" />
+        Uniques
+      </div>
+      <div className="qs-cards-grid qs-cards-grid--matrix">
+        {/* Unique Key — rare single keywords, tends to surface <5 results */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['unique-keyword'].name}
+          id="unique-keyword"
+          variantClass="qs-card-unique-kw"
+          extraWrapClass="qs-unique-wrap"
+          isPulsing={activeRevealCard === 'unique-keyword'}
+          isPostClick={postClickCardId === 'unique-keyword'}
+          activeRarity={cardRarities['unique-keyword']}
+          hasResult={isKwRevealedState}
+          typeIcon={KeyRound}
+          actionIcon={Sparkles}
+          actionLabel="Discover unique"
+          revealedContent={kwRevealed?.name ?? ''}
+          idleFooterCopy="<5 results"
+          footerMeta={
+            <span className="qs-sequence-track">
+              {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
+              <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
+            </span>
+          }
+          isSequence
+          onClick={applyUniqueKeyword}
+        />
+        {/* Unique Combo — rare keyword+filter combos, tends to surface <5 results */}
+        <DiscoveryCard
+          name={DISCOVERY_CARD_META['unique-combo'].name}
+          id="unique-combo"
+          variantClass="qs-card-unique-combo"
+          extraWrapClass="qs-unique-wrap"
+          isPulsing={activeRevealCard === 'unique-combo'}
+          isPostClick={postClickCardId === 'unique-combo'}
+          activeRarity={cardRarities['unique-combo']}
+          hasResult={isComboRevealedState}
+          typeIcon={Hammer}
+          actionIcon={Wand2}
+          actionLabel="Craft unique"
+          revealedContent={comboRevealed?.title ?? ''}
+          idleFooterCopy="<5 results"
+          footerMeta={
+            <span className="qs-sequence-track">
+              {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
+              <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
+            </span>
+          }
+          isSequence
+          onClick={applyUniqueCombo}
+        />
+      </div>
+
+      {showTasteStory && renderTasteStory()}
+    </div>
+  );
+
   const renderMobileShelves = () => {
     const inlineKwData = activeSubcategory ? getKeywordPanelData(activeSubcategory) : null;
     return (
-      <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:flex-none lg:overflow-visible">
-        <div className="flex-1 overflow-y-auto lg:flex-none lg:overflow-visible">
+      <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
+        <div className="flex-1 overflow-y-auto">
           <div className="grid gap-4">
             <div className="mobile-keyword-search-wrap">
               <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
             </div>
             <section className="grid gap-3 mx-1">
-              {/* Browse all keywords toggle */}
+              {/* Browse all keywords toggle — collapsed by default (progressive disclosure);
+                  the roll/curated deck below always renders regardless, so keyword selection
+                  and roll cards stay on one scrollable screen in a fixed order. */}
               <button
                 type="button"
                 onClick={() => {
@@ -1071,7 +1291,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 <ChevronDown className={`keyword-browse-chevron ${browseOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {browseOpen ? (
+              {browseOpen && (
                 <>
                   <div className="mobile-cat-segmented">
                     {mainCategoryOrder
@@ -1147,149 +1367,10 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                     </div>
                   )}
                 </>
-              ) : (
-                <>
-                  <div className="qs-discovery-matrix">
-                    <div className="qs-discovery-columns" aria-hidden="true">
-                      <span>
-                        <KeyRound className="w-3 h-3" />
-                        Keys
-                      </span>
-                      <span>
-                        <Hammer className="w-3 h-3" />
-                        Crafts
-                      </span>
-                    </div>
-                    <div className="qs-cards-grid qs-cards-grid--matrix">
-                      {/* Popular — cycles curated high-use keywords */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['popular'].name}
-                        id="popular"
-                        variantClass="qs-card-rnd-kw"
-                        isPulsing={activeRevealCard === 'popular'}
-                        isPostClick={postClickCardId === 'popular'}
-                        activeRarity={cardRarities['popular']}
-                        hasResult={!!popularRevealed}
-                        typeIcon={KeyRound}
-                        actionIcon={Dices}
-                        actionLabel="Roll popular"
-                        revealedContent={popularRevealed?.name ?? ''}
-                        idleFooterCopy="Top key this week"
-                        footerMeta={popularStep}
-                        onClick={applyPopular}
-                      />
-                      {/* Crafted — hand-picked keyword+filter combos */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['rare-combo'].name}
-                        id="rare-combo"
-                        variantClass="qs-card-rnd-combo"
-                        isPulsing={activeRevealCard === 'rare-combo'}
-                        isPostClick={postClickCardId === 'rare-combo'}
-                        activeRarity={cardRarities['rare-combo']}
-                        hasResult={isRareComboRevealed}
-                        typeIcon={Hammer}
-                        actionIcon={Wand2}
-                        actionLabel="Craft curated"
-                        revealedContent={rareComboRevealed?.title ?? ''}
-                        idleFooterCopy={rareComboState}
-                        footerMeta={craftedStep}
-                        onClick={applyRareCombo}
-                      />
-                      {/* Random — draws a random keyword from the full pool, infinite */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['common-keyword'].name}
-                        id="common-keyword"
-                        variantClass="qs-card-popular"
-                        isPulsing={activeRevealCard === 'common-keyword'}
-                        isPostClick={postClickCardId === 'common-keyword'}
-                        activeRarity={cardRarities['common-keyword']}
-                        hasResult={isCommonKeywordRevealed}
-                        typeIcon={KeyRound}
-                        actionIcon={Shuffle}
-                        actionLabel="Roll any key"
-                        revealedContent={commonKeywordRevealed?.name ?? ''}
-                        idleFooterCopy={commonKeywordState}
-                        footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
-                        onClick={applyCommonKeyword}
-                      />
-                      {/* Hidden Gem — fixed editorial pick, not live community data */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['user-crafts'].name}
-                        id="user-crafts"
-                        variantClass="qs-card-user-crafts"
-                        isPulsing={activeRevealCard === 'user-crafts'}
-                        isPostClick={postClickCardId === 'user-crafts'}
-                        activeRarity={cardRarities['user-crafts']}
-                        hasResult={userCraftsRevealed}
-                        typeIcon={Hammer}
-                        actionIcon={Gem}
-                        actionLabel="Reveal gem"
-                        revealedContent="Cosmic Horror + Indie"
-                        idleFooterCopy="Niche pick"
-                        footerMeta="1/1"
-                        onClick={applyUserCrafts}
-                      />
-                    </div>
-
-                    <div className="qs-uniques-divider">
-                      <Star className="w-3 h-3" />
-                      Uniques
-                    </div>
-                    <div className="qs-cards-grid qs-cards-grid--matrix">
-                      {/* Unique Key — rare single keywords, tends to surface <5 results */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['unique-keyword'].name}
-                        id="unique-keyword"
-                        variantClass="qs-card-unique-kw"
-                        extraWrapClass="qs-unique-wrap"
-                        isPulsing={activeRevealCard === 'unique-keyword'}
-                        isPostClick={postClickCardId === 'unique-keyword'}
-                        activeRarity={cardRarities['unique-keyword']}
-                        hasResult={isKwRevealedState}
-                        typeIcon={KeyRound}
-                        actionIcon={Sparkles}
-                        actionLabel="Discover unique"
-                        revealedContent={kwRevealed?.name ?? ''}
-                        idleFooterCopy="<5 results"
-                        footerMeta={
-                          <span className="qs-sequence-track">
-                            {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
-                            <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
-                          </span>
-                        }
-                        isSequence
-                        onClick={applyUniqueKeyword}
-                      />
-                      {/* Unique Combo — rare keyword+filter combos, tends to surface <5 results */}
-                      <DiscoveryCard
-                        name={DISCOVERY_CARD_META['unique-combo'].name}
-                        id="unique-combo"
-                        variantClass="qs-card-unique-combo"
-                        extraWrapClass="qs-unique-wrap"
-                        isPulsing={activeRevealCard === 'unique-combo'}
-                        isPostClick={postClickCardId === 'unique-combo'}
-                        activeRarity={cardRarities['unique-combo']}
-                        hasResult={isComboRevealedState}
-                        typeIcon={Hammer}
-                        actionIcon={Wand2}
-                        actionLabel="Craft unique"
-                        revealedContent={comboRevealed?.title ?? ''}
-                        idleFooterCopy="<5 results"
-                        footerMeta={
-                          <span className="qs-sequence-track">
-                            {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
-                            <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
-                          </span>
-                        }
-                        isSequence
-                        onClick={applyUniqueCombo}
-                      />
-                    </div>
-
-                    {showTasteStory && renderTasteStory()}
-                  </div>
-                </>
               )}
+
+              {/* Roll/curated cards — keyword selection above, this deck second, same screen. */}
+              {renderDiscoveryDeck()}
             </section>
           </div>
         </div>

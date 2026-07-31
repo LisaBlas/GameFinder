@@ -5,6 +5,17 @@ Durable decisions and context not derivable from source alone.
 ## Active Product Flows
 1. **Keyword UX** — make keyword selection feel fun and rewarding. Keywords
    are curated and sorted intentionally; preserve their order and meaning.
+   Desktop always exposes the category/subcategory explorer inline; the
+   mobile-style "Browse all keywords" shelf is not a desktop prerequisite.
+   In expanded `GameCard`s, the Keywords tag group's header becomes "Why
+   this matched" (instead of "Keywords") whenever the game has keywords
+   overlapping the active search's selected `Keywords` filters — those
+   matched keywords already sort first within the group. On `fullscreen`
+   cards (mobile takeover / modal) the whole tags panel renders above the
+   video/stores block for that reason — surfacing match context before
+   media; the desktop inline-expand card (`fullscreen=false`) keeps
+   video/stores first, tags panel after. `GameCard.tsx` builds both blocks
+   as JSX variables (`tagsPanel`) and reorders by the `fullscreen` prop.
 2. **Homepage discovery cards** — `KeywordSection` has Roll and Uniques
    sections above manual browsing. All 6 cards render via the reusable
    `DiscoveryCard` component (`client/src/components/DiscoveryCard.tsx`); card
@@ -38,8 +49,13 @@ Durable decisions and context not derivable from source alone.
    (capped at 100 entries, wiped on every restart/deploy) — not enough to
    back a "live community data" claim, which is why the card was relabeled
    from "User Crafted" to "Hidden Gem" (2026-07-23) rather than wired to it.
-5. **Game/keyword search** — `KeywordSearch` queries both
-   `/api/games/suggest` and `/api/keywords/search`.
+5. **Game/keyword search** — `KeywordSearch` queries `/api/games/suggest`
+   and `/api/keywords/search` as two independently debounced fetches, not a
+   joined request: keywords (local in-memory lookup) debounce at 120ms and
+   render as soon as they arrive, while games (IGDB-backed, slower) debounce
+   at 500ms and fill in afterward without blocking the keyword dropdown.
+   Decoupled 2026-07-23 so the instant-filter keyword path isn't held back by
+   the slower game suggestions.
 6. **Find similar** — selecting a game suggestion clears filters, sets
    `seedGame`, fetches `/api/games/:id/similar-seed`, then seeds up to 3
    keywords plus one genre and one theme.
@@ -68,6 +84,17 @@ Durable decisions and context not derivable from source alone.
     parallel with the search; count is capped at 250 and returns
     `capped: true` when exceeded. The results header shows "N Results" or
     "N+ Results". Page size is 50 (changed from 30).
+13. **Query-context highlight (`highlightFilters`)** — when a `GameCard`
+    opens with `highlightFilters` true, the tags panel flashes gold
+    (`tags-gold-glow`) and any tag whose id appears in `game._matchedFilters`
+    (set server-side per result in `igdbService.searchGames`, from the
+    filters actually used in that search) also flashes (`tag-gold-glow`) and
+    then settles into a persistent gold-tinted `game-card-tag-matched` state
+    — showing which keywords/tags drove that result. As of 2026-07-24 this is
+    wired from `SearchResults` (primary search path), `GameCardModal`, and
+    `KeywordSearch`; any new place that opens a `GameCard` for a search
+    result should pass `highlightFilters` too or matched tags won't be
+    marked.
 
 ## Competitive Context
 - Main competitors: WhatOPlay, Boredgame.lol, GamesFinder.gg
