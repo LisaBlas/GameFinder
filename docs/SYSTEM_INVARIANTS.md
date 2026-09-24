@@ -19,6 +19,9 @@ On desktop, expanding a game card must preserve the two-column grid slots.
 `SearchResults` animates the selected card's stable wrapper and `GameCard`
 expands visually over its adjacent slot; do not reintroduce a selected-card
 grid-column span, which makes every result reflow without a transition.
+A left-expanding (right-column) card shifts by `translateX(calc(-50% - 0.5rem))`:
+translate percentages resolve against the shell's own doubled width, not the
+slot, so `-100%` overshoots by a full column.
 
 ## Game cache requires `DATABASE_URL` in two places
 SEO pages read their game cache (`seo_page_cache`) on Render at request time,

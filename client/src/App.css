@@ -1564,8 +1564,10 @@ h3{
     max-width: calc(200% + 1rem);
   }
 
+  /* translateX % resolves against the shell's own (doubled) width: shift by
+     one slot plus the 1rem gap, i.e. half the shell plus half the gap. */
   .game-card-shell-selected.game-card-shell-expand-left {
-    transform: translateX(calc(-100% - 1rem));
+    transform: translateX(calc(-50% - 0.5rem));
   }
 }
 

@@ -3,6 +3,11 @@
 Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
+## 2026-09-24
+- Fixed right-column search-result cards overshooting a full column to the
+  left when expanded on desktop (`translateX` percent was measured against the
+  doubled shell width). `client/src/App.css`.
+
 ## 2026-07-25
 - Simplified the desktop keyword-build panel around three clear entry points:
   search for a game or keyword, browse a feeling, or optionally open “Need a
