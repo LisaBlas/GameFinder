@@ -21,8 +21,8 @@ Durable decisions and context not derivable from source alone.
    `DiscoveryCard` component (`client/src/components/DiscoveryCard.tsx`); card
    metadata lives in `DISCOVERY_CARD_META`
    (`client/src/lib/discoveryCards.ts`). Roll has four cards: **Popular**
-   (curated sequence of popular keys, e.g. Action Roguelike → Souls-like;
-   label "Top key this week"), **Crafted** (hand-picked combos, first entry is
+   (curated static sequence of popular keys, e.g. Action Roguelike → Souls-like;
+   its "Top key this week" label is not backed by live ranking data), **Crafted** (hand-picked combos, first entry is
    Memory Loss + Horror theme), **Random** (random single keyword from the
    full pool, infinite), and **Hidden Gem** (id `user-crafts`; fixed
    editorial reveal — Cosmic Horror + Indie — labeled/iconed as a curated

@@ -36,6 +36,13 @@ display names via `idToFilterName`, built from `game-filters.json` at module
 load. If a filter pill shows a raw number instead of a name, the ID is missing
 from `game-filters.json`.
 
+## Keyword URL hydration is async; set sort and filters together
+`FilterContext` builds the keyword slug map lazily (dynamic import of the
+taxonomy JSON) only when the URL has `kw` / `kw-ex`. In that case hydration
+must call `setSortBy` and `setSelectedFilters` together, after the map loads.
+If sort is set earlier, the URL-sync effect fires with no keyword filters and
+rewrites the URL, erasing `kw` / `kw-ex` before they hydrate.
+
 ## IGDB exclusion filters cannot use `!=`
 `keywords != (id)` in Apicalypse does not mean "does not contain id" — it
 means "the array is not equal to (id)," which is almost always true and does
@@ -49,17 +56,13 @@ generated dynamically from `SEO_PAGES` in `server/seoRenderer.ts`. Do not edit
 the static file expecting it to take effect.
 
 ## Pre-commit hook requires Node >=20.12
-The `pre-commit` hook (added 2026-07-23) runs ESLint 10.7, which calls
-`util.styleText` — only available in Node >=20.12. Under Node 18.x (the
-current VPS default for this project as of 2026-07-23) every commit fails
-at the `eslint` hook stage with `TypeError: util.styleText is not a
-function`, regardless of what changed. This blocks *all* commits, not just
-ones touching lintable files. Confirmed via `git stash` that the failure
-reproduces against the unmodified tree too — it's an environment/tooling
-mismatch, not a code regression. Do not work around it with
-`git commit --no-verify` without asking first; either pin/upgrade the
-project's Node version or downgrade `eslint` to a Node-18-compatible
-release.
+The `pre-commit` hook runs ESLint 10.7, which calls `util.styleText` and
+therefore requires Node >=20.12. Node 18.x fails at the `eslint` hook stage
+with `TypeError: util.styleText is not a function`, regardless of what
+changed. This blocks *all* commits, not just ones touching lintable files.
+Do not work around it with `git commit --no-verify` without asking first;
+use a supported Node release (the workspace used v22.22.2 on 2026-09-25),
+or downgrade `eslint` to a Node-18-compatible release.
 
 ## The desktop keyword pane is 40% of the viewport, not full width
 `home.tsx` splits the desktop workspace into a keyword build panel

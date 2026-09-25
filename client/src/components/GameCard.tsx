@@ -949,9 +949,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                             aria-label={`Play ${game.name} trailer`}
                           >
                             <img
-                              src={`https://i.ytimg.com/vi/${videos[0].video_id}/maxresdefault.jpg`}
-                              onError={(e) => { (e.target as HTMLImageElement).src = `https://i.ytimg.com/vi/${videos[0].video_id}/hqdefault.jpg`; }}
+                              src={`https://i.ytimg.com/vi/${videos[0].video_id}/hqdefault.jpg`}
                               alt=""
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-200" />

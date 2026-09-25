@@ -15,4 +15,5 @@ Two halves of the app:
   This is the main organic-traffic driver.
 
 Revenue path: game cards link out to official stores plus affiliate
-marketplaces (Eneba, G2A, Kinguin, Instant Gaming) with rotated partner links.
+marketplaces (GamersGate, Instant Gaming, Eneba, Kinguin, and G2A) with
+rotated partner links.
