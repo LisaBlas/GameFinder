@@ -8,6 +8,7 @@ import FilterBar from './FilterBar';
 import MobileFilterSheet from './MobileFilterSheet';
 import SearchPlaceholder from './SearchPlaceholder';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cardLinkFor, setHoveredCard, setSelectedCard, subscribeMapLink, getMapLink } from '../lib/mapLink';
 
 type RarityTier = "common" | "uncommon" | "rare" | "epic" | "unique";
 
@@ -58,6 +59,28 @@ const SearchResults: React.FC = () => {
   }, [isLoading]);
 
   const selectedGame = gameResults.find(g => g.id === selectedGameId) ?? null;
+
+  // The expanded card keeps its matched keywords lit on the map.
+  useEffect(() => {
+    setSelectedCard(selectedGame ? cardLinkFor(selectedGame) : null);
+  }, [selectedGame]);
+  useEffect(() => () => {
+    setSelectedCard(null);
+    setHoveredCard(null);
+  }, []);
+
+  // Map keyword hovered → light up the cards that have it. Toggled on the DOM
+  // directly so hovering around the map doesn't re-render every card.
+  const gridRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    let lit: Element[] = [];
+    return subscribeMapLink(() => {
+      const id = getMapLink().mapKeywordId;
+      lit.forEach(el => el.classList.remove('is-map-echo'));
+      lit = id === null || !gridRef.current ? [] : Array.from(gridRef.current.querySelectorAll(`[data-kws~="${id}"]`));
+      lit.forEach(el => el.classList.add('is-map-echo'));
+    });
+  }, []);
 
   useEffect(() => {
     if (selectedGameId !== null) {
@@ -210,13 +233,16 @@ const SearchResults: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
+          <div ref={gridRef} className="grid grid-cols-1 widescreen:grid-cols-2 gap-4">
             {gameResults.map((game, index) => (
               <motion.div
                 layout
                 transition={CARD_LAYOUT_TRANSITION}
                 key={`game-${game.id}`}
                 className={`game-card-appear game-card-slot ${selectedGameId === game.id ? 'game-card-slot-selected' : 'h-full'}`}
+                data-kws={game.keywords?.map((k: { id: number }) => k.id).join(' ')}
+                onMouseEnter={() => setHoveredCard(cardLinkFor(game))}
+                onMouseLeave={() => setHoveredCard(null)}
               >
                 <GameCard
                   game={game}

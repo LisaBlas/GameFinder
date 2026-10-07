@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import axios from "axios";
+import { buildSearchPayload } from "../lib/searchPayload";
+import { attributeSearch } from "../lib/funnel";
 
 declare const gtag: (...args: any[]) => void;
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
@@ -304,11 +306,15 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    const searchKeywords = searchableFilters.filter(f => f.category === 'Keywords');
+    // Always attribute (affiliate clicks read it), even when analytics isn't loaded.
+    const attribution = attributeSearch(searchKeywords.map(f => Number(f.id)));
     if (typeof gtag !== 'undefined') {
       gtag('event', 'keyword_search', {
-        keywords: searchableFilters.filter(f => f.category === 'Keywords').map(f => f.name).join(','),
-        keyword_count: searchableFilters.filter(f => f.category === 'Keywords').length,
+        keywords: searchKeywords.map(f => f.name).join(','),
+        keyword_count: searchKeywords.length,
         total_filters: searchableFilters.length,
+        ...attribution,
       });
     }
 
@@ -328,38 +334,13 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     console.log('[FilterContext] Reset page to 1, cleared cache and errors');
     
     try {
-      // Group filters by category for the API
-      const groupedFilters = searchableFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
-        if (filter.isParentOnly) return acc;
-        if (!acc[filter.category]) {
-          acc[filter.category] = [];
-        }
-        acc[filter.category].push(filter);
-        return acc;
-      }, {});
-
-      const excludeKeywordIds = selectedFilters
-        .filter(f => f.category === 'Keywords' && f.mode === 'exclude')
-        .map(f => Number(f.id));
-
-      const excludeFilterIds = selectedFilters
-        .filter(f => f.mode === 'exclude' && f.category !== 'Keywords')
-        .reduce<Record<string, number[]>>((acc, f) => {
-          const key = f.category.toLowerCase().replace(/\s+/g, '_');
-          if (!acc[key]) acc[key] = [];
-          acc[key].push(Number(f.id));
-          return acc;
-        }, {});
-
+      // Same body as count previews (lib/searchPayload), so their caches line up.
+      const payload = buildSearchPayload(selectedFilters, { requireDeveloper, requireRating }) ?? { filters: {} };
       const response = await axios.post('/api/games/search', {
-        filters: groupedFilters,
+        ...payload,
         sort: sortBy,
         page: 1,
         excludeIds: seedGame ? [seedGame.id] : [],
-        excludeKeywords: excludeKeywordIds,
-        excludeFilters: excludeFilterIds,
-        requireDeveloper,
-        requireRating
       });
 
       const { games: rawGames, totalCount: tc, countIsCapped: cap, hasMore: serverHasMore } = response.data;
@@ -436,28 +417,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       const searchableFilters = selectedFilters.filter(filter => filter.mode !== "exclude");
-
-      // Group filters by category for the API
-      const groupedFilters = searchableFilters.reduce<Record<string, Filter[]>>((acc, filter) => {
-        if (!acc[filter.category]) {
-          acc[filter.category] = [];
-        }
-        acc[filter.category].push(filter);
-        return acc;
-      }, {});
-
-      const excludeKeywordIds = selectedFilters
-        .filter(f => f.category === 'Keywords' && f.mode === 'exclude')
-        .map(f => Number(f.id));
-
-      const excludeFilterIds = selectedFilters
-        .filter(f => f.mode === 'exclude' && f.category !== 'Keywords')
-        .reduce<Record<string, number[]>>((acc, f) => {
-          const key = f.category.toLowerCase().replace(/\s+/g, '_');
-          if (!acc[key]) acc[key] = [];
-          acc[key].push(Number(f.id));
-          return acc;
-        }, {});
+      // Identical to page 1's body (this copy used to keep parent-only filters, so later pages queried differently).
+      const payload = buildSearchPayload(selectedFilters, { requireDeveloper, requireRating }) ?? { filters: {} };
 
       const excludeIds = [
         ...gameResults.map(game => game.id),
@@ -465,14 +426,10 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
       ];
 
       const request = axios.post('/api/games/search', {
-        filters: groupedFilters,
+        ...payload,
         sort: sortBy,
         page: nextPage,
         excludeIds,
-        excludeKeywords: excludeKeywordIds,
-        excludeFilters: excludeFilterIds,
-        requireDeveloper,
-        requireRating
       });
       
       setPendingRequests(prev => ({
@@ -645,7 +602,8 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     const newUrl = params.toString()
       ? `${window.location.pathname}?${params}`
       : window.location.pathname;
-    window.history.replaceState(null, '', newUrl);
+    // Preserve state: overlays and the keyword map tag their history entries.
+    window.history.replaceState(window.history.state, '', newUrl);
   }, []);
 
   // URL sync — skip the very first render so hydration can set state before we write

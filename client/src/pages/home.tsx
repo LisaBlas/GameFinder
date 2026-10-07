@@ -71,7 +71,8 @@ const HomeContent: React.FC = () => {
     const newUrl = params.toString()
       ? `${window.location.pathname}?${params}`
       : window.location.pathname;
-    window.history.replaceState(null, '', newUrl);
+    // Preserve state: overlays and the keyword map tag their history entries.
+    window.history.replaceState(window.history.state, '', newUrl);
   }, []);
 
   return (

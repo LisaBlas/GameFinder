@@ -16,7 +16,8 @@ Desktop:
   Left panel (40%): KeywordSection
     Sticky desktop Navbar inside KeywordSection
     Desktop action bar with SelectedFilters, Clear, Search
-    Hierarchical keyword explorer
+    Search card (KeywordSearch)
+    KeywordMap explorer: category doors -> subcategory grid -> keyword map
   Right panel (60%): ResultsSection/SearchResults
     Sticky results header with count, FilterBar, sort select
 ```
@@ -27,12 +28,64 @@ Desktop:
 - `FilterSidebar` is no longer part of the active split layout.
 - `Hero` is not part of the active home layout, though the component still
   exists.
-- `KeywordSection` shares one discovery-card deck (`renderDiscoveryDeck()`:
-  Popular/Crafted/Random/Hidden Gem + Uniques) between breakpoints, always
-  presented after keyword selection. Desktop: hierarchical category/
-  subcategory rail plus detail panel, then the discovery deck below.
+- Desktop left panel is search + `KeywordMap` (`client/src/components/KeywordMap.tsx`):
+  3 large category buttons -> subcategory tile grid -> SVG keyword map. In the
+  map, clicking a node re-centres on it (explore, does not add); adding is
+  explicit via the `+` badge in each pill or Include/Exclude for the centred
+  keyword. Refresh brings only keywords not yet shown for the current centre
+  (tracked by name, since IGDB has duplicate-name ids): the inner ring never
+  repeats until the pool is used up ("Start over"), and the outer ring avoids
+  the previous map. Pool order: curated for a subcategory centre,
+  co-occurrence score for a keyword centre. If a keyword has no co-occurrence
+  row, both rings fall back to its curated subcategory and the map labels the
+  relationship "Related by category".
+  `scripts/build-keyword-cooccurrence.mjs` builds the co-occurrence data from
+  the same top + extended keyword lists rendered by the map, deduplicated by
+  id; its checkpoint is reusable when either list changes.
+  Keywords added elsewhere (search bar, card tags, URL) re-centre the map.
+  Taxonomy helpers live in `client/src/lib/keywordTaxonomy.ts`; layout in
+  `client/src/lib/keywordMap.ts` (radii were tuned against pill overlaps at
+  the label max lengths there; re-check if you change either).
+  Transitions: the map is one persistent SVG; nodes are keyed by keyword id
+  and edges by an undirected id pair, each under its own `AnimatePresence`, so
+  survivors move instead of remounting. `client/src/lib/keywordMapMotion.ts`
+  (pure, tested by `npm test`) diffs the last committed scene against the new
+  one and decides direction (forward/back/refresh/jump), entry origins, exit
+  targets and reveal delays. Exit targets reach leaving nodes through
+  `AnimatePresence custom={plan}` because their own props are stale.
+  Layout: `keywordMap.ts` picks the graph (`selectKeywordGraph`), then
+  `keywordMapLayout.ts` positions it in the measured viewport (1 unit = 1 CSS
+  px): radial slots, survivors keep their angle relative to where the new
+  centre was, then a deterministic collision pass on canvas-measured pill
+  widths (`measureLabel.ts`). The scene component is `KeywordMapScene.tsx`;
+  `useMapCamera` frames the scene and handles zoom (Ctrl/pinch-wheel, buttons),
+  drag-to-pan and swipe; `useMapHistory` makes every map step a history entry
+  (`{gamefinder:'kmap', inst, depth}`) so browser Back retraces it.
+  Mobile: `KeywordMapSheet.tsx` is a full-screen "map mode" (portalled to
+  body), opened from the shelf's "Explore the keyword map" button or the
+  inline subcategory header's "Map" button; 4 diagonal neighbours, swipe =
+  next set, drag the handle down or Done to close (pops all its entries).
+  Graph data: the client never downloads `keyword_cooccurrence.json`. The
+  server (`server/services/keywordGraph.ts`) loads it, ranks every list with
+  `shared/keywordRelevance.ts` (Jaccard or NPMI association + curated-list
+  editorial lift scaled by association + hub-penalising novelty; editorial
+  pins/boosts/blocks in `shared/keywordEditorial.ts`), and serves slices at
+  `GET /api/keyword-graph?ids=…&depth=1|2`. `client/src/lib/keywordGraphStore.ts`
+  caches slices and idle-prefetches visible neighbours.
+  Counts: `POST /api/games/count` (body = search body without paging) goes
+  through `server/services/countCache.ts` (10-min TTL, in-flight dedupe, max 2
+  concurrent IGDB calls), shared with the search route's total. Client:
+  `lib/searchPayload.ts` builds the body for both search and count (one source
+  of truth), `lib/searchCount.ts` caches previews by `shared/searchKey.ts`
+  identity, so "search + X" counted on hover is instant after adding X.
+  Results ↔ map: `lib/mapLink.ts` (card hover/expand lights its matched
+  keywords gold on the map; map hover outlines cards via `data-kws`, toggled
+  on the DOM). Funnel: `lib/funnel.ts` — `map_open`, `map_explore`,
+  `map_keyword_toggle` (with `method`), and `search_source`/`map_keyword_count`
+  attribution on `keyword_search` and `affiliate_outbound_click`.
+- The discovery-card deck (`renderDiscoveryDeck()`) is mobile-only now.
   Mobile: search, then a collapsible "Browse all keywords" shelf (collapsed
-  by default, category-grouped with subcategory drill-in), then the same
+  by default, category-grouped with subcategory drill-in), then the
   discovery deck — all on one scrollable screen.
 - `SelectedFilters` appears in both desktop and mobile action areas.
 - `BottomBar` is mobile-only, fixed, and behaves as an expandable drawer.

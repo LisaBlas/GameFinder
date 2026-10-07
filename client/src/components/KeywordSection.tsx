@@ -1,35 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Filter } from "./Filter";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
-import keywordCategories from "../assets/keyword-categories.json";
 import {
-  Cog, Globe, Palette,
-  Sword, Mountain, Crosshair, Zap, Layers, TrendingUp, Flame, Gamepad2,
-  Coins, Sparkles, Wand2, LayoutGrid, Target, Trophy, Dices, Brain,
-  Clock, Map, Leaf, Scroll, Users, Cloud, Car, Film, Hash,
-  Paintbrush, Eye, Wind, Volume2, BookOpen, Gem, type LucideIcon,
+  Sparkles, Wand2, LayoutGrid, Dices, BookOpen, Gem,
   X, Search, Share2, Check, ChevronDown, ChevronLeft, ChevronRight,
   Shuffle, Star, KeyRound, Hammer,
-  Infinity as InfinityIcon,
+  Infinity as InfinityIcon, Waypoints,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
-import KeywordMap from './KeywordMap';
+import KeywordMap, { type MapLocation } from './KeywordMap';
+import { KeywordMapSheet, openMapSheetEntry, useMapSheetPopClose } from './KeywordMapSheet';
+import { useSelectionCount } from '../hooks/useSelectionCount';
+import { formatCount } from '../lib/searchCount';
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters } from '../context/FilterContext';
 import Navbar from './Navbar';
 import { DiscoveryCard } from './DiscoveryCard';
 import { DISCOVERY_CARD_META, getRarity } from '../lib/discoveryCards';
 import type { RevealCard, RarityTier } from '../lib/discoveryCards';
-
-interface KeywordItem {
-  id: number;
-  name: string;
-  category: string;
-  "sub-category": string;
-  game_count?: number;
-}
+import {
+  MAIN_CATEGORIES,
+  MAIN_CATEGORY_META,
+  getAllKeywordsForSubcategory,
+  getAvailableSubcategories,
+  getCategoryDescription,
+  getKeywordCountForSubcategory,
+  getSubcategoryDescription,
+  getSubcategoryIconComponent,
+  getSubcategoryParent,
+  type KeywordItem,
+  type MainCategory,
+} from '../lib/keywordTaxonomy';
 
 type RawKw = { id: number; name: string };
 const _randomKeywordPool: RawKw[] = (() => {
@@ -44,7 +47,6 @@ const _randomKeywordPool: RawKw[] = (() => {
   return out;
 })();
 
-type MainCategory = "Mechanics & Systems" | "Setting & World" | "Aesthetics & Style";
 // RevealCard, RarityTier, and getRarity are imported from ../lib/discoveryCards
 
 interface KeywordComboSuggestion {
@@ -93,16 +95,42 @@ interface KeywordSectionProps {
 
 export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const desktopSearchRef = useRef<HTMLInputElement>(null);
+
+  // "/" jumps to the keyword search (desktop), unless already typing somewhere.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      if (t?.closest('input, textarea, select, [contenteditable="true"]')) return;
+      const input = desktopSearchRef.current;
+      if (!input || input.offsetParent === null) return;
+      e.preventDefault();
+      input.focus();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Mobile map mode: a full-screen sheet; `loc` is where it opens (root when undefined).
+  const [mapSheet, setMapSheet] = useState<{ loc?: MapLocation } | null>(null);
+  const closeMapSheetState = useCallback(() => setMapSheet(null), []);
+  useMapSheetPopClose(mapSheet !== null, closeMapSheetState);
+  const openMapSheet = (loc?: MapLocation) => {
+    openMapSheetEntry();
+    setMapSheet({ loc });
+  };
   const revealTimerRef = useRef<number | null>(null);
   const category = 'Keywords';
   const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh, gameResults, totalCount } = useFilters();
+  const selectionCount = useSelectionCount();
+  const zeroSelection = selectionCount.status === 'ready' && selectionCount.count === 0;
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
   const hasDesktopActionItems = selectedFilters.length > 0;
   const showTasteStory = selectedFilters.length === 0 && !searchFresh;
   const [shareCopied, setShareCopied] = useState(false);
   const [shareShineActive, setShareShineActive] = useState(false);
 
-  const mainCategoryOrder: MainCategory[] = ["Mechanics & Systems", "Setting & World", "Aesthetics & Style"];
   const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>("Mechanics & Systems");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [mobileCategoryView, setMobileCategoryView] = useState(false);
@@ -505,9 +533,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const getCategoryIcon = (mainCat: MainCategory, size = "w-5 h-5") => {
-    if (mainCat === "Mechanics & Systems") return <Cog className={size} />;
-    if (mainCat === "Setting & World") return <Globe className={size} />;
-    return <Palette className={size} />;
+    const Icon = MAIN_CATEGORY_META[mainCat].icon;
+    return <Icon className={size} />;
   };
 
   const getCategoryAccentVars = (_mainCat: MainCategory): React.CSSProperties => {
@@ -517,84 +544,16 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     } as React.CSSProperties;
   };
 
-
-
-  const subcategoryIconMap: Record<string, LucideIcon> = {
-    "Combat Systems": Sword,
-    "Combat Environments": Mountain,
-    "Combat Styles": Crosshair,
-    "Movement": Zap,
-    "Structure": Layers,
-    "Progression": TrendingUp,
-    "Challenges": Flame,
-    "Controls": Gamepad2,
-    "Economy Value": Coins,
-    "Game Features": Sparkles,
-    "RPGs": Wand2,
-    "Puzzles": LayoutGrid,
-    "Shooters": Target,
-    "Sports": Trophy,
-    "Strategy": Dices,
-    "Simulation": Brain,
-    "Time Periods": Clock,
-    "Locations": Map,
-    "Environmental Features": Leaf,
-    "Historical Events": Scroll,
-    "Cultural Elements": Users,
-    "Setting Conditions": Cloud,
-    "Vehicles & Transportation": Car,
-    "Entertainment Franchises": Film,
-    "Internet Culture": Hash,
-    "Art Styles": Paintbrush,
-    "Visual Themes": Eye,
-    "Atmosphere": Wind,
-    "Sound Design": Volume2,
-    "Narrative Tone": BookOpen,
-  };
-
   const getSubcategoryIcon = (subCategory: string, className = "w-3.5 h-3.5 shrink-0") => {
-    const Icon = subcategoryIconMap[subCategory] ?? Dices;
+    const Icon = getSubcategoryIconComponent(subCategory);
     return <Icon className={className} />;
   };
 
-  const getSubcategories = (mainCat: MainCategory): string[] => {
-    const categoryData = keywordCategories[mainCat];
-    if (!categoryData) return [];
-    return Object.keys(categoryData).filter(key => key !== 'description');
-  };
-
-  const getKeywordsForSubcategory = (subCategoryName: string): KeywordItem[] => {
-    return (topKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
-  };
-
-  const getExtendedKeywordsForSubcategory = (subCategoryName: string): KeywordItem[] => {
-    return (extendedKeywordsByCategory as Record<string, KeywordItem[]>)[subCategoryName] || [];
-  };
-
-  const getKeywordCountForSubcategory = (subCategoryName: string): number =>
-    getKeywordsForSubcategory(subCategoryName).length + getExtendedKeywordsForSubcategory(subCategoryName).length;
-
-  const getAvailableSubcategories = (mainCat: MainCategory): string[] =>
-    getSubcategories(mainCat).filter(subCat => getKeywordsForSubcategory(subCat).length > 0);
-
-  const getTotalKeywordCount = (mainCat: MainCategory): number =>
-    getAvailableSubcategories(mainCat).length;
-
-  const getSubcategoryDescription = (mainCat: MainCategory, subCategoryName: string): string =>
-    (keywordCategories[mainCat] as unknown as Record<string, { description: string }>)[subCategoryName]?.description || "";
-
-  const getSubcategoryParent = (subCategoryName: string): MainCategory | undefined =>
-    mainCategoryOrder.find(cat => getSubcategories(cat).includes(subCategoryName));
-
   const getKeywordPanelData = (subCategoryName: string) => {
-    const topKeywords = getKeywordsForSubcategory(subCategoryName);
-    const extendedKeywords = getExtendedKeywordsForSubcategory(subCategoryName);
-    const displayedKeywords = [...topKeywords, ...extendedKeywords];
+    const displayedKeywords = getAllKeywordsForSubcategory(subCategoryName);
     const mainCat = getSubcategoryParent(subCategoryName);
 
     return {
-      topKeywords,
-      extendedKeywords,
       displayedKeywords,
       totalKeywords: displayedKeywords.length,
       description: mainCat ? getSubcategoryDescription(mainCat, subCategoryName) : "",
@@ -680,39 +639,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       </span>
     </section>
   );
-
-  const renderKeywordPanel = (subCategoryName: string, variant: "desktop" | "mobile") => {
-    const { displayedKeywords, totalKeywords, description } = getKeywordPanelData(subCategoryName);
-
-    return (
-      <div className={variant === "desktop" ? "flex h-full min-h-0 flex-col" : "grid gap-3"}>
-        {variant === "desktop" && (
-          <div className="flex min-h-[6.5rem] items-center gap-4 border-b border-border bg-card p-5">
-            <div className="shrink-0 p-2.5 rounded-lg bg-primary/10">
-              {getSubcategoryIcon(subCategoryName, "w-5 h-5 text-primary")}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-xl font-bold text-foreground">
-                  {subCategoryName}
-                </span>
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/15 text-primary">
-                  {totalKeywords} keywords
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1 leading-snug">{description}</p>
-            </div>
-          </div>
-        )}
-
-        <div className={variant === "desktop" ? "flex-1 overflow-y-auto px-4 py-4" : "pt-1"}>
-          <div className="keyword-inline-list">
-            {displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const renderQsKeywordPanel = () => {
     const kw = quickStartKeywords[activeQsKeywordIndex];
@@ -800,152 +726,23 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  const renderDesktopExplorer = () => {
-    const availableMainCategories = mainCategoryOrder.filter(
-      mainCat => getAvailableSubcategories(mainCat).length > 0
-    );
-    const resolvedMainCategory =
-      activeMainCategory && getAvailableSubcategories(activeMainCategory).length > 0
-        ? activeMainCategory
-        : availableMainCategories[0] ?? null;
-
-    if (!resolvedMainCategory) return null;
-
-    const subcategories = getAvailableSubcategories(resolvedMainCategory);
-    const descriptor = (keywordCategories[resolvedMainCategory] as unknown as { description: string }).description;
-    const isActiveSubcategoryInCategory = activeSubcategory
-      ? getSubcategoryParent(activeSubcategory) === resolvedMainCategory
-      : false;
-    /** Drilled into a keyword group — the deepest step, which replaces the
-     *  subcategory list rather than sitting beside it. */
-    const showKeywordGroup = isActiveSubcategoryInCategory && !!activeSubcategory;
-
-    return (
-      <section className="hidden lg:grid gap-4">
-        <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
-          <div className="mb-2 text-sm font-semibold text-foreground">
-            Start with a game or a keyword
-          </div>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Search a game you love, or name the feeling you want next.
-          </p>
-          <div>
-            <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
-          </div>
+  /** Desktop left panel: search bar, then the keyword map explorer fills the rest. */
+  const renderDesktopExplorer = () => (
+    <section className="hidden lg:grid gap-4">
+      <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
+        <div className="mb-2 text-sm font-semibold text-foreground">
+          Start with a game or a keyword
         </div>
-
-        <section className="min-w-0 overflow-hidden rounded-[28px] border border-border bg-card/75 shadow-[0_16px_48px_rgba(0,0,0,0.18)]">
-          <div className="border-b border-border/80 px-5 py-4">
-            <div className="mb-4">
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
-                <LayoutGrid className="h-3.5 w-3.5" />
-                Browse by feel
-              </div>
-              <h2 className="mt-2 text-lg font-bold text-foreground">What are you in the mood for?</h2>
-            </div>
-            <div className="desktop-cat-segmented">
-              {availableMainCategories.map(mainCat => {
-                const isActive = mainCat === resolvedMainCategory;
-                const shortLabel = ({ "Mechanics & Systems": "Mechanics", "Setting & World": "Setting", "Aesthetics & Style": "Aesthetics" } as Record<MainCategory, string>)[mainCat];
-                return (
-                <button
-                  key={mainCat}
-                  type="button"
-                  onClick={() => {
-                    setActiveMainCategory(mainCat);
-                    setActiveSubcategory(null);
-                  }}
-                  className={`desktop-cat-segment${isActive ? ' desktop-cat-segment-active' : ''}`}
-                  style={getCategoryAccentVars(mainCat)}
-                >
-                  {getCategoryIcon(mainCat, "w-4 h-4")}
-                  <span className="desktop-cat-segment-label">{shortLabel}</span>
-                  <span className="desktop-cat-segment-count">{getAvailableSubcategories(mainCat).length}</span>
-                </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="h-[34rem]" style={getCategoryAccentVars(resolvedMainCategory)}>
-            {showKeywordGroup && activeSubcategory ? (
-              <div className="flex h-full min-h-0 flex-col">
-                <button
-                  type="button"
-                  onClick={() => setActiveSubcategory(null)}
-                  className="flex shrink-0 items-center gap-2 border-b border-border/80 px-5 py-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  All {resolvedMainCategory} groups
-                </button>
-                <div className="min-h-0 flex-1">
-                  {renderKeywordPanel(activeSubcategory, "desktop")}
-                </div>
-              </div>
-            ) : (
-              <div className="h-full overflow-y-auto px-3 py-3">
-                <div className="px-2 pb-3 text-sm text-muted-foreground">{descriptor}</div>
-                <div className="grid gap-2">
-                  {subcategories.map(subCategoryName => {
-                    const keywordCount = getKeywordCountForSubcategory(subCategoryName);
-                    const description = getSubcategoryDescription(resolvedMainCategory, subCategoryName);
-
-                    return (
-                      <button
-                        key={subCategoryName}
-                        type="button"
-                        onClick={() => {
-                          setActiveMainCategory(resolvedMainCategory);
-                          setActiveSubcategory(subCategoryName);
-                        }}
-                        className="rounded-2xl border border-border/80 bg-background/35 px-4 py-3 text-left transition-all hover:border-primary/25 hover:bg-background/60"
-                      >
-                        <div className="flex items-start gap-3">
-                          <span
-                            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                            style={{
-                              background: "rgba(var(--cat-accent-rgb), 0.08)",
-                              color: "var(--cat-accent-soft)",
-                            }}
-                          >
-                            {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="flex items-center justify-between gap-3">
-                              <span className="truncate font-semibold text-foreground">{subCategoryName}</span>
-                              <span className="shrink-0 text-xs font-semibold text-muted-foreground">{keywordCount}</span>
-                            </span>
-                            <span className="mt-1 block text-sm leading-5 text-muted-foreground">{description}</span>
-                          </span>
-                          <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground/70" />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <details className="group rounded-[28px] border border-border bg-card/60 px-5 shadow-[0_12px_36px_rgba(0,0,0,0.14)]">
-          <summary className="flex cursor-pointer list-none items-center gap-3 py-4 text-sm font-semibold text-foreground marker:content-none">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Sparkles className="h-4 w-4" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block">Need a spark?</span>
-              <span className="mt-0.5 block text-xs font-normal text-muted-foreground">Try a curated key, combo, or hidden gem.</span>
-            </span>
-            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
-          </summary>
-          <div className="border-t border-border/80 py-4">
-            {renderDiscoveryDeck()}
-          </div>
-        </details>
-      </section>
-    );
-  };
+        <p className="mb-4 text-sm text-muted-foreground">
+          Search a game you love, or name the feeling you want next.
+        </p>
+        <div>
+          <KeywordSearch inputRef={desktopSearchRef} onKeywordSelect={() => {}} />
+        </div>
+      </div>
+      <KeywordMap />
+    </section>
+  );
 
   const renderMobileSubcategoryDetail = () => {
     if (!mobileSubcategoryView || !activeSubcategory) return null;
@@ -977,6 +774,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
             {getSubcategoryIcon(activeSubcategory, "w-4 h-4")}
           </span>
           <span className="font-bold text-foreground truncate flex-1">{activeSubcategory}</span>
+
           <span
             className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full"
             style={{ background: 'rgba(var(--cat-accent-rgb), 0.12)', color: 'var(--cat-accent-soft)' }}
@@ -1003,7 +801,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const renderMobileCategoryDetail = () => {
     if (!mobileCategoryView || !activeMainCategory) return null;
     const subcategories = getAvailableSubcategories(activeMainCategory);
-    const descriptor = (keywordCategories[activeMainCategory] as unknown as { description: string }).description;
+    const descriptor = getCategoryDescription(activeMainCategory);
 
     return (
       <motion.div
@@ -1291,14 +1089,18 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                 </span>
                 <ChevronDown className={`keyword-browse-chevron ${browseOpen ? 'rotate-180' : ''}`} />
               </button>
+              <button type="button" className="kmap-open-btn" onClick={() => openMapSheet()}>
+                <Waypoints className="h-4 w-4" />
+                Explore the keyword map
+              </button>
 
               {browseOpen && (
                 <>
                   <div className="mobile-cat-segmented">
-                    {mainCategoryOrder
+                    {MAIN_CATEGORIES
                       .filter(mainCat => getAvailableSubcategories(mainCat).length > 0)
                       .map(mainCat => {
-                        const shortLabel = ({ "Mechanics & Systems": "Mechanics", "Setting & World": "Setting", "Aesthetics & Style": "Aesthetics" } as Record<MainCategory, string>)[mainCat];
+                        const shortLabel = MAIN_CATEGORY_META[mainCat].short;
                         return (
                           <button
                             key={mainCat}
@@ -1331,6 +1133,15 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
                               {getSubcategoryIcon(activeSubcategory, "w-3.5 h-3.5")}
                             </span>
                             <span className="mobile-inline-kw-name">{activeSubcategory}</span>
+                            <button
+                              type="button"
+                              onClick={() => openMapSheet({ category: activeMainCategory, subcategory: activeSubcategory, trail: [] })}
+                              className="mobile-inline-map-btn"
+                              aria-label={`Open ${activeSubcategory} as a keyword map`}
+                            >
+                              <Waypoints className="h-3.5 w-3.5" />
+                              Map
+                            </button>
                           </div>
                           <div className="keyword-inline-list mobile-inline-kw-list">
                             {inlineKwData.displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
@@ -1403,6 +1214,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <AnimatePresence>{renderMobileCategoryDetail()}</AnimatePresence>
       <AnimatePresence>{renderMobileSubcategoryDetail()}</AnimatePresence>
       <AnimatePresence>{renderMobileQsDetail()}</AnimatePresence>
+      <AnimatePresence>{mapSheet && <KeywordMapSheet initialLocation={mapSheet.loc} />}</AnimatePresence>
       <Navbar />
 
       <div className={`desktop-action-bar ${hasDesktopActionItems ? 'desktop-action-bar-visible' : 'desktop-action-bar-empty'} hidden lg:grid border-b border-border`}>
@@ -1424,7 +1236,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               hasSearchableFilters || searchFresh
                 ? 'desktop-action-button-search-active'
                 : 'desktop-action-button-search-disabled'
-            } ${shareShineActive ? 'hero-button-share-shine' : ''}`}
+            } ${shareShineActive ? 'hero-button-share-shine' : ''}${zeroSelection && !searchFresh ? ' desktop-action-button-search-zero' : ''}`}
+            title={zeroSelection && !searchFresh ? 'No games match this search yet' : undefined}
           >
             {isLoading ? (
               <>
@@ -1443,6 +1256,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
               <>
                 <Search className="w-4 h-4" />
                 Search
+                {selectionCount.status === 'ready' && (
+                  <span className="search-count-hint">{formatCount(selectionCount.count, selectionCount.capped)}</span>
+                )}
               </>
             )}
           </button>
@@ -1452,7 +1268,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <div className="flex-1 min-h-0 p-3 lg:flex-none">
         <div className="flex h-full min-h-0 flex-col gap-5 lg:h-auto">
           {renderDesktopExplorer()}
-          <KeywordMap />
           {renderMobileShelves()}
         </div>
       </div>

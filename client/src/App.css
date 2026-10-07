@@ -3818,87 +3818,730 @@ svg.filter-caret.expanded {
 
 /* ── end Mobile category segmented control ───────────────────── */
 
-/* ── Desktop category segmented control ──────────────────────────
-   Desktop counterpart of .mobile-cat-segmented. The keyword pane is only 40%
-   of the viewport (home.tsx `lg:w-2/5`), so the explorer cannot afford a fixed
-   multi-column layout — this row of three equal segments fits any pane width
-   and gives desktop the same "pick a category first" step mobile has. */
+/* ── Desktop keyword map explorer (KeywordMap.tsx) ───────────────
+   Three steps in one card: category doors → subcategory grid → map.
+   The pane is only 40% of the viewport (home.tsx `lg:w-2/5`), so the doors
+   stay 3-up but the subcategory grid is 2 columns until widescreen. */
 
-.desktop-cat-segmented {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid rgba(var(--c-border-rgb), 0.18);
-  border-radius: 14px;
+.kmap {
+  flex-direction: column;
+  min-width: 0;
   overflow: hidden;
-  background: rgba(var(--c-bg-rgb), 0.6);
+  border: 1px solid hsl(var(--border));
+  border-radius: 28px;
+  background: hsl(var(--card) / 0.75);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
 }
 
-.desktop-cat-segment {
+.kmap-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  min-width: 0;
-  padding: 0.8rem 0.6rem;
-  font-size: 0.8rem;
+  gap: 0.5rem;
+  min-height: 3.75rem;
+  padding: 0.75rem 1rem 0.75rem 1.25rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.8);
+}
+
+.kmap-title {
+  font-size: 1.125rem;
   font-weight: 700;
-  line-height: 1.1;
-  color: var(--c-dim);
-  background: transparent;
-  border: none;
-  border-right: 1px solid rgba(var(--c-border-rgb), 0.18);
-  transition: background 0.15s, color 0.15s;
+  color: var(--c-text);
 }
 
-.desktop-cat-segment:last-child {
-  border-right: none;
+.kmap-subtitle {
+  font-size: 0.875rem;
+  color: var(--c-muted);
 }
 
-.desktop-cat-segment svg {
+.kmap-body {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.kmap-icon-btn {
+  display: inline-flex;
   flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.18);
+  border-radius: 10px;
+  color: var(--c-muted);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.kmap-icon-btn:hover:not(:disabled) {
+  color: var(--c-emerald-soft);
+  border-color: rgba(var(--c-emerald-rgb), 0.4);
+  background: rgba(var(--c-emerald-rgb), 0.08);
+}
+
+.kmap-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.kmap-crumbs {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.kmap-crumb {
+  font-size: 0.8rem;
+  font-weight: 600;
   color: var(--c-dim);
   transition: color 0.15s;
 }
 
-.desktop-cat-segment-label {
+button.kmap-crumb:hover,
+.kmap-crumb--current {
+  color: var(--c-text);
+}
+
+.kmap-crumb-sep {
+  width: 0.8rem;
+  height: 0.8rem;
+  flex-shrink: 0;
+  color: var(--c-dim);
+}
+
+/* Step 1 — category doors */
+.kmap-doors {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.kmap-door {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 11rem;
+  padding: 1.25rem 0.75rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.16);
+  border-radius: 22px;
+  background: rgba(var(--c-bg-rgb), 0.45);
+  text-align: center;
+  transition: border-color 0.18s, background 0.18s, transform 0.18s;
+}
+
+.kmap-door:hover {
+  border-color: rgba(var(--c-emerald-rgb), 0.45);
+  background: rgba(var(--c-emerald-rgb), 0.07);
+  transform: translateY(-2px);
+}
+
+.kmap-door-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 0.4rem;
+  border-radius: 18px;
+  background: rgba(var(--c-emerald-rgb), 0.1);
+  color: var(--c-emerald-soft);
+}
+
+.kmap-door-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.kmap-door-hint {
+  font-size: 0.78rem;
+  line-height: 1.25;
+  color: var(--c-muted);
+}
+
+/* Step 2 — subcategory grid */
+.kmap-sub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+@media (min-width: 1400px) {
+  .kmap-sub-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.kmap-sub-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.14);
+  border-radius: 14px;
+  background: rgba(var(--c-bg-rgb), 0.35);
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.kmap-sub-tile:hover {
+  border-color: rgba(var(--c-emerald-rgb), 0.35);
+  background: rgba(var(--c-emerald-rgb), 0.06);
+}
+
+.kmap-sub-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 10px;
+  background: rgba(var(--c-emerald-rgb), 0.08);
+  color: var(--c-emerald-soft);
+}
+
+.kmap-sub-name {
+  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--c-text);
 }
 
-.desktop-cat-segment-count {
+.kmap-sub-count {
   flex-shrink: 0;
-  padding: 0.05rem 0.4rem;
-  border-radius: 999px;
-  background: rgba(var(--c-border-rgb), 0.16);
-  font-size: 0.66rem;
+  font-size: 0.7rem;
   font-weight: 700;
+  color: var(--c-dim);
 }
 
-.desktop-cat-segment:hover {
-  background: rgba(var(--cat-accent-rgb), 0.08);
-  color: var(--cat-accent-soft);
+/* Step 3 — the map */
+/* Measured by KeywordMap: its size is the map's coordinate space (1 unit = 1 CSS px). */
+.kmap-viewport {
+  position: relative;
+  width: 100%;
 }
 
-.desktop-cat-segment:hover svg {
-  color: var(--cat-accent-soft);
+.kmap-viewport--desktop {
+  aspect-ratio: 520 / 440;
 }
 
-.desktop-cat-segment-active {
-  background: rgba(var(--cat-accent-rgb), 0.12);
-  color: var(--cat-accent-soft);
+.kmap-viewport--mobile {
+  flex: 1;
+  min-height: 260px;
 }
 
-.desktop-cat-segment-active svg {
-  color: var(--cat-accent-soft);
+.kmap-viewport-inner {
+  position: absolute;
+  inset: 0;
 }
 
-.desktop-cat-segment-active .desktop-cat-segment-count {
-  background: rgba(var(--cat-accent-rgb), 0.2);
+.kmap-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* ── end Desktop category segmented control ──────────────────── */
+.kmap-svg.is-zoomed {
+  cursor: grab;
+}
+
+.kmap-svg.is-zoomed:active {
+  cursor: grabbing;
+}
+
+/* Thumb gestures (swipe for more) belong to the map, not the page. */
+.kmap-viewport-inner--mobile .kmap-svg {
+  touch-action: none;
+}
+
+.kmap-bg {
+  fill: transparent;
+}
+
+.kmap-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 0.875rem;
+  color: var(--c-muted);
+}
+
+.kmap-relation-label {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid rgba(var(--c-emerald-rgb), 0.22);
+  border-radius: 999px;
+  background: rgba(var(--c-bg-rgb), 0.78);
+  color: var(--c-muted);
+  font-size: 0.68rem;
+  line-height: 1rem;
+  pointer-events: none;
+}
+
+.kmap-controls {
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.kmap-viewport:hover .kmap-controls,
+.kmap-controls:focus-within {
+  opacity: 1;
+}
+
+.kmap-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--card) / 0.85);
+  color: var(--c-muted);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.kmap-control:hover:not(:disabled) {
+  color: var(--c-emerald-soft);
+  border-color: rgba(var(--c-emerald-rgb), 0.5);
+}
+
+.kmap-control:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.kmap-edge {
+  stroke: var(--c-emerald);
+  stroke-linecap: round;
+  transition: stroke-opacity 150ms;
+}
+
+/* Two included keywords linked directly. */
+.kmap-edge.is-linked {
+  stroke: var(--c-emerald-soft);
+}
+
+/* Ambient: faint glow behind the centre, breathing slowly; one pulse per new centre. */
+.kmap-glow {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kmap-glow {
+    animation: kmap-breathe 3s ease-in-out infinite;
+  }
+}
+
+@keyframes kmap-breathe {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.kmap-pulse {
+  fill: none;
+  stroke: var(--c-emerald);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
+.kmap-node {
+  transition: opacity 150ms;
+  outline: none;
+}
+
+.kmap-node rect {
+  fill: var(--c-surface-2);
+  stroke: rgba(var(--c-emerald-rgb), 0.45);
+  stroke-width: 1;
+  transition: fill 0.15s, stroke 0.15s;
+}
+
+.kmap-node text {
+  fill: var(--c-text);
+  pointer-events: none;
+}
+
+.kmap-node--explorable {
+  cursor: pointer;
+}
+
+.kmap-node--explorable:hover rect,
+.kmap-node--explorable:focus-visible rect,
+.kmap-node:focus-visible rect {
+  /* Opaque mixes, not rgba: edges run to pill centres and must not show through. */
+  fill: color-mix(in srgb, var(--c-emerald) 12%, var(--c-bg));
+  stroke: var(--c-emerald);
+}
+
+.kmap-node--center rect {
+  fill: color-mix(in srgb, var(--c-emerald) 16%, var(--c-bg));
+  stroke: var(--c-emerald);
+  stroke-width: 2;
+}
+
+.kmap-node--virtual rect {
+  fill: var(--c-surface);
+  stroke-dasharray: 4 3;
+}
+
+.kmap-node.is-include rect {
+  fill: var(--c-emerald);
+  stroke: var(--c-emerald);
+}
+
+.kmap-node.is-include text {
+  fill: var(--c-bg);
+  font-weight: 600;
+}
+
+.kmap-node.is-exclude rect {
+  fill: color-mix(in srgb, var(--c-danger) 14%, var(--c-bg));
+  stroke: var(--c-danger);
+}
+
+.kmap-node.is-exclude text {
+  fill: var(--c-danger);
+  text-decoration: line-through;
+}
+
+.kmap-badge {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 150ms;
+}
+
+.kmap-badge .kmap-badge-hit {
+  fill: transparent;
+  stroke: none;
+}
+
+.kmap-badge circle {
+  fill: rgba(var(--c-emerald-rgb), 0.14);
+  stroke: rgba(var(--c-emerald-rgb), 0.6);
+  stroke-width: 1;
+  transition: fill 0.15s;
+}
+
+.kmap-badge line,
+.kmap-badge polyline {
+  fill: none;
+  stroke: var(--c-emerald-soft);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kmap-badge:hover circle:not(.kmap-badge-hit),
+.kmap-badge:focus-visible circle:not(.kmap-badge-hit) {
+  fill: var(--c-emerald);
+}
+
+.kmap-badge:hover line,
+.kmap-badge:hover polyline,
+.kmap-badge:focus-visible line,
+.kmap-badge:focus-visible polyline {
+  stroke: var(--c-bg);
+}
+
+.kmap-node.is-include .kmap-badge circle:not(.kmap-badge-hit) {
+  fill: var(--c-bg);
+  stroke: var(--c-bg);
+}
+
+.kmap-node.is-exclude .kmap-badge circle:not(.kmap-badge-hit) {
+  fill: rgba(var(--c-danger-rgb), 0.2);
+  stroke: var(--c-danger);
+}
+
+.kmap-node.is-exclude .kmap-badge line {
+  stroke: var(--c-danger);
+}
+
+.kmap-hint {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--c-muted);
+}
+
+.kmap-inspector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.6rem 0.6rem 0.9rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.14);
+  border-radius: 14px;
+  background: rgba(var(--c-bg-rgb), 0.4);
+}
+
+.kmap-inspector-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.kmap-action {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.2);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--c-muted);
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.kmap-action--include:hover {
+  color: var(--c-emerald-soft);
+  border-color: rgba(var(--c-emerald-rgb), 0.5);
+  background: rgba(var(--c-emerald-rgb), 0.1);
+}
+
+.kmap-action--include.is-active {
+  color: var(--c-bg);
+  border-color: var(--c-emerald);
+  background: var(--c-emerald);
+}
+
+.kmap-action--exclude:hover,
+.kmap-action--exclude.is-active {
+  color: var(--c-danger);
+  border-color: rgba(var(--c-danger-rgb), 0.5);
+  background: rgba(var(--c-danger-rgb), 0.1);
+}
+
+/* Mobile map mode: full-screen sheet (see KeywordSection). */
+.kmap--mobile {
+  display: flex;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.kmap--mobile .kmap-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+}
+
+.kmap--mobile .kmap-doors {
+  grid-template-columns: 1fr;
+}
+
+.kmap--mobile .kmap-inspector {
+  padding: 0.5rem 0.5rem 0.5rem 0.9rem;
+}
+
+.kmap--mobile .kmap-action {
+  padding: 0.55rem 0.9rem;
+}
+
+.kmap-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: hsl(var(--background));
+}
+
+.kmap-sheet-handle {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0 0.25rem;
+  touch-action: none;
+  cursor: grab;
+}
+
+.kmap-sheet-handle span {
+  width: 2.5rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: hsl(var(--border));
+}
+
+.kmap-sheet-tray {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  border-top: 1px solid hsl(var(--border) / 0.8);
+}
+
+.mobile-inline-map-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgba(var(--c-emerald-rgb), 0.35);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--c-emerald-soft);
+}
+
+.kmap-open-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(var(--c-emerald-rgb), 0.35);
+  border-radius: 14px;
+  background: rgba(var(--c-emerald-rgb), 0.08);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--c-emerald-soft);
+}
+
+/* Phase 3: search intelligence ─────────────────────────────── */
+
+/* Hover preview under a pill: "→ 38 games". */
+.kmap-count-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  fill: var(--c-emerald-soft);
+  stroke: var(--c-bg);
+  stroke-width: 3px;
+  paint-order: stroke;
+  pointer-events: none;
+}
+
+.kmap-count-tag.is-zero {
+  fill: var(--c-danger);
+}
+
+/* Results → map: keywords that made the hovered/expanded card match (gold, like Search),
+   and the card's other keywords (soft emerald). */
+.kmap-node.is-cause rect {
+  stroke: var(--c-gold);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px rgba(var(--c-gold-rgb), 0.55));
+}
+
+.kmap-node.is-echo rect {
+  stroke: var(--c-emerald-soft);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 2;
+}
+
+/* Map → results: cards that have the hovered keyword. */
+.game-card-slot.is-map-echo {
+  outline: 2px solid rgba(var(--c-emerald-rgb), 0.6);
+  outline-offset: 3px;
+  border-radius: 1rem;
+  transition: outline-color 0.15s;
+}
+
+.kmap-inspector-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.kmap-inspector-count {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  font-size: 0.72rem;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.kmap-inspector-count.is-loading {
+  opacity: 0.7;
+}
+
+.kmap-inspector-count.is-zero {
+  color: var(--c-danger);
+  white-space: normal;
+}
+
+.kmap-strength {
+  padding: 0 0.4rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.3);
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kmap-strength--focused {
+  border-color: rgba(var(--c-emerald-rgb), 0.5);
+  color: var(--c-emerald-soft);
+}
+
+.kmap-strength--niche {
+  border-color: rgba(var(--c-rare-blue-rgb), 0.55);
+  color: rgb(var(--c-rare-blue-rgb));
+}
+
+.kmap-strength--hidden-gem {
+  border-color: rgba(var(--c-gold-rgb), 0.6);
+  color: var(--c-gold);
+}
+
+.kmap-action.is-warn {
+  border-color: rgba(var(--c-danger-rgb), 0.5);
+  color: var(--c-danger);
+}
+
+.kmap-retry {
+  color: var(--c-emerald-soft);
+  text-decoration: underline;
+}
+
+.search-count-hint {
+  margin-left: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.desktop-action-button-search-zero {
+  box-shadow: 0 0 0 1px rgba(var(--c-danger-rgb), 0.7);
+}
+
+/* ── end Desktop keyword map explorer ─────────────────────────── */
 
 /* ── Mobile inline category content ─────────────────────────── */
 

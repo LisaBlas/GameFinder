@@ -6,6 +6,7 @@ import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGlobe, FaHeart, FaP
 import { Share2, Check, Gamepad2, KeyRound } from 'lucide-react';
 import { useFilterSelection } from '../context/FilterContext';
 import { useSavedGames } from '../context/SavedGamesContext';
+import { searchAttribution } from '../lib/funnel';
 import EnebaIconImg from '../assets/icons/eneba.png';
 import G2AIconImg from '../assets/icons/g2a.png';
 import InstantGamingIconImg from '../assets/icons/instantGaming.png';
@@ -36,6 +37,8 @@ const trackAffiliateClick = (
       game_id: gameId,
       game_name: gameTitle,
       link_position: linkPosition,
+      // Closes the funnel: was the search behind this click built on the keyword map?
+      ...searchAttribution(),
     });
   }
 };

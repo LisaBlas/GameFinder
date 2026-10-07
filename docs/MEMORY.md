@@ -5,8 +5,9 @@ Durable decisions and context not derivable from source alone.
 ## Active Product Flows
 1. **Keyword UX** — make keyword selection feel fun and rewarding. Keywords
    are curated and sorted intentionally; preserve their order and meaning.
-   Desktop always exposes the category/subcategory explorer inline; the
-   mobile-style "Browse all keywords" shelf is not a desktop prerequisite.
+   Desktop's left panel is built around the keyword map explorer
+   (category -> subcategory -> map); exploring the map never adds keywords
+   implicitly. Discovery cards are mobile-only.
    In expanded `GameCard`s, the Keywords tag group's header becomes "Why
    this matched" (instead of "Keywords") whenever the game has keywords
    overlapping the active search's selected `Keywords` filters — those

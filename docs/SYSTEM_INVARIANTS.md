@@ -77,6 +77,13 @@ eyeballing one wide screenshot.
 (`qs-card-has-result`, `qs-card-rarity-*`, etc.). Do not duplicate that string
 -building in `KeywordSection` or elsewhere.
 
+## `history.replaceState` must preserve `history.state`
+Overlays (game card, saved panel) and the keyword map tag their history
+entries; the map's Back/Forward retracing reads those tags on `popstate`.
+Filter URL sync rewrites the URL on every filter change, so it calls
+`replaceState(window.history.state, ...)`. Passing `null` would silently wipe
+the tag and break Back after the first keyword is added.
+
 ## Product/brand constraints
 - Dark theme only — do not add a light mode toggle.
 - Deep forest neutral system with emerald (`#10b981`) as the primary accent —

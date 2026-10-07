@@ -1,70 +1,166 @@
 /**
- * Pure data + layout for the related-keyword map (centre keyword, ring of
- * related keywords, dimmed outer ring of their related keywords).
+ * Pure data for the keyword map (centre node, ring of related keywords,
+ * dimmed outer ring of their related keywords). Positions come from
+ * keywordMapLayout.ts.
  * Data comes from keyword_cooccurrence.json (see scripts/build-keyword-cooccurrence.mjs),
- * which is large, so it is imported lazily by the caller.
+ * ranked and served in slices by GET /api/keyword-graph (keywordGraphStore.ts).
  */
+import { layoutKeywordMap } from './keywordMapLayout';
 
 export interface CooccurrenceNeighbor {
   id: number;
   name: string;
   count: number;
-  score: number;
+  score: number; // Jaccard
+  npmi?: number;
+  /** Blended rarity-aware rank from the server (shared/keywordRelevance.ts). */
+  relevance?: number;
 }
 
 export type CooccurrenceData = Record<string, CooccurrenceNeighbor[]>;
 
-export interface MapNode {
+/** A keyword that can sit on the inner ring. `score` drives edge weight when known. */
+export interface MapSeed {
+  id: number;
+  name: string;
+  score?: number;
+  relevance?: number;
+}
+
+/** Link strength for edge weight: server relevance when ranked, else raw similarity. */
+const strength = (n: MapSeed) => n.relevance ?? n.score;
+
+/** A keyword's place in the map graph, before layout. */
+export interface GraphNode {
   id: number;
   name: string;
   level: 0 | 1 | 2;
   parentId?: number;
   weight: number; // 0..1 relative link strength to its parent
+}
+
+export interface MapNode extends GraphNode {
   x: number;
   y: number;
 }
 
+export interface GraphShape {
+  level1Count: number;
+  level2PerParent: number;
+}
+
+/** Id for a centre node that is a subcategory rather than a real keyword. */
+export const VIRTUAL_CENTER_ID = -1;
+
 export const LEVEL1_COUNT = 6;
 export const LEVEL2_PER_PARENT = 2;
+export const DESKTOP_SHAPE: GraphShape = { level1Count: LEVEL1_COUNT, level2PerParent: LEVEL2_PER_PARENT };
 
-export const MAP_WIDTH = 640;
-export const MAP_HEIGHT = 460;
-const CX = MAP_WIDTH / 2;
-const CY = MAP_HEIGHT / 2;
-const R1 = { x: 120, y: 100 };
-const R2 = { x: 255, y: 190 };
-const L2_SPREAD_DEG = 15;
+/** Default viewport; the live map measures its container instead. */
+export const MAP_WIDTH = 520;
+export const MAP_HEIGHT = 440;
 
-const point = (r: { x: number; y: number }, deg: number) => ({
-  x: CX + r.x * Math.cos((deg * Math.PI) / 180),
-  y: CY + r.y * Math.sin((deg * Math.PI) / 180),
-});
+const LABEL_MAX: Record<GraphNode['level'], number> = { 0: 22, 1: 14, 2: 13 };
+const CHAR_W = 6.2;
+/** Room inside non-centre pills for the add/selected badge. */
+export const BADGE_ROOM = 16;
+/** Horizontal padding around a pill's label (centre / others, the latter excluding the badge). */
+export const PILL_PAD = { center: 24, other: 14 } as const;
 
-export function buildKeywordMap(centerId: number, centerName: string, data: CooccurrenceData): MapNode[] {
-  const used = new Set<number>([centerId]);
-  const nodes: MapNode[] = [{ id: centerId, name: centerName, level: 0, weight: 1, x: CX, y: CY }];
+export const nodeLabel = (node: Pick<GraphNode, 'name' | 'level'>) =>
+  truncateLabel(titleCase(node.name), LABEL_MAX[node.level]);
 
-  const level1 = (data[centerId] || []).slice(0, LEVEL1_COUNT);
-  level1.forEach(n => used.add(n.id));
-  const maxScore1 = level1[0]?.score || 1;
+/** Estimated pill width; the live map measures real text widths instead (see measureLabel). */
+export const nodeWidth = (node: Pick<GraphNode, 'name' | 'level'>) =>
+  nodeLabel(node).length * (node.level === 0 ? 7.2 : CHAR_W) + (node.level === 0 ? PILL_PAD.center : PILL_PAD.other + BADGE_ROOM);
 
-  level1.forEach((n, i) => {
-    const deg = -90 + (360 / level1.length) * i;
-    nodes.push({ id: n.id, name: n.name, level: 1, parentId: centerId, weight: n.score / maxScore1, ...point(R1, deg) });
-  });
+/** Identity for dedupe: IGDB has distinct ids for the same keyword name. */
+export const nameKey = (name: string) => name.trim().toLowerCase();
 
-  level1.forEach((parent, i) => {
-    const deg = -90 + (360 / level1.length) * i;
-    const children = (data[parent.id] || []).filter(c => !used.has(c.id)).slice(0, LEVEL2_PER_PARENT);
-    const maxScore2 = children[0]?.score || 1;
-    children.forEach((c, j) => {
-      used.add(c.id);
-      const offset = (j - (children.length - 1) / 2) * 2 * L2_SPREAD_DEG;
-      nodes.push({ id: c.id, name: c.name, level: 2, parentId: parent.id, weight: c.score / maxScore2, ...point(R2, deg + offset) });
-    });
-  });
+/**
+ * Makes an equal-weight adjacency list from a curated subcategory. Used only
+ * when the IGDB co-occurrence crawl has no row for the current keyword.
+ */
+export function buildCategoryFallbackData(keywords: MapSeed[]): CooccurrenceData {
+  return Object.fromEntries(
+    keywords.map(keyword => [
+      keyword.id,
+      keywords
+        .filter(candidate => candidate.id !== keyword.id)
+        .map(candidate => ({ id: candidate.id, name: candidate.name, count: 0, score: 1 })),
+    ]),
+  );
+}
 
+/**
+ * Picks the map graph. Level 1 is the first `level1Count` pool entries not in
+ * `exclude.inner`; level 2 is their strongest neighbours not already on the
+ * map or in `exclude.outer`. Both sets hold name keys. Refresh passes every
+ * name shown so far as `inner` and the previous map's names as `outer`, so the
+ * inner ring never repeats and the outer ring stays full without echoing the
+ * last map. Order is strength order (level 1, then level 2 by parent).
+ */
+export function selectKeywordGraph(
+  center: { id: number; name: string },
+  pool: MapSeed[],
+  data: CooccurrenceData,
+  exclude: { inner?: ReadonlySet<string>; outer?: ReadonlySet<string> } = {},
+  shape: GraphShape = DESKTOP_SHAPE,
+): GraphNode[] {
+  const used = new Set<number>([center.id]);
+  const usedNames = new Set<string>([nameKey(center.name)]);
+  const isFree = (n: { id: number; name: string }, excluded?: ReadonlySet<string>) =>
+    !used.has(n.id) && !usedNames.has(nameKey(n.name)) && !excluded?.has(nameKey(n.name));
+  const take = (n: { id: number; name: string }) => {
+    used.add(n.id);
+    usedNames.add(nameKey(n.name));
+  };
+  const nodes: GraphNode[] = [{ id: center.id, name: center.name, level: 0, weight: 1 }];
+
+  const level1: MapSeed[] = [];
+  for (const n of pool) {
+    if (level1.length === shape.level1Count) break;
+    if (isFree(n, exclude.inner)) {
+      take(n);
+      level1.push(n);
+    }
+  }
+  const maxScore1 = Math.max(...level1.map(n => strength(n) ?? 0)) || 1;
+  for (const n of level1) {
+    const s = strength(n);
+    const weight = s !== undefined ? s / maxScore1 : 0.5;
+    nodes.push({ id: n.id, name: n.name, level: 1, parentId: center.id, weight });
+  }
+
+  for (const parent of level1) {
+    const children: CooccurrenceNeighbor[] = [];
+    for (const c of data[parent.id] || []) {
+      if (children.length === shape.level2PerParent) break;
+      if (isFree(c, exclude.outer)) {
+        take(c);
+        children.push(c);
+      }
+    }
+    const maxScore2 = (children[0] && strength(children[0])) || 1;
+    for (const c of children) {
+      nodes.push({ id: c.id, name: c.name, level: 2, parentId: parent.id, weight: (strength(c) ?? 0) / maxScore2 });
+    }
+  }
   return nodes;
+}
+
+/** Graph + default layout at the default viewport with estimated label widths. */
+export function buildKeywordMap(
+  center: { id: number; name: string },
+  pool: MapSeed[],
+  data: CooccurrenceData,
+  exclude: { inner?: ReadonlySet<string>; outer?: ReadonlySet<string> } = {},
+  shape: GraphShape = DESKTOP_SHAPE,
+): MapNode[] {
+  return layoutKeywordMap(selectKeywordGraph(center, pool, data, exclude, shape), {
+    viewport: { width: MAP_WIDTH, height: MAP_HEIGHT },
+    widthOf: nodeWidth,
+  });
 }
 
 export const titleCase = (s: string) => s.replace(/\b\w/g, c => c.toUpperCase());

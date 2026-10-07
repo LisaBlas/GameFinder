@@ -20,6 +20,7 @@ npm run db:push             # push schema to Neon
 npm run db:seed             # seed database
 npm run seo:refresh-cache   # repopulate seo_page_cache from IGDB (run on VPS, needs env vars)
 npm run check               # TypeScript check; expected to pass
+npm test                    # node:test via tsx on client/src/**/*.test.ts (no vitest)
 ```
 
 See `docs/SYSTEM_INVARIANTS.md` for the Windows build gotcha and other hard
