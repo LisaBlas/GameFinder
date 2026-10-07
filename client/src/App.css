@@ -4707,7 +4707,7 @@ button.kmap-crumb:hover,
   gap: 0.4rem;
 }
 
-/* Search inside the map section, above the body (its dropdown overlays the map). */
+/* Search sits directly below the map navigation header. */
 .kmap-search {
   position: relative;
   z-index: 20;
@@ -4811,7 +4811,7 @@ button.kmap-crumb:hover,
   cursor: default;
 }
 
-/* Inspector, rare pairings and hints live in the window's bottom dock. */
+/* Rare pairings and hints live below the map, above its navigation bar. */
 .kmap-dock {
   flex-shrink: 0;
   padding: 0.45rem 0.6rem 0.55rem;
@@ -4875,13 +4875,91 @@ button.kmap-crumb:hover,
   color: var(--c-danger);
 }
 
-/* Bottom bar: Include/Exclude left, Clear + Search right. */
+/* Current selection and Clear/Search form the map's bottom row. */
+.kmap-user-selection {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: auto;
+  min-height: 3.6rem;
+  padding: 0.45rem 0.6rem;
+  border-top: 1px solid rgba(var(--c-border-rgb), 0.14);
+  border-radius: 0;
+}
+
+.kmap-user-selection-filters {
+  flex: 1;
+  min-width: 0;
+}
+
+.kmap-user-selection-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kmap-user-selection .desktop-action-button {
+  height: 2.25rem;
+  padding: 0 0.8rem;
+  font-size: 0.8rem;
+}
+
+.kmap-user-selection .desktop-action-button-search {
+  min-width: 0;
+}
+
+/* Legacy dock groups retained for contextual extensions. */
 .kmap-dock-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+}
+
+.kmap-center-action {
+  cursor: pointer;
+  color: var(--c-muted);
+  outline: none;
+}
+
+.kmap-center-action-hit {
+  fill: transparent;
+}
+
+.kmap-center-action-bg {
+  fill: hsl(var(--card) / 0.94);
+  stroke: rgba(var(--c-border-rgb), 0.45);
+  stroke-width: 1;
+}
+
+.kmap-center-action line {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.kmap-center-action:hover,
+.kmap-center-action:focus-visible,
+.kmap-center-action--include.is-active {
+  color: var(--c-emerald-soft);
+}
+
+.kmap-center-action--include.is-active .kmap-center-action-bg {
+  stroke: var(--c-emerald);
+  fill: rgba(var(--c-emerald-rgb), 0.16);
+}
+
+.kmap-center-action--exclude:hover,
+.kmap-center-action--exclude:focus-visible,
+.kmap-center-action--exclude.is-active {
+  color: var(--c-danger);
+}
+
+.kmap-center-action--exclude.is-active .kmap-center-action-bg {
+  stroke: rgba(var(--c-danger-rgb), 0.7);
+  fill: rgba(var(--c-danger-rgb), 0.12);
 }
 
 .kmap-dock-keyword,

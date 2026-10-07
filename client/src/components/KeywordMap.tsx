@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
-import { ArrowRight, Ban, Check, ChevronLeft, ChevronRight, Compass, Home, Link2, ListFilter, Plus, RefreshCw, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Compass, Home, Link2, ListFilter, Plus, RefreshCw, Sparkles, X } from 'lucide-react';
 import { useFilters, type Filter } from '../context/FilterContext';
 import {
   DESKTOP_SHAPE,
@@ -148,6 +148,8 @@ interface Props {
   spark?: React.ReactNode;
   /** Search actions (Clear, Search) for the map's bottom bar. */
   actions?: React.ReactNode;
+  /** Current user selection, shown with the search actions below the map. */
+  selection?: React.ReactNode;
 }
 
 /**
@@ -163,7 +165,7 @@ interface Props {
  * Keywords added from elsewhere (search bar, game-card tags, shared URLs)
  * re-centre the map on them (replacing the current entry).
  */
-export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocation, onClose, search, spark, actions }) => {
+export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocation, onClose, search, spark, actions, selection }) => {
   const { selectedFilters, addFilter, removeFilter, requireDeveloper, requireRating } = useFilters();
   const [sparkOpen, setSparkOpen] = useState(false);
   // Start: an explicit location (mobile sheet), else a shared journey link, else the doors.
@@ -745,50 +747,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     );
   };
 
-  /** Bottom bar of the map window: Include/Exclude for the centre, then the search actions. */
+  /** Optional contextual content below the map. Keyword controls live on its centre node. */
   const renderDock = () => {
     const name = centerKw ? titleCase(centerKw.name) : '';
-    const mode = centerMode;
-    const zeroIfAdded = Boolean(centerKw && !mode && inspectorCount.status === 'ready' && inspectorCount.count === 0);
-    const keywordActions = centerKw && (
-      <div className="kmap-dock-keyword" role="group" aria-label={`${name} in your search`}>
-        <button
-          type="button"
-          className={`kmap-action kmap-action--include${mode === 'include' ? ' is-active' : ''}${zeroIfAdded ? ' is-warn' : ''}`}
-          onClick={() => setMode(centerKw, 'include')}
-          aria-pressed={mode === 'include'}
-          aria-label={`${mode === 'include' ? 'Included' : 'Include'} ${name}`}
-          title={zeroIfAdded ? 'Adding this returns no games with your current search' : undefined}
-        >
-          <Plus className="h-3.5 w-3.5" />
-          {mode === 'include' ? 'Included' : 'Include'}
-        </button>
-        <button
-          type="button"
-          className={`kmap-action kmap-action--exclude${mode === 'exclude' ? ' is-active' : ''}`}
-          onClick={() => setMode(centerKw, 'exclude')}
-          aria-pressed={mode === 'exclude'}
-          aria-label={`${mode === 'exclude' ? 'Excluded' : 'Exclude'} ${name}`}
-        >
-          <Ban className="h-3.5 w-3.5" />
-          {mode === 'exclude' ? 'Excluded' : 'Exclude'}
-        </button>
-      </div>
-    );
-    const extras = (
-      <>
-        {renderDiscoveries()}
-        {name && renderStory(name)}
-      </>
-    );
-    if (!keywordActions && !actions && discoveries.length === 0) return null;
+    if (discoveries.length === 0 && !storyFor(name)) return null;
     return (
       <div className="kmap-dock">
-        {extras}
-        <div className="kmap-dock-row">
-          {keywordActions || <span />}
-          {actions && <div className="kmap-dock-actions">{actions}</div>}
-        </div>
+        {renderDiscoveries()}
+        {name && renderStory(name)}
       </div>
     );
   };
@@ -968,6 +934,12 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
                 {renderMap()}
                 {renderToolbar()}
                 {renderDock()}
+                {(selection || actions) && (
+                  <div className="user-selection kmap-user-selection">
+                    <div className="kmap-user-selection-filters">{selection}</div>
+                    {actions && <div className="kmap-user-selection-actions">{actions}</div>}
+                  </div>
+                )}
               </div>
             )}
           </>

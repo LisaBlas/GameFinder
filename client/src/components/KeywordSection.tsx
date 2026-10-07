@@ -132,7 +132,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const selectionCount = useSelectionCount();
   const zeroSelection = selectionCount.status === 'ready' && selectionCount.count === 0;
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
-  const hasDesktopActionItems = selectedFilters.length > 0;
   const showTasteStory = selectedFilters.length === 0 && !searchFresh;
   const [shareCopied, setShareCopied] = useState(false);
   const [shareShineActive, setShareShineActive] = useState(false);
@@ -787,6 +786,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         search={<KeywordSearch inputRef={desktopSearchRef} onKeywordSelect={() => {}} />}
         spark={renderDiscoveryDeck()}
         actions={renderSearchActions()}
+        selection={<SelectedFilters variant="lanes" />}
       />
     </section>
   );
@@ -1271,12 +1271,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         )}
       </AnimatePresence>
       <Navbar />
-
-      <div className={`desktop-action-bar ${hasDesktopActionItems ? 'desktop-action-bar-visible' : 'desktop-action-bar-empty'} hidden lg:grid border-b border-border`}>
-        <div className="user-selection">
-          <SelectedFilters variant="lanes" />
-        </div>
-      </div>
 
       <div className="flex-1 min-h-0 p-3 lg:flex-none">
         <div className="flex h-full min-h-0 flex-col gap-5 lg:h-auto">

@@ -187,6 +187,38 @@ export const KeywordMapScene: React.FC<Props> = ({
     );
   };
 
+  const renderCenterActions = (node: MapNode, w: number, mode: KeywordMode | null) => {
+    const x = w / 2 + 13;
+    const action = (kind: KeywordMode, cy: number, symbol: 'plus' | 'minus') => (
+      <g
+        className={`kmap-center-action kmap-center-action--${kind}${mode === kind ? ' is-active' : ''}`}
+        transform={`translate(${x} ${cy})`}
+        role="button"
+        tabIndex={0}
+        aria-label={`${kind === 'include' ? 'Include' : 'Exclude'} ${titleCase(node.name)}`}
+        aria-pressed={mode === kind}
+        onClick={e => {
+          e.stopPropagation();
+          onToggle(node, kind, 'inspector');
+        }}
+        onDoubleClick={e => e.stopPropagation()}
+        onKeyDown={e => {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault();
+          e.stopPropagation();
+          onToggle(node, kind, 'keyboard');
+        }}
+      >
+        <title>{`${kind === 'include' ? 'Include' : 'Exclude'} ${titleCase(node.name)}`}</title>
+        <circle className="kmap-center-action-hit" r={11} />
+        <circle className="kmap-center-action-bg" r={8} />
+        <line x1={-3.5} y1={0} x2={3.5} y2={0} />
+        {symbol === 'plus' && <line x1={0} y1={-3.5} x2={0} y2={3.5} />}
+      </g>
+    );
+    return <g className="kmap-center-actions">{action('include', -9, 'plus')}{action('exclude', 9, 'minus')}</g>;
+  };
+
   const renderEdge = (e: SceneEdge) => {
     const a = byId.get(e.from);
     const b = byId.get(e.to);
@@ -342,6 +374,7 @@ export const KeywordMapScene: React.FC<Props> = ({
             {label}
           </text>
           {!isCenter && !isVirtual && renderBadge(n, w, mode, lit)}
+          {isCenter && !isVirtual && renderCenterActions(n, w, mode)}
           {groupTag && (
             <text className="kmap-count-tag kmap-group-tag" y={h / 2 + 10} textAnchor="middle" dominantBaseline="central" aria-hidden="true">
               {groupTag}
