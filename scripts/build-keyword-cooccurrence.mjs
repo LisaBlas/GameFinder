@@ -238,6 +238,8 @@ function pruneAndFormat(counts, curated, totals, universe) {
           count,
           score: union > 0 ? Math.round((count / union) * 1000) / 1000 : 0,
           npmi: npmi(count, totals.get(kwId), totals.get(id), universe),
+          // The neighbour's own game total: lets the client compute exact overlap/rarity.
+          total: totals.get(id),
         };
       })
       .sort((a, b) => b.score - a.score || b.count - a.count)
