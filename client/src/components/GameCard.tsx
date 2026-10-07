@@ -12,6 +12,7 @@ import G2AIconImg from '../assets/icons/g2a.png';
 import InstantGamingIconImg from '../assets/icons/instantGaming.png';
 import KinguinIconImg from '../assets/icons/kinguin.png';
 import GamersGateIconImg from '../assets/icons/gamersGate.png';
+import type { RarityTier } from '../lib/discoveryCards';
 
 const trackExternalClick = (storeName: string, storeType: 'official' | 'affiliate', gameTitle: string) => {
   if (typeof gtag !== 'undefined') {
@@ -102,6 +103,7 @@ interface GameCardProps {
   highlightFilters?: boolean;
   onOpenSimilar?: (id: number) => void;
   desktopExpandDirection?: 'left' | 'right';
+  rarity?: RarityTier | null;
 }
 
 const encodeGameTitle = (title: string): string => {
@@ -179,7 +181,7 @@ const getAffiliateLinks = (gameTitle: string) => {
 };
 
 
-const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false, onOpenSimilar, desktopExpandDirection = 'right' }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscreen = false, highlightFilters = false, onOpenSimilar, desktopExpandDirection = 'right', rarity = null }) => {
   const [videos, setVideos] = useState<Array<{ name?: string; video_id: string }>>([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
@@ -717,7 +719,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   );
 
   return (
-    <div className={`game-card-shell relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'game-card-shell-fullscreen pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? `game-card-shell-selected game-card-shell-expand-${desktopExpandDirection}` : ''}`}>
+    <div className={`game-card-shell game-card-shell-rarity-${rarity ?? 'common'} relative group ${!fullscreen && !isSelected ? 'h-full' : ''} ${fullscreen ? 'game-card-shell-fullscreen pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-0' : ''} ${isSelected ? `game-card-shell-selected game-card-shell-expand-${desktopExpandDirection}` : ''}`}>
       {fullscreen && (
         <div className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-slate-700/40 bg-[#111312]/95 px-3 py-2 backdrop-blur-sm md:hidden">
           <h2 className="min-w-0 flex-1 truncate pr-1 text-sm font-semibold text-white">{game.name}</h2>
@@ -761,6 +763,15 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         >
           <FaTimes className="h-4 w-4" />
         </button>
+      )}
+
+      {!fullscreen && (
+        <div className="game-card-forge" aria-hidden="true">
+          <span className="game-card-forge-corner game-card-forge-corner-tl" />
+          <span className="game-card-forge-corner game-card-forge-corner-tr" />
+          <span className="game-card-forge-corner game-card-forge-corner-bl" />
+          <span className="game-card-forge-corner game-card-forge-corner-br" />
+        </div>
       )}
 
       <article
@@ -1139,6 +1150,7 @@ const areEqual = (prev: GameCardProps, next: GameCardProps): boolean =>
   prev.game === next.game &&
   prev.isSelected === next.isSelected &&
   prev.fullscreen === next.fullscreen &&
+  prev.rarity === next.rarity &&
   (prev.highlightFilters ?? false) === (next.highlightFilters ?? false);
 
 export default React.memo(GameCard, areEqual);

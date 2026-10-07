@@ -1470,16 +1470,16 @@ h3{
 @keyframes card-appear {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    filter: blur(7px) brightness(0.35);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    filter: blur(0) brightness(1);
   }
 }
 
 .game-card-appear {
-  animation: card-appear 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: card-appear 0.72s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
 }
 
 .game-card-slot {
@@ -1499,18 +1499,237 @@ h3{
 }
 
 .game-card-shell {
+  --forge-rgb: 111, 126, 119;
+  --forge-soft-rgb: 195, 207, 199;
+  --forge-frame-opacity: 0.22;
   --corner-size: 16px;
   --corner-base: rgb(43, 52, 48);
   --corner-edge: rgb(93, 108, 99);
   --corner-highlight: rgba(240, 248, 232, 0.34);
   --corner-shadow: rgba(0, 0, 0, 0.64);
   --corner-grain: rgba(255, 255, 255, 0.07);
+  isolation: isolate;
   transform-origin: top center;
   transition:
     width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
     max-width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: width, transform;
+}
+
+/* Forged result frame -----------------------------------------------------
+   The persistent layer is deliberately quiet; the heat layers play once
+   when a fresh result node mounts, then cool into the rarity material. */
+.game-card-forge {
+  position: absolute;
+  inset: -2px;
+  z-index: 4;
+  pointer-events: none;
+  border: 1px solid rgba(var(--forge-rgb), var(--forge-frame-opacity));
+  border-radius: 14px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+    inset 0 0 16px rgba(var(--forge-rgb), 0.035),
+    0 0 0 1px rgba(0, 0, 0, 0.7);
+}
+
+.game-card-forge::before,
+.game-card-forge::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  opacity: 0;
+}
+
+/* The first flash is a white-hot perimeter that cools toward the tier. */
+.game-card-forge::before {
+  border: 2px solid rgba(var(--forge-soft-rgb), 0.9);
+  box-shadow:
+    inset 0 0 12px rgba(255, 255, 255, 0.55),
+    inset 0 0 28px rgba(var(--forge-rgb), 0.35),
+    0 0 7px rgba(255, 255, 255, 0.9),
+    0 0 24px rgba(var(--forge-rgb), 0.72),
+    0 0 56px rgba(var(--forge-rgb), 0.28);
+}
+
+/* A short surface bloom makes the rectangle emerge from the dark stone. */
+.game-card-forge::after {
+  inset: 2px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.72), transparent 8% 92%, rgba(255, 255, 255, 0.58)),
+    linear-gradient(0deg, rgba(var(--forge-rgb), 0.5), transparent 16% 84%, rgba(255, 255, 255, 0.62)),
+    radial-gradient(ellipse at 50% 50%, rgba(var(--forge-rgb), 0.13), rgba(255, 255, 255, 0.25) 68%, transparent 78%);
+  mix-blend-mode: screen;
+}
+
+.game-card-shell-rarity-uncommon {
+  --forge-rgb: var(--c-emerald-rgb);
+  --forge-soft-rgb: 213, 255, 240;
+  --forge-frame-opacity: 0.25;
+}
+
+.game-card-shell-rarity-rare {
+  --forge-rgb: var(--c-rare-blue-rgb);
+  --forge-soft-rgb: 224, 244, 255;
+  --forge-frame-opacity: 0.42;
+}
+
+.game-card-shell-rarity-epic {
+  --forge-rgb: var(--c-purple-rgb);
+  --forge-soft-rgb: 247, 229, 255;
+  --forge-frame-opacity: 0.58;
+}
+
+.game-card-shell-rarity-unique {
+  --forge-rgb: var(--c-unique-rgb);
+  --forge-soft-rgb: 255, 244, 218;
+  --forge-frame-opacity: 0.68;
+}
+
+.game-card-shell-rarity-rare .game-card-forge {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--forge-soft-rgb), 0.055),
+    inset 0 0 20px rgba(var(--forge-rgb), 0.055),
+    0 0 0 1px rgba(0, 0, 0, 0.76),
+    0 0 14px rgba(var(--forge-rgb), 0.07);
+}
+
+/* Epic is cut like an angular obsidian seal with violet inlay. */
+.game-card-shell-rarity-epic .game-card-forge {
+  border-width: 2px;
+  border-radius: 7px;
+  background:
+    linear-gradient(90deg, transparent 12%, rgba(var(--forge-rgb), 0.2) 30% 70%, transparent 88%) top / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 18%, rgba(var(--forge-soft-rgb), 0.12) 50%, transparent 82%) bottom / 100% 1px no-repeat;
+  box-shadow:
+    inset 0 0 0 1px rgba(9, 3, 14, 0.88),
+    inset 0 0 0 3px rgba(var(--forge-rgb), 0.12),
+    inset 0 0 24px rgba(var(--forge-rgb), 0.075),
+    0 0 0 1px rgba(0, 0, 0, 0.9),
+    0 0 18px rgba(var(--forge-rgb), 0.11);
+}
+
+/* Unique is heavier and ceremonial: blackened bronze with a hot gold seam. */
+.game-card-shell-rarity-unique .game-card-forge {
+  border-width: 2px;
+  border-radius: 5px;
+  background:
+    linear-gradient(90deg, transparent 9%, rgba(var(--forge-soft-rgb), 0.28) 25% 75%, transparent 91%) top / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 15%, rgba(var(--forge-rgb), 0.28) 50%, transparent 85%) bottom / 100% 1px no-repeat,
+    linear-gradient(0deg, transparent 15%, rgba(var(--forge-rgb), 0.16) 50%, transparent 85%) left / 1px 100% no-repeat,
+    linear-gradient(0deg, transparent 15%, rgba(var(--forge-rgb), 0.16) 50%, transparent 85%) right / 1px 100% no-repeat;
+  box-shadow:
+    inset 0 0 0 1px rgba(34, 17, 3, 0.95),
+    inset 0 0 0 3px rgba(var(--forge-rgb), 0.16),
+    inset 0 0 26px rgba(var(--forge-rgb), 0.085),
+    0 0 0 1px rgba(0, 0, 0, 0.92),
+    0 0 22px rgba(var(--forge-rgb), 0.14);
+}
+
+.game-card-forge-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  display: none;
+  background: linear-gradient(135deg, rgba(var(--forge-soft-rgb), 0.66), rgba(var(--forge-rgb), 0.38) 40%, rgba(9, 7, 8, 0.98) 76%);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.9));
+}
+
+.game-card-forge-corner::before,
+.game-card-forge-corner::after {
+  content: "";
+  position: absolute;
+}
+
+.game-card-forge-corner::before {
+  left: 5px;
+  top: 5px;
+  width: 15px;
+  height: 15px;
+  border-left: 1px solid rgba(var(--forge-soft-rgb), 0.42);
+  border-top: 1px solid rgba(var(--forge-soft-rgb), 0.42);
+}
+
+.game-card-forge-corner::after {
+  left: 4px;
+  top: 4px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(var(--forge-soft-rgb), 0.72);
+  box-shadow: 0 0 4px rgba(var(--forge-rgb), 0.34);
+}
+
+.game-card-shell-rarity-epic .game-card-forge-corner,
+.game-card-shell-rarity-unique .game-card-forge-corner {
+  display: block;
+}
+
+.game-card-shell-rarity-epic .game-card-forge-corner {
+  clip-path: polygon(0 0, 100% 0, 100% 20%, 44% 20%, 20% 44%, 20% 100%, 0 100%);
+}
+
+.game-card-shell-rarity-unique .game-card-forge-corner {
+  width: 31px;
+  height: 31px;
+  background: linear-gradient(135deg, rgba(var(--forge-soft-rgb), 0.78), rgba(var(--forge-rgb), 0.46) 34%, rgba(31, 17, 6, 0.98) 70%);
+  clip-path: polygon(0 0, 100% 0, 100% 23%, 52% 23%, 23% 52%, 23% 100%, 0 100%);
+}
+
+.game-card-forge-corner-tl { left: -1px; top: -1px; }
+.game-card-forge-corner-tr { right: -1px; top: -1px; transform: rotate(90deg); }
+.game-card-forge-corner-br { right: -1px; bottom: -1px; transform: rotate(180deg); }
+.game-card-forge-corner-bl { left: -1px; bottom: -1px; transform: rotate(270deg); }
+
+@keyframes forge-edge-heat {
+  0% { opacity: 0; filter: brightness(2.8) saturate(0); }
+  14% { opacity: 1; filter: brightness(2.4) saturate(0.2); }
+  38% { opacity: 0.92; filter: brightness(1.55) saturate(0.75); }
+  72% { opacity: 0.3; filter: brightness(1.05) saturate(1); }
+  100% { opacity: 0; filter: brightness(1) saturate(1); }
+}
+
+@keyframes forge-surface-heat {
+  0%, 8% { opacity: 0; }
+  20% { opacity: 0.86; }
+  48% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+
+@keyframes forge-materialize {
+  0% { transform: scale(0.975); filter: contrast(0.72) brightness(0.42); }
+  28% { transform: scale(1.004); filter: contrast(1.16) brightness(1.2); }
+  100% { transform: scale(1); filter: contrast(1) brightness(1); }
+}
+
+.game-card-appear .game-card {
+  animation: forge-materialize 0.82s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
+}
+
+.game-card-slot-rarity-rare .game-card-forge::before,
+.game-card-slot-rarity-epic .game-card-forge::before,
+.game-card-slot-rarity-unique .game-card-forge::before {
+  animation: forge-edge-heat 1.25s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
+}
+
+.game-card-slot-rarity-rare .game-card-forge::after,
+.game-card-slot-rarity-epic .game-card-forge::after,
+.game-card-slot-rarity-unique .game-card-forge::after {
+  animation: forge-surface-heat 1.05s ease-out var(--forge-delay, 0ms) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-card-appear,
+  .game-card-appear .game-card,
+  .game-card-slot-rarity-rare .game-card-forge::before,
+  .game-card-slot-rarity-epic .game-card-forge::before,
+  .game-card-slot-rarity-unique .game-card-forge::before,
+  .game-card-slot-rarity-rare .game-card-forge::after,
+  .game-card-slot-rarity-epic .game-card-forge::after,
+  .game-card-slot-rarity-unique .game-card-forge::after {
+    animation: none;
+  }
 }
 
 .game-card-shell::before {
@@ -1547,6 +1766,13 @@ h3{
   --corner-edge: rgb(118, 100, 62);
   --corner-highlight: rgba(255, 248, 214, 0.30);
   --corner-grain: rgba(255, 231, 169, 0.075);
+}
+
+/* Epic/unique provide their own forged brackets; the neutral triangular caps
+   underneath made those corners look curled and doubled. */
+.game-card-shell-rarity-epic::before,
+.game-card-shell-rarity-unique::before {
+  opacity: 0;
 }
 
 .game-card-shell-fullscreen::before {

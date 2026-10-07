@@ -9,17 +9,7 @@ import MobileFilterSheet from './MobileFilterSheet';
 import SearchPlaceholder from './SearchPlaceholder';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cardLinkFor, setHoveredCard, setSelectedCard, subscribeMapLink, getMapLink } from '../lib/mapLink';
-
-type RarityTier = "common" | "uncommon" | "rare" | "epic" | "unique";
-
-function getRarity(count: number): RarityTier | null {
-  if (count <= 0)   return null;
-  if (count <= 5)   return "unique";
-  if (count <= 20)  return "epic";
-  if (count <= 50)  return "rare";
-  if (count <= 150) return "uncommon";
-  return "common";
-}
+import { getRarity, type RarityTier } from '../lib/discoveryCards';
 
 const RARITY_RGB: Record<RarityTier, string> = {
   common:   '--c-border-rgb',
@@ -49,7 +39,9 @@ const SearchResults: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
   const [hideMobileControls, setHideMobileControls] = useState(false);
+  const [forgeCycle, setForgeCycle] = useState(0);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const startedFreshSearchRef = useRef(false);
 
   // Update hasSearched when a search is performed
   useEffect(() => {
@@ -57,6 +49,19 @@ const SearchResults: React.FC = () => {
       setHasSearched(true);
     }
   }, [isLoading]);
+
+  // A fresh search clears the grid before loading. Advance the cycle only for
+  // that state so sorting, expanding, and pagination never re-forge old cards.
+  useEffect(() => {
+    const isFreshSearch = isLoading && gameResults.length === 0;
+    if (isFreshSearch && !startedFreshSearchRef.current) {
+      startedFreshSearchRef.current = true;
+      setForgeCycle(cycle => cycle + 1);
+      setSelectedGameId(null);
+    } else if (!isLoading) {
+      startedFreshSearchRef.current = false;
+    }
+  }, [gameResults.length, isLoading]);
 
   const selectedGame = gameResults.find(g => g.id === selectedGameId) ?? null;
 
@@ -238,8 +243,9 @@ const SearchResults: React.FC = () => {
               <motion.div
                 layout
                 transition={CARD_LAYOUT_TRANSITION}
-                key={`game-${game.id}`}
-                className={`game-card-appear game-card-slot ${selectedGameId === game.id ? 'game-card-slot-selected' : 'h-full'}`}
+                key={`forge-${forgeCycle}-${game.id}`}
+                className={`game-card-appear game-card-slot game-card-slot-rarity-${rarity ?? 'common'} ${selectedGameId === game.id ? 'game-card-slot-selected' : 'h-full'}`}
+                style={{ '--forge-delay': `${Math.min(index, 7) * 65}ms` } as React.CSSProperties}
                 data-kws={game.keywords?.map((k: { id: number }) => k.id).join(' ')}
                 onMouseEnter={() => setHoveredCard(cardLinkFor(game))}
                 onMouseLeave={() => setHoveredCard(null)}
@@ -248,6 +254,7 @@ const SearchResults: React.FC = () => {
                   game={game}
                   isSelected={selectedGameId === game.id}
                   highlightFilters={selectedGameId === game.id}
+                  rarity={rarity}
                   desktopExpandDirection={index % 2 === 0 ? 'right' : 'left'}
                   onSelect={() => setSelectedGameId(current => current === game.id ? null : game.id)}
                 />
@@ -281,6 +288,7 @@ const SearchResults: React.FC = () => {
               isSelected={true}
               fullscreen={true}
               highlightFilters={true}
+              rarity={getRarity(totalCount ?? gameResults.length)}
               onSelect={() => setSelectedGameId(null)}
             />
           </div>

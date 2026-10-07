@@ -276,6 +276,11 @@ classes make unwieldy:
   button states
 - `.results-filter-trigger`, `.results-sticky-header`,
   `.workspace-sticky-header` - results panel chrome
+- `.game-card-forge`, `.game-card-shell-rarity-*` - result-card material and
+  rarity frames. Fresh searches advance a forge cycle in `SearchResults` so
+  cards materialize once; rare/epic/unique tiers briefly cool from white-hot
+  into blue/purple/orange. Epic and unique retain distinct corner geometry.
+  Rarity thresholds come from `lib/discoveryCards.ts`; do not duplicate them.
 
 Use Tailwind for layout, spacing, and one-off styles. Use the CSS classes
 above for anything involving multiple interactive states.
