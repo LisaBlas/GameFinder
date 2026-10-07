@@ -94,18 +94,21 @@ app.use((req, res, next) => {
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen(port, "0.0.0.0", () => {
-    log(`serving on port ${port}`);
-  }).on('error', (err: any) => {
-    if (err.code === 'EADDRINUSE') {
-      const nextPort = port + 1;
-      log(`Port ${port} is busy, trying ${nextPort}`);
-      server.listen(nextPort, "0.0.0.0", () => {
-        log(`serving on port ${nextPort}`);
-      });
-    } else {
-      throw err;
+  const basePort = parseInt(process.env.PORT || '5000', 10);
+  const MAX_PORT_ATTEMPTS = 10;
+  let port = basePort;
+  // One listener for all attempts: walk up from the base port, then give up loudly
+  // (re-registering per attempt, or retrying a fixed port, loops forever).
+  server.on('error', (err: any) => {
+    if (err.code !== 'EADDRINUSE') throw err;
+    if (port - basePort + 1 >= MAX_PORT_ATTEMPTS) {
+      log(`Ports ${basePort}-${port} are all busy; is another dev server still running?`);
+      process.exit(1);
     }
-  });  
+    log(`Port ${port} is busy, trying ${port + 1}`);
+    port += 1;
+    server.listen(port, "0.0.0.0");
+  });
+  server.on('listening', () => log(`serving on port ${port}`));
+  server.listen(port, "0.0.0.0");
 })();
