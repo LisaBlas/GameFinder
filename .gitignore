@@ -44,4 +44,4 @@ yarn-error.log*
 
 server/public
 vite.config.ts.*
-*.tar.gz
+*.tar.gzscripts/cooccurrence-intermediate.json
