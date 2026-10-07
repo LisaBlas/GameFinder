@@ -320,6 +320,14 @@ export const KeywordMapScene: React.FC<Props> = ({
         }}
         exit="exit"
       >
+        {/* Opaque backing outside the dimmed group: lit-state opacity fades the pill, never reveals edges. */}
+        <motion.rect
+          className="kmap-node-backdrop"
+          initial={false}
+          animate={{ attrX: -w / 2, attrY: -h / 2, width: w, height: h, rx: h / 2 }}
+          transition={move(delay)}
+          aria-hidden="true"
+        />
         <g
           ref={el => {
             if (el) nodeEls.current.set(n.id, el);

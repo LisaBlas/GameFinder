@@ -4370,6 +4370,13 @@ button.kmap-crumb:hover,
   pointer-events: none;
 }
 
+/* Sits outside .kmap-node so the node's rect rules (hover, rarity, cause…) never reach it. */
+.kmap-node-backdrop {
+  fill: var(--c-surface-2);
+  stroke: none;
+  pointer-events: none;
+}
+
 .kmap-node {
   transition: opacity 150ms;
   outline: none;
