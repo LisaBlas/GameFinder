@@ -388,6 +388,11 @@ subcategories (counts per keyword, "N fit" per subcategory). Filtering (not
 dimming) is deliberate: the inner ring has 6 slots and dead ends would waste
 them. Curated order is kept.
 
+Explore mode still loads the same counts once something is searched, but only
+colours with them: each keyword is tinted by the rarity tier its "if added"
+count would get (`getRarity`, same colours as the results header; common stays
+neutral), and 0-result keywords are dimmed instead of hidden.
+
 ### Phase 4 — Signature polish
 
 Status: done (2026-10-07). Discoveries are deliberately strict on the current

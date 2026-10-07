@@ -378,12 +378,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     [selectedFilters, requireDeveloper, requireRating],
   );
   const fitActive = fitMode && currentSearch !== null;
-  // Only used when the search is too broad to facet: count exactly what this screen draws from.
+  // Counts load in both modes once something is searched: Explore uses them to
+  // colour keywords by rarity-if-added; only Fits mode filters by them.
+  // Probes are only used when the search is too broad to facet: count exactly what this screen draws from.
   const probeIds = useMemo(
-    () => (fitActive ? pool.filter(n => n.id > 0).slice(0, MAX_PROBE).map(n => n.id) : []),
-    [fitActive, pool],
+    () => (currentSearch ? pool.filter(n => n.id > 0).slice(0, MAX_PROBE).map(n => n.id) : []),
+    [currentSearch, pool],
   );
-  const fit = useKeywordFit(fitActive ? currentSearch : null, probeIds);
+  const fit = useKeywordFit(currentSearch, probeIds);
   const keywordFits = useCallback(
     (id: number) => {
       if (!fitActive || fit.status === 'off' || fit.status === 'error') return true;
@@ -679,7 +681,8 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
           onHoverNode={onHoverNode}
           previewPayload={previewPayload}
           discoveries={discoveryMap}
-          fitCountOf={fitActive && fit.status !== 'error' ? fit.countOf : undefined}
+          fitCountOf={fit.status !== 'off' && fit.status !== 'error' ? fit.countOf : undefined}
+          showFitTags={fitActive}
           tagFor={tagFor}
           onSwipe={variant === 'mobile' ? refresh : undefined}
         />

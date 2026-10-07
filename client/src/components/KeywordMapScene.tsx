@@ -7,6 +7,7 @@ import { TIMING, type SceneEdge, type TransitionPlan } from '../lib/keywordMapMo
 import { useMapCamera, ZOOM_MAX, ZOOM_MIN } from '../hooks/useMapCamera';
 import { formatCount, useSearchCount } from '../lib/searchCount';
 import { useMapLink } from '../lib/mapLink';
+import { getRarity } from '../lib/discoveryCards';
 import type { SearchPayload } from '../../../shared/searchKey';
 
 export type KeywordMode = 'include' | 'exclude';
@@ -38,6 +39,8 @@ interface Props {
   discoveries?: ReadonlyMap<number, number>;
   /** Fits-my-search mode: results if this keyword were added (undefined = unknown). */
   fitCountOf?: (id: number) => number | undefined;
+  /** Fits mode: caption every visible keyword with its count (Explore only colours by rarity). */
+  showFitTags?: boolean;
   /** Persistent caption under a category/subcategory node, e.g. "65 keywords". */
   tagFor?: (node: MapNode) => string | undefined;
   /** Mobile swipe: show the next set of neighbours, rotating in the swipe direction. */
@@ -65,6 +68,7 @@ export const KeywordMapScene: React.FC<Props> = ({
   previewPayload,
   discoveries,
   fitCountOf,
+  showFitTags = false,
   tagFor,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -265,6 +269,10 @@ export const KeywordMapScene: React.FC<Props> = ({
     const isVirtual = n.id < 0; // category/subcategory node, not a keyword
     const mode = isVirtual ? null : modeOf(n.id);
     const lit = isLit(n);
+    // Rarity if added to the search (same tiers as result counts); 0 results → dimmed.
+    const ifAdded = !isCenter && !isVirtual && !mode && fitCountOf ? fitCountOf(n.id) : undefined;
+    const rarity = ifAdded !== undefined ? getRarity(ifAdded) : null;
+    const dead = ifAdded === 0;
     const classes = [
       'kmap-node',
       isCenter ? 'kmap-node--center' : 'kmap-node--explorable',
@@ -273,21 +281,22 @@ export const KeywordMapScene: React.FC<Props> = ({
       mode && `is-${mode}`,
       linkClass(n.id),
       discoveries?.has(n.id) && 'is-discovery',
+      rarity && rarity !== 'common' && `is-rarity-${rarity}`,
+      dead && 'is-dead',
     ].filter(Boolean).join(' ');
     const rareGames = discoveries?.get(n.id);
     const showCount = n.id === hoveredId && !isCenter && hoverCount.status === 'ready';
     // Fits mode: every visible keyword carries its count (outer ring only when lit, to stay calm).
-    const fitCount = !isCenter && !isVirtual && !mode && fitCountOf && (n.level === 1 || lit) ? fitCountOf(n.id) : undefined;
+    const fitCount = showFitTags && (n.level === 1 || lit) ? ifAdded : undefined;
     const groupTag = !isCenter && isVirtual ? tagFor?.(n) : undefined;
     const from = plan.nodes.get(n.id)?.from;
     const delay = delayOf(n.id);
     const name = isVirtual ? n.name : titleCase(n.name);
-    const fitLabel = !isCenter && !isVirtual && !mode && fitCountOf ? fitCountOf(n.id) : undefined;
     const ariaLabel = isCenter
       ? `${name}, centre${mode ? `, ${mode}d` : ''}`
       : isVirtual
         ? `${name}${groupTag ? `, ${groupTag}` : ''}. Enter to open`
-        : `${name}${mode ? `, ${mode}d` : ''}${fitLabel !== undefined ? `, ${formatCount(fitLabel, false)} if added` : ''}. Enter to explore, A to add, X to exclude`;
+        : `${name}${mode ? `, ${mode}d` : ''}${ifAdded !== undefined ? `, ${formatCount(ifAdded, false)} if added` : ''}. Enter to explore, A to add, X to exclude`;
 
     return (
       <motion.g
@@ -317,7 +326,7 @@ export const KeywordMapScene: React.FC<Props> = ({
             else nodeEls.current.delete(n.id);
           }}
           className={classes}
-          style={{ opacity: lit ? 1 : 0.4 }}
+          style={{ opacity: (lit ? 1 : 0.4) * (dead ? 0.45 : 1) }}
           data-node-id={n.id}
           role="button"
           aria-disabled={isCenter || undefined}

@@ -4184,6 +4184,38 @@ button.kmap-crumb:hover,
   stroke-dasharray: 4 3;
 }
 
+/* Rarity if added to the current search (same tiers/colours as result counts).
+   Common keeps the default look; 0 results is dimmed (opacity set inline). */
+.kmap-node.is-rarity-uncommon { --kmap-rarity-rgb: var(--c-emerald-rgb); --kmap-rarity-text: var(--c-emerald-soft); }
+.kmap-node.is-rarity-rare     { --kmap-rarity-rgb: var(--c-rare-blue-rgb); --kmap-rarity-text: var(--c-rare-blue-soft); }
+.kmap-node.is-rarity-epic     { --kmap-rarity-rgb: var(--c-purple-rgb); --kmap-rarity-text: var(--c-purple-soft); }
+.kmap-node.is-rarity-unique   { --kmap-rarity-rgb: var(--c-unique-rgb); --kmap-rarity-text: var(--c-unique-soft); }
+
+.kmap-node[class*="is-rarity-"] rect {
+  /* Opaque mix (edges must not show through). */
+  fill: color-mix(in srgb, rgb(var(--kmap-rarity-rgb)) 10%, var(--c-surface-2));
+  stroke: rgba(var(--kmap-rarity-rgb), 0.8);
+}
+
+.kmap-node[class*="is-rarity-"] text {
+  fill: var(--kmap-rarity-text);
+}
+
+.kmap-node--explorable[class*="is-rarity-"]:hover rect,
+.kmap-node--explorable[class*="is-rarity-"]:focus-visible rect {
+  fill: color-mix(in srgb, rgb(var(--kmap-rarity-rgb)) 20%, var(--c-bg));
+  stroke: rgb(var(--kmap-rarity-rgb));
+}
+
+.kmap-node.is-dead rect {
+  stroke: rgba(var(--c-border-rgb), 0.3);
+  stroke-dasharray: 3 3;
+}
+
+.kmap-node.is-dead text {
+  fill: var(--c-muted);
+}
+
 .kmap-node.is-include rect {
   fill: var(--c-emerald);
   stroke: var(--c-emerald);
