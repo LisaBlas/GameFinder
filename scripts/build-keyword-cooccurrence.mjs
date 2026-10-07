@@ -1,7 +1,7 @@
 /**
  * build-keyword-cooccurrence.mjs
  *
- * Crawls IGDB once per curated keyword to find which OTHER curated keywords
+ * Crawls IGDB once per map keyword to find which OTHER map keywords
  * tend to appear on the same games, then writes a pruned adjacency list:
  *   client/src/assets/keyword_cooccurrence.json
  *   { [keywordId]: [{ id, name, count, score }, ...] }   (sorted by Jaccard score desc, capped)
@@ -16,9 +16,6 @@
  * accumulated game->keywords map) is checkpointed to
  * scripts/cooccurrence-intermediate.json every CHECKPOINT_EVERY keywords,
  * so an interrupted run can pick back up instead of re-crawling from zero.
- *
- * This is a scaffold: it produces the data file only. Nothing in
- * server/ or client/ reads keyword_cooccurrence.json yet.
  *
  * Usage:
  *   node scripts/build-keyword-cooccurrence.mjs
@@ -37,7 +34,8 @@ const root = path.resolve(__dirname, '..');
 
 dotenv.config({ path: path.join(root, '.env') });
 
-const CURATED_PATH = path.join(root, 'client/src/assets/all_categorised_keywords.json');
+const TOP_PATH = path.join(root, 'client/src/assets/top_keywords_by_category.json');
+const EXTENDED_PATH = path.join(root, 'client/src/assets/extended_keywords_by_category.json');
 const INTERMEDIATE_PATH = path.join(__dirname, 'cooccurrence-intermediate.json');
 const OUTPUT_PATH = path.join(root, 'client/src/assets/keyword_cooccurrence.json');
 
@@ -48,6 +46,20 @@ const MIN_COOCCURRENCE = 2; // drop pairs that only share one game (noise)
 const MAX_NEIGHBORS = 20; // cap related-keyword list size per keyword
 
 const readJson = p => JSON.parse(fs.readFileSync(p, 'utf8').replace(/^﻿/, ''));
+
+// These are the two sources rendered by the keyword map. Keep their curated
+// order while deduplicating ids that may appear in more than one subcategory.
+function readMapKeywords() {
+  const byId = new Map();
+  for (const source of [readJson(TOP_PATH), readJson(EXTENDED_PATH)]) {
+    for (const keywords of Object.values(source)) {
+      for (const keyword of keywords) {
+        if (!byId.has(keyword.id)) byId.set(keyword.id, keyword);
+      }
+    }
+  }
+  return [...byId.values()];
+}
 
 // ─── IGDB auth ────────────────────────────────────────────────────────────────
 
@@ -130,13 +142,24 @@ function saveProgress({ doneIds, totals, gameKeywords }) {
 async function crawl(curated) {
   const curatedIds = new Set(curated.map(k => k.id));
   const progress = loadProgress();
+  // A checkpoint may have been created when this script used a different
+  // source list. Retain reusable work, but do not leak retired ids into the
+  // rebuilt map data.
+  progress.doneIds = new Set([...progress.doneIds].filter(id => curatedIds.has(id)));
+  progress.totals = new Map([...progress.totals].filter(([id]) => curatedIds.has(id)));
+  for (const [gameId, ids] of progress.gameKeywords) {
+    const currentIds = ids.filter(id => curatedIds.has(id));
+    if (currentIds.length >= 2) progress.gameKeywords.set(gameId, currentIds);
+    else progress.gameKeywords.delete(gameId);
+  }
   const remaining = curated.filter(k => !progress.doneIds.has(k.id));
+  const completedAtStart = progress.doneIds.size;
 
   console.log(`${progress.doneIds.size} keywords already crawled, ${remaining.length} remaining`);
 
   for (let i = 0; i < remaining.length; i++) {
     const kw = remaining[i];
-    process.stdout.write(`  [${progress.doneIds.size + i + 1}/${curated.length}] ${kw.name} `);
+    process.stdout.write(`  [${completedAtStart + i + 1}/${curated.length}] ${kw.name} `);
 
     try {
       const games = await fetchGamesForKeyword(kw.id);
@@ -187,9 +210,20 @@ function computeCooccurrence(gameKeywords) {
   return counts;
 }
 
+// Normalised PMI in [-1, 1]: how much more often a pair co-occurs than chance,
+// over the `universe` of crawled games. The server blends it with editorial
+// signals (shared/keywordRelevance.ts); rarity-aware, unlike raw counts.
+function npmi(count, totalA, totalB, universe) {
+  if (!universe || !totalA || !totalB || count <= 0) return undefined;
+  const pAB = count / universe;
+  if (pAB >= 1) return 1;
+  const pmi = Math.log(pAB / ((totalA / universe) * (totalB / universe)));
+  return Math.round(Math.max(-1, Math.min(1, pmi / -Math.log(pAB))) * 1000) / 1000;
+}
+
 // Rank by Jaccard similarity, not raw count: raw counts just surface hub
 // keywords (war, multiplayer) that co-occur with everything.
-function pruneAndFormat(counts, curated, totals) {
+function pruneAndFormat(counts, curated, totals, universe) {
   const nameById = new Map(curated.map(k => [k.id, k.name]));
   const output = {};
 
@@ -198,7 +232,13 @@ function pruneAndFormat(counts, curated, totals) {
       .filter(([, count]) => count >= MIN_COOCCURRENCE)
       .map(([id, count]) => {
         const union = (totals.get(kwId) || 0) + (totals.get(id) || 0) - count;
-        return { id, name: nameById.get(id), count, score: union > 0 ? Math.round((count / union) * 1000) / 1000 : 0 };
+        return {
+          id,
+          name: nameById.get(id),
+          count,
+          score: union > 0 ? Math.round((count / union) * 1000) / 1000 : 0,
+          npmi: npmi(count, totals.get(kwId), totals.get(id), universe),
+        };
       })
       .sort((a, b) => b.score - a.score || b.count - a.count)
       .slice(0, MAX_NEIGHBORS);
@@ -217,8 +257,8 @@ async function main() {
     process.exit(1);
   }
 
-  const curated = readJson(CURATED_PATH);
-  console.log(`\n── Step 1: crawling IGDB for ${curated.length} curated keywords ──────`);
+  const curated = readMapKeywords();
+  console.log(`\n── Step 1: crawling IGDB for ${curated.length} map keywords ──────`);
   console.log(`  (one paginated request per keyword; resumes from ${path.relative(root, INTERMEDIATE_PATH)} if interrupted)\n`);
 
   const { gameKeywords, totals } = await crawl(curated);
@@ -228,14 +268,13 @@ async function main() {
   const counts = computeCooccurrence(gameKeywords);
 
   console.log(`\n── Step 3: pruning (min count ${MIN_COOCCURRENCE}, max ${MAX_NEIGHBORS} neighbors) ──`);
-  const output = pruneAndFormat(counts, curated, totals);
+  const output = pruneAndFormat(counts, curated, totals, gameKeywords.size);
   const keywordsWithNeighbors = Object.keys(output).length;
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(output));
 
   console.log(`\n✓ ${keywordsWithNeighbors}/${curated.length} keywords have related-keyword data`);
   console.log(`  Written to ${path.relative(root, OUTPUT_PATH)}`);
-  console.log(`\nThis file is not wired into server/ or client/ yet — scaffold only.`);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });

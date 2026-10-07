@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { eq } from "drizzle-orm";
 import { storage } from "./storage";
 import { IGDBService } from "./services/igdbService";
+import { createCountCache } from "./services/countCache";
+import { getGraphSlice } from "./services/keywordGraph";
 import keywordsRouter from "./routes/keywords";
 import { SEO_PAGE_MAP } from "./seoPages";
 import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
@@ -24,6 +26,8 @@ const STEAM_PRICE_TTL = 6 * 60 * 60 * 1000; // 6 hours
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize IGDB service
   const igdbService = new IGDBService();
+  // Shared by search totals and map count previews: a previewed count makes the search's total instant.
+  const cachedCount = createCountCache(igdbService);
 
   // Mount the keywords router
   app.use('/api/keywords', keywordsRouter);
@@ -96,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // On page 1 run count in parallel; subsequent pages reuse the client-cached total
       const searchPromise = igdbService.searchGames(filters, sort, page, excludeIds, excludeKeywords, requireDeveloper, requireRating, excludeFilters);
       const countPromise = page === 1
-        ? igdbService.countGames(filters, excludeKeywords, requireDeveloper, requireRating, excludeFilters)
+        ? cachedCount({ filters, excludeKeywords, requireDeveloper, requireRating, excludeFilters })
         : Promise.resolve(null);
 
       const [games, countResult] = await Promise.all([searchPromise, countPromise]);
@@ -135,6 +139,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: error.message,
         details: error.response?.data || 'No additional details available'
       });
+    }
+  });
+
+  // Result-count preview for a prospective search (keyword map hover/inspector, Search button).
+  app.post('/api/games/count', async (req, res) => {
+    const { filters, excludeKeywords = [], excludeFilters = {}, requireDeveloper = false, requireRating = false } = req.body ?? {};
+    if (!filters || typeof filters !== 'object' || Object.keys(filters).length === 0) {
+      return res.status(400).json({ message: 'No filters provided' });
+    }
+    try {
+      res.json(await cachedCount({ filters, excludeKeywords, excludeFilters, requireDeveloper, requireRating }));
+    } catch (error: any) {
+      console.error('[routes] Error counting games:', error.message);
+      res.status(502).json({ message: 'Failed to count games' });
+    }
+  });
+
+  // Ranked keyword-map neighbour lists. depth=2 also returns each neighbour's list.
+  app.get('/api/keyword-graph', (req, res) => {
+    const ids = String(req.query.ids ?? '')
+      .split(',')
+      .map(Number)
+      .filter(n => Number.isInteger(n) && n > 0);
+    if (ids.length === 0) return res.status(400).json({ message: 'ids required' });
+    try {
+      const slice = getGraphSlice(ids, req.query.depth === '2' ? 2 : 1);
+      // Data only changes on deploy; the version lets clients detect that.
+      res.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+      res.json(slice);
+    } catch (error: any) {
+      console.error('[routes] Error reading keyword graph:', error.message);
+      res.status(500).json({ message: 'Keyword graph unavailable' });
     }
   });
 
