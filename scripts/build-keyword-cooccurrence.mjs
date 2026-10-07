@@ -4,7 +4,7 @@
  * Crawls IGDB once per curated keyword to find which OTHER curated keywords
  * tend to appear on the same games, then writes a pruned adjacency list:
  *   client/src/assets/keyword_cooccurrence.json
- *   { [keywordId]: [{ id, name, count }, ...] }   (sorted by count desc, capped)
+ *   { [keywordId]: [{ id, name, count, score }, ...] }   (sorted by Jaccard score desc, capped)
  *
  * Why one request per keyword, not a chunked `where keywords = (id1,id2,...)`:
  * `scripts/prove-multi-keyword.mjs` already proved that filter is AND
@@ -109,17 +109,19 @@ function loadProgress() {
     const saved = readJson(INTERMEDIATE_PATH);
     return {
       doneIds: new Set(saved.doneIds),
+      totals: new Map(Object.entries(saved.totals || {}).map(([k, v]) => [Number(k), v])),
       gameKeywords: new Map(Object.entries(saved.gameKeywords).map(([k, v]) => [Number(k), v])),
     };
   }
-  return { doneIds: new Set(), gameKeywords: new Map() };
+  return { doneIds: new Set(), totals: new Map(), gameKeywords: new Map() };
 }
 
-function saveProgress({ doneIds, gameKeywords }) {
+function saveProgress({ doneIds, totals, gameKeywords }) {
   fs.writeFileSync(
     INTERMEDIATE_PATH,
     JSON.stringify({
       doneIds: [...doneIds],
+      totals: Object.fromEntries(totals),
       gameKeywords: Object.fromEntries(gameKeywords),
     }),
   );
@@ -145,6 +147,7 @@ async function crawl(curated) {
         for (const id of curatedKwIds) existing.add(id);
         progress.gameKeywords.set(game.id, [...existing]);
       }
+      progress.totals.set(kw.id, games.length);
       console.log(`→ ${games.length} games`);
       progress.doneIds.add(kw.id);
     } catch (err) {
@@ -158,7 +161,7 @@ async function crawl(curated) {
     }
   }
 
-  return progress.gameKeywords;
+  return progress;
 }
 
 // ─── Compute pairwise counts from the game->keywords map ─────────────────────
@@ -184,16 +187,21 @@ function computeCooccurrence(gameKeywords) {
   return counts;
 }
 
-function pruneAndFormat(counts, curated) {
+// Rank by Jaccard similarity, not raw count: raw counts just surface hub
+// keywords (war, multiplayer) that co-occur with everything.
+function pruneAndFormat(counts, curated, totals) {
   const nameById = new Map(curated.map(k => [k.id, k.name]));
   const output = {};
 
   for (const [kwId, neighbors] of counts) {
     const ranked = [...neighbors.entries()]
       .filter(([, count]) => count >= MIN_COOCCURRENCE)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, MAX_NEIGHBORS)
-      .map(([id, count]) => ({ id, name: nameById.get(id), count }));
+      .map(([id, count]) => {
+        const union = (totals.get(kwId) || 0) + (totals.get(id) || 0) - count;
+        return { id, name: nameById.get(id), count, score: union > 0 ? Math.round((count / union) * 1000) / 1000 : 0 };
+      })
+      .sort((a, b) => b.score - a.score || b.count - a.count)
+      .slice(0, MAX_NEIGHBORS);
 
     if (ranked.length > 0) output[kwId] = ranked;
   }
@@ -213,17 +221,17 @@ async function main() {
   console.log(`\n── Step 1: crawling IGDB for ${curated.length} curated keywords ──────`);
   console.log(`  (one paginated request per keyword; resumes from ${path.relative(root, INTERMEDIATE_PATH)} if interrupted)\n`);
 
-  const gameKeywords = await crawl(curated);
+  const { gameKeywords, totals } = await crawl(curated);
   console.log(`\n${gameKeywords.size} games contributed at least one co-occurring pair`);
 
   console.log(`\n── Step 2: computing pairwise counts ────────────────────────────`);
   const counts = computeCooccurrence(gameKeywords);
 
   console.log(`\n── Step 3: pruning (min count ${MIN_COOCCURRENCE}, max ${MAX_NEIGHBORS} neighbors) ──`);
-  const output = pruneAndFormat(counts, curated);
+  const output = pruneAndFormat(counts, curated, totals);
   const keywordsWithNeighbors = Object.keys(output).length;
 
-  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(output, null, 2));
+  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(output));
 
   console.log(`\n✓ ${keywordsWithNeighbors}/${curated.length} keywords have related-keyword data`);
   console.log(`  Written to ${path.relative(root, OUTPUT_PATH)}`);
