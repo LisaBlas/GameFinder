@@ -77,7 +77,7 @@ const AnimatedBackground: React.FC = () => {
     const createDustParticle = () => {
       const particle = document.createElement('div');
       particle.className = 'particle dust';
-      particle.style.left = `${Math.random() * 100}vw`;
+      particle.style.left = `${Math.random() * 100}%`;
       particle.style.top = `${Math.random() * 26 + 92}vh`;
       particle.style.animationDuration = `${Math.random() * 18 + 30}s`;
       particle.style.animationDelay = `-${Math.random() * 44}s`;
@@ -96,7 +96,7 @@ const AnimatedBackground: React.FC = () => {
     const createEmberParticle = () => {
       const particle = document.createElement('div');
       particle.className = 'particle ember';
-      particle.style.left = `${Math.random() * 100}vw`;
+      particle.style.left = `${Math.random() * 100}%`;
       particle.style.top = `${Math.random() * 6 + 98}vh`;
       particle.style.animationName = Math.random() < 0.5 ? 'emberRise1' : 'emberRise2';
       particle.style.animationDuration = `${Math.random() * 0.9 + 1.25}s`;

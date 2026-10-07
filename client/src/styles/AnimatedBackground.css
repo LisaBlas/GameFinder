@@ -25,6 +25,16 @@
   background-blend-mode: screen, screen, color, soft-light, soft-light, normal;
 }
 
+/* On desktop the environment belongs to the results surface. The keyword
+   builder is an opaque object sitting above it, rather than another pane of
+   translucent glass. */
+@media (min-width: 1024px) {
+  .animated-background {
+    left: 40vw;
+    width: 60vw;
+  }
+}
+
 .animated-background::before,
 .animated-background::after {
   content: "";
