@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { storage } from '../storage.js';
 import gameFiltersRaw from '../../client/src/assets/game-filters.json' with { type: 'json' };
+import { applyExclusions, buildWhere, EXCLUSION_FIELDS, keywordFacets, needsExclusionFields } from './igdbQuery';
 
 // Build a Set of curated keyword IDs from game-filters.json at startup.
 // Only keywords that exist here get passed back as similarity signals — this
@@ -486,78 +487,77 @@ export class IGDBService {
     excludeFilters: Record<string, number[]> = {},
     cap: number = 250
   ): Promise<{ count: number; capped: boolean }> {
-    const filterConditions: string[] = [];
-
-    Object.entries(filters).forEach(([category, values]) => {
-      const items = values as any[];
-      const normalizedCategory = category.toLowerCase().replace(/\s+/g, '_');
-      if (!items || items.length === 0) return;
-      const validIds = items
-        .filter(item => item.id && !isNaN(Number(item.id)))
-        .map(item => Number(item.id));
-      if (validIds.length === 0) return;
-      switch (normalizedCategory) {
-        case 'platforms': filterConditions.push(`platforms = [${validIds.join(',')}]`); break;
-        case 'genres':    filterConditions.push(`genres = [${validIds.join(',')}]`); break;
-        case 'themes':    filterConditions.push(`themes = [${validIds.join(',')}]`); break;
-        case 'game_mode': filterConditions.push(`game_modes = [${validIds.join(',')}]`); break;
-        case 'keywords':  filterConditions.push(`keywords = [${validIds.join(',')}]`); break;
-        case 'perspective': filterConditions.push(`player_perspectives = [${validIds.join(',')}]`); break;
-      }
-    });
-
-    if (requireRating) filterConditions.push('rating != null');
-    if (requireDeveloper) filterConditions.push('involved_companies.developer = true');
-
-    const whereClause = filterConditions.length > 0 ? filterConditions.join(' & ') : 'id != null';
-
-    const needsExtraFields = excludeKeywords.length > 0 || Object.keys(excludeFilters).length > 0 || requireDeveloper;
-    const fields = needsExtraFields
-      ? 'id, keywords.id, genres.id, themes.id, game_modes.id, player_perspectives.id, involved_companies.developer, involved_companies.company.name'
-      : 'id';
-
+    const exclusions = { excludeKeywords, excludeFilters, requireDeveloper };
     const query = `
-      fields ${fields};
-      where ${whereClause};
+      fields ${needsExclusionFields(exclusions) ? `id, ${EXCLUSION_FIELDS}` : 'id'};
+      where ${buildWhere(filters, { requireDeveloper, requireRating })};
       sort rating desc;
       limit ${cap + 1};
     `.trim();
 
     const results = await this.makeRequest('games', query);
-
-    let filtered: any[] = results;
-
-    if (excludeKeywords.length > 0) {
-      filtered = filtered.filter((g: any) =>
-        !g.keywords?.some((kw: any) => excludeKeywords.includes(kw.id))
-      );
-    }
-
-    const excludeFieldMap: Record<string, string> = {
-      platforms: 'platforms',
-      genres: 'genres',
-      themes: 'themes',
-      game_mode: 'game_modes',
-      perspective: 'player_perspectives',
-    };
-
-    Object.entries(excludeFilters).forEach(([category, ids]) => {
-      if (!ids || ids.length === 0) return;
-      const field = excludeFieldMap[category];
-      if (!field) return;
-      filtered = filtered.filter((g: any) =>
-        !g[field]?.some((item: any) => ids.includes(item.id))
-      );
-    });
-
-    if (requireDeveloper) {
-      filtered = filtered.filter((g: any) =>
-        g.involved_companies?.some((ic: any) => ic.developer && ic.company?.name?.trim())
-      );
-    }
-
-    const count = filtered.length;
+    const count = applyExclusions(results, exclusions).length;
     return { count: Math.min(count, cap), capped: count > cap };
+  }
+
+  /**
+   * Keyword facets of a search: for every keyword on the matching games, how
+   * many of them carry it — i.e. the result count of "this search + keyword".
+   * Pages through up to `cap` games; `complete` is false when there were more,
+   * in which case the counts only cover the first `cap` (by id) and callers
+   * should use probeKeywordCounts for exact numbers.
+   */
+  async facetKeywords(
+    filters: any,
+    excludeKeywords: number[] = [],
+    requireDeveloper: boolean = false,
+    requireRating: boolean = false,
+    excludeFilters: Record<string, number[]> = {},
+    cap: number = 2000,
+  ): Promise<{ total: number; complete: boolean; keywords: Record<number, number> }> {
+    const exclusions = { excludeKeywords, excludeFilters, requireDeveloper };
+    const fields = needsExclusionFields(exclusions) ? `id, ${EXCLUSION_FIELDS}` : 'id, keywords';
+    const where = buildWhere(filters, { requireDeveloper, requireRating });
+    // One cheap count first: a search too broad to enumerate goes straight to probing.
+    const { count } = (await this.makeRequest('games/count', `where ${where};`)) as { count: number };
+    if (count > cap) return { total: count, complete: false, keywords: {} };
+    const PAGE = 500; // IGDB's max page size
+    const games: any[] = [];
+    let complete = false;
+    for (let offset = 0; offset < cap; offset += PAGE) {
+      const page = await this.makeRequest('games', `fields ${fields}; where ${where}; sort id asc; limit ${PAGE}; offset ${offset};`);
+      games.push(...page);
+      if (page.length < PAGE) {
+        complete = true;
+        break;
+      }
+    }
+    const kept = applyExclusions(games, exclusions);
+    return { total: kept.length, complete, keywords: keywordFacets(kept) };
+  }
+
+  /**
+   * Exact "search + keyword" counts for specific keywords via IGDB multiquery
+   * (10 counts per request). For searches too broad to facet. Exclusions can't
+   * be expressed in an IGDB count, so these ignore them (an overestimate,
+   * which only matters for searches that are broad anyway).
+   */
+  async probeKeywordCounts(
+    filters: any,
+    keywordIds: number[],
+    requireDeveloper: boolean = false,
+    requireRating: boolean = false,
+  ): Promise<Record<number, number>> {
+    const out: Record<number, number> = {};
+    for (let i = 0; i < keywordIds.length; i += 10) {
+      const chunk = keywordIds.slice(i, i + 10);
+      const body = chunk
+        .map(id => `query games/count "${id}" { where ${buildWhere(filters, { requireDeveloper, requireRating }, [id])}; };`)
+        .join('\n');
+      const rows: Array<{ name: string; count: number }> = await this.makeRequest('multiquery', body);
+      for (const r of rows) out[Number(r.name)] = r.count;
+    }
+    return out;
   }
 
   /**

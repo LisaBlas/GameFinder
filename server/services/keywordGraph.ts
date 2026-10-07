@@ -72,3 +72,23 @@ export function getGraphSlice(ids: number[], depth: 1 | 2): { version: string; l
   }
   return { version, lists };
 }
+
+let known: Set<number> | null = null;
+
+/**
+ * Every keyword the map can show: the curated taxonomy (top + extended lists)
+ * plus everything in the co-occurrence graph. Bounds facet payloads.
+ */
+export function knownKeywordIds(): ReadonlySet<number> {
+  if (known) return known;
+  const ids = new Set<number>();
+  const names = new Map<number, string>();
+  collectIds(readJson('top_keywords_by_category.json'), ids, names);
+  collectIds(readJson('extended_keywords_by_category.json'), ids, names);
+  for (const [k, list] of Object.entries(load().graph)) {
+    ids.add(Number(k));
+    for (const n of list) ids.add(n.id);
+  }
+  known = ids;
+  return known;
+}

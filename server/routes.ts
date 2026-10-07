@@ -4,7 +4,8 @@ import { eq } from "drizzle-orm";
 import { storage } from "./storage";
 import { IGDBService } from "./services/igdbService";
 import { createCountCache } from "./services/countCache";
-import { getGraphSlice } from "./services/keywordGraph";
+import { getGraphSlice, knownKeywordIds } from "./services/keywordGraph";
+import { createFacetService } from "./services/facetCache";
 import keywordsRouter from "./routes/keywords";
 import { SEO_PAGE_MAP } from "./seoPages";
 import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
@@ -28,6 +29,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const igdbService = new IGDBService();
   // Shared by search totals and map count previews: a previewed count makes the search's total instant.
   const cachedCount = createCountCache(igdbService);
+  const keywordFit = createFacetService(igdbService, knownKeywordIds);
 
   // Mount the keywords router
   app.use('/api/keywords', keywordsRouter);
@@ -153,6 +155,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('[routes] Error counting games:', error.message);
       res.status(502).json({ message: 'Failed to count games' });
+    }
+  });
+
+  // Keyword map "Fits my search": which keywords still give results alongside this search.
+  app.post('/api/games/facets', async (req, res) => {
+    const { filters, excludeKeywords = [], excludeFilters = {}, requireDeveloper = false, requireRating = false, probe = [] } = req.body ?? {};
+    if (!filters || typeof filters !== 'object' || Object.keys(filters).length === 0) {
+      return res.status(400).json({ message: 'No filters provided' });
+    }
+    try {
+      res.json(await keywordFit({
+        filters,
+        excludeKeywords,
+        excludeFilters,
+        requireDeveloper,
+        requireRating,
+        probe: Array.isArray(probe) ? probe.map(Number) : [],
+      }));
+    } catch (error: any) {
+      console.error('[routes] Error computing keyword facets:', error.message);
+      res.status(502).json({ message: 'Failed to compute keyword facets' });
     }
   });
 
