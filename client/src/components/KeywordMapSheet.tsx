@@ -45,7 +45,11 @@ export function useMapSheetPopClose(open: boolean, onClosed: () => void) {
  * Mobile "Map mode": a full-screen sheet with the thumb-sized map variant,
  * the current search pinned at the bottom, and drag-down-to-close on the handle.
  */
-export const KeywordMapSheet: React.FC<{ initialLocation?: MapLocation }> = ({ initialLocation }) => {
+export const KeywordMapSheet: React.FC<{ initialLocation?: MapLocation; search?: React.ReactNode; spark?: React.ReactNode }> = ({
+  initialLocation,
+  search,
+  spark,
+}) => {
   const drag = useDragControls();
   const { selectedFilters } = useFilters();
   const count = useSelectionCount();
@@ -74,7 +78,7 @@ export const KeywordMapSheet: React.FC<{ initialLocation?: MapLocation }> = ({ i
         <span />
       </div>
       <div className="flex flex-1 min-h-0 flex-col">
-        <KeywordMap variant="mobile" initialLocation={initialLocation} onClose={closeMapSheet} />
+        <KeywordMap variant="mobile" initialLocation={initialLocation} onClose={closeMapSheet} search={search} spark={spark} />
       </div>
       <div className="kmap-sheet-tray">
         <div className="flex items-center gap-2">

@@ -1,8 +1,8 @@
 import React, { useId, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
 import { Maximize2, Minus, Plus } from 'lucide-react';
-import { BADGE_ROOM, VIRTUAL_CENTER_ID, nodeLabel, titleCase, type GraphNode, type MapNode } from '../lib/keywordMap';
-import { frameScene, nearestInDirection, pillHeight, sceneBounds, type Direction, type Size } from '../lib/keywordMapLayout';
+import { BADGE_ROOM, badgeRoom, nodeLabel, titleCase, type LabelNode, type MapNode } from '../lib/keywordMap';
+import { nearestInDirection, pillHeight, type Direction, type Size } from '../lib/keywordMapLayout';
 import { TIMING, type SceneEdge, type TransitionPlan } from '../lib/keywordMapMotion';
 import { useMapCamera, ZOOM_MAX, ZOOM_MIN } from '../hooks/useMapCamera';
 import { formatCount, useSearchCount } from '../lib/searchCount';
@@ -21,7 +21,7 @@ interface Props {
   nodes: MapNode[];
   plan: TransitionPlan;
   viewport: Size;
-  widthOf: (n: GraphNode) => number;
+  widthOf: (n: LabelNode) => number;
   reduceMotion: boolean;
   /** Changes with the centre and refresh round: replays the pulse, resets user zoom. */
   sceneKey: string;
@@ -34,6 +34,12 @@ interface Props {
   onHoverNode?: (node: MapNode | null) => void;
   /** Search to count while a node is hovered (null: no preview for it). */
   previewPayload?: (node: MapNode) => SearchPayload | null;
+  /** Rare-but-strong pairings with the centre: id → shared games at crawl time. */
+  discoveries?: ReadonlyMap<number, number>;
+  /** Fits-my-search mode: results if this keyword were added (undefined = unknown). */
+  fitCountOf?: (id: number) => number | undefined;
+  /** Persistent caption under a category/subcategory node, e.g. "65 keywords". */
+  tagFor?: (node: MapNode) => string | undefined;
   /** Mobile swipe: show the next set of neighbours, rotating in the swipe direction. */
   onSwipe?: (dir: 1 | -1) => void;
 }
@@ -57,6 +63,9 @@ export const KeywordMapScene: React.FC<Props> = ({
   onSwipe,
   onHoverNode,
   previewPayload,
+  discoveries,
+  fitCountOf,
+  tagFor,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const cameraRef = useRef<SVGGElement>(null);
@@ -73,7 +82,10 @@ export const KeywordMapScene: React.FC<Props> = ({
   // Roving tabindex: one tab stop for the whole map, arrows move between nodes.
   const tabStopId = focusId !== null && byId.has(focusId) ? focusId : centerNode.id;
 
-  const frame = useMemo(() => frameScene(sceneBounds(nodes, widthOf), viewport, 16, 1.2), [nodes, widthOf, viewport]);
+  // Identity framing: the layout already fits the viewport and keeps clear of the overlays
+  // (toolbar, info card) in viewport coordinates; auto pan/zoom would move pills under them.
+  // User zoom/pan still applies on top.
+  const frame = useMemo(() => ({ focus: { x: viewport.width / 2, y: viewport.height / 2 }, scale: 1 }), [viewport]);
   const camera = useMapCamera(svgRef, cameraRef, { viewport, frame, reduceMotion, resetKey: sceneKey, onSwipe });
 
   // Results ↔ map: a hovered/expanded game card lights its keywords here.
@@ -92,7 +104,32 @@ export const KeywordMapScene: React.FC<Props> = ({
 
   // Result-count preview for the hovered keyword, after a short hover-intent delay.
   const hovered = hoveredId !== null ? byId.get(hoveredId) : undefined;
-  const hoverCount = useSearchCount(hovered && previewPayload ? previewPayload(hovered) : null, 350);
+  // Fits mode already knows every count: no request, and the persistent tag shows it.
+  const hoverKnown = hovered && fitCountOf ? fitCountOf(hovered.id) : undefined;
+  const hoverCount = useSearchCount(hovered && previewPayload && hoverKnown === undefined ? previewPayload(hovered) : null, 350);
+
+  // Active path: centre → (parent →) hovered node, drawn outward with flowing energy.
+  const activePath = useMemo(() => {
+    if (!hovered || hovered.level === 0) return [];
+    const chain: MapNode[] = [hovered];
+    for (let p = hovered.parentId !== undefined ? byId.get(hovered.parentId) : undefined; p; p = p.parentId !== undefined ? byId.get(p.parentId) : undefined) {
+      chain.unshift(p);
+    }
+    return chain.slice(1).map((c, i) => ({ from: chain[i], to: c }));
+  }, [hovered, byId]);
+
+  // Transition sparks: a restrained burst from the new centre, only while the scene changes.
+  const sparks = useMemo(
+    () =>
+      reduceMotion || plan.direction === 'jump'
+        ? []
+        : Array.from({ length: 10 }, (_, i) => {
+            const a = ((i * 137.5 + (sceneKey.length % 7) * 11) * Math.PI) / 180; // golden-angle spread, deterministic
+            const d = 46 + ((i * 29) % 40);
+            return { dx: Math.cos(a) * d, dy: Math.sin(a) * d, delay: 0.18 + (i % 4) * 0.04 };
+          }),
+    [sceneKey, reduceMotion, plan.direction],
+  );
 
   // Position springs, opacity tweens; reduced motion repositions instantly.
   const move = (delay: number): Transition => (reduceMotion ? { duration: 0 } : { ...POSITION_SPRING, delay });
@@ -193,23 +230,32 @@ export const KeywordMapScene: React.FC<Props> = ({
     const w = widthOf(n);
     const h = pillHeight(n);
     const isCenter = n.level === 0;
-    const isVirtual = n.id === VIRTUAL_CENTER_ID;
+    const isVirtual = n.id < 0; // category/subcategory node, not a keyword
     const mode = isVirtual ? null : modeOf(n.id);
     const lit = isLit(n);
     const classes = [
       'kmap-node',
       isCenter ? 'kmap-node--center' : 'kmap-node--explorable',
       isVirtual && 'kmap-node--virtual',
+      isVirtual && !isCenter && 'kmap-node--group',
       mode && `is-${mode}`,
       linkClass(n.id),
+      discoveries?.has(n.id) && 'is-discovery',
     ].filter(Boolean).join(' ');
+    const rareGames = discoveries?.get(n.id);
     const showCount = n.id === hoveredId && !isCenter && hoverCount.status === 'ready';
+    // Fits mode: every visible keyword carries its count (outer ring only when lit, to stay calm).
+    const fitCount = !isCenter && !isVirtual && !mode && fitCountOf && (n.level === 1 || lit) ? fitCountOf(n.id) : undefined;
+    const groupTag = !isCenter && isVirtual ? tagFor?.(n) : undefined;
     const from = plan.nodes.get(n.id)?.from;
     const delay = delayOf(n.id);
-    const name = titleCase(n.name);
+    const name = isVirtual ? n.name : titleCase(n.name);
+    const fitLabel = !isCenter && !isVirtual && !mode && fitCountOf ? fitCountOf(n.id) : undefined;
     const ariaLabel = isCenter
       ? `${name}, centre${mode ? `, ${mode}d` : ''}`
-      : `${name}${mode ? `, ${mode}d` : ''}. Enter to explore, A to add, X to exclude`;
+      : isVirtual
+        ? `${name}${groupTag ? `, ${groupTag}` : ''}. Enter to open`
+        : `${name}${mode ? `, ${mode}d` : ''}${fitLabel !== undefined ? `, ${formatCount(fitLabel, false)} if added` : ''}. Enter to explore, A to add, X to exclude`;
 
     return (
       <motion.g
@@ -279,7 +325,7 @@ export const KeywordMapScene: React.FC<Props> = ({
           }}
           onBlur={() => hover(null)}
         >
-          {!isCenter && <title>{`Explore ${name}`}</title>}
+          {!isCenter && <title>{`${isVirtual ? 'Open' : 'Explore'} ${name}${rareGames ? ` — rare pairing: ${rareGames} games share both` : ''}`}</title>}
           {/* Pill shape morphs when a neighbour becomes the centre. */}
           <motion.rect
             initial={false}
@@ -287,7 +333,7 @@ export const KeywordMapScene: React.FC<Props> = ({
             transition={move(delay)}
           />
           <text
-            x={isCenter ? 0 : -BADGE_ROOM / 2}
+            x={-badgeRoom(n) / 2}
             textAnchor="middle"
             dominantBaseline="central"
             fontSize={isCenter ? 13 : 12}
@@ -295,7 +341,26 @@ export const KeywordMapScene: React.FC<Props> = ({
           >
             {label}
           </text>
-          {!isCenter && renderBadge(n, w, mode, lit)}
+          {!isCenter && !isVirtual && renderBadge(n, w, mode, lit)}
+          {groupTag && (
+            <text className="kmap-count-tag kmap-group-tag" y={h / 2 + 10} textAnchor="middle" dominantBaseline="central" aria-hidden="true">
+              {groupTag}
+            </text>
+          )}
+          {rareGames !== undefined && (
+            // Discovery mark: a four-point star on the pill's top-left corner.
+            <path
+              className="kmap-discovery-mark"
+              transform={`translate(${-w / 2 + 3} ${-h / 2 + 1})`}
+              d="M0 -4.5 L1.2 -1.2 L4.5 0 L1.2 1.2 L0 4.5 L-1.2 1.2 L-4.5 0 L-1.2 -1.2 Z"
+              aria-hidden="true"
+            />
+          )}
+          {fitCount !== undefined && !showCount && (
+            <text className="kmap-count-tag kmap-fit-tag" y={h / 2 + 10} textAnchor="middle" dominantBaseline="central" aria-hidden="true">
+              {formatCount(fitCount, false)}
+            </text>
+          )}
           {showCount && hoverCount.status === 'ready' && (
             <text
               className={`kmap-count-tag${hoverCount.count === 0 ? ' is-zero' : ''}`}
@@ -323,6 +388,7 @@ export const KeywordMapScene: React.FC<Props> = ({
         role="group"
         aria-label={`Keyword map centred on ${titleCase(centerNode.name)}`}
         aria-describedby={helpId}
+        data-transition={plan.direction}
         onKeyDown={onKeyDown}
         {...camera.handlers}
       >
@@ -350,6 +416,27 @@ export const KeywordMapScene: React.FC<Props> = ({
           <g>
             <AnimatePresence custom={plan}>{plan.edges.map(renderEdge)}</AnimatePresence>
           </g>
+          <g className="kmap-energy-layer" aria-hidden="true">
+            {activePath.map(({ from, to }) => (
+              <line key={`${from.id}>${to.id}`} className="kmap-energy" x1={from.x} y1={from.y} x2={to.x} y2={to.y} />
+            ))}
+          </g>
+          {sparks.length > 0 && (
+            <g key={`sparks-${sceneKey}`} aria-hidden="true">
+              {sparks.map((sp, i) => (
+                <motion.circle
+                  key={i}
+                  className="kmap-spark"
+                  cx={centerNode.x}
+                  cy={centerNode.y}
+                  r={1.6}
+                  initial={{ x: 0, y: 0, opacity: 0 }}
+                  animate={{ x: sp.dx, y: sp.dy, opacity: [0, 0.9, 0] }}
+                  transition={{ duration: 0.7, delay: sp.delay, ease: 'easeOut' }}
+                />
+              ))}
+            </g>
+          )}
           <g>
             <AnimatePresence custom={plan}>{nodes.map(renderNode)}</AnimatePresence>
           </g>

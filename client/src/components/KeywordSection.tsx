@@ -10,7 +10,7 @@ import {
   Infinity as InfinityIcon, Waypoints,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
-import KeywordMap, { type MapLocation } from './KeywordMap';
+import KeywordMap, { takeSharedJourney, type MapLocation } from './KeywordMap';
 import { KeywordMapSheet, openMapSheetEntry, useMapSheetPopClose } from './KeywordMapSheet';
 import { useSelectionCount } from '../hooks/useSelectionCount';
 import { formatCount } from '../lib/searchCount';
@@ -96,6 +96,7 @@ interface KeywordSectionProps {
 export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const desktopSearchRef = useRef<HTMLInputElement>(null);
+  const sheetSearchRef = useRef<HTMLInputElement>(null);
 
   // "/" jumps to the keyword search (desktop), unless already typing somewhere.
   useEffect(() => {
@@ -120,6 +121,11 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     openMapSheetEntry();
     setMapSheet({ loc });
   };
+  // A shared map journey link opens straight into map mode on phones (desktop's map takes it otherwise).
+  useEffect(() => {
+    const shared = takeSharedJourney('mobile');
+    if (shared) openMapSheet(shared);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const revealTimerRef = useRef<number | null>(null);
   const category = 'Keywords';
   const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh, gameResults, totalCount } = useFilters();
@@ -726,21 +732,62 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  /** Desktop left panel: search bar, then the keyword map explorer fills the rest. */
+  /** Clear + Search/Share, shown in the keyword map's bottom bar (Clear only once something is picked). */
+  const renderSearchActions = () => (
+    <>
+      {selectedFilters.length > 0 && (
+        <button
+          onClick={handleDesktopClear}
+          className="desktop-action-button desktop-action-button-clear"
+        >
+          <X className="w-4 h-4" />
+          Clear
+        </button>
+      )}
+      <button
+        onClick={searchFresh ? handleDesktopShare : handleDesktopSearch}
+        disabled={(!hasSearchableFilters && !searchFresh) || isLoading}
+        className={`hero-button desktop-action-button desktop-action-button-search ${
+          hasSearchableFilters || searchFresh
+            ? 'desktop-action-button-search-active'
+            : 'desktop-action-button-search-disabled'
+        } ${shareShineActive ? 'hero-button-share-shine' : ''}${zeroSelection && !searchFresh ? ' desktop-action-button-search-zero' : ''}`}
+        title={zeroSelection && !searchFresh ? 'No games match this search yet' : undefined}
+      >
+        {isLoading ? (
+          <>
+            <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            Searching...
+          </>
+        ) : searchFresh ? (
+          <>
+            {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+            {shareCopied ? 'Copied!' : 'Share'}
+          </>
+        ) : (
+          <>
+            <Search className="w-4 h-4" />
+            Search
+            {selectionCount.status === 'ready' && (
+              <span className="search-count-hint">{formatCount(selectionCount.count, selectionCount.capped)}</span>
+            )}
+          </>
+        )}
+      </button>
+    </>
+  );
+
+  /** Desktop left panel: one keyword-map section with the search built in and the roll deck on demand. */
   const renderDesktopExplorer = () => (
     <section className="hidden lg:grid gap-4">
-      <div className="rounded-[28px] border border-border bg-card/80 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
-        <div className="mb-2 text-sm font-semibold text-foreground">
-          Start with a game or a keyword
-        </div>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Search a game you love, or name the feeling you want next.
-        </p>
-        <div>
-          <KeywordSearch inputRef={desktopSearchRef} onKeywordSelect={() => {}} />
-        </div>
-      </div>
-      <KeywordMap />
+      <KeywordMap
+        search={<KeywordSearch inputRef={desktopSearchRef} onKeywordSelect={() => {}} />}
+        spark={renderDiscoveryDeck()}
+        actions={renderSearchActions()}
+      />
     </section>
   );
 
@@ -1214,54 +1261,20 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <AnimatePresence>{renderMobileCategoryDetail()}</AnimatePresence>
       <AnimatePresence>{renderMobileSubcategoryDetail()}</AnimatePresence>
       <AnimatePresence>{renderMobileQsDetail()}</AnimatePresence>
-      <AnimatePresence>{mapSheet && <KeywordMapSheet initialLocation={mapSheet.loc} />}</AnimatePresence>
+      <AnimatePresence>
+        {mapSheet && (
+          <KeywordMapSheet
+            initialLocation={mapSheet.loc}
+            search={<KeywordSearch inputRef={sheetSearchRef} onKeywordSelect={() => {}} />}
+            spark={renderDiscoveryDeck()}
+          />
+        )}
+      </AnimatePresence>
       <Navbar />
 
       <div className={`desktop-action-bar ${hasDesktopActionItems ? 'desktop-action-bar-visible' : 'desktop-action-bar-empty'} hidden lg:grid border-b border-border`}>
         <div className="user-selection">
           <SelectedFilters variant="lanes" />
-        </div>
-        <div className="desktop-action-buttons">
-          <button
-            onClick={handleDesktopClear}
-            className="desktop-action-button desktop-action-button-clear"
-          >
-            <X className="w-4 h-4" />
-            Clear
-          </button>
-          <button
-            onClick={searchFresh ? handleDesktopShare : handleDesktopSearch}
-            disabled={(!hasSearchableFilters && !searchFresh) || isLoading}
-            className={`hero-button desktop-action-button desktop-action-button-search ${
-              hasSearchableFilters || searchFresh
-                ? 'desktop-action-button-search-active'
-                : 'desktop-action-button-search-disabled'
-            } ${shareShineActive ? 'hero-button-share-shine' : ''}${zeroSelection && !searchFresh ? ' desktop-action-button-search-zero' : ''}`}
-            title={zeroSelection && !searchFresh ? 'No games match this search yet' : undefined}
-          >
-            {isLoading ? (
-              <>
-                <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Searching...
-              </>
-            ) : searchFresh ? (
-              <>
-                {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-                {shareCopied ? 'Copied!' : 'Share'}
-              </>
-            ) : (
-              <>
-                <Search className="w-4 h-4" />
-                Search
-                {selectionCount.status === 'ready' && (
-                  <span className="search-count-hint">{formatCount(selectionCount.count, selectionCount.capped)}</span>
-                )}
-              </>
-            )}
-          </button>
         </div>
       </div>
 

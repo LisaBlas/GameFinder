@@ -22,6 +22,10 @@ export interface LayoutOptions {
   slotOffsetDeg?: number;
   /** Horizontal ring radii as fractions of the width (narrow screens need wider rings). */
   ringWidth?: { inner: number; outer: number };
+  /** Vertical ring radii as fractions of the room above/below the centre. */
+  ringHeight?: { inner: number; outer: number };
+  /** Areas pills must stay out of (e.g. an overlaid toolbar), in viewport coordinates. */
+  obstacles?: Rect[];
   margin?: number;
 }
 
@@ -47,8 +51,9 @@ export function layoutKeywordMap(graph: GraphNode[], opts: LayoutOptions): MapNo
   const C: Point = { x: W / 2, y: H * (opts.centerY ?? 0.5) };
   const vRoom = Math.min(C.y, H - C.y);
   const ringWidth = opts.ringWidth ?? { inner: 0.163, outer: 0.385 };
-  const R1 = { x: ringWidth.inner * W, y: 0.43 * vRoom };
-  const R2 = { x: ringWidth.outer * W, y: 0.84 * vRoom };
+  const ringHeight = opts.ringHeight ?? { inner: 0.43, outer: 0.84 };
+  const R1 = { x: ringWidth.inner * W, y: ringHeight.inner * vRoom };
+  const R2 = { x: ringWidth.outer * W, y: ringHeight.outer * vRoom };
   const onRing = (r: Point, deg: number): Point => ({ x: C.x + r.x * Math.cos(rad(deg)), y: C.y + r.y * Math.sin(rad(deg)) });
 
   const center = graph.find(n => n.level === 0);
@@ -108,7 +113,9 @@ export function layoutKeywordMap(graph: GraphNode[], opts: LayoutOptions): MapNo
   const boxes = graph
     .filter(n => placed.has(n.id))
     .map(n => ({ node: n, ...placed.get(n.id)!, w: opts.widthOf(n), h: heightOf(n), m: MOBILITY[n.level] }));
-  resolveCollisions(boxes, { width: W, height: H }, margin);
+  // Obstacles are immovable boxes: the collision pass pushes pills out of them.
+  const walls = (opts.obstacles ?? []).map(r => ({ x: r.x + r.width / 2, y: r.y + r.height / 2, w: r.width, h: r.height, m: 0 }));
+  resolveCollisions([...boxes, ...walls], { width: W, height: H }, margin);
 
   return boxes.map(b => ({ ...b.node, x: b.x, y: b.y }));
 }

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import axios from "axios";
 import { buildSearchPayload } from "../lib/searchPayload";
 import { attributeSearch } from "../lib/funnel";
+import { JOURNEY_PARAM } from "../lib/mapJourney";
 
 declare const gtag: (...args: any[]) => void;
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
@@ -598,6 +599,10 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (sort && sort !== 'relevance') params.set('sort', sort);
+
+    // Not ours to drop: a shared keyword-map journey waits here until the map consumes it.
+    const journey = new URLSearchParams(window.location.search).get(JOURNEY_PARAM);
+    if (journey) params.set(JOURNEY_PARAM, journey);
 
     const newUrl = params.toString()
       ? `${window.location.pathname}?${params}`

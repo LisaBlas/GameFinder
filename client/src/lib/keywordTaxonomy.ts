@@ -27,10 +27,11 @@ export interface KeywordItem {
 
 export const MAIN_CATEGORIES: MainCategory[] = ['Mechanics & Systems', 'Setting & World', 'Aesthetics & Style'];
 
-export const MAIN_CATEGORY_META: Record<MainCategory, { short: string; hint: string; icon: LucideIcon }> = {
-  'Mechanics & Systems': { short: 'Mechanics', hint: 'How it plays', icon: Cog },
-  'Setting & World': { short: 'Setting', hint: 'Where it takes you', icon: Globe },
-  'Aesthetics & Style': { short: 'Aesthetics', hint: 'How it looks & feels', icon: Palette },
+/** Display copy. `title` is the full name; `short` fits breadcrumbs and tabs. Keys stay stable (URLs use them). */
+export const MAIN_CATEGORY_META: Record<MainCategory, { title: string; short: string; hint: string; icon: LucideIcon }> = {
+  'Mechanics & Systems': { title: 'Gameplay and Mechanics', short: 'Mechanics', hint: 'How it plays', icon: Cog },
+  'Setting & World': { title: 'Setting and World', short: 'Setting', hint: 'Where it takes you', icon: Globe },
+  'Aesthetics & Style': { title: 'Visuals and Aesthetics', short: 'Aesthetics', hint: 'How it looks & feels', icon: Palette },
 };
 
 const SUBCATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -116,3 +117,42 @@ export const findKeywordHome = (keywordId: number) => {
   }
   return keywordHome.get(keywordId) ?? null;
 };
+
+// ── Map node ids for categories and subcategories ────────────────────
+// Keyword ids are positive; categories and subcategories get stable negative
+// ids so the keyword map can animate them like keywords (a subcategory node
+// glides into the centre when opened).
+
+const CATEGORY_ID_BASE = -10;
+const SUBCATEGORY_ID_BASE = -100;
+let subcategoryIds: globalThis.Map<string, number> | null = null;
+let subcategoryById: globalThis.Map<number, { category: MainCategory; subcategory: string }> | null = null;
+
+const buildSubcategoryIds = () => {
+  subcategoryIds = new globalThis.Map();
+  subcategoryById = new globalThis.Map();
+  let i = 0;
+  for (const category of MAIN_CATEGORIES) {
+    for (const subcategory of getAvailableSubcategories(category)) {
+      const id = SUBCATEGORY_ID_BASE - i++;
+      subcategoryIds.set(subcategory, id);
+      subcategoryById.set(id, { category, subcategory });
+    }
+  }
+};
+
+export const categoryNodeId = (category: MainCategory) => CATEGORY_ID_BASE - MAIN_CATEGORIES.indexOf(category);
+
+export const subcategoryNodeId = (subcategory: string) => {
+  if (!subcategoryIds) buildSubcategoryIds();
+  return subcategoryIds!.get(subcategory) ?? SUBCATEGORY_ID_BASE + 1; // -99: unknown, never collides
+};
+
+/** The subcategory behind a map node id, if it is one. */
+export const subcategoryFromNodeId = (id: number) => {
+  if (!subcategoryById) buildSubcategoryIds();
+  return subcategoryById!.get(id) ?? null;
+};
+
+/** Category and subcategory nodes aren't keywords: they can't be added to a search. */
+export const isTaxonomyNodeId = (id: number) => id < 0;

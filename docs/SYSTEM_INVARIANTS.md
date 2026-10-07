@@ -84,6 +84,12 @@ Filter URL sync rewrites the URL on every filter change, so it calls
 `replaceState(window.history.state, ...)`. Passing `null` would silently wipe
 the tag and break Back after the first keyword is added.
 
+## Filter URL sync must carry over the `map` param
+`FilterContext.syncToUrl` rebuilds the query string from the filters. The home
+page mounts the keyword map lazily, after that sync has run, so a shared
+journey's `?map=` would be dropped before the map reads it. The sync copies
+`map` across until `takeSharedJourney` consumes it.
+
 ## Product/brand constraints
 - Dark theme only — do not add a light mode toggle.
 - Deep forest neutral system with emerald (`#10b981`) as the primary accent —

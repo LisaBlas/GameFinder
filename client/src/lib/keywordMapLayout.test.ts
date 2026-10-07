@@ -122,3 +122,23 @@ test('mobile shape fits a phone viewport without overlaps', () => {
   assert.deepEqual(overlaps(nodes), []);
   for (const n of nodes) assert.ok(n.x - nodeWidth(n) / 2 >= 0 && n.x + nodeWidth(n) / 2 <= vp.width);
 });
+
+test('selectKeywordGraph: `allow` filters both rings (Fits-my-search mode)', () => {
+  const blocked = new Set([3, 20, 21]);
+  const g = selectKeywordGraph({ id: 1, name: 'Turn-Based' }, data[1], data, { allow: id => !blocked.has(id) });
+  assert.ok(g.every(n => !blocked.has(n.id)));
+  assert.equal(g.filter(n => n.level === 1).length, 6, 'the inner ring refills from the remaining pool');
+});
+
+test('obstacles: pills are pushed out of an overlaid toolbar', () => {
+  const vp = { width: 520, height: 440 };
+  const toolbar = { x: 520 - 110, y: 0, width: 110, height: 80 };
+  const nodes = layoutKeywordMap(graph, { ...opts(vp), obstacles: [toolbar] });
+  for (const n of nodes) {
+    const w = nodeWidth(n) / 2;
+    const h = pillHeight(n) / 2;
+    const inside = n.x + w > toolbar.x + 0.5 && n.x - w < toolbar.x + toolbar.width && n.y - h < toolbar.y + toolbar.height - 0.5;
+    assert.ok(!inside, `${n.name} overlaps the toolbar`);
+  }
+  assert.deepEqual(overlaps(nodes), []);
+});

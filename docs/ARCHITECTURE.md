@@ -15,9 +15,11 @@ Mobile:
 Desktop:
   Left panel (40%): KeywordSection
     Sticky desktop Navbar inside KeywordSection
-    Desktop action bar with SelectedFilters, Clear, Search
-    Search card (KeywordSearch)
-    KeywordMap explorer: category doors -> subcategory grid -> keyword map
+    Desktop action bar with SelectedFilters lanes (Clear/Search live in the map)
+    KeywordMap section: header (back, home, crumbs, "Need a spark?"), built-in
+      KeywordSearch, then category doors -> category map -> keyword maps, drawn in
+      a map window: centre info card top-left, toolbar top-right (refresh, copy
+      link, zoom), bottom bar with Include/Exclude + Clear/Search
   Right panel (60%): ResultsSection/SearchResults
     Sticky results header with count, FilterBar, sort select
 ```
@@ -28,8 +30,23 @@ Desktop:
 - `FilterSidebar` is no longer part of the active split layout.
 - `Hero` is not part of the active home layout, though the component still
   exists.
-- Desktop left panel is search + `KeywordMap` (`client/src/components/KeywordMap.tsx`):
-  3 large category buttons -> subcategory tile grid -> SVG keyword map. In the
+- Desktop left panel is one `KeywordMap` section (`client/src/components/KeywordMap.tsx`)
+  with the search built in (`search` prop) and the roll/discovery deck behind a
+  small "Need a spark?" header button (`spark` prop; swaps the body). Steps:
+  3 category doors (full titles + subcategory preview) -> category map (its
+  subcategories as nodes, 8 per page desktop / 4 mobile, refresh pages; each
+  subcategory/category has a stable negative node id from `keywordTaxonomy`
+  so opening one glides it into the centre) -> subcategory map -> keyword
+  maps. A home button next to Back returns to the doors. The map step is one
+  `.kmap-window`: the toolbar overlays the map's top-right corner and is passed
+  to the layout as an obstacle (`layoutKeywordMap({ obstacles })`, sized by
+  `TOOLBAR_FOOTPRINT`) so pills never sit under it. The centre's info card
+  (name, count, craft strength) overlays the top-left and is an obstacle too
+  (`INFO_FOOTPRINT`, matching its CSS max size). The bottom bar (Include/
+  Exclude for the centre, then KeywordSection's Clear/Search via the `actions`
+  prop) is docked below the drawing area, which is measured without it. The
+  camera uses identity framing: the layout already fits and avoids overlays in
+  viewport coordinates, so auto pan/zoom would push pills under them. In the
   map, clicking a node re-centres on it (explore, does not add); adding is
   explicit via the `+` badge in each pill or Include/Exclude for the centred
   keyword. Refresh brings only keywords not yet shown for the current centre
@@ -83,6 +100,30 @@ Desktop:
   on the DOM). Funnel: `lib/funnel.ts` — `map_open`, `map_explore`,
   `map_keyword_toggle` (with `method`), and `search_source`/`map_keyword_count`
   attribution on `keyword_search` and `affiliate_outbound_click`.
+  Polish (Phase 4): hovering a node draws flowing "energy" along its path from
+  the centre; transitions emit a short spark burst; including a keyword flies
+  a light dot to the search tray (`lib/lightPulse.ts`). The viewport carries a
+  per-category texture + grain (`data-texture`, static CSS). Decorative motion
+  pauses via `data-ambient="paused"` (`useAmbientPause`: tab hidden, offscreen,
+  45 s idle). Discoveries (`lib/keywordDiscoveries.ts`): strong pairings few
+  games share, curated keywords only, NPMI-preferred. Journeys
+  (`lib/mapJourney.ts`): share button copies the URL + `?map=`; the map takes
+  it on load (desktop map or mobile sheet). Editorial story cards:
+  `lib/keywordStories.ts` (empty registry). The graph data is frozen per
+  centre and the current scene is held while the next slice loads, so late
+  slices never re-plan a running transition.
+  Modes: "Explore" (free wandering) vs "Fits my search" (persisted per viewer
+  in localStorage). Fits mode only shows keywords that would still return
+  games if added to the current search, in every subcategory, with a count on
+  each and "N fit" on the subcategory nodes. Data: `POST /api/games/facets`
+  (`server/services/facetCache.ts`). A search of ≤2,000 games is enumerated
+  once and faceted (exact, exclusions included, every keyword at once); a
+  broader one returns exact multiquery counts (10 per IGDB request) for the
+  probed keywords only, and unprobed keywords stay visible ("unknown").
+  `server/services/igdbQuery.ts` holds the where-clause + exclusion helpers
+  shared by counts and facets; `igdbLimiter.ts` is the one IGDB concurrency
+  budget (2) for counts, facets and probes. Client: `lib/keywordFit.ts`;
+  `selectKeywordGraph(…, { allow })` applies the filter to both rings.
 - The discovery-card deck (`renderDiscoveryDeck()`) is mobile-only now.
   Mobile: search, then a collapsible "Browse all keywords" shelf (collapsed
   by default, category-grouped with subcategory drill-in), then the

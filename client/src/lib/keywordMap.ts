@@ -49,8 +49,7 @@ export interface GraphShape {
   level2PerParent: number;
 }
 
-/** Id for a centre node that is a subcategory rather than a real keyword. */
-export const VIRTUAL_CENTER_ID = -1;
+// Category/subcategory nodes use negative ids (keywordTaxonomy: categoryNodeId/subcategoryNodeId).
 
 export const LEVEL1_COUNT = 6;
 export const LEVEL2_PER_PARENT = 2;
@@ -67,12 +66,22 @@ export const BADGE_ROOM = 16;
 /** Horizontal padding around a pill's label (centre / others, the latter excluding the badge). */
 export const PILL_PAD = { center: 24, other: 14 } as const;
 
-export const nodeLabel = (node: Pick<GraphNode, 'name' | 'level'>) =>
-  truncateLabel(titleCase(node.name), LABEL_MAX[node.level]);
+/** Label/width input: `id` < 0 marks a category/subcategory node (no add badge, longer labels). */
+export type LabelNode = Pick<GraphNode, 'name' | 'level'> & { id?: number };
+const isTaxonomy = (node: LabelNode) => node.id !== undefined && node.id < 0;
+
+// Taxonomy names are already cased ("Gameplay and Mechanics"); keyword names come lowercase from IGDB.
+export const nodeLabel = (node: LabelNode) =>
+  isTaxonomy(node)
+    ? truncateLabel(node.name, Math.max(LABEL_MAX[node.level], 24))
+    : truncateLabel(titleCase(node.name), LABEL_MAX[node.level]);
+
+/** Room a non-centre pill keeps for its add badge (taxonomy nodes can't be added). */
+export const badgeRoom = (node: LabelNode) => (node.level === 0 || isTaxonomy(node) ? 0 : BADGE_ROOM);
 
 /** Estimated pill width; the live map measures real text widths instead (see measureLabel). */
-export const nodeWidth = (node: Pick<GraphNode, 'name' | 'level'>) =>
-  nodeLabel(node).length * (node.level === 0 ? 7.2 : CHAR_W) + (node.level === 0 ? PILL_PAD.center : PILL_PAD.other + BADGE_ROOM);
+export const nodeWidth = (node: LabelNode) =>
+  nodeLabel(node).length * (node.level === 0 ? 7.2 : CHAR_W) + (node.level === 0 ? PILL_PAD.center : PILL_PAD.other) + badgeRoom(node);
 
 /** Identity for dedupe: IGDB has distinct ids for the same keyword name. */
 export const nameKey = (name: string) => name.trim().toLowerCase();
@@ -99,18 +108,20 @@ export function buildCategoryFallbackData(keywords: MapSeed[]): CooccurrenceData
  * name shown so far as `inner` and the previous map's names as `outer`, so the
  * inner ring never repeats and the outer ring stays full without echoing the
  * last map. Order is strength order (level 1, then level 2 by parent).
+ * `exclude.allow`, when given, must accept a keyword for it to appear at all
+ * (the map's "Fits my search" mode passes "would still give results").
  */
 export function selectKeywordGraph(
   center: { id: number; name: string },
   pool: MapSeed[],
   data: CooccurrenceData,
-  exclude: { inner?: ReadonlySet<string>; outer?: ReadonlySet<string> } = {},
+  exclude: { inner?: ReadonlySet<string>; outer?: ReadonlySet<string>; allow?: (id: number) => boolean } = {},
   shape: GraphShape = DESKTOP_SHAPE,
 ): GraphNode[] {
   const used = new Set<number>([center.id]);
   const usedNames = new Set<string>([nameKey(center.name)]);
   const isFree = (n: { id: number; name: string }, excluded?: ReadonlySet<string>) =>
-    !used.has(n.id) && !usedNames.has(nameKey(n.name)) && !excluded?.has(nameKey(n.name));
+    !used.has(n.id) && !usedNames.has(nameKey(n.name)) && !excluded?.has(nameKey(n.name)) && (exclude.allow?.(n.id) ?? true);
   const take = (n: { id: number; name: string }) => {
     used.add(n.id);
     usedNames.add(nameKey(n.name));

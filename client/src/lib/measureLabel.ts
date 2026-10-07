@@ -1,4 +1,4 @@
-import { BADGE_ROOM, PILL_PAD, nodeLabel, nodeWidth, type GraphNode } from './keywordMap';
+import { PILL_PAD, badgeRoom, nodeLabel, nodeWidth, type LabelNode } from './keywordMap';
 
 let ctx: CanvasRenderingContext2D | null | undefined;
 let family = '';
@@ -8,10 +8,10 @@ const cache = new Map<string, number>();
  * Real pill width for a map node, measured with the page font on a canvas.
  * Falls back to the character-count estimate where canvas is unavailable.
  */
-export function measuredNodeWidth(node: Pick<GraphNode, 'name' | 'level'>): number {
+export function measuredNodeWidth(node: LabelNode): number {
   const label = nodeLabel(node);
   const isCenter = node.level === 0;
-  const key = `${node.level === 0 ? 'c' : 'o'}|${label}`;
+  const key = `${isCenter ? 'c' : 'o'}${badgeRoom(node)}|${label}`;
   const hit = cache.get(key);
   if (hit !== undefined) return hit;
 
@@ -24,7 +24,7 @@ export function measuredNodeWidth(node: Pick<GraphNode, 'name' | 'level'>): numb
   if (!ctx) return nodeWidth(node);
   ctx.font = `${isCenter ? 600 : 400} ${isCenter ? 13 : 12}px ${family || 'sans-serif'}`;
   const text = Math.ceil(ctx.measureText(label).width);
-  const width = text + (isCenter ? PILL_PAD.center : PILL_PAD.other + BADGE_ROOM);
+  const width = text + (isCenter ? PILL_PAD.center : PILL_PAD.other) + badgeRoom(node);
   cache.set(key, width);
   return width;
 }

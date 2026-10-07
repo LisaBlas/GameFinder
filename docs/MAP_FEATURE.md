@@ -380,7 +380,20 @@ repeat visits).
 - Add bidirectional result-card/map highlighting.
 - Instrument exploration-to-search and affiliate-conversion funnels.
 
+### Beyond the plan — "Fits my search" mode (2026-10-07)
+
+Two ways to use the map: explore freely, or refine. Refining filters both
+rings to keywords that still return games with the current selection, across
+subcategories (counts per keyword, "N fit" per subcategory). Filtering (not
+dimming) is deliberate: the inner ring has 6 slots and dead ends would waste
+them. Curated order is kept.
+
 ### Phase 4 — Signature polish
+
+Status: done (2026-10-07). Discoveries are deliberately strict on the current
+data (7 of 388 curated keywords qualify); they widen automatically once the
+re-crawl emits NPMI/totals. Saved journeys are share links only (no saved
+list). Story cards ship as an empty editorial registry.
 
 - Active-path energy pulses.
 - Category-specific environmental texture.

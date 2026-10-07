@@ -432,7 +432,7 @@
 }
 
 .desktop-action-bar {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 0.75rem;
   height: 7rem;
@@ -3826,7 +3826,8 @@ svg.filter-caret.expanded {
 .kmap {
   flex-direction: column;
   min-width: 0;
-  overflow: hidden;
+  /* Not hidden: the search dropdown must be able to extend past a short step. */
+  overflow: visible;
   border: 1px solid hsl(var(--border));
   border-radius: 28px;
   background: hsl(var(--card) / 0.75);
@@ -3914,114 +3915,78 @@ button.kmap-crumb:hover,
 /* Step 1 — category doors */
 .kmap-doors {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
+/* A door is a row: icon, full title + what's inside, arrow. */
 .kmap-door {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  min-height: 11rem;
-  padding: 1.25rem 0.75rem;
+  gap: 0.9rem;
+  padding: 0.85rem 1rem;
   border: 1px solid rgba(var(--c-border-rgb), 0.16);
-  border-radius: 22px;
+  border-radius: 18px;
   background: rgba(var(--c-bg-rgb), 0.45);
-  text-align: center;
+  text-align: left;
   transition: border-color 0.18s, background 0.18s, transform 0.18s;
 }
 
-.kmap-door:hover {
+.kmap-door:hover,
+.kmap-door:focus-visible {
   border-color: rgba(var(--c-emerald-rgb), 0.45);
   background: rgba(var(--c-emerald-rgb), 0.07);
-  transform: translateY(-2px);
+  transform: translateX(2px);
 }
 
 .kmap-door-icon {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  margin-bottom: 0.4rem;
-  border-radius: 18px;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
   background: rgba(var(--c-emerald-rgb), 0.1);
   color: var(--c-emerald-soft);
 }
 
+.kmap-door-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
 .kmap-door-label {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--c-text);
 }
 
 .kmap-door-hint {
-  font-size: 0.78rem;
-  line-height: 1.25;
-  color: var(--c-muted);
-}
-
-/* Step 2 — subcategory grid */
-.kmap-sub-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-
-@media (min-width: 1400px) {
-  .kmap-sub-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.kmap-sub-tile {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  min-width: 0;
-  padding: 0.65rem 0.7rem;
-  border: 1px solid rgba(var(--c-border-rgb), 0.14);
-  border-radius: 14px;
-  background: rgba(var(--c-bg-rgb), 0.35);
-  text-align: left;
-  transition: border-color 0.15s, background 0.15s;
-}
-
-.kmap-sub-tile:hover {
-  border-color: rgba(var(--c-emerald-rgb), 0.35);
-  background: rgba(var(--c-emerald-rgb), 0.06);
-}
-
-.kmap-sub-icon {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  border-radius: 10px;
-  background: rgba(var(--c-emerald-rgb), 0.08);
+  font-size: 0.72rem;
+  font-weight: 600;
   color: var(--c-emerald-soft);
 }
 
-.kmap-sub-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--c-text);
+.kmap-door-desc {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--c-muted);
 }
 
-.kmap-sub-count {
-  flex-shrink: 0;
-  font-size: 0.7rem;
-  font-weight: 700;
+.kmap-door-subs {
+  overflow: hidden;
+  font-size: 0.72rem;
   color: var(--c-dim);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kmap-door-go {
+  flex-shrink: 0;
+  color: var(--c-muted);
 }
 
 /* Step 3 — the map */
@@ -4081,7 +4046,7 @@ button.kmap-crumb:hover,
 
 .kmap-relation-label {
   position: absolute;
-  top: 0.5rem;
+  bottom: 0.5rem;
   right: 0.5rem;
   z-index: 2;
   padding: 0.2rem 0.5rem;
@@ -4094,10 +4059,11 @@ button.kmap-crumb:hover,
   pointer-events: none;
 }
 
+/* Zoom row sits under the window toolbar (top-right), clear of the docked inspector. */
 .kmap-controls {
   position: absolute;
-  right: 0.25rem;
-  bottom: 0.25rem;
+  top: calc(0.5rem + 2rem + 0.25rem);
+  right: 0.5rem;
   display: flex;
   gap: 0.25rem;
   opacity: 0.55;
@@ -4279,33 +4245,8 @@ button.kmap-crumb:hover,
   stroke: var(--c-danger);
 }
 
-.kmap-hint {
-  margin-top: 0.5rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--c-muted);
-}
 
-.kmap-inspector {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.6rem 0.6rem 0.6rem 0.9rem;
-  border: 1px solid rgba(var(--c-border-rgb), 0.14);
-  border-radius: 14px;
-  background: rgba(var(--c-bg-rgb), 0.4);
-}
 
-.kmap-inspector-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 700;
-  color: var(--c-text);
-}
 
 .kmap-action {
   display: inline-flex;
@@ -4359,13 +4300,7 @@ button.kmap-crumb:hover,
   padding: 0.75rem 1rem;
 }
 
-.kmap--mobile .kmap-doors {
-  grid-template-columns: 1fr;
-}
 
-.kmap--mobile .kmap-inspector {
-  padding: 0.5rem 0.5rem 0.5rem 0.9rem;
-}
 
 .kmap--mobile .kmap-action {
   padding: 0.55rem 0.9rem;
@@ -4469,31 +4404,9 @@ button.kmap-crumb:hover,
   transition: outline-color 0.15s;
 }
 
-.kmap-inspector-text {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-}
 
-.kmap-inspector-count {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-width: 0;
-  font-size: 0.72rem;
-  color: var(--c-muted);
-  white-space: nowrap;
-}
 
-.kmap-inspector-count.is-loading {
-  opacity: 0.7;
-}
 
-.kmap-inspector-count.is-zero {
-  color: var(--c-danger);
-  white-space: normal;
-}
 
 .kmap-strength {
   padding: 0 0.4rem;
@@ -4539,6 +4452,468 @@ button.kmap-crumb:hover,
 
 .desktop-action-button-search-zero {
   box-shadow: 0 0 0 1px rgba(var(--c-danger-rgb), 0.7);
+}
+
+/* Phase 4: signature polish ─────────────────────────────────── */
+
+/* Environment: per-category texture + fine grain, static (no per-frame cost),
+   faded toward the centre so labels stay clean. */
+.kmap-viewport::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, #000 78%);
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, #000 78%);
+}
+
+/* Mechanics: blueprint grid. */
+.kmap-viewport[data-texture="mechanics"]::before {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(rgba(var(--c-emerald-rgb), 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--c-emerald-rgb), 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(var(--c-emerald-rgb), 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--c-emerald-rgb), 0.025) 1px, transparent 1px);
+  background-size: 160px 160px, 64px 64px, 64px 64px, 16px 16px, 16px 16px;
+}
+
+/* Setting: topographic contours. */
+.kmap-viewport[data-texture="setting"]::before {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    repeating-radial-gradient(ellipse 120% 90% at 18% 28%, transparent 0 19px, rgba(var(--c-emerald-rgb), 0.055) 19px 20px),
+    repeating-radial-gradient(ellipse 110% 100% at 84% 76%, transparent 0 23px, rgba(var(--c-emerald-rgb), 0.045) 23px 24px);
+  background-size: 160px 160px, auto, auto;
+}
+
+/* Aesthetics: soft pigment washes. */
+.kmap-viewport[data-texture="aesthetics"]::before {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 18% 22%, rgba(var(--c-gold-rgb), 0.07), transparent 42%),
+    radial-gradient(circle at 82% 74%, rgba(var(--c-purple-rgb), 0.08), transparent 46%),
+    radial-gradient(circle at 64% 12%, rgba(var(--c-emerald-rgb), 0.06), transparent 36%);
+  background-size: 160px 160px, auto, auto, auto;
+}
+
+/* Active path: emerald energy flowing from the centre to the hovered keyword. */
+.kmap-energy {
+  stroke: var(--c-emerald-soft);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-dasharray: 3 11;
+  opacity: 0.9;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgba(var(--c-emerald-rgb), 0.8));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kmap-energy {
+    animation: kmap-flow 0.9s linear infinite;
+  }
+}
+
+@keyframes kmap-flow {
+  to { stroke-dashoffset: -14; }
+}
+
+/* Decorative motion stops when the tab is hidden, the map is offscreen, or the user is idle. */
+.kmap[data-ambient="paused"] .kmap-glow,
+.kmap[data-ambient="paused"] .kmap-energy {
+  animation-play-state: paused;
+}
+
+.kmap-spark {
+  fill: var(--c-emerald-soft);
+  pointer-events: none;
+}
+
+/* Discoveries: rare-but-strong pairings. */
+.kmap-discovery-mark {
+  fill: var(--c-gold);
+  filter: drop-shadow(0 0 2px rgba(var(--c-gold-rgb), 0.8));
+  pointer-events: none;
+}
+
+.kmap-discoveries {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.kmap-discoveries-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-right: 0.15rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-gold);
+}
+
+.kmap-discovery {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.6rem;
+  border: 1px solid rgba(var(--c-gold-rgb), 0.35);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  color: var(--c-text);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.kmap-discovery:hover,
+.kmap-discovery:focus-visible {
+  border-color: var(--c-gold);
+  background: rgba(var(--c-gold-rgb), 0.08);
+}
+
+.kmap-discovery-games {
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: rgba(var(--c-gold-rgb), 0.14);
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--c-gold);
+}
+
+/* Editorial story card (lib/keywordStories.ts). */
+.kmap-story {
+  margin-top: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-left: 2px solid var(--c-gold);
+  border-radius: 10px;
+  background: rgba(var(--c-gold-rgb), 0.05);
+}
+
+.kmap-story-title {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.kmap-story-body {
+  margin-top: 0.2rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+.kmap-story-link {
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--c-gold);
+}
+
+/* Next centre still loading: the current scene stays, with a quiet cue. */
+.kmap-loading {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  z-index: 2;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(var(--c-bg-rgb), 0.78);
+  font-size: 0.72rem;
+  color: var(--c-muted);
+  pointer-events: none;
+}
+
+.kmap-viewport[aria-busy="true"] .kmap-svg {
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+
+/* Light pulse from an included keyword to the search tray (lib/lightPulse.ts). */
+.kmap-light {
+  position: fixed;
+  z-index: 90;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c-emerald-soft);
+  box-shadow: 0 0 12px 4px rgba(var(--c-emerald-rgb), 0.6);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+/* Map modes: Explore vs Fits my search ─────────────────────── */
+.kmap-modes-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.kmap-modes {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  background: rgba(var(--c-bg-rgb), 0.4);
+}
+
+.kmap-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--c-muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.kmap-mode:hover {
+  color: var(--c-text);
+}
+
+.kmap-mode[aria-checked="true"] {
+  background: rgba(var(--c-emerald-rgb), 0.16);
+  color: var(--c-emerald-soft);
+}
+
+.kmap-modes-note {
+  min-width: 0;
+  font-size: 0.72rem;
+  color: var(--c-muted);
+}
+
+.kmap-modes-note.is-loading {
+  opacity: 0.75;
+}
+
+.kmap-fit-tag {
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--c-muted);
+}
+
+.kmap-empty--fit {
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Search inside the map section, above the body (its dropdown overlays the map). */
+.kmap-search {
+  position: relative;
+  z-index: 20;
+  padding: 0.75rem 1.25rem 0;
+}
+
+.kmap--mobile .kmap-search {
+  padding: 0.6rem 1rem 0;
+}
+
+/* "Need a spark?": a small header pill that swaps the map for the roll deck. */
+.kmap-spark-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgba(var(--c-gold-rgb), 0.4);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--c-gold);
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.kmap-spark-btn:hover,
+.kmap-spark-btn.is-open {
+  border-color: var(--c-gold);
+  background: rgba(var(--c-gold-rgb), 0.1);
+}
+
+/* Not ".kmap-spark": that's the transition particles (pointer-events: none). */
+.kmap-spark-panel {
+  min-height: 0;
+}
+
+/* Subcategory nodes in a category map: folder-like, not addable. */
+.kmap-node--group rect {
+  fill: color-mix(in srgb, var(--c-emerald) 7%, var(--c-surface-2));
+  stroke: rgba(var(--c-emerald-rgb), 0.55);
+  stroke-dasharray: none;
+}
+
+.kmap-node--group text {
+  font-weight: 600;
+}
+
+.kmap-group-tag {
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--c-muted);
+}
+
+/* The map window: map, toolbar overlay (top-right), inspector docked at the bottom. */
+.kmap-window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(var(--c-border-rgb), 0.16);
+  border-radius: 20px;
+  background: rgba(var(--c-bg-rgb), 0.3);
+}
+
+.kmap-window--mobile {
+  flex: 1;
+  min-height: 0;
+}
+
+.kmap-toolbar {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 3;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.kmap-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.22);
+  border-radius: 10px;
+  background: hsl(var(--card) / 0.85);
+  color: var(--c-muted);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.kmap-tool:hover:not(:disabled),
+.kmap-tool:focus-visible {
+  border-color: rgba(var(--c-emerald-rgb), 0.5);
+  color: var(--c-emerald-soft);
+}
+
+.kmap-tool:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Inspector, rare pairings and hints live in the window's bottom dock. */
+.kmap-dock {
+  flex-shrink: 0;
+  padding: 0.45rem 0.6rem 0.55rem;
+  border-top: 1px solid rgba(var(--c-border-rgb), 0.14);
+  background: rgba(var(--c-bg-rgb), 0.55);
+}
+
+
+
+.kmap-dock .kmap-discoveries,
+.kmap-dock .kmap-story {
+  margin-top: 0.4rem;
+}
+
+/* Centre info card, top-left inside the map. Max size = INFO_FOOTPRINT in KeywordMap. */
+.kmap-info {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  max-width: 228px;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.18);
+  border-radius: 12px;
+  background: hsl(var(--card) / 0.85);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+.kmap-info--mobile {
+  max-width: 178px;
+}
+
+.kmap-info-title {
+  overflow: hidden;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--c-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kmap-info-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  font-size: 0.7rem;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.kmap-info-detail.is-loading {
+  opacity: 0.7;
+}
+
+.kmap-info-detail.is-zero {
+  color: var(--c-danger);
+}
+
+/* Bottom bar: Include/Exclude left, Clear + Search right. */
+.kmap-dock-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.kmap-dock-keyword,
+.kmap-dock-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kmap-dock-actions {
+  margin-left: auto;
+}
+
+.kmap-dock .desktop-action-button {
+  height: 2.25rem;
+  padding: 0 0.8rem;
+  font-size: 0.8rem;
+}
+
+.kmap-dock .desktop-action-button-search {
+  min-width: 0;
+}
+
+/* Narrow map: keep one row by dropping the Search button's count (the info card shows it). */
+.kmap-dock {
+  container-type: inline-size;
+}
+
+@container (max-width: 480px) {
+  .kmap-dock .search-count-hint {
+    display: none;
+  }
 }
 
 /* ── end Desktop keyword map explorer ─────────────────────────── */
