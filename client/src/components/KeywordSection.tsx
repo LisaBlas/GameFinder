@@ -15,6 +15,7 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
+import KeywordMap from './KeywordMap';
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters } from '../context/FilterContext';
 import Navbar from './Navbar';
@@ -1451,6 +1452,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       <div className="flex-1 min-h-0 p-3 lg:flex-none">
         <div className="flex h-full min-h-0 flex-col gap-5 lg:h-auto">
           {renderDesktopExplorer()}
+          <KeywordMap />
           {renderMobileShelves()}
         </div>
       </div>
