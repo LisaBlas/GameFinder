@@ -16,9 +16,9 @@ Desktop:
   Left panel (40%): KeywordSection
     Sticky desktop Navbar inside KeywordSection
     Desktop action bar with SelectedFilters lanes (Clear/Search live in the map)
-    KeywordMap section: header (back, home, crumbs, "Need a spark?"), built-in
+    KeywordMap section: header (home, back, crumbs, "Need a spark?"), built-in
       KeywordSearch, then category doors -> category map -> keyword maps, drawn in
-      a map window: centre info card top-left, toolbar top-right (refresh, copy
+      a map window: toolbar top-right (refresh, copy
       link, zoom), bottom bar with Include/Exclude + Clear/Search
   Right panel (60%): ResultsSection/SearchResults
     Sticky results header with count, FilterBar, sort select
@@ -37,12 +37,12 @@ Desktop:
   subcategories as nodes, 8 per page desktop / 4 mobile, refresh pages; each
   subcategory/category has a stable negative node id from `keywordTaxonomy`
   so opening one glides it into the centre) -> subcategory map -> keyword
-  maps. A home button next to Back returns to the doors. The map step is one
+  maps. A home button before Back returns to the doors. The map step is one
   `.kmap-window`: the toolbar overlays the map's top-right corner and is passed
   to the layout as an obstacle (`layoutKeywordMap({ obstacles })`, sized by
-  `TOOLBAR_FOOTPRINT`) so pills never sit under it. The centre's info card
-  (name, count, craft strength) overlays the top-left and is an obstacle too
-  (`INFO_FOOTPRINT`, matching its CSS max size). The bottom bar (Include/
+  `TOOLBAR_FOOTPRINT`) so pills never sit under it. There is no centre info
+  overlay (removed 2026-10-07; the centre pill and hover counts carry that
+  information). The bottom bar (Include/
   Exclude for the centre, then KeywordSection's Clear/Search via the `actions`
   prop) is docked below the drawing area, which is measured without it. The
   camera uses identity framing: the layout already fits and avoids overlays in
@@ -279,7 +279,12 @@ classes make unwieldy:
 - `.game-card-forge`, `.game-card-shell-rarity-*` - result-card material and
   rarity frames. Fresh searches advance a forge cycle in `SearchResults` so
   cards materialize once; rare/epic/unique tiers briefly cool from white-hot
-  into blue/purple/orange. Epic and unique retain distinct corner geometry.
+  into blue/purple/orange. Each tier has a transparent nine-slice material
+  asset under `assets/ui/game-card-frame-*.png`: common slate/iron, uncommon
+  serpentine/iron, rare blue granite/steel, epic obsidian/amethyst, and unique
+  meteorite/blackened gold. Uncommon uses a separate top-center ornament and
+  unique a bottom-center relic core so those sockets never stretch with the border. The small
+  square rivets remain exclusive to panels inside a game card.
   Rarity thresholds come from `lib/discoveryCards.ts`; do not duplicate them.
 
 Use Tailwind for layout, spacing, and one-off styles. Use the CSS classes

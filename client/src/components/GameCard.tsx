@@ -766,11 +766,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       )}
 
       {!fullscreen && (
-        <div className="game-card-forge" aria-hidden="true">
-          <span className="game-card-forge-corner game-card-forge-corner-tl" />
-          <span className="game-card-forge-corner game-card-forge-corner-tr" />
-          <span className="game-card-forge-corner game-card-forge-corner-bl" />
-          <span className="game-card-forge-corner game-card-forge-corner-br" />
+        <div className="game-card-frame-assembly" aria-hidden="true">
+          <div className="game-card-forge" aria-hidden="true" />
+          {rarity !== 'common' && (
+            <div className="game-card-rarity-ornament" aria-hidden="true" />
+          )}
         </div>
       )}
 
@@ -793,7 +793,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           }
         }}
       >
-        <div className={`flex flex-col md:flex-row ${!fullscreen && !isSelected ? 'h-full' : ''}`}>
+        <div className={`game-card-content flex flex-col md:flex-row ${!fullscreen && !isSelected ? 'h-full' : ''}`}>
           <div className={`game-card-cover relative w-full h-56 md:w-40 lg:w-44 md:h-auto md:min-h-[230px] self-stretch flex-shrink-0 overflow-hidden bg-slate-950 ${isSelected ? 'hidden' : ''}`}>
             <img
               src={imageUrl}

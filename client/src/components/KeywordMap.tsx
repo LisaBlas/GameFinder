@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
-import { ArrowRight, Check, ChevronLeft, ChevronRight, Compass, Home, Link2, ListFilter, Plus, RefreshCw, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Compass, Home, Link2, ListFilter, RefreshCw, Sparkles, X } from 'lucide-react';
 import { useFilters, type Filter } from '../context/FilterContext';
 import {
   DESKTOP_SHAPE,
@@ -32,7 +32,7 @@ import { useMapHistory } from '../hooks/useMapHistory';
 import { KeywordMapScene, type KeywordMode, type ToggleMethod } from './KeywordMapScene';
 import { ensureLists, prefetchLists, useKeywordGraph } from '../lib/keywordGraphStore';
 import { buildSearchPayload, withKeyword } from '../lib/searchPayload';
-import { craftStrength, formatCount, peekCount, useSearchCount } from '../lib/searchCount';
+import { formatCount, peekCount } from '../lib/searchCount';
 import { setMapKeyword } from '../lib/mapLink';
 import { markMapSourced, track } from '../lib/funnel';
 import { findDiscoveries } from '../lib/keywordDiscoveries';
@@ -129,12 +129,6 @@ const CATEGORY_SCENE: Record<'desktop' | 'mobile', { shape: GraphShape; layout: 
 const TOOLBAR_FOOTPRINT: Record<'desktop' | 'mobile', { width: number; height: number }> = {
   desktop: { width: 112, height: 80 },
   mobile: { width: 84, height: 46 },
-};
-
-/** The centre's info card (top-left). Its CSS max size matches, so the footprint is honest. */
-const INFO_FOOTPRINT: Record<'desktop' | 'mobile', { width: number; height: number }> = {
-  desktop: { width: 236, height: 58 },
-  mobile: { width: 186, height: 54 },
 };
 
 interface Props {
@@ -450,10 +444,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
             viewport: viewport!,
             widthOf: measuredNodeWidth,
             previous: sceneRef.current?.nodes,
-            obstacles: [
-              { x: viewport!.width - TOOLBAR_FOOTPRINT[variant].width, y: 0, ...TOOLBAR_FOOTPRINT[variant] },
-              { x: 0, y: 0, ...INFO_FOOTPRINT[variant] },
-            ],
+            obstacles: [{ x: viewport!.width - TOOLBAR_FOOTPRINT[variant].width, y: 0, ...TOOLBAR_FOOTPRINT[variant] }],
           })
         : [],
     [graph, viewport, usable, layout, variant],
@@ -527,16 +518,6 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   const previewPayload = (node: MapNode) =>
     node.level === 0 || node.id < 0 || modeOf(node.id) ? null : previewWith(node);
 
-  // Inspector: what the search looks like with the centred keyword (added, if it isn't yet).
-  const centerMode = centerKw ? modeOf(centerKw.id) : null;
-  const inspectorPayload = centerKw
-    ? centerMode
-      ? buildSearchPayload(selectedFilters, payloadOpts)
-      : previewWith(centerKw)
-    : null;
-  const inspectorCount = useSearchCount(inspectorPayload, 150);
-  const hasOtherIncludes = selectedFilters.some(f => f.mode !== 'exclude' && !(f.category === CATEGORY && centerKw && Number(f.id) === centerKw.id));
-
   const onMap = useMemo(() => new Set(graph.filter(n => n.level > 0).map(n => nameKey(n.name))), [graph]);
   const shownNow = useMemo(() => new Set(Array.from(seen).concat(Array.from(onMap))), [seen, onMap]);
   const remaining = visiblePool.filter(n => !shownNow.has(nameKey(n.name))).length;
@@ -562,9 +543,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   const renderCategories = () => (
     <div className="kmap-doors">
       {MAIN_CATEGORIES.filter(cat => getAvailableSubcategories(cat).length > 0).map(cat => {
-        const { title, hint, icon: Icon } = MAIN_CATEGORY_META[cat];
-        const subs = getAvailableSubcategories(cat);
-        const keywordTotal = subs.reduce((n, sub) => n + getKeywordCountForSubcategory(sub), 0);
+        const { title, icon: Icon } = MAIN_CATEGORY_META[cat];
         return (
           <button
             key={cat}
@@ -577,14 +556,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
             </span>
             <span className="kmap-door-text">
               <span className="kmap-door-label">{title}</span>
-              <span className="kmap-door-hint">
-                {hint} · {subs.length} subcategories · {keywordTotal} keywords
-              </span>
               <span className="kmap-door-desc">{getCategoryDescription(cat)}</span>
-              <span className="kmap-door-subs">
-                {subs.slice(0, 4).join(' · ')}
-                {subs.length > 4 && ` +${subs.length - 4} more`}
-              </span>
             </span>
             <ArrowRight className="kmap-door-go h-4 w-4" aria-hidden="true" />
           </button>
@@ -697,55 +669,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
       >
         {holding && <span className="kmap-loading">Mapping {titleCase(center?.name ?? '')}…</span>}
         {content}
-        {usable && nodes.length > 1 && renderInfo()}
         {isCategoryFallback && graph.length > 1 && <span className="kmap-relation-label">Related by category</span>}
-      </div>
-    );
-  };
-
-  /** Compact read-out of the centre, top-left inside the map. */
-  const renderInfo = () => {
-    if (!center) return null;
-    const title = centerKw ? titleCase(center.name) : center.name;
-    let detail: React.ReactNode = null;
-    let tone = '';
-    if (sceneKind === 'category') {
-      detail = `${variant === 'mobile' ? 'Tap' : 'Open'} a subcategory${canRefresh ? ` · ${variant === 'mobile' ? 'swipe' : 'refresh'} for more` : ''}`;
-    } else if (!centerKw) {
-      detail = (
-        <>
-          {variant === 'mobile' ? 'Tap' : 'Click'} to explore · <Plus className="inline h-3 w-3" aria-label="plus" /> adds
-        </>
-      );
-    } else {
-      const c = inspectorCount;
-      if (c.status === 'loading') {
-        detail = 'Counting games…';
-        tone = ' is-loading';
-      } else if (c.status === 'ready') {
-        const label = formatCount(c.count, c.capped);
-        const strength = craftStrength(c.count, c.capped);
-        if (!centerMode && c.count === 0) {
-          detail = hasOtherIncludes ? 'No games with this added' : `No games tagged ${title} yet`;
-          tone = ' is-zero';
-        } else {
-          detail = (
-            <>
-              {centerMode ? `Your search: ${label}` : hasOtherIncludes ? `With your search: ${label}` : label}
-              {strength && <span className={`kmap-strength kmap-strength--${strength.replace(' ', '-')}`}>{strength}</span>}
-            </>
-          );
-        }
-      }
-    }
-    return (
-      <div className={`kmap-info kmap-info--${variant}`}>
-        <span className="kmap-info-title" title={title}>{title}</span>
-        {detail && (
-          <span className={`kmap-info-detail${tone}`} role="status">
-            {detail}
-          </span>
-        )}
       </div>
     );
   };
@@ -846,11 +770,11 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
 
     return (
       <div className="kmap-header">
-        <button type="button" className="kmap-icon-btn" onClick={goBack} aria-label="Back">
-          <ChevronLeft className="h-4 w-4" />
-        </button>
         <button type="button" className="kmap-icon-btn" onClick={() => navigate(ROOT)} aria-label="All categories" title="All categories">
           <Home className="h-4 w-4" />
+        </button>
+        <button type="button" className="kmap-icon-btn" onClick={goBack} aria-label="Back">
+          <ChevronLeft className="h-4 w-4" />
         </button>
         <nav ref={crumbsRef} className="kmap-crumbs" aria-label="Keyword map path">
           {crumbs.map((c, i) => {

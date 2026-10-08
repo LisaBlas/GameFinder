@@ -1502,6 +1502,9 @@ h3{
   --forge-rgb: 111, 126, 119;
   --forge-soft-rgb: 195, 207, 199;
   --forge-frame-opacity: 0.22;
+  --forge-frame: url("./assets/ui/game-card-frame-common.png");
+  --forge-border-width: 22px;
+  --forge-border-outset: 2px;
   --corner-size: 16px;
   --corner-base: rgb(43, 52, 48);
   --corner-edge: rgb(93, 108, 99);
@@ -1520,7 +1523,16 @@ h3{
 /* Forged result frame -----------------------------------------------------
    The persistent layer is deliberately quiet; the heat layers play once
    when a fresh result node mounts, then cool into the rarity material. */
+.game-card-frame-assembly {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  transform-origin: center;
+}
+
 .game-card-forge {
+  box-sizing: border-box;
   position: absolute;
   inset: -2px;
   z-index: 4;
@@ -1567,120 +1579,154 @@ h3{
   --forge-rgb: var(--c-emerald-rgb);
   --forge-soft-rgb: 213, 255, 240;
   --forge-frame-opacity: 0.25;
+  --forge-frame: url("./assets/ui/game-card-frame-uncommon.png");
+  --forge-border-width: 23px;
+  --forge-border-outset: 2px;
 }
 
 .game-card-shell-rarity-rare {
   --forge-rgb: var(--c-rare-blue-rgb);
   --forge-soft-rgb: 224, 244, 255;
   --forge-frame-opacity: 0.42;
+  --forge-frame: url("./assets/ui/game-card-frame-rare.png");
+  --forge-border-width: 24px;
+  --forge-border-outset: 3px;
 }
 
 .game-card-shell-rarity-epic {
   --forge-rgb: var(--c-purple-rgb);
   --forge-soft-rgb: 247, 229, 255;
   --forge-frame-opacity: 0.58;
+  --forge-frame: url("./assets/ui/game-card-frame-epic.png");
+  --forge-border-width: 26px;
+  --forge-border-outset: 3px;
 }
 
 .game-card-shell-rarity-unique {
   --forge-rgb: var(--c-unique-rgb);
   --forge-soft-rgb: 255, 244, 218;
   --forge-frame-opacity: 0.68;
+  --forge-frame: url("./assets/ui/game-card-frame-unique.png");
+  --forge-border-width: 28px;
+  --forge-border-outset: 4px;
+}
+
+.game-card-shell-rarity-common .game-card-forge,
+.game-card-shell-rarity-uncommon .game-card-forge,
+.game-card-shell-rarity-rare .game-card-forge,
+.game-card-shell-rarity-epic .game-card-forge,
+.game-card-shell-rarity-unique .game-card-forge {
+  border: 24px solid transparent;
+  border-image-source: var(--forge-frame);
+  border-image-slice: 128;
+  border-image-width: var(--forge-border-width);
+  border-image-outset: var(--forge-border-outset);
+  border-image-repeat: stretch;
+  border-radius: 0;
+  background: none;
+}
+
+.game-card-shell-rarity-common .game-card-forge {
+  box-shadow:
+    inset 0 0 13px rgba(0, 0, 0, 0.26),
+    0 2px 3px rgba(0, 0, 0, 0.48),
+    0 7px 14px rgba(0, 0, 0, 0.22);
+}
+
+.game-card-shell-rarity-uncommon .game-card-forge {
+  box-shadow:
+    inset 0 0 12px rgba(var(--forge-rgb), 0.025),
+    0 2px 3px rgba(0, 0, 0, 0.5),
+    0 8px 15px rgba(0, 0, 0, 0.23);
 }
 
 .game-card-shell-rarity-rare .game-card-forge {
   box-shadow:
-    inset 0 0 0 1px rgba(var(--forge-soft-rgb), 0.055),
-    inset 0 0 20px rgba(var(--forge-rgb), 0.055),
-    0 0 0 1px rgba(0, 0, 0, 0.76),
-    0 0 14px rgba(var(--forge-rgb), 0.07);
+    inset 0 0 14px rgba(var(--forge-rgb), 0.035),
+    0 0 2px rgba(var(--forge-rgb), 0.08),
+    0 2px 3px rgba(0, 0, 0, 0.52),
+    0 9px 17px rgba(0, 0, 0, 0.24);
 }
 
-/* Epic is cut like an angular obsidian seal with violet inlay. */
 .game-card-shell-rarity-epic .game-card-forge {
-  border-width: 2px;
-  border-radius: 7px;
-  background:
-    linear-gradient(90deg, transparent 12%, rgba(var(--forge-rgb), 0.2) 30% 70%, transparent 88%) top / 100% 1px no-repeat,
-    linear-gradient(90deg, transparent 18%, rgba(var(--forge-soft-rgb), 0.12) 50%, transparent 82%) bottom / 100% 1px no-repeat;
   box-shadow:
-    inset 0 0 0 1px rgba(9, 3, 14, 0.88),
-    inset 0 0 0 3px rgba(var(--forge-rgb), 0.12),
-    inset 0 0 24px rgba(var(--forge-rgb), 0.075),
-    0 0 0 1px rgba(0, 0, 0, 0.9),
-    0 0 18px rgba(var(--forge-rgb), 0.11);
+    inset 0 0 15px rgba(var(--forge-rgb), 0.045),
+    0 0 2px rgba(var(--forge-rgb), 0.09),
+    0 2px 3px rgba(0, 0, 0, 0.54),
+    0 10px 18px rgba(0, 0, 0, 0.25);
 }
 
-/* Unique is heavier and ceremonial: blackened bronze with a hot gold seam. */
 .game-card-shell-rarity-unique .game-card-forge {
-  border-width: 2px;
-  border-radius: 5px;
-  background:
-    linear-gradient(90deg, transparent 9%, rgba(var(--forge-soft-rgb), 0.28) 25% 75%, transparent 91%) top / 100% 1px no-repeat,
-    linear-gradient(90deg, transparent 15%, rgba(var(--forge-rgb), 0.28) 50%, transparent 85%) bottom / 100% 1px no-repeat,
-    linear-gradient(0deg, transparent 15%, rgba(var(--forge-rgb), 0.16) 50%, transparent 85%) left / 1px 100% no-repeat,
-    linear-gradient(0deg, transparent 15%, rgba(var(--forge-rgb), 0.16) 50%, transparent 85%) right / 1px 100% no-repeat;
   box-shadow:
-    inset 0 0 0 1px rgba(34, 17, 3, 0.95),
-    inset 0 0 0 3px rgba(var(--forge-rgb), 0.16),
-    inset 0 0 26px rgba(var(--forge-rgb), 0.085),
-    0 0 0 1px rgba(0, 0, 0, 0.92),
-    0 0 22px rgba(var(--forge-rgb), 0.14);
+    inset 0 0 16px rgba(var(--forge-rgb), 0.05),
+    0 0 2px rgba(var(--forge-rgb), 0.1),
+    0 2px 3px rgba(0, 0, 0, 0.56),
+    0 11px 20px rgba(0, 0, 0, 0.26);
 }
 
-.game-card-forge-corner {
+/* A box-shadow follows the forge element's rectangular box rather than the
+   transparent silhouette of the border-image, creating a faint second frame. */
+.game-card-shell-rarity-common .game-card-forge,
+.game-card-shell-rarity-uncommon .game-card-forge,
+.game-card-shell-rarity-rare .game-card-forge,
+.game-card-shell-rarity-epic .game-card-forge,
+.game-card-shell-rarity-unique .game-card-forge {
+  box-shadow: none;
+}
+
+.game-card-rarity-ornament {
   position: absolute;
-  width: 28px;
-  height: 28px;
-  display: none;
-  background: linear-gradient(135deg, rgba(var(--forge-soft-rgb), 0.66), rgba(var(--forge-rgb), 0.38) 40%, rgba(9, 7, 8, 0.98) 76%);
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.9));
+  left: 50%;
+  top: calc(100% - var(--ornament-rail-inset));
+  z-index: 5;
+  pointer-events: none;
+  width: var(--ornament-width);
+  height: var(--ornament-height);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  transform: translate(-50%, -50%);
 }
 
-.game-card-forge-corner::before,
-.game-card-forge-corner::after {
-  content: "";
-  position: absolute;
+.game-card-shell-rarity-uncommon .game-card-rarity-ornament {
+  --ornament-width: 30px;
+  --ornament-height: 25px;
+  --ornament-rail-inset: 8px;
+  background-image: url("./assets/ui/game-card-ornament-uncommon.png");
+  filter:
+    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7))
+    drop-shadow(0 0 2px rgba(var(--c-emerald-rgb), 0.12));
 }
 
-.game-card-forge-corner::before {
-  left: 5px;
-  top: 5px;
-  width: 15px;
-  height: 15px;
-  border-left: 1px solid rgba(var(--forge-soft-rgb), 0.42);
-  border-top: 1px solid rgba(var(--forge-soft-rgb), 0.42);
+.game-card-shell-rarity-rare .game-card-rarity-ornament {
+  --ornament-width: 32px;
+  --ornament-height: 28px;
+  --ornament-rail-inset: 8px;
+  background-image: url("./assets/ui/game-card-ornament-rare.png");
+  filter:
+    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.72))
+    drop-shadow(0 0 2px rgba(var(--c-rare-blue-rgb), 0.14));
 }
 
-.game-card-forge-corner::after {
-  left: 4px;
-  top: 4px;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgba(var(--forge-soft-rgb), 0.72);
-  box-shadow: 0 0 4px rgba(var(--forge-rgb), 0.34);
+.game-card-shell-rarity-epic .game-card-rarity-ornament {
+  --ornament-width: 34px;
+  --ornament-height: 30px;
+  --ornament-rail-inset: 9px;
+  background-image: url("./assets/ui/game-card-ornament-epic.png");
+  filter:
+    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.72))
+    drop-shadow(0 0 2px rgba(var(--c-purple-rgb), 0.14));
 }
 
-.game-card-shell-rarity-epic .game-card-forge-corner,
-.game-card-shell-rarity-unique .game-card-forge-corner {
-  display: block;
+.game-card-shell-rarity-unique .game-card-rarity-ornament {
+  --ornament-width: 80px;
+  --ornament-height: 54px;
+  --ornament-rail-inset: 14px;
+  background-image: url("./assets/ui/game-card-ornament-unique.png");
+  filter:
+    drop-shadow(0 2px 1px rgba(0, 0, 0, 0.76))
+    drop-shadow(0 0 3px rgba(var(--c-unique-rgb), 0.16));
 }
-
-.game-card-shell-rarity-epic .game-card-forge-corner {
-  clip-path: polygon(0 0, 100% 0, 100% 20%, 44% 20%, 20% 44%, 20% 100%, 0 100%);
-}
-
-.game-card-shell-rarity-unique .game-card-forge-corner {
-  width: 31px;
-  height: 31px;
-  background: linear-gradient(135deg, rgba(var(--forge-soft-rgb), 0.78), rgba(var(--forge-rgb), 0.46) 34%, rgba(31, 17, 6, 0.98) 70%);
-  clip-path: polygon(0 0, 100% 0, 100% 23%, 52% 23%, 23% 52%, 23% 100%, 0 100%);
-}
-
-.game-card-forge-corner-tl { left: -1px; top: -1px; }
-.game-card-forge-corner-tr { right: -1px; top: -1px; transform: rotate(90deg); }
-.game-card-forge-corner-br { right: -1px; bottom: -1px; transform: rotate(180deg); }
-.game-card-forge-corner-bl { left: -1px; bottom: -1px; transform: rotate(270deg); }
 
 @keyframes forge-edge-heat {
   0% { opacity: 0; filter: brightness(2.8) saturate(0); }
@@ -1695,6 +1741,28 @@ h3{
   20% { opacity: 0.86; }
   48% { opacity: 0.3; }
   100% { opacity: 0; }
+}
+
+@keyframes forge-mineral-wake {
+  0%, 12% { opacity: 0; filter: brightness(0.7); }
+  34% { opacity: 0.42; filter: brightness(1.45); }
+  100% { opacity: 0; filter: brightness(1); }
+}
+
+@keyframes forge-epic-settle {
+  0%, 35% { filter: drop-shadow(0 0 0 rgba(var(--forge-rgb), 0)); }
+  58% { filter: drop-shadow(0 0 9px rgba(var(--forge-rgb), 0.55)); }
+  100% { filter: drop-shadow(0 0 1px rgba(var(--forge-rgb), 0.06)); }
+}
+
+@keyframes forge-frame-assembly-awaken {
+  0%, 22% { opacity: 0; transform: scale(0.985); filter: brightness(2.4) saturate(0); }
+  52% { opacity: 1; transform: scale(1.003); filter: brightness(1.5) saturate(0.7); }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1) saturate(1);
+  }
 }
 
 @keyframes forge-materialize {
@@ -1713,10 +1781,30 @@ h3{
   animation: forge-edge-heat 1.25s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
 }
 
+.game-card-slot-rarity-epic .game-card-forge::before {
+  animation-duration: 1.45s;
+}
+
+.game-card-slot-rarity-unique .game-card-forge::before {
+  animation-duration: 1.65s;
+}
+
 .game-card-slot-rarity-rare .game-card-forge::after,
 .game-card-slot-rarity-epic .game-card-forge::after,
 .game-card-slot-rarity-unique .game-card-forge::after {
   animation: forge-surface-heat 1.05s ease-out var(--forge-delay, 0ms) both;
+}
+
+.game-card-slot-rarity-uncommon .game-card-forge::after {
+  animation: forge-mineral-wake 0.9s ease-out var(--forge-delay, 0ms) both;
+}
+
+.game-card-slot-rarity-epic .game-card-forge {
+  animation: forge-epic-settle 1.4s ease-out var(--forge-delay, 0ms) both;
+}
+
+.game-card-appear .game-card-frame-assembly {
+  animation: forge-frame-assembly-awaken 1.15s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1725,9 +1813,12 @@ h3{
   .game-card-slot-rarity-rare .game-card-forge::before,
   .game-card-slot-rarity-epic .game-card-forge::before,
   .game-card-slot-rarity-unique .game-card-forge::before,
+  .game-card-slot-rarity-uncommon .game-card-forge::after,
   .game-card-slot-rarity-rare .game-card-forge::after,
   .game-card-slot-rarity-epic .game-card-forge::after,
-  .game-card-slot-rarity-unique .game-card-forge::after {
+  .game-card-slot-rarity-unique .game-card-forge::after,
+  .game-card-slot-rarity-epic .game-card-forge,
+  .game-card-appear .game-card-frame-assembly {
     animation: none;
   }
 }
@@ -1768,8 +1859,10 @@ h3{
   --corner-grain: rgba(255, 231, 169, 0.075);
 }
 
-/* Epic/unique provide their own forged brackets; the neutral triangular caps
-   underneath made those corners look curled and doubled. */
+/* Every rarity now supplies its own complete carved frame. */
+.game-card-shell-rarity-common::before,
+.game-card-shell-rarity-uncommon::before,
+.game-card-shell-rarity-rare::before,
 .game-card-shell-rarity-epic::before,
 .game-card-shell-rarity-unique::before {
   opacity: 0;
@@ -1875,6 +1968,31 @@ h3{
 .game-card > * {
   position: relative;
   z-index: 1;
+}
+
+/* The transparent shell owns the frame bed. The background-bearing card is
+   inset inside it, so its rectangular surface cannot protrude through the
+   carved frame's transparent outer silhouette. */
+.game-card-shell:not(.game-card-shell-fullscreen) {
+  padding: 10px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}
+
+/* The raster rarity frame is now the sole visible perimeter. The older
+   embossed ::after treatment otherwise leaves a second grey rail beneath it. */
+.game-card-shell:not(.game-card-shell-fullscreen) .game-card::after {
+  background: none;
+  box-shadow: none;
+}
+
+/* The carved raster frame owns the card perimeter. Suppress compact/selected
+   shadows on the inset content surface so no legacy rounded rail can show
+   through the transparent pixels around the artwork. */
+.game-card-shell:not(.game-card-shell-fullscreen) .game-card {
+  box-shadow: none !important;
 }
 
 .game-card-compact {
@@ -2309,39 +2427,71 @@ svg.filter-caret.expanded {
 
 .keyword-build-panel {
   background:
-    linear-gradient(90deg, rgba(8, 17, 13, 0.96), rgba(12, 23, 18, 0.92)),
-    linear-gradient(180deg, rgba(28, 42, 31, 0.32), rgba(4, 8, 6, 0.58)),
-    url("./assets/leather-background.webp"),
-    #08110d !important;
-  background-size: auto, auto, 620px 620px, auto;
-  background-blend-mode: normal, multiply, soft-light, normal;
-  border-color: rgba(var(--c-emerald-rgb), 0.18) !important;
+    radial-gradient(ellipse 78% 46% at 24% 8%, rgba(67, 91, 68, 0.12), transparent 68%),
+    linear-gradient(90deg, rgba(2, 8, 6, 0.52), rgba(9, 17, 12, 0.22) 74%, rgba(0, 0, 0, 0.68)),
+    linear-gradient(180deg, rgba(3, 10, 7, 0.18), rgba(0, 0, 0, 0.48)),
+    url("./assets/ui/search-panel-leather-v1.png"),
+    #07100c !important;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 680px 680px, auto;
+  background-blend-mode: screen, multiply, multiply, normal, normal;
+  border: 0 !important;
   box-shadow:
-    14px 0 28px rgba(0, 0, 0, 0.48),
-    4px 0 9px rgba(0, 0, 0, 0.42),
-    inset -1px 0 0 rgba(var(--c-gold-rgb), 0.13),
-    inset 0 1px 0 rgba(255, 255, 255, 0.025),
-    inset -8px 0 22px rgba(0, 0, 0, 0.22);
+    22px 0 42px rgba(0, 0, 0, 0.68),
+    7px 0 14px rgba(0, 0, 0, 0.58),
+    inset -18px 0 34px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(238, 218, 164, 0.035);
 }
 
 @media (min-width: 1024px) {
   .keyword-build-panel {
     position: relative;
     z-index: 20;
+    padding-right: 13px;
+  }
+
+  .keyword-build-panel::before,
+  .keyword-build-panel::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .keyword-build-panel::before {
+    inset: 8px 13px 8px 8px;
+    z-index: 0;
+    border: 1px solid rgba(191, 151, 72, 0.075);
+    box-shadow:
+      inset 0 0 0 1px rgba(0, 0, 0, 0.56),
+      inset 0 0 28px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(227, 238, 221, 0.018);
+  }
+
+  .keyword-build-panel::after {
+    z-index: 4;
+    top: -5px;
+    right: -21px;
+    bottom: -5px;
+    width: 43px;
+    background: url("./assets/ui/search-panel-edge-spine-web.png") center / 100% 100% no-repeat;
+    filter: brightness(0.68) saturate(0.82) drop-shadow(5px 0 8px rgba(0, 0, 0, 0.72));
+  }
+
+  .keyword-build-panel-scroll {
+    position: relative;
+    z-index: 1;
   }
 }
 
 .keyword-section {
-  border: 1px solid rgba(var(--c-emerald-rgb), 0.1);
-  border-radius: 8px;
+  border: 0;
+  border-radius: 0;
   margin: 0 auto;
   background:
-    linear-gradient(180deg, rgba(var(--c-bg-rgb), 0.24), rgba(var(--c-bg-rgb), 0.08)),
-    rgba(var(--c-surface-rgb), 0.08);
+    linear-gradient(180deg, rgba(3, 10, 7, 0.08), rgba(0, 0, 0, 0.15)),
+    transparent;
   box-shadow:
-    inset 0 2px 12px rgba(0, 0, 0, 0.3),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
-    inset -1px 0 0 rgba(var(--c-emerald-rgb), 0.045);
+    inset 0 1px 0 rgba(255, 255, 255, 0.012),
+    inset -1px 0 0 rgba(0, 0, 0, 0.28);
 }
 
 
@@ -4202,11 +4352,6 @@ button.kmap-crumb:hover,
   color: var(--c-text);
 }
 
-.kmap-door-hint {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--c-emerald-soft);
-}
 
 .kmap-door-desc {
   font-size: 0.78rem;
@@ -4214,13 +4359,6 @@ button.kmap-crumb:hover,
   color: var(--c-muted);
 }
 
-.kmap-door-subs {
-  overflow: hidden;
-  font-size: 0.72rem;
-  color: var(--c-dim);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 .kmap-door-go {
   flex-shrink: 0;
@@ -4685,31 +4823,6 @@ button.kmap-crumb:hover,
 
 
 
-.kmap-strength {
-  padding: 0 0.4rem;
-  border: 1px solid rgba(var(--c-border-rgb), 0.3);
-  border-radius: 999px;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.kmap-strength--focused {
-  border-color: rgba(var(--c-emerald-rgb), 0.5);
-  color: var(--c-emerald-soft);
-}
-
-.kmap-strength--niche {
-  border-color: rgba(var(--c-rare-blue-rgb), 0.55);
-  color: rgb(var(--c-rare-blue-rgb));
-}
-
-.kmap-strength--hidden-gem {
-  border-color: rgba(var(--c-gold-rgb), 0.6);
-  color: var(--c-gold);
-}
-
 .kmap-action.is-warn {
   border-color: rgba(var(--c-danger-rgb), 0.5);
   color: var(--c-danger);
@@ -5101,55 +5214,6 @@ button.kmap-crumb:hover,
 .kmap-dock .kmap-discoveries,
 .kmap-dock .kmap-story {
   margin-top: 0.4rem;
-}
-
-/* Centre info card, top-left inside the map. Max size = INFO_FOOTPRINT in KeywordMap. */
-.kmap-info {
-  position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  max-width: 228px;
-  padding: 0.35rem 0.6rem;
-  border: 1px solid rgba(var(--c-border-rgb), 0.18);
-  border-radius: 12px;
-  background: hsl(var(--card) / 0.85);
-  backdrop-filter: blur(6px);
-  pointer-events: none;
-}
-
-.kmap-info--mobile {
-  max-width: 178px;
-}
-
-.kmap-info-title {
-  overflow: hidden;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--c-text);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.kmap-info-detail {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  overflow: hidden;
-  font-size: 0.7rem;
-  color: var(--c-muted);
-  white-space: nowrap;
-}
-
-.kmap-info-detail.is-loading {
-  opacity: 0.7;
-}
-
-.kmap-info-detail.is-zero {
-  color: var(--c-danger);
 }
 
 /* Current selection and Clear/Search form the map's bottom row. */

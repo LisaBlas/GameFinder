@@ -157,16 +157,16 @@ const HomeContent: React.FC = () => {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Build panel - mobile: cross-fade, desktop: left 40% */}
+        {/* Build panel - mobile: cross-fade, desktop: left half */}
         <div
-          className={`keyword-build-panel absolute inset-0 lg:static bg-card flex flex-col overflow-y-auto lg:w-2/5 lg:max-h-full lg:self-start lg:border-r lg:border-b lg:border-border transition-opacity duration-200 ${
+          className={`keyword-build-panel absolute inset-0 lg:relative bg-card flex flex-col overflow-hidden lg:overflow-visible lg:w-1/2 lg:h-full lg:max-h-full transition-opacity duration-200 ${
             activeTab === 'build'
               ? 'opacity-100 pointer-events-auto z-10'
               : 'opacity-0 pointer-events-none z-0 lg:opacity-100 lg:pointer-events-auto'
           }`}
         >
           {/* Keyword builder */}
-          <div className="flex-1 lg:flex-none">
+          <div className="keyword-build-panel-scroll min-h-0 flex-1 overflow-y-auto">
             <KeywordSection
               expanded={true}
               setActiveSection={() => {}}
@@ -176,7 +176,7 @@ const HomeContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Results panel - mobile: cross-fade, desktop: right 60% */}
+        {/* Results panel - mobile: cross-fade, desktop: right half */}
         <div
           className={`absolute inset-0 lg:static flex flex-col overflow-y-auto lg:flex-1 transition-opacity duration-200 ${
             activeTab === 'results'

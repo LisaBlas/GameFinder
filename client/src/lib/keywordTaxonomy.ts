@@ -28,10 +28,10 @@ export interface KeywordItem {
 export const MAIN_CATEGORIES: MainCategory[] = ['Mechanics & Systems', 'Setting & World', 'Aesthetics & Style'];
 
 /** Display copy. `title` is the full name; `short` fits breadcrumbs and tabs. Keys stay stable (URLs use them). */
-export const MAIN_CATEGORY_META: Record<MainCategory, { title: string; short: string; hint: string; icon: LucideIcon }> = {
-  'Mechanics & Systems': { title: 'Gameplay and Mechanics', short: 'Mechanics', hint: 'How it plays', icon: Cog },
-  'Setting & World': { title: 'Setting and World', short: 'Setting', hint: 'Where it takes you', icon: Globe },
-  'Aesthetics & Style': { title: 'Visuals and Aesthetics', short: 'Aesthetics', hint: 'How it looks & feels', icon: Palette },
+export const MAIN_CATEGORY_META: Record<MainCategory, { title: string; short: string; icon: LucideIcon }> = {
+  'Mechanics & Systems': { title: 'Gameplay and Mechanics', short: 'Mechanics', icon: Cog },
+  'Setting & World': { title: 'Setting and World', short: 'Setting', icon: Globe },
+  'Aesthetics & Style': { title: 'Visuals and Aesthetics', short: 'Aesthetics', icon: Palette },
 };
 
 const SUBCATEGORY_ICONS: Record<string, LucideIcon> = {
