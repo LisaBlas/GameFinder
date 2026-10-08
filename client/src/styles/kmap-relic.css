@@ -60,7 +60,7 @@
 
 /* Content clears the frame rail (~22px) and the medallion. */
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header {
-  padding: 1.1rem 2.4rem 0.75rem 4.6rem;
+  padding: 2rem 2.4rem 1rem 4.6rem;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-search {
@@ -145,7 +145,7 @@
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-crumb {
-  font-size: 1.15rem;
+  font-size: 0.98rem;
   font-weight: 500;
   color: #9d9a8e;
 }
@@ -155,15 +155,15 @@
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-crumb--current {
-  font-size: 1.3rem;
+  font-size: 1.08rem;
   font-weight: 700;
   color: var(--relic-gold-text);
   text-shadow: 0 0 14px rgba(240, 196, 110, 0.25), 0 1px 0 #000;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-crumb-sep {
-  width: 1rem;
-  height: 1rem;
+  width: 0.85rem;
+  height: 0.85rem;
   color: #7a6440;
 }
 
@@ -267,9 +267,28 @@
 }
 
 /* ── 4. Mode toggle ─────────────────────────────────────────────── */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-modes-row {
-  gap: 0.5rem 1rem;
-  margin-bottom: 1rem;
+/* Top inset: the camera frames nodes below the overlay row (toggle + note,
+   toolbar), so they never sit under it. */
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window {
+  padding-top: 4.2rem;
+}
+
+/* Overlaid on the map window's top-left, clear of the inner frame. */
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window .kmap-modes-row {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 5;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  max-width: 55%;
+  margin: 0;
+  pointer-events: none;
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window .kmap-modes {
+  pointer-events: auto;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-modes {
@@ -283,20 +302,20 @@
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode {
   --plate-shape: var(--plate-hex);
-  --cut: 13px;
-  gap: 0.5rem;
-  height: 2.6rem;
-  padding: 0 1.4rem;
+  --cut: 11px;
+  gap: 0.4rem;
+  height: 2.1rem;
+  padding: 0 1.1rem;
   background: linear-gradient(160deg, #a8803f 0%, #5a4224 45%, #2c1f0f 70%, #7d5c2e 100%);
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 1.02rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #d9d2bd;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode svg {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 0.9rem;
+  height: 0.9rem;
   color: #b8a988;
 }
 
@@ -324,9 +343,12 @@
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-modes-note {
+  padding-left: 0.3rem;
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
+  line-height: 1.25;
   color: #a39f92;
+  text-shadow: 0 1px 2px #000, 0 0 6px #000;
 }
 
 /* ── 5. Map window ──────────────────────────────────────────────── */
@@ -583,52 +605,102 @@
   background: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill.keyword,
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill.keyword-exclude {
-  padding: 0.28rem 0.75rem;
-  border: 1px solid rgba(45, 212, 191, 0.55);
-  background: linear-gradient(180deg, #0f2e2a, #081a18);
-  box-shadow: inset 0 0 8px rgba(45, 212, 191, 0.18);
+/* Fixed row height: adding the first keyword must not grow the tray. */
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-lane {
+  height: 1.75rem;
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-lane-scroll {
+  gap: 0.4rem;
+  padding-block: 0;
+}
+
+/* Selected pills mirror selected map keywords: a hex plate in polished stone
+   (excluded: the same plate in red). Element = rim, ::before = face. */
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill:is(.keyword, .keyword-exclude) {
+  --pill-rgb: 226, 227, 220;
+  position: relative;
+  isolation: isolate;
+  height: 1.4rem;
+  padding: 0 0.85rem;
+  border: 0;
+  border-radius: 0;
+  background: rgb(var(--pill-rgb));
+  box-shadow: none;
+  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%);
+  line-height: 1;
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: #e9fffa;
+  color: #ffffff;
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill:is(.keyword, .keyword-exclude)::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 60%),
+    color-mix(in srgb, rgb(var(--pill-rgb)) 20%, #0b100f);
+  clip-path: inherit;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill.keyword-exclude {
-  border-color: rgba(var(--c-danger-rgb), 0.5);
-  background: linear-gradient(180deg, #2a1012, #160809);
-  box-shadow: inset 0 0 8px rgba(var(--c-danger-rgb), 0.15);
+  --pill-rgb: var(--c-danger-rgb);
   color: #f3c9c9;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill.keyword:hover,
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill.keyword-exclude:hover {
-  border-color: rgba(94, 234, 212, 0.85);
-  background: linear-gradient(180deg, #134039, #0a221f);
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill:is(.keyword, .keyword-exclude):hover::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 60%),
+    color-mix(in srgb, rgb(var(--pill-rgb)) 30%, #0b100f);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill.keyword svg {
-  color: #5eead4;
+/* Mode toggle inside the pill: scaled to the shorter pill, tinted to match. */
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill .keyword-mode-chip-button {
+  width: 1rem;
+  height: 1rem;
+  background: rgba(var(--pill-rgb), 0.14);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .desktop-action-button-clear {
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill .keyword-mode-chip-button:hover {
+  background: rgba(var(--pill-rgb), 0.3);
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .selected-filter-pill svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  color: rgb(var(--pill-rgb));
+}
+
+/* Clear on the lane divider: the field's face colour masks the line behind it. */
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .kmap-selection-clear {
+  right: 1.4rem;
+  height: 1.25rem;
+  padding: 0 0.5rem;
+  background: #0d1211;
+  box-shadow: 0 0 0 1px rgba(168, 128, 63, 0.35);
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 1rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: #b9b29f;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .desktop-action-button-clear:hover {
-  background: transparent;
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .kmap-selection-clear:hover {
+  background: #1a0d0e;
+  box-shadow: 0 0 0 1px rgba(var(--c-danger-rgb), 0.55);
   color: #f3c9c9;
 }
 
 /* Gold plate: border-image wider than the 1px border paints the whole plate
    (pointed ends included) without changing layout; ::before stays the shine. */
+/* Fixed width: Search / Searching... / Share / Copied! never resize the plate. */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .desktop-action-button-search {
+  width: 10.5rem;
   height: 3rem;
-  padding: 0 1.5rem;
+  padding: 0 1.2rem;
+  white-space: nowrap;
   border: 1px solid transparent;
   border-image: url("../assets/ui/relic/frame-cta.svg") 24 fill / 24px stretch;
   border-radius: 0;
@@ -646,13 +718,6 @@
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .desktop-action-button-search svg {
   width: 1.15rem;
   height: 1.15rem;
-}
-
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .desktop-action-button-search .search-count-hint {
-  margin-left: 0.5rem;
-  font-size: 0.95rem;
-  opacity: 0.9;
-  color: #f0d9a8;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection .desktop-action-button-search-active:hover {

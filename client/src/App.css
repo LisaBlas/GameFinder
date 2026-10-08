@@ -5394,8 +5394,29 @@ button.kmap-door-sub:focus-visible {
 }
 
 .kmap-user-selection-filters {
+  position: relative;
   flex: 1;
   min-width: 0;
+}
+
+/* Clear sits on the divider between the include and exclude lanes. */
+.kmap-user-selection .kmap-selection-clear {
+  position: absolute;
+  top: 50%;
+  right: 0.9rem;
+  z-index: 1;
+  height: 1.5rem;
+  padding: 0 0.55rem;
+  gap: 0.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--c-surface-2);
+  font-size: 0.75rem;
+  transform: translateY(-50%);
+}
+
+.kmap-user-selection .kmap-selection-clear:hover:not(:disabled) {
+  transform: translateY(-50%);
 }
 
 .kmap-user-selection-actions {

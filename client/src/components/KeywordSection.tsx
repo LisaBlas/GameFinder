@@ -13,7 +13,6 @@ import KeywordSearch from './KeywordSearch';
 import KeywordMap, { takeSharedJourney, type MapLocation } from './KeywordMap';
 import { KeywordMapSheet, openMapSheetEntry, useMapSheetPopClose } from './KeywordMapSheet';
 import { useSelectionCount } from '../hooks/useSelectionCount';
-import { formatCount } from '../lib/searchCount';
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters } from '../context/FilterContext';
 import Navbar from './Navbar';
@@ -731,51 +730,50 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     );
   };
 
-  /** Clear + Search/Share, shown in the keyword map's bottom bar (Clear only once something is picked). */
+  /** Search/Share, shown in the keyword map's bottom bar. Fixed width across states (see kmap-relic.css). */
   const renderSearchActions = () => (
+    <button
+      onClick={searchFresh ? handleDesktopShare : handleDesktopSearch}
+      disabled={(!hasSearchableFilters && !searchFresh) || isLoading}
+      className={`hero-button desktop-action-button desktop-action-button-search ${
+        hasSearchableFilters || searchFresh
+          ? 'desktop-action-button-search-active'
+          : 'desktop-action-button-search-disabled'
+      } ${shareShineActive ? 'hero-button-share-shine' : ''}${zeroSelection && !searchFresh ? ' desktop-action-button-search-zero' : ''}`}
+      title={zeroSelection && !searchFresh ? 'No games match this search yet' : undefined}
+    >
+      {isLoading ? (
+        <>
+          <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          Searching...
+        </>
+      ) : searchFresh ? (
+        <>
+          {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+          {shareCopied ? 'Copied!' : 'Share'}
+        </>
+      ) : (
+        <>
+          <Search className="w-4 h-4" />
+          Search
+        </>
+      )}
+    </button>
+  );
+
+  /** Selection lanes with Clear sitting on the divider between them (once something is picked). */
+  const renderSelection = () => (
     <>
+      <SelectedFilters variant="lanes" />
       {selectedFilters.length > 0 && (
-        <button
-          onClick={handleDesktopClear}
-          className="desktop-action-button desktop-action-button-clear"
-        >
-          <X className="w-4 h-4" />
+        <button onClick={handleDesktopClear} className="desktop-action-button desktop-action-button-clear kmap-selection-clear">
+          <X className="w-3.5 h-3.5" />
           Clear
         </button>
       )}
-      <button
-        onClick={searchFresh ? handleDesktopShare : handleDesktopSearch}
-        disabled={(!hasSearchableFilters && !searchFresh) || isLoading}
-        className={`hero-button desktop-action-button desktop-action-button-search ${
-          hasSearchableFilters || searchFresh
-            ? 'desktop-action-button-search-active'
-            : 'desktop-action-button-search-disabled'
-        } ${shareShineActive ? 'hero-button-share-shine' : ''}${zeroSelection && !searchFresh ? ' desktop-action-button-search-zero' : ''}`}
-        title={zeroSelection && !searchFresh ? 'No games match this search yet' : undefined}
-      >
-        {isLoading ? (
-          <>
-            <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-            Searching...
-          </>
-        ) : searchFresh ? (
-          <>
-            {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-            {shareCopied ? 'Copied!' : 'Share'}
-          </>
-        ) : (
-          <>
-            <Search className="w-4 h-4" />
-            Search
-            {selectionCount.status === 'ready' && (
-              <span className="search-count-hint">{formatCount(selectionCount.count, selectionCount.capped)}</span>
-            )}
-          </>
-        )}
-      </button>
     </>
   );
 
@@ -786,7 +784,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
         search={<KeywordSearch inputRef={desktopSearchRef} onKeywordSelect={() => {}} />}
         spark={renderDiscoveryDeck()}
         actions={renderSearchActions()}
-        selection={<SelectedFilters variant="lanes" />}
+        selection={renderSelection()}
       />
     </section>
   );

@@ -930,7 +930,8 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
           <div className="kmap-spark-panel">{spark}</div>
         ) : (
           <>
-            {step !== 'categories' && renderModes()}
+            {/* Desktop: the mode toggle sits inside the map window (top-left). */}
+            {step !== 'categories' && variant === 'mobile' && renderModes()}
             {step === 'categories' && renderCategories()}
             {step === 'categories' && selectedFilters.length > 0 && (selection || actions) && (
               <div className="user-selection kmap-user-selection kmap-doors-selection">
@@ -941,6 +942,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
             {step === 'map' && (
               <div className={`kmap-window kmap-window--${variant}`}>
                 {renderMap()}
+                {variant === 'desktop' && renderModes()}
                 {renderToolbar()}
                 {renderDock()}
                 {(selection || actions) && (
