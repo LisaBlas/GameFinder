@@ -23,6 +23,7 @@ import {
   getAvailableSubcategories,
   getCategoryDescription,
   getKeywordCountForSubcategory,
+  getSubcategoryIconComponent,
   subcategoryFromNodeId,
   subcategoryNodeId,
   type MainCategory,
@@ -52,6 +53,18 @@ const readFitMode = () => {
 };
 
 const CATEGORY = 'Keywords';
+
+/** Subcategory shortcuts shown on each category door before "+N more". */
+const DOOR_SUBCATEGORY_LIMIT = { desktop: 6, mobile: 4 } as const;
+
+/** Per category: its subcategories and the unique keyword ids across them. */
+const CATEGORY_STATS = Object.fromEntries(
+  MAIN_CATEGORIES.map(cat => {
+    const subcategories = getAvailableSubcategories(cat);
+    const ids = Array.from(new Set(subcategories.flatMap(sub => getAllKeywordsForSubcategory(sub).map(k => k.id))));
+    return [cat, { subcategories, ids }];
+  }),
+) as Record<MainCategory, { subcategories: string[]; ids: number[] }>;
 
 type Kw = { id: number; name: string };
 const EMPTY_SHOWN: ReadonlySet<string> = new Set();
@@ -540,30 +553,93 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   }, [location]);
 
   // ── renderers ─────────────────────────────────────────────────────
-  const renderCategories = () => (
-    <div className="kmap-doors">
-      {MAIN_CATEGORIES.filter(cat => getAvailableSubcategories(cat).length > 0).map(cat => {
-        const { title, icon: Icon } = MAIN_CATEGORY_META[cat];
-        return (
-          <button
-            key={cat}
-            type="button"
-            className="kmap-door"
-            onClick={() => navigate({ category: cat, subcategory: null, trail: [] })}
-          >
-            <span className="kmap-door-icon">
-              <Icon className="h-6 w-6" />
-            </span>
-            <span className="kmap-door-text">
-              <span className="kmap-door-label">{title}</span>
-              <span className="kmap-door-desc">{getCategoryDescription(cat)}</span>
-            </span>
-            <ArrowRight className="kmap-door-go h-4 w-4" aria-hidden="true" />
-          </button>
-        );
-      })}
-    </div>
+  /**
+   * Keywords that would still return games if added to the current search
+   * (null: no search, still loading, or too broad to facet — counts unknown).
+   */
+  const fitTally = useCallback(
+    (ids: number[]): number | null => {
+      if (!currentSearch || !fit.complete || fit.status === 'off' || fit.status === 'error') return null;
+      return ids.filter(id => !keywordFilters.has(id) && (fit.countOf(id) ?? 0) > 0).length;
+    },
+    [currentSearch, fit, keywordFilters],
   );
+
+  const renderCategories = () => {
+    const searching = currentSearch !== null;
+    const checking = searching && fit.status === 'loading' && !fit.stale;
+    return (
+      <div className="kmap-doors">
+        {MAIN_CATEGORIES.filter(cat => getAvailableSubcategories(cat).length > 0).map(cat => {
+          const { title, icon: Icon } = MAIN_CATEGORY_META[cat];
+          const { ids, subcategories } = CATEGORY_STATS[cat];
+          const fitN = fitTally(ids);
+          // With a search, the groups that fit best come first; otherwise curated order.
+          const subs = subcategories.map(sub => ({ sub, fit: fitTally(getAllKeywordsForSubcategory(sub).map(k => k.id)) }));
+          if (fitN !== null) subs.sort((a, b) => (b.fit ?? 0) - (a.fit ?? 0));
+          const shownSubs = subs.slice(0, DOOR_SUBCATEGORY_LIMIT[variant]);
+          const hiddenSubs = subcategories.length - shownSubs.length;
+          const empty = fitN === 0;
+          return (
+            <div key={cat} className={`kmap-door${empty ? ' is-empty' : ''}`}>
+              <button
+                type="button"
+                className="kmap-door-main"
+                onClick={() => navigate({ category: cat, subcategory: null, trail: [] })}
+              >
+                <span className="kmap-door-icon">
+                  <Icon className="h-6 w-6" />
+                </span>
+                <span className="kmap-door-text">
+                  <span className="kmap-door-label">{title}</span>
+                  <span className="kmap-door-desc">{getCategoryDescription(cat)}</span>
+                </span>
+                {fitN !== null ? (
+                  <span className="kmap-door-fit" title="Keywords here that still return games with your current search">
+                    <strong>{fitN}</strong>
+                    <span>fit your search</span>
+                  </span>
+                ) : checking ? (
+                  <span className="kmap-door-fit is-loading">
+                    <strong>…</strong>
+                    <span>checking fit</span>
+                  </span>
+                ) : null}
+                <ArrowRight className="kmap-door-go h-4 w-4" aria-hidden="true" />
+              </button>
+
+              <div className="kmap-door-subs" aria-label={`${title} subcategories`}>
+                {shownSubs.map(({ sub, fit: subFit }) => {
+                  const SubIcon = getSubcategoryIconComponent(sub);
+                  return (
+                    <button
+                      key={sub}
+                      type="button"
+                      className={`kmap-door-sub${subFit === 0 ? ' is-empty' : ''}`}
+                      onClick={() => {
+                        track('map_explore', { subcategory: sub, depth: 0, variant, from: 'door' });
+                        navigate({ category: cat, subcategory: sub, trail: [] });
+                      }}
+                    >
+                      <SubIcon className="h-3 w-3" aria-hidden="true" />
+                      {sub}
+                      {subFit !== null && <span className="kmap-door-sub-count">{subFit}</span>}
+                    </button>
+                  );
+                })}
+                {hiddenSubs > 0 && (
+                  <button type="button" className="kmap-door-sub kmap-door-sub--more" onClick={() => navigate({ category: cat, subcategory: null, trail: [] })}>
+                    +{hiddenSubs} more
+                  </button>
+                )}
+              </div>
+
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   /** Caption under a subcategory node: "12 fit" in Fits mode, else its size. */
   const tagFor = (node: MapNode) => {
@@ -856,6 +932,12 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
           <>
             {step !== 'categories' && renderModes()}
             {step === 'categories' && renderCategories()}
+            {step === 'categories' && selectedFilters.length > 0 && (selection || actions) && (
+              <div className="user-selection kmap-user-selection kmap-doors-selection">
+                <div className="kmap-user-selection-filters">{selection}</div>
+                {actions && <div className="kmap-user-selection-actions">{actions}</div>}
+              </div>
+            )}
             {step === 'map' && (
               <div className={`kmap-window kmap-window--${variant}`}>
                 {renderMap()}

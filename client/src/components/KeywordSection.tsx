@@ -781,7 +781,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
 
   /** Desktop left panel: one keyword-map section with the search built in and the roll deck on demand. */
   const renderDesktopExplorer = () => (
-    <section className="hidden lg:grid gap-4">
+    <section className="hidden lg:flex lg:flex-1 lg:min-h-0 lg:flex-col">
       <KeywordMap
         search={<KeywordSearch inputRef={desktopSearchRef} onKeywordSelect={() => {}} />}
         spark={renderDiscoveryDeck()}
@@ -1272,8 +1272,8 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       </AnimatePresence>
       <Navbar />
 
-      <div className="flex-1 min-h-0 p-3 lg:flex-none">
-        <div className="flex h-full min-h-0 flex-col gap-5 lg:h-auto">
+      <div className="flex-1 min-h-0 p-3 lg:flex lg:flex-col">
+        <div className="flex h-full min-h-0 flex-col gap-5 lg:h-auto lg:flex-1">
           {renderDesktopExplorer()}
           {renderMobileShelves()}
         </div>

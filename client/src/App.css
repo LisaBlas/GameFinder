@@ -1,4 +1,5 @@
 @import './styles/tokens.css';
+@import './styles/kmap-relic.css';
 
 @tailwind base;
 @tailwind components;
@@ -2447,6 +2448,32 @@ svg.filter-caret.expanded {
     position: relative;
     z-index: 1;
   }
+
+  /* Fill chain: scroll content → keyword section → map → map window, so the
+     map takes the remaining height. Below the floor, the panel scrolls. */
+  .keyword-build-panel-scroll .fantasy-scroll-viewport > div {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .keyword-build-panel .keyword-section {
+    flex: 1;
+  }
+
+  .keyword-build-panel .kmap:not(.kmap--mobile) {
+    flex: 1;
+  }
+
+  .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .keyword-build-panel .kmap-window--desktop {
+    flex: 1;
+  }
 }
 
 .keyword-section {
@@ -4269,29 +4296,61 @@ button.kmap-crumb:hover,
 }
 
 /* Step 1 — category doors */
+/* Doors share the panel's height: each is a tall card with subcategory
+   shortcuts and, once something is searched, how many keywords still fit. */
 .kmap-doors {
-  display: grid;
-  gap: 0.6rem;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-/* A door is a row: icon, full title + what's inside, arrow. */
 .kmap-door {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  padding: 0.85rem 1rem;
+  flex: 1 0 auto; /* grow into spare height, never shrink below content (mobile sheet scrolls) */
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  overflow: hidden;
   border: 1px solid rgba(var(--c-border-rgb), 0.16);
-  border-radius: 18px;
-  background: rgba(var(--c-bg-rgb), 0.45);
-  text-align: left;
-  transition: border-color 0.18s, background 0.18s, transform 0.18s;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(var(--c-emerald-rgb), 0.08), transparent 55%),
+    rgba(var(--c-bg-rgb), 0.45);
+  transition: border-color 0.18s, background 0.18s, opacity 0.18s;
 }
 
 .kmap-door:hover,
-.kmap-door:focus-visible {
+.kmap-door:focus-within {
   border-color: rgba(var(--c-emerald-rgb), 0.45);
-  background: rgba(var(--c-emerald-rgb), 0.07);
-  transform: translateX(2px);
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(var(--c-emerald-rgb), 0.14), transparent 55%),
+    rgba(var(--c-emerald-rgb), 0.05);
+}
+
+.kmap-door.is-empty {
+  opacity: 0.6;
+}
+
+/* The whole card opens the category (stretched button); chips sit above it. */
+.kmap-door-main {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: left;
+  outline: none;
+}
+
+.kmap-door-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.kmap-door-main:focus-visible::after {
+  box-shadow: inset 0 0 0 2px rgba(var(--c-emerald-rgb), 0.6);
 }
 
 .kmap-door-icon {
@@ -4301,6 +4360,7 @@ button.kmap-crumb:hover,
   justify-content: center;
   width: 3rem;
   height: 3rem;
+  border: 1px solid rgba(var(--c-emerald-rgb), 0.18);
   border-radius: 14px;
   background: rgba(var(--c-emerald-rgb), 0.1);
   color: var(--c-emerald-soft);
@@ -4315,11 +4375,10 @@ button.kmap-crumb:hover,
 }
 
 .kmap-door-label {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--c-text);
 }
-
 
 .kmap-door-desc {
   font-size: 0.78rem;
@@ -4327,10 +4386,145 @@ button.kmap-crumb:hover,
   color: var(--c-muted);
 }
 
-
 .kmap-door-go {
   flex-shrink: 0;
   color: var(--c-muted);
+  transition: transform 0.18s, color 0.18s;
+}
+
+.kmap-door:hover .kmap-door-go {
+  color: var(--c-emerald-soft);
+  transform: translateX(3px);
+}
+
+.kmap-door-subs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  pointer-events: none; /* clicks between chips fall through to the door */
+}
+
+.kmap-door-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1.75rem;
+  padding: 0 0.6rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.18);
+  border-radius: 999px;
+  background: rgba(var(--c-bg-rgb), 0.55);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--c-muted);
+  pointer-events: auto;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+button.kmap-door-sub:hover,
+button.kmap-door-sub:focus-visible {
+  border-color: rgba(var(--c-emerald-rgb), 0.5);
+  background: rgba(var(--c-emerald-rgb), 0.1);
+  color: var(--c-text);
+}
+
+.kmap-door-sub.is-empty {
+  opacity: 0.45;
+}
+
+.kmap-door-sub--more {
+  border-style: dashed;
+  color: var(--c-dim);
+}
+
+.kmap-door-sub-count {
+  min-width: 1.1rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: rgba(var(--c-emerald-rgb), 0.16);
+  font-size: 0.65rem;
+  line-height: 1.1rem;
+  text-align: center;
+  color: var(--c-emerald-soft);
+}
+
+.kmap-door-sub.is-empty .kmap-door-sub-count {
+  background: rgba(var(--c-border-rgb), 0.14);
+  color: var(--c-dim);
+}
+
+/* "70 fit your search": the door's answer to the current selection. */
+.kmap-door-fit {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgba(var(--c-emerald-rgb), 0.28);
+  border-radius: 12px;
+  background: rgba(var(--c-emerald-rgb), 0.1);
+  line-height: 1.1;
+}
+
+.kmap-door-fit strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-emerald-soft);
+}
+
+.kmap-door-fit span {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--c-muted);
+}
+
+.kmap-door.is-empty .kmap-door-fit {
+  border-color: rgba(var(--c-border-rgb), 0.2);
+  background: rgba(var(--c-border-rgb), 0.08);
+}
+
+.kmap-door.is-empty .kmap-door-fit strong {
+  color: var(--c-dim);
+}
+
+.kmap-door-fit.is-loading {
+  animation: kmap-door-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes kmap-door-pulse {
+  50% { opacity: 0.45; }
+}
+
+/* Mobile sheet: compact doors — the chips carry the "what's inside". */
+.kmap--mobile .kmap-door {
+  gap: 0.65rem;
+  padding: 0.8rem 0.85rem;
+}
+
+.kmap--mobile .kmap-door-desc {
+  display: none;
+}
+
+.kmap--mobile .kmap-door-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+}
+
+.kmap-doors-selection {
+  flex-shrink: 0;
+  margin-top: 0.75rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.16);
+  border-radius: 18px;
+  background: rgba(var(--c-bg-rgb), 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kmap-door-go { transition: none; }
+  .kmap-door-fit.is-loading { animation: none; }
 }
 
 /* Step 3 — the map */
@@ -4340,8 +4534,11 @@ button.kmap-crumb:hover,
   width: 100%;
 }
 
+/* Desktop: fill the panel's leftover height (not width × ratio), so the
+   selection row below stays in view on wide screens. */
 .kmap-viewport--desktop {
-  aspect-ratio: 520 / 440;
+  flex: 1;
+  min-height: 300px;
 }
 
 .kmap-viewport--mobile {
@@ -4488,7 +4685,7 @@ button.kmap-crumb:hover,
   outline: none;
 }
 
-.kmap-node rect {
+.kmap-node .kmap-node-shape {
   fill: var(--c-surface-2);
   stroke: rgba(var(--c-emerald-rgb), 0.45);
   stroke-width: 1;
@@ -4504,21 +4701,21 @@ button.kmap-crumb:hover,
   cursor: pointer;
 }
 
-.kmap-node--explorable:hover rect,
-.kmap-node--explorable:focus-visible rect,
-.kmap-node:focus-visible rect {
+.kmap-node--explorable:hover .kmap-node-shape,
+.kmap-node--explorable:focus-visible .kmap-node-shape,
+.kmap-node:focus-visible .kmap-node-shape {
   /* Opaque mixes, not rgba: edges run to pill centres and must not show through. */
   fill: color-mix(in srgb, var(--c-emerald) 12%, var(--c-bg));
   stroke: var(--c-emerald);
 }
 
-.kmap-node--center rect {
+.kmap-node--center .kmap-node-shape {
   fill: color-mix(in srgb, var(--c-emerald) 16%, var(--c-bg));
   stroke: var(--c-emerald);
   stroke-width: 2;
 }
 
-.kmap-node--virtual rect {
+.kmap-node--virtual .kmap-node-shape {
   fill: var(--c-surface);
   stroke-dasharray: 4 3;
 }
@@ -4530,7 +4727,7 @@ button.kmap-crumb:hover,
 .kmap-node.is-rarity-epic     { --kmap-rarity-rgb: var(--c-purple-rgb); --kmap-rarity-text: var(--c-purple-soft); }
 .kmap-node.is-rarity-unique   { --kmap-rarity-rgb: var(--c-unique-rgb); --kmap-rarity-text: var(--c-unique-soft); }
 
-.kmap-node[class*="is-rarity-"] rect {
+.kmap-node[class*="is-rarity-"] .kmap-node-shape {
   /* Opaque mix (edges must not show through). */
   fill: color-mix(in srgb, rgb(var(--kmap-rarity-rgb)) 10%, var(--c-surface-2));
   stroke: rgba(var(--kmap-rarity-rgb), 0.8);
@@ -4540,13 +4737,13 @@ button.kmap-crumb:hover,
   fill: var(--kmap-rarity-text);
 }
 
-.kmap-node--explorable[class*="is-rarity-"]:hover rect,
-.kmap-node--explorable[class*="is-rarity-"]:focus-visible rect {
+.kmap-node--explorable[class*="is-rarity-"]:hover .kmap-node-shape,
+.kmap-node--explorable[class*="is-rarity-"]:focus-visible .kmap-node-shape {
   fill: color-mix(in srgb, rgb(var(--kmap-rarity-rgb)) 20%, var(--c-bg));
   stroke: rgb(var(--kmap-rarity-rgb));
 }
 
-.kmap-node.is-dead rect {
+.kmap-node.is-dead .kmap-node-shape {
   stroke: rgba(var(--c-border-rgb), 0.3);
   stroke-dasharray: 3 3;
 }
@@ -4555,7 +4752,7 @@ button.kmap-crumb:hover,
   fill: var(--c-muted);
 }
 
-.kmap-node.is-include rect {
+.kmap-node.is-include .kmap-node-shape {
   fill: var(--c-emerald);
   stroke: var(--c-emerald);
 }
@@ -4565,7 +4762,7 @@ button.kmap-crumb:hover,
   font-weight: 600;
 }
 
-.kmap-node.is-exclude rect {
+.kmap-node.is-exclude .kmap-node-shape {
   fill: color-mix(in srgb, var(--c-danger) 14%, var(--c-bg));
   stroke: var(--c-danger);
 }
@@ -4767,13 +4964,13 @@ button.kmap-crumb:hover,
 
 /* Results → map: keywords that made the hovered/expanded card match (gold, like Search),
    and the card's other keywords (soft emerald). */
-.kmap-node.is-cause rect {
+.kmap-node.is-cause .kmap-node-shape {
   stroke: var(--c-gold);
   stroke-width: 2;
   filter: drop-shadow(0 0 6px rgba(var(--c-gold-rgb), 0.55));
 }
 
-.kmap-node.is-echo rect {
+.kmap-node.is-echo .kmap-node-shape {
   stroke: var(--c-emerald-soft);
   stroke-width: 1.5;
   stroke-dasharray: 3 2;
@@ -5104,7 +5301,7 @@ button.kmap-crumb:hover,
 }
 
 /* Subcategory nodes in a category map: folder-like, not addable. */
-.kmap-node--group rect {
+.kmap-node--group .kmap-node-shape {
   fill: color-mix(in srgb, var(--c-emerald) 7%, var(--c-surface-2));
   stroke: rgba(var(--c-emerald-rgb), 0.55);
   stroke-dasharray: none;
@@ -5216,6 +5413,93 @@ button.kmap-crumb:hover,
 
 .kmap-user-selection .desktop-action-button-search {
   min-width: 0;
+}
+
+/* Discreet tray: the map carries the colour; the selection stays neutral.
+   Mode is read from the lane icon and, for excludes, a strikethrough. */
+.kmap-user-selection .selected-filter-lanes {
+  border-color: rgba(var(--c-border-rgb), 0.1);
+  background: rgba(var(--c-bg-rgb), 0.28);
+}
+
+.kmap-user-selection .selected-filter-lane-mode {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.kmap-user-selection .selected-filter-lane-mode svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.kmap-user-selection .selected-filter-lane-mode-include.active,
+.kmap-user-selection .selected-filter-lane-mode-exclude.active {
+  border: 0;
+  background: transparent;
+  color: var(--c-dim);
+}
+
+.kmap-user-selection .selected-filter-pill.keyword,
+.kmap-user-selection .selected-filter-pill.keyword-exclude {
+  padding: 0.24rem 0.6rem;
+  border: 1px solid rgba(var(--c-border-rgb), 0.18);
+  background-color: rgba(var(--c-surface-rgb), 0.6);
+  color: var(--c-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.kmap-user-selection .selected-filter-pill.keyword-exclude {
+  color: var(--c-muted);
+}
+
+.kmap-user-selection .selected-filter-pill.keyword-exclude .selected-filter-name {
+  text-decoration: line-through;
+  text-decoration-color: rgba(var(--c-danger-rgb), 0.55);
+}
+
+.kmap-user-selection .selected-filter-pill.keyword:hover,
+.kmap-user-selection .selected-filter-pill.keyword-exclude:hover {
+  border-color: rgba(var(--c-border-rgb), 0.34);
+  background-color: rgba(var(--c-surface-rgb), 0.9);
+}
+
+.kmap-user-selection .selected-filter-pill.keyword svg,
+.kmap-user-selection .selected-filter-pill.keyword-exclude svg {
+  color: var(--c-dim);
+}
+
+.kmap-user-selection .selected-filter-pill.keyword .keyword-mode-chip-button,
+.kmap-user-selection .selected-filter-pill.keyword-exclude .keyword-mode-chip-button {
+  background: transparent;
+}
+
+.kmap-user-selection .selected-filter-pill .keyword-mode-chip-button:hover {
+  background: rgba(var(--c-border-rgb), 0.16);
+}
+
+.kmap-user-selection .selected-filter-pill .keyword-mode-chip-button:hover svg {
+  color: var(--c-text);
+}
+
+/* Search: tinted gold instead of a solid, glowing slab. */
+.kmap-user-selection .desktop-action-button-search-active {
+  border-color: rgba(var(--c-gold-rgb), 0.45);
+  background: rgba(var(--c-gold-rgb), 0.14);
+  color: #ffd36a;
+  box-shadow: none;
+}
+
+.kmap-user-selection .desktop-action-button-search-active:hover {
+  border-color: rgba(var(--c-gold-rgb), 0.7);
+  background: rgba(var(--c-gold-rgb), 0.22);
+  color: #ffe08f;
+  box-shadow: none;
+}
+
+.kmap-user-selection .desktop-action-button-clear {
+  border-color: transparent;
+  background: transparent;
 }
 
 /* Legacy dock groups retained for contextual extensions. */

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 48" width="160" height="48">
+  <!-- 9-slice gold CTA plate (slice 24 all round: the pointed ends live in
+       the corner slices, so only the flat middle stretches). -->
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe2a0"/>
+      <stop offset="0.45" stop-color="#c8913c"/>
+      <stop offset="1" stop-color="#6a4515"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a2408"/>
+      <stop offset="0.5" stop-color="#1e1305"/>
+      <stop offset="1" stop-color="#2c1a06"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0" stop-color="#ffb347" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#ffb347" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path d="M18 0.5 H142 L159.5 24 L142 47.5 H18 L0.5 24 Z" fill="#000" opacity="0.6"/>
+  <path d="M18 1.5 H142 L158.3 24 L142 46.5 H18 L1.7 24 Z" fill="url(#rim)"/>
+  <path d="M19 4 H141 L155.2 24 L141 44 H19 L4.8 24 Z" fill="#2a1a06"/>
+  <path d="M19.6 5.2 H140.4 L153.8 24 L140.4 42.8 H19.6 L6.2 24 Z" fill="url(#face)"/>
+  <path d="M19.6 5.2 H140.4 L153.8 24 L140.4 42.8 H19.6 L6.2 24 Z" fill="url(#glow)"/>
+  <path d="M21 8 H139 L150 24 L139 40 H21 L10 24 Z" fill="none" stroke="#e0a850" stroke-opacity="0.45" stroke-width="0.8"/>
+  <!-- end gems -->
+  <path d="M4.5 24 L8 20.5 L11.5 24 L8 27.5 Z" fill="#2dd4bf" stroke="#06201c" stroke-width="0.6"/>
+  <path d="M148.5 24 L152 20.5 L155.5 24 L152 27.5 Z" fill="#2dd4bf" stroke="#06201c" stroke-width="0.6"/>
+</svg>
