@@ -13,6 +13,7 @@ import InstantGamingIconImg from '../assets/icons/instantGaming.png';
 import KinguinIconImg from '../assets/icons/kinguin.png';
 import GamersGateIconImg from '../assets/icons/gamersGate.png';
 import type { RarityTier } from '../lib/discoveryCards';
+import FantasyScrollArea from './FantasyScrollArea';
 
 const trackExternalClick = (storeName: string, storeType: 'official' | 'affiliate', gameTitle: string) => {
   if (typeof gtag !== 'undefined') {
@@ -343,7 +344,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
 
     const mediaEl = mediaRef.current;
     const updateMediaHeight = () => {
-      setMediaHeight(mediaEl.getBoundingClientRect().height);
+      // offsetHeight ignores transforms; getBoundingClientRect would read the
+      // scaled size mid Framer `layout` animation and never be corrected.
+      setMediaHeight(mediaEl.offsetHeight);
     };
 
     updateMediaHeight();
@@ -497,7 +500,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   [filteredStores]);
   const synopsis = game.summary || 'No synopsis available yet.';
   const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
-  const storeButtonClass = "game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm font-semibold transition-colors";
+  const storeButtonClass = "game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 px-1 py-2 text-left text-sm font-semibold transition-colors";
   const storeIconClass = "game-card-store-icon flex h-5 w-5 flex-shrink-0 items-center justify-center";
   const officialStoreLinks = (
     <>
@@ -687,7 +690,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         key={`${tag.type}-${tag.id}-${tag.name}`}
         data-matched={isMatchedFilter ? 'true' : undefined}
         onClick={(e) => handleTagClick(tag, tag.category, e)}
-        className={`game-card-tag inline-flex px-2 py-1 text-xs rounded-md transition-all cursor-pointer ${tagClass}`}
+        className={`game-card-tag inline-flex px-2 py-1 text-xs rounded transition-all cursor-pointer ${tagClass}`}
         title={isExcluded ? `Click to remove "${displayName}" exclusion` : isSelectedTag ? `Click to remove "${displayName}" filter` : `Click to add "${displayName}" to filters`}
       >
         {displayName}
@@ -696,13 +699,13 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   };
 
   const tagsPanel = (
-    <div ref={tagsRef} className="game-card-panel game-card-panel-keywords rounded-lg border px-4 pb-4 pt-2.5">
+    <div ref={tagsRef} className="game-card-carved-section pt-4">
       <div>
         {tagGroups.length > 0 ? (
           <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
             {tagGroups.map(group => (
               <div key={group.key} className="min-w-0">
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">{group.label}</span>
+                <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">{group.label}</span>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {group.tags.length > 0
                     ? group.tags.map(renderTagButton)
@@ -839,7 +842,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className={`flex gap-2 ${isSelected ? 'items-center flex-wrap' : 'items-start flex-nowrap'} ${fullscreen && isSelected ? 'hidden md:flex' : ''}`}>
-                    <h3 className={`min-w-0 flex-1 text-xl font-bold text-white leading-tight ${!isSelected ? 'line-clamp-2' : ''}`}>{game.name}</h3>
+                    <h3 className={`game-card-title min-w-0 flex-1 text-xl font-bold leading-tight ${!isSelected ? 'line-clamp-2' : ''}`}>{game.name}</h3>
                     {rating && (
                       <span className="game-card-rating flex-shrink-0 text-xs font-semibold px-2 py-0.5 rounded-md">
                         {rating.toFixed(1)}
@@ -855,7 +858,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   <button
                     type="button"
                     onClick={handleGameShare}
-                    className={`h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-800/70 hover:text-slate-300 ${!isSelected ? 'hidden md:flex' : 'flex'}`}
+                    className={`game-card-icon-action h-8 w-8 items-center justify-center transition-colors ${!isSelected ? 'hidden md:flex' : 'flex'}`}
                     aria-label="Share game"
                   >
                     {gameCopied
@@ -865,7 +868,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); toggleSaved({ id: game.id, name: game.name, cover: game.cover, rating: game.rating, first_release_date: game.first_release_date }); }}
-                    className={`h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-slate-800/70 ${!isSelected ? 'hidden md:flex' : 'flex'} ${isSaved(game.id) ? 'text-rose-400' : 'text-slate-500 hover:text-rose-400'}`}
+                    className={`game-card-icon-action h-8 w-8 items-center justify-center transition-colors ${!isSelected ? 'hidden md:flex' : 'flex'} ${isSaved(game.id) ? 'game-card-icon-action-active' : ''}`}
                     aria-label={isSaved(game.id) ? 'Remove from saved' : 'Save game'}
                   >
                     <FaHeart className="h-4 w-4" />
@@ -896,7 +899,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </div>
               )}
 
-              <div className={isSelected ? 'game-card-summary-panel rounded-lg px-4 py-3' : ''}>
+              <div className={isSelected ? 'game-card-carved-summary' : ''}>
                 <div className="text-xs text-slate-400">
                   {developerName && <span className="text-slate-300">{developerName}</span>}
                   {developerName && releaseYear && <span className="px-1.5 text-slate-600">/</span>}
@@ -904,7 +907,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </div>
 
                 <div className={isSelected ? 'mt-2' : 'mt-1'}>
-                  <p className={`text-sm leading-relaxed text-slate-300 ${isSelected && !synopsisExpanded ? 'line-clamp-3' : !isSelected ? 'line-clamp-2' : ''}`}>
+                  <p className={`game-card-synopsis text-sm leading-relaxed ${isSelected && !synopsisExpanded ? 'line-clamp-3' : !isSelected ? 'line-clamp-2' : ''}`}>
                     {synopsis}
                   </p>
                   {!isSelected && (steamPrice?.isFree || (steamPrice?.discount ?? 0) > 0 || isNewRelease) && (
@@ -929,8 +932,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                   {isSelected && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(v => !v); }}
-                      className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-md py-1.5 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/5 transition-colors"
+                      className="game-card-read-more mt-2 flex w-full items-center gap-2 text-xs transition-colors"
                     >
+                      <span className="game-card-groove flex-1" aria-hidden="true" />
                       {synopsisExpanded ? 'Read less' : 'Read more'}
                       <FaChevronDown className={`h-2.5 w-2.5 transition-transform ${synopsisExpanded ? 'rotate-180' : ''}`} />
                     </button>
@@ -942,7 +946,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 <div className="grid gap-4 pt-1">
                   {fullscreen && tagsPanel}
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)]">
-                    <div ref={mediaRef} className="aspect-video overflow-hidden rounded-lg bg-black">
+                    <div ref={mediaRef} className="game-card-screen aspect-video overflow-hidden rounded-lg bg-black">
                       {isVideoLoading && (
                         <div className="w-full h-full bg-slate-800 animate-pulse" />
                       )}
@@ -1002,13 +1006,13 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                     </div>
 
                     <div
-                      className="game-card-panel game-card-panel-stores flex min-h-0 flex-col rounded-lg border px-4 pb-4 pt-2.5"
+                      className="game-card-carved-column flex min-h-0 flex-col"
                       style={mediaHeight && isMediaSyncedLayout ? { height: `${mediaHeight}px` } : undefined}
                     >
-                      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+                      <FantasyScrollArea>
                         <div className="grid gap-4">
                           <div className="min-w-0">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Stores</span>
+                            <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">Stores</span>
                             <div className="mt-2">
                               {hasOfficialLinks ? (
                                 <div className="flex flex-col gap-1.5">
@@ -1022,20 +1026,20 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                             </div>
                           </div>
                           <div className="min-w-0">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">Marketplaces</span>
+                            <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">Marketplaces</span>
                             <div className="mt-2">
                               {partnerStoreLinks}
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </FantasyScrollArea>
                     </div>
                   </div>
 
                   {!fullscreen && tagsPanel}
 
                   {/* ── Similar games panel — modal only ── */}
-                  {fullscreen && <div className="game-card-panel rounded-lg border px-4 pb-4 pt-3">
+                  {fullscreen && <div className="game-card-carved-section pt-4">
                     {/* "Find games like this" CTA */}
                     <button
                       type="button"

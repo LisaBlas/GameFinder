@@ -10,6 +10,7 @@ import { FaGithub, FaHeart } from 'react-icons/fa';
 import { FaXTwitter, FaGlobe } from 'react-icons/fa6';
 import { useSavedGames } from '../context/SavedGamesContext';
 import { motion } from 'framer-motion';
+import FantasyScrollArea from '../components/FantasyScrollArea';
 
 const homepageSeoLinks = [
   { href: '/best/cozy-games', label: 'Cozy games' },
@@ -166,19 +167,19 @@ const HomeContent: React.FC = () => {
           }`}
         >
           {/* Keyword builder */}
-          <div className="keyword-build-panel-scroll min-h-0 flex-1 overflow-y-auto">
+          <FantasyScrollArea className="keyword-build-panel-scroll">
             <KeywordSection
               expanded={true}
               setActiveSection={() => {}}
               filterSectionRef={resultsSectionRef}
               heroRef={resultsSectionRef}
             />
-          </div>
+          </FantasyScrollArea>
         </div>
 
         {/* Results panel - mobile: cross-fade, desktop: right half */}
         <div
-          className={`absolute inset-0 lg:static flex flex-col overflow-y-auto lg:flex-1 transition-opacity duration-200 ${
+          className={`results-panel-scroll absolute inset-0 lg:static flex flex-col overflow-y-auto lg:flex-1 transition-opacity duration-200 ${
             activeTab === 'results'
               ? 'opacity-100 pointer-events-auto z-10'
               : 'opacity-0 pointer-events-none z-0 lg:opacity-100 lg:pointer-events-auto'

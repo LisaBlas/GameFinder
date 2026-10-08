@@ -36,26 +36,34 @@
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(var(--c-emerald-rgb), 0.3) rgba(var(--c-bg-rgb), 0.55);
+    scrollbar-color: rgba(117, 132, 127, 0.34) rgba(var(--c-bg-rgb), 0.45);
   }
 
   *::-webkit-scrollbar {
     width: 8px;
-    height: 8px;
+    height: 7px;
   }
 
   *::-webkit-scrollbar-track {
-    background: rgba(var(--c-bg-rgb), 0.55);
+    background: rgba(var(--c-bg-rgb), 0.45);
   }
 
   *::-webkit-scrollbar-thumb {
-    background: rgba(var(--c-emerald-rgb), 0.25);
-    border: 2px solid rgba(var(--c-bg-rgb), 0.85);
+    border: 2px solid rgba(var(--c-bg-rgb), 0.72);
     border-radius: 999px;
+    background: rgba(117, 132, 127, 0.34);
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background: rgba(var(--c-emerald-rgb), 0.45);
+    background: rgba(151, 166, 161, 0.46);
+  }
+
+  *::-webkit-scrollbar-thumb:active {
+    background: rgba(151, 166, 161, 0.58);
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: #07100e;
   }
 }
 
@@ -920,7 +928,7 @@
   overflow-y: hidden;
   padding: 0.32rem 0.7rem;
   scrollbar-width: thin;
-  scrollbar-color: rgba(var(--c-emerald-rgb), 0.32) transparent;
+  scrollbar-color: #652b25 transparent;
 }
 
 .selected-filter-lane-scroll::-webkit-scrollbar {
@@ -932,12 +940,14 @@
 }
 
 .selected-filter-lane-scroll::-webkit-scrollbar-thumb {
-  background: rgba(var(--c-emerald-rgb), 0.32);
+  min-height: 0;
+  border: 0;
   border-radius: 999px;
+  background: rgba(117, 132, 127, 0.28);
 }
 
 .selected-filter-lane-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--c-emerald-rgb), 0.48);
+  background: rgba(151, 166, 161, 0.4);
 }
 
 .selected-filter-empty {
@@ -1894,43 +1904,12 @@ h3{
   isolation: isolate;
   background:
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
-    linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.97), rgba(var(--c-card-rgb), 0.95) 55%, rgba(var(--c-bg-rgb), 0.98));
+    linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.82), rgba(var(--c-card-rgb), 0.78) 55%, rgba(var(--c-bg-rgb), 0.9)),
+    url("./assets/ui/game-card-forge-slate.png") center / cover;
   border-radius: 12px;
   overflow: hidden;
   border: none;
   position: relative;
-}
-
-.game-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      115deg,
-      transparent 22%,
-      rgba(255, 255, 255, 0.022) 36%,
-      rgba(255, 255, 255, 0.042) 44%,
-      rgba(255, 255, 255, 0.022) 54%,
-      transparent 70%
-    ),
-    repeating-linear-gradient(
-      172deg,
-      transparent 0px, transparent 2px,
-      rgba(255, 255, 255, 0.014) 2px, rgba(255, 255, 255, 0.014) 3px
-    ),
-    repeating-linear-gradient(
-      188deg,
-      transparent 0px, transparent 3px,
-      rgba(255, 255, 255, 0.009) 3px, rgba(255, 255, 255, 0.009) 4px
-    ),
-    repeating-linear-gradient(
-      88deg,
-      transparent 0px, transparent 8px,
-      rgba(255, 255, 255, 0.007) 8px, rgba(255, 255, 255, 0.007) 9px
-    );
 }
 
 .game-card::after {
@@ -2004,7 +1983,8 @@ h3{
 .game-card-compact:hover {
   background:
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
-    linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.99), rgba(var(--c-card-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
+    linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.78), rgba(var(--c-card-rgb), 0.74) 55%, rgba(var(--c-bg-rgb), 0.88)),
+    url("./assets/ui/game-card-forge-slate.png") center / cover;
 }
 
 .game-card-compact:hover::after {
@@ -2025,37 +2005,11 @@ h3{
 .game-card-selected {
   background:
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
-    linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.99), rgba(var(--c-card-rgb), 0.97) 55%, rgba(var(--c-bg-rgb), 0.99));
+    linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.8), rgba(var(--c-card-rgb), 0.76) 55%, rgba(var(--c-bg-rgb), 0.9)),
+    url("./assets/ui/game-card-forge-slate.png") center / cover;
   box-shadow:
     0 22px 70px rgba(0, 0, 0, 0.40),
     0 0 0 1px rgba(0, 0, 0, 0.58);
-}
-
-.game-card-selected::before {
-  background:
-    linear-gradient(
-      115deg,
-      transparent 20%,
-      rgba(255, 255, 255, 0.028) 34%,
-      rgba(255, 255, 255, 0.052) 44%,
-      rgba(255, 255, 255, 0.028) 55%,
-      transparent 72%
-    ),
-    repeating-linear-gradient(
-      172deg,
-      transparent 0px, transparent 2px,
-      rgba(255, 255, 255, 0.018) 2px, rgba(255, 255, 255, 0.018) 3px
-    ),
-    repeating-linear-gradient(
-      188deg,
-      transparent 0px, transparent 3px,
-      rgba(255, 255, 255, 0.011) 3px, rgba(255, 255, 255, 0.011) 4px
-    ),
-    repeating-linear-gradient(
-      88deg,
-      transparent 0px, transparent 8px,
-      rgba(255, 255, 255, 0.009) 8px, rgba(255, 255, 255, 0.009) 9px
-    );
 }
 
 .game-card-selected::after {
@@ -2119,36 +2073,16 @@ h3{
   }
 }
 
-.game-card-summary-panel {
-  position: relative;
-  overflow: visible;
-  background: transparent;
+/* Carved layout: one slab, regions separated by engraved grooves, no inner boxes.
+   The trailer (.game-card-screen) is the only solid internal block. */
+.game-card-groove {
+  display: block;
+  height: 2px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.065) 1px 2px);
 }
 
-.game-card-summary-panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at left top, rgba(0, 0, 0, 0.16), transparent 32px) left top / 52px 52px no-repeat,
-    radial-gradient(circle at right top, rgba(0, 0, 0, 0.16), transparent 32px) right top / 52px 52px no-repeat,
-    radial-gradient(circle at left bottom, rgba(0, 0, 0, 0.16), transparent 32px) left bottom / 52px 52px no-repeat,
-    radial-gradient(circle at right bottom, rgba(0, 0, 0, 0.16), transparent 32px) right bottom / 52px 52px no-repeat,
-    linear-gradient(to right, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) left top / 44px 1px no-repeat,
-    linear-gradient(to bottom, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) left top / 1px 44px no-repeat,
-    linear-gradient(to left, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) right top / 44px 1px no-repeat,
-    linear-gradient(to bottom, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) right top / 1px 44px no-repeat,
-    linear-gradient(to right, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) left bottom / 44px 1px no-repeat,
-    linear-gradient(to top, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) left bottom / 1px 44px no-repeat,
-    linear-gradient(to left, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) right bottom / 44px 1px no-repeat,
-    linear-gradient(to top, rgba(255, 248, 214, 0.2), rgba(255, 216, 137, 0.08), transparent) right bottom / 1px 44px no-repeat;
-}
-
-.game-card-summary-panel > * {
+.game-card-carved-summary {
   position: relative;
-  z-index: 1;
 }
 
 .game-card-rating {
@@ -2158,91 +2092,147 @@ h3{
   box-shadow: 0 0 16px rgba(var(--c-emerald-rgb), 0.1);
 }
 
-.game-card-panel {
+.game-card-carved-section,
+.game-card-carved-column {
   position: relative;
-  overflow: hidden;
-  border-color: rgba(var(--c-gold-rgb), 0.1);
-  background:
-    linear-gradient(180deg, rgba(var(--c-bg-rgb), 0.66), rgba(var(--c-surface-rgb), 0.5)),
-    rgba(var(--c-bg-rgb), 0.48);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 243, 195, 0.09),
-    inset 1px 0 0 rgba(255, 243, 195, 0.04),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.36),
-    inset -1px 0 0 rgba(0, 0, 0, 0.22),
-    inset 0 0 0 4px rgba(0, 0, 0, 0.16),
-    inset 0 0 0 5px rgba(255, 243, 195, 0.025),
-    0 14px 32px rgba(0, 0, 0, 0.18);
 }
 
-.game-card-panel-stores,
-.game-card-panel-keywords {
-  border-color: rgba(128, 144, 138, 0.12);
-  background:
-    linear-gradient(116deg, rgba(255, 255, 255, 0.035), transparent 22% 58%, rgba(255, 255, 255, 0.014) 66%, transparent 78%),
-    repeating-linear-gradient(92deg, rgba(255, 255, 255, 0.010) 0 1px, transparent 1px 7px, rgba(0, 0, 0, 0.065) 7px 8px, transparent 8px 14px),
-    repeating-linear-gradient(176deg, transparent 0 4px, rgba(255, 255, 255, 0.006) 4px 5px, transparent 5px 10px),
-    radial-gradient(ellipse at 50% 0%, rgba(178, 196, 187, 0.035), transparent 60%),
-    linear-gradient(180deg, rgba(24, 30, 29, 0.86), rgba(13, 17, 16, 0.90) 54%, rgba(7, 10, 10, 0.92));
-  box-shadow:
-    inset 0 1px 0 rgba(244, 250, 246, 0.085),
-    inset 1px 0 0 rgba(244, 250, 246, 0.025),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.52),
-    inset -1px 0 0 rgba(0, 0, 0, 0.32),
-    inset 0 0 0 1px rgba(194, 210, 202, 0.035),
-    inset 0 0 0 4px rgba(0, 0, 0, 0.14),
-    inset 0 0 24px rgba(0, 0, 0, 0.18),
-    0 15px 34px rgba(0, 0, 0, 0.24);
-}
-
-.game-card-panel::before {
+/* Full-width channel across the top with short corner cuts dropping from each end. */
+.game-card-carved-section::before {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: 0;
+  inset: 0 0 auto 0;
+  height: 8px;
   pointer-events: none;
   background:
-    radial-gradient(circle at 11px 11px, rgba(255, 248, 214, 0.56) 0 1px, rgba(144, 154, 139, 0.46) 1.5px 2.7px, rgba(12, 14, 13, 0.86) 3.2px 4.4px, transparent 4.8px),
-    radial-gradient(circle at calc(100% - 11px) 11px, rgba(255, 248, 214, 0.50) 0 1px, rgba(144, 154, 139, 0.40) 1.5px 2.7px, rgba(12, 14, 13, 0.84) 3.2px 4.4px, transparent 4.8px),
-    radial-gradient(circle at 11px calc(100% - 11px), rgba(255, 248, 214, 0.36) 0 1px, rgba(144, 154, 139, 0.34) 1.5px 2.7px, rgba(12, 14, 13, 0.86) 3.2px 4.4px, transparent 4.8px),
-    radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), rgba(255, 248, 214, 0.32) 0 1px, rgba(144, 154, 139, 0.30) 1.5px 2.7px, rgba(12, 14, 13, 0.84) 3.2px 4.4px, transparent 4.8px);
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.065) 1px 2px) top / 100% 2px no-repeat,
+    linear-gradient(to right, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.055) 1px 2px) left top / 2px 8px no-repeat,
+    linear-gradient(to left, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.055) 1px 2px) right top / 2px 8px no-repeat;
 }
 
-.game-card-panel-stores::before,
-.game-card-panel-keywords::before {
-  background:
-    radial-gradient(circle at 11px 11px, rgba(220, 230, 225, 0.38) 0 0.7px, rgba(98, 112, 107, 0.36) 1.2px 2.4px, rgba(5, 7, 7, 0.82) 3px 4.3px, transparent 4.8px),
-    radial-gradient(circle at calc(100% - 11px) 11px, rgba(220, 230, 225, 0.32) 0 0.7px, rgba(98, 112, 107, 0.31) 1.2px 2.4px, rgba(5, 7, 7, 0.80) 3px 4.3px, transparent 4.8px),
-    radial-gradient(circle at 11px calc(100% - 11px), rgba(180, 194, 187, 0.22) 0 0.7px, rgba(82, 94, 90, 0.28) 1.2px 2.4px, rgba(5, 7, 7, 0.82) 3px 4.3px, transparent 4.8px),
-    radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), rgba(180, 194, 187, 0.20) 0 0.7px, rgba(82, 94, 90, 0.24) 1.2px 2.4px, rgba(5, 7, 7, 0.80) 3px 4.3px, transparent 4.8px),
-    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.018) 20%, transparent 40% 66%, rgba(0, 0, 0, 0.10), transparent);
+/* Stores sit in the stone itself: a groove on the top (stacked) or left (beside the screen). */
+.game-card-carved-column {
+  padding-top: 0.875rem;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.065) 1px 2px) top / 100% 2px no-repeat;
 }
 
-.game-card-panel > * {
-  position: relative;
-  z-index: 1;
+@media (min-width: 1280px) {
+  .game-card-carved-column {
+    padding-top: 0.125rem;
+    padding-left: 1rem;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.065) 1px 2px) left top / 2px 100% no-repeat;
+  }
 }
 
-.game-card-store-button,
-.game-card-empty-state {
-  border-color: rgba(var(--c-border-rgb), 0.12);
-  background:
-    linear-gradient(180deg, rgba(229, 238, 233, 0.022), rgba(0, 0, 0, 0.085)),
-    repeating-linear-gradient(94deg, rgba(255, 255, 255, 0.007) 0 1px, transparent 1px 8px),
-    rgba(var(--c-surface-rgb), 0.42);
-  color: rgba(248, 250, 252, 0.72);
+.game-card-screen {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.032),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+    0 0 0 1px rgba(0, 0, 0, 0.85),
+    0 0 0 2px rgba(255, 248, 214, 0.07),
+    0 0 0 4px rgba(0, 0, 0, 0.42),
+    0 8px 22px rgba(0, 0, 0, 0.38);
+}
+
+.game-card-title {
+  color: rgba(226, 231, 226, 0.92);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.95), 0 1px 0 rgba(255, 248, 214, 0.12);
+}
+
+.game-card-synopsis {
+  color: rgba(185, 195, 189, 0.82);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.92), 0 1px 0 rgba(232, 239, 230, 0.075);
+}
+
+.game-card-icon-action {
+  color: rgba(150, 160, 152, 0.62);
+  filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.95)) drop-shadow(0 1px 0 rgba(255, 248, 214, 0.08));
+}
+
+.game-card-icon-action:hover {
+  color: rgba(var(--c-gold-rgb), 0.82);
+}
+
+.game-card-icon-action-active,
+.game-card-icon-action-active:hover {
+  color: rgba(var(--c-gold-rgb), 0.9);
+}
+
+.game-card-read-more {
+  color: rgba(var(--c-gold-rgb), 0.62);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9);
+}
+
+.game-card-read-more:hover {
+  color: rgba(var(--c-gold-rgb), 0.9);
+}
+
+.fantasy-scroll-area {
+  position: relative;
+  overflow: hidden;
+}
+
+.fantasy-scroll-viewport {
+  scrollbar-width: none;
+}
+
+.fantasy-scroll-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.results-panel-scroll {
+  scrollbar-width: none;
+}
+
+.results-panel-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.fantasy-scrollbar {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 16px;
+  touch-action: none;
+  user-select: none;
+}
+
+.fantasy-scroll-track {
+  position: absolute;
+  inset: 0;
+  background: transparent url("./assets/ui/scrollbar-forged-track.png") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+.fantasy-scroll-thumb {
+  position: absolute;
+  left: 4px;
+  width: 8px;
+  min-height: 38px;
+  cursor: grab;
+  background: transparent url("./assets/ui/scrollbar-oxblood-grip.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
+}
+
+.fantasy-scroll-thumb:hover {
+  filter: brightness(1.13) saturate(1.06) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
+}
+
+.fantasy-scroll-thumb:active {
+  cursor: grabbing;
+  filter: brightness(0.92) saturate(1.08) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.75));
+}
+
+.game-card-section-label {
+  color: rgba(var(--c-gold-rgb), 0.62);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+.game-card-store-button {
+  color: rgba(214, 222, 215, 0.74);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0 1px, rgba(255, 248, 214, 0.045) 1px 2px) bottom / 100% 2px no-repeat;
 }
 
 .game-card-store-button:hover {
-  border-color: rgba(var(--c-emerald-rgb), 0.36);
-  background:
-    linear-gradient(180deg, rgba(229, 255, 246, 0.032), rgba(0, 0, 0, 0.09)),
-    repeating-linear-gradient(94deg, rgba(255, 255, 255, 0.009) 0 1px, transparent 1px 8px),
-    rgba(var(--c-emerald-rgb), 0.08);
-  color: rgba(248, 250, 252, 0.88);
+  color: rgba(var(--c-gold-rgb), 0.92);
 }
 
 .game-card-store-icon {
@@ -2251,7 +2241,7 @@ h3{
 
 
 .game-card-empty-state {
-  color: var(--c-dim);
+  color: rgba(180, 193, 186, 0.76);
 }
 
 .game-card-compact-stat {
@@ -2281,60 +2271,43 @@ h3{
 }
 
 .game-card-tag {
-  border: 1px solid transparent;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(0, 0, 0, 0.09)),
-    repeating-linear-gradient(92deg, rgba(255, 255, 255, 0.007) 0 1px, transparent 1px 8px),
-    rgba(var(--c-surface-rgb), 0.46);
-  color: var(--c-muted);
+  border: 1px solid rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.12);
+  color: rgba(176, 186, 179, 0.72);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.85);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.026),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.20);
+    inset 0 1px 2px rgba(0, 0, 0, 0.62),
+    0 1px 0 rgba(255, 248, 214, 0.045);
 }
 
 .game-card-tag:hover {
-  border-color: rgba(var(--c-emerald-rgb), 0.24);
-  background:
-    linear-gradient(180deg, rgba(226, 255, 244, 0.026), rgba(0, 0, 0, 0.085)),
-    repeating-linear-gradient(92deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 8px),
-    rgba(var(--c-emerald-rgb), 0.075);
-  color: var(--c-emerald-soft);
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(226, 231, 226, 0.88);
 }
 
-.game-card-tag-selected,
-.game-card-tag-emerald:hover {
-  border-color: rgba(var(--c-emerald-rgb), 0.18);
-  background: rgba(var(--c-emerald-rgb), 0.065);
+.game-card-tag-selected {
   color: rgba(var(--c-emerald-soft-rgb), 0.82);
 }
 
 .game-card-tag-keyword-selected {
-  border-color: rgba(var(--c-gold-rgb), 0.22);
-  background: rgba(var(--c-gold-rgb), 0.075);
+  border-color: rgba(var(--c-gold-rgb), 0.24);
+  background: rgba(var(--c-gold-rgb), 0.06);
   color: #d9b86d;
-}
-
-.game-card-tag-platform:hover {
-  border-color: rgba(var(--c-cyan-rgb), 0.28);
-  background: rgba(var(--c-cyan-rgb), 0.09);
-  color: var(--c-cyan-soft);
 }
 
 .game-card-tag-excluded {
   border-color: rgba(var(--c-danger-rgb), 0.3);
-  background: rgba(var(--c-danger-rgb), 0.1);
-  color: #ffc4c7;
-}
-
-.game-card-tag-muted:hover {
-  border-color: rgba(var(--c-gold-rgb), 0.26);
-  background: rgba(var(--c-gold-rgb), 0.08);
-  color: #ffe2a1;
+  color: #e8a3a7;
+  text-decoration: line-through;
+  text-decoration-color: rgba(var(--c-danger-rgb), 0.5);
 }
 
 .game-card-tag-matched {
-  border-color: rgba(var(--c-gold-rgb), 0.55);
-  box-shadow: inset 0 0 0 1px rgba(var(--c-gold-rgb), 0.2);
+  border-color: rgba(var(--c-gold-rgb), 0.42);
+  color: #d9b86d;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.62),
+    inset 0 0 0 1px rgba(var(--c-gold-rgb), 0.12);
 }
 
 .game-image {
@@ -2467,13 +2440,7 @@ svg.filter-caret.expanded {
   }
 
   .keyword-build-panel::after {
-    z-index: 4;
-    top: -5px;
-    right: -21px;
-    bottom: -5px;
-    width: 43px;
-    background: url("./assets/ui/search-panel-edge-spine-web.png") center / 100% 100% no-repeat;
-    filter: brightness(0.68) saturate(0.82) drop-shadow(5px 0 8px rgba(0, 0, 0, 0.72));
+    display: none;
   }
 
   .keyword-build-panel-scroll {
@@ -2496,17 +2463,18 @@ svg.filter-caret.expanded {
 
 
 .keyword-section::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
   background: transparent;
 }
 
 .keyword-section::-webkit-scrollbar-thumb {
-  background: rgba(var(--c-emerald-rgb), 0.22);
-  border-radius: 3px;
+  border: 2px solid rgba(var(--c-bg-rgb), 0.72);
+  border-radius: 999px;
+  background: rgba(117, 132, 127, 0.34);
 }
 
 .keyword-section::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--c-emerald-rgb), 0.38);
+  background: rgba(151, 166, 161, 0.46);
 }
 
 .keyword-section-header {
