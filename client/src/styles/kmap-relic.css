@@ -39,8 +39,10 @@
   position: absolute;
   inset: 0;
   z-index: 30;
-  border: 48px solid transparent;
-  border-image: url("../assets/ui/relic/frame-outer.svg") 48 / 48px stretch;
+  border: 30px solid transparent;
+  border-image: url("../assets/ui/relic/frame-outer.svg") 48 / 30px stretch;
+  opacity: 0.52;
+  filter: brightness(0.65) saturate(0.55);
   pointer-events: none;
 }
 
@@ -48,27 +50,28 @@
 .keyword-build-panel .kmap:not(.kmap--mobile)::before {
   content: "";
   position: absolute;
-  top: -14px;
-  left: -14px;
+  top: -7px;
+  left: -7px;
   z-index: 31;
-  width: 78px;
-  height: 78px;
+  width: 58px;
+  height: 58px;
   background: url("../assets/ui/relic/medallion.svg") center / contain no-repeat;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 10px rgba(45, 212, 191, 0.18));
+  opacity: 0.78;
+  filter: brightness(0.8) saturate(0.72) drop-shadow(0 3px 7px rgba(0, 0, 0, 0.75));
   pointer-events: none;
 }
 
 /* Content clears the frame rail (~22px) and the medallion. */
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header {
-  padding: 2rem 2.4rem 1rem 4.6rem;
+  padding: 1.45rem 2rem 0.8rem 3.8rem;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-search {
-  padding-inline: 1.6rem;
+  padding-inline: 1.35rem;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-body {
-  padding: 1rem 1.6rem 1.6rem;
+  padding: 0.8rem 1.35rem 1.25rem;
 }
 
 /* ── Plate primitive ─────────────────────────────────────────────
@@ -108,9 +111,9 @@
 /* ── 2. Header ───────────────────────────────────────────────────── */
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header {
   gap: 0.6rem;
-  min-height: 4.4rem;
+  min-height: 3.8rem;
   border-bottom: 1px solid;
-  border-image: linear-gradient(90deg, transparent, rgba(168, 128, 63, 0.55) 12%, rgba(168, 128, 63, 0.55) 88%, transparent) 1;
+  border-image: linear-gradient(90deg, transparent, rgba(112, 91, 53, 0.34) 12%, rgba(112, 91, 53, 0.34) 88%, transparent) 1;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.7);
 }
 
@@ -168,9 +171,9 @@
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-title {
-  font-size: 1.4rem;
+  font-size: 1.28rem;
   font-weight: 700;
-  color: var(--relic-gold-text);
+  color: #d1b574;
   text-shadow: 0 1px 0 #000;
 }
 
@@ -186,20 +189,20 @@
   --cut: 14px;
   --rim: 1.5px;
   gap: 0.45rem;
-  height: 2.6rem;
-  padding: 0 1.4rem;
-  background: linear-gradient(160deg, #ffd88a 0%, #b8863a 35%, #5a3f16 65%, #d6a650 100%);
+  height: 2.35rem;
+  padding: 0 1.2rem;
+  background: linear-gradient(160deg, #8f7442 0%, #5f4a29 42%, #2b2113 72%, #68522d 100%);
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 1.02rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #ffd27a;
-  text-shadow: 0 0 10px rgba(255, 190, 90, 0.35);
+  color: #cfb67d;
+  text-shadow: 0 1px 0 #000;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-spark-btn::before {
   background:
-    radial-gradient(80% 120% at 50% 0%, rgba(255, 190, 90, 0.14), transparent 70%),
-    linear-gradient(180deg, #1c1810, #0c0a07);
+    radial-gradient(80% 120% at 50% 0%, rgba(147, 119, 65, 0.08), transparent 70%),
+    linear-gradient(180deg, #121411, #080a08);
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-spark-btn svg {
@@ -220,17 +223,20 @@
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search input {
-  height: 3.6rem;
-  padding: 0 3rem 0 2.6rem;
-  border: 16px solid transparent;
-  border-image: url("../assets/ui/relic/frame-field.svg") 16 fill / 16px stretch;
+  height: 3.45rem;
+  padding: 0 3.1rem 0 3rem;
+  border: 1px solid rgba(112, 91, 53, 0.26);
   border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(0, 0, 0, 0.24)),
+    url("../assets/ui/keyword-search-surface-v3.webp") left center / auto 100% repeat-x,
+    #070b0a;
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.42);
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 1.15rem;
+  font-size: 1.08rem;
   color: #e6dcc4;
-  transition: filter 0.2s;
+  caret-color: var(--relic-gold-text);
+  transition: filter 0.2s, color 0.2s;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search input::placeholder {
@@ -238,32 +244,24 @@
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search input:focus {
-  border-color: transparent;
-  background: transparent;
-  box-shadow: none;
-  filter: drop-shadow(0 0 6px rgba(240, 196, 110, 0.28));
+  border-color: rgba(79, 135, 113, 0.42);
+  background-color: #070b0a;
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.42);
+  filter: brightness(1.06) drop-shadow(0 0 4px rgba(96, 143, 124, 0.2));
 }
 
 /* Lens icon (the svg right after the input). */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search input + svg {
-  left: 1.5rem;
-  width: 1.4rem;
-  height: 1.4rem;
-  color: #d9ad62;
-  filter: drop-shadow(0 0 4px rgba(240, 196, 110, 0.3));
+  left: 1.35rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  color: #9d8553;
+  filter: drop-shadow(0 1px 2px #000);
 }
 
-/* Compass glyph etched at the right end of the field. */
+/* The plate already carries a small compass tick at its right edge. */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search > .relative > .relative::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 1.1rem;
-  width: 2rem;
-  height: 2rem;
-  transform: translateY(-50%);
-  background: url("../assets/ui/relic/compass-glyph.svg") center / contain no-repeat;
-  pointer-events: none;
+  content: none;
 }
 
 /* ── 4. Mode toggle ─────────────────────────────────────────────── */
@@ -739,46 +737,70 @@
 
 /* ── 8. Category doors ──────────────────────────────────────────── */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door {
-  border: 1px solid transparent;
-  border-image: url("../assets/ui/relic/frame-inner.svg") 40 / 40px stretch;
+  isolation: isolate;
+  min-height: 8.25rem;
+  padding: 1.05rem 1.2rem;
+  border: 0;
   border-radius: 0;
-  background:
-    radial-gradient(90% 120% at 100% 0%, rgba(45, 212, 191, 0.06), transparent 60%),
-    linear-gradient(180deg, #0b100f, #070a09);
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7);
-  padding: 1.3rem 1.4rem;
+  background: #070b0a;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-door:hover, .kmap-door:focus-within) {
-  background:
-    radial-gradient(90% 120% at 100% 0%, rgba(240, 196, 110, 0.1), transparent 60%),
-    linear-gradient(180deg, #0e1412, #090c0b);
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url("../assets/ui/keyword-category-plate-v3.webp") center / 100% 100% no-repeat;
+  pointer-events: none;
+  transition: filter 0.2s;
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door:nth-child(2)::before {
+  background-image: url("../assets/ui/keyword-category-plate-v3-b.webp");
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door:nth-child(3)::before {
+  background-image: url("../assets/ui/keyword-category-plate-v3-c.webp");
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-door:hover, .kmap-door:focus-within)::before {
+  filter: brightness(1.06) saturate(1.03);
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door-main::after {
   border-radius: 0;
 }
 
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door-main {
+  z-index: 1;
+}
+
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door-icon {
-  border: 1px solid rgba(168, 128, 63, 0.7);
-  border-radius: 0;
-  background: linear-gradient(180deg, #1a1810, #0b0a07);
-  box-shadow: inset 0 0 0 2px #0a0806, inset 0 0 0 3px rgba(168, 128, 63, 0.3);
-  color: var(--relic-gold-text);
-  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+  position: static;
+  width: 2.5rem;
+  height: 2.5rem;
+  transform: none;
+  border: 1px solid rgba(112, 91, 53, 0.28);
+  border-radius: 2px;
+  background: rgba(4, 8, 7, 0.42);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.36);
+  color: #b89a5d;
+  filter: none;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door-label {
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 1.3rem;
-  color: var(--relic-gold-text);
+  font-size: 1.15rem;
+  color: #d0b476;
   text-shadow: 0 1px 0 #000;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door-desc {
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 0.95rem;
-  color: #a39f92;
+  font-size: 0.86rem;
+  color: #92958c;
+  text-shadow: none;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door-go {
@@ -790,25 +812,25 @@
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door-sub {
-  height: 2rem;
-  padding: 0 0.8rem;
-  border: 1px solid rgba(168, 128, 63, 0.45);
-  border-radius: 3px;
-  background: linear-gradient(180deg, #121614, #0a0d0c);
+  height: 1.75rem;
+  padding: 0 0.65rem;
+  border: 1px solid rgba(112, 91, 53, 0.25);
+  border-radius: 2px;
+  background: rgba(5, 9, 8, 0.56);
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  color: #d9d2bd;
+  color: #bdb8aa;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-door-sub svg {
-  color: #b8904c;
+  color: #887348;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) :is(button.kmap-door-sub:hover, button.kmap-door-sub:focus-visible) {
-  border-color: rgba(45, 212, 191, 0.7);
-  background: linear-gradient(180deg, #0f2e2a, #081a18);
-  color: #e9fffa;
+  border-color: rgba(45, 212, 191, 0.46);
+  background: rgba(8, 28, 24, 0.72);
+  color: #dff7f1;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) :is(button.kmap-door-sub:hover, button.kmap-door-sub:focus-visible) svg {
