@@ -2515,7 +2515,13 @@ h3{
 .fantasy-scroll-track {
   position: absolute;
   inset: 0;
-  background: transparent url("./assets/ui/scrollbar-forged-track.png") center / 100% 100% no-repeat;
+  /* Caps at natural size, uniform middle stretched between them, so the spikes
+     never squash with the scroll length (slices: scripts/build-scrollbar-slices.py). */
+  --cap: 10px;
+  background:
+    url("./assets/ui/scrollbar-forged-track-top.webp") center top / 6px var(--cap) no-repeat,
+    url("./assets/ui/scrollbar-forged-track-bot.webp") center bottom / 6px var(--cap) no-repeat,
+    url("./assets/ui/scrollbar-forged-track-mid.webp") center / 6px calc(100% - 2 * var(--cap)) no-repeat;
   pointer-events: none;
 }
 
@@ -2525,7 +2531,12 @@ h3{
   width: 8px;
   min-height: 38px;
   cursor: grab;
-  background: transparent url("./assets/ui/scrollbar-oxblood-grip.png") center / 100% 100% no-repeat;
+  /* Hit area stays 8px; the visible grip is a 4px 3-slice like the track. */
+  --cap: 3px;
+  background:
+    url("./assets/ui/scrollbar-oxblood-grip-top.webp") center top / 4px var(--cap) no-repeat,
+    url("./assets/ui/scrollbar-oxblood-grip-bot.webp") center bottom / 4px var(--cap) no-repeat,
+    url("./assets/ui/scrollbar-oxblood-grip-mid.webp") center / 4px calc(100% - 2 * var(--cap)) no-repeat;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
 }
 
