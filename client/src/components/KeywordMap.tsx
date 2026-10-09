@@ -1,28 +1,35 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useReducedMotion } from 'framer-motion';
-import { ArrowRight, Check, ChevronLeft, ChevronRight, Compass, Home, Link2, ListFilter, RefreshCw, Sparkles, X } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Home, ListFilter, Map as MapIcon, RefreshCw, Sparkles, X } from 'lucide-react';
 import { useFilters, type Filter } from '../context/FilterContext';
 import {
+  CARD,
+  CARD_DESC_FONT,
   DESKTOP_SHAPE,
+  PILL_PAD,
   buildCategoryFallbackData,
+  cardHeight,
   titleCase,
   nameKey,
   selectKeywordGraph,
   type GraphShape,
+  type LabelNode,
   type MapNode,
   type MapSeed,
 } from '../lib/keywordMap';
-import { layoutKeywordMap, type LayoutOptions, type Size } from '../lib/keywordMapLayout';
-import { measuredNodeWidth } from '../lib/measureLabel';
+import { layoutKeywordMap, pillHeight, type LayoutOptions, type Rect, type Size } from '../lib/keywordMapLayout';
+import { measuredNodeWidth, wrapText } from '../lib/measureLabel';
 import {
   MAIN_CATEGORIES,
   MAIN_CATEGORY_META,
+  categoryFromNodeId,
   findKeywordHome,
   getAllKeywordsForSubcategory,
   categoryNodeId,
   getAvailableSubcategories,
   getCategoryDescription,
   getKeywordCountForSubcategory,
+  getSubcategoryDescription,
   getSubcategoryIconComponent,
   subcategoryFromNodeId,
   subcategoryNodeId,
@@ -30,7 +37,7 @@ import {
 } from '../lib/keywordTaxonomy';
 import { planTransition, snapshotScene, type MapNavState, type SceneSnapshot } from '../lib/keywordMapMotion';
 import { useMapHistory } from '../hooks/useMapHistory';
-import { KeywordMapScene, type KeywordMode, type ToggleMethod } from './KeywordMapScene';
+import { KeywordMapScene, type KeywordMode, type TaxonCard, type ToggleMethod } from './KeywordMapScene';
 import { ensureLists, prefetchLists, useKeywordGraph } from '../lib/keywordGraphStore';
 import { buildSearchPayload, withKeyword } from '../lib/searchPayload';
 import { formatCount, peekCount } from '../lib/searchCount';
@@ -39,7 +46,7 @@ import { markMapSourced, track } from '../lib/funnel';
 import { findDiscoveries } from '../lib/keywordDiscoveries';
 import { sendLightPulse } from '../lib/lightPulse';
 import { storyFor } from '../lib/keywordStories';
-import { JOURNEY_PARAM, decodeJourney, encodeJourney, journeyUrl } from '../lib/mapJourney';
+import { JOURNEY_PARAM, decodeJourney } from '../lib/mapJourney';
 import { useAmbientPause } from '../hooks/useAmbientPause';
 import { MAX_PROBE, useKeywordFit } from '../lib/keywordFit';
 
@@ -54,9 +61,6 @@ const readFitMode = () => {
 
 const CATEGORY = 'Keywords';
 
-/** Subcategory shortcuts shown on each category door before "+N more". */
-const DOOR_SUBCATEGORY_LIMIT = { desktop: 6, mobile: 4 } as const;
-
 /** Per category: its subcategories and the unique keyword ids across them. */
 const CATEGORY_STATS = Object.fromEntries(
   MAIN_CATEGORIES.map(cat => {
@@ -68,6 +72,7 @@ const CATEGORY_STATS = Object.fromEntries(
 
 type Kw = { id: number; name: string };
 const EMPTY_SHOWN: ReadonlySet<string> = new Set();
+const ROOT_NODE_ID = -1;
 
 export interface MapLocation {
   category: MainCategory | null;
@@ -135,32 +140,23 @@ const CATEGORY_SCENE: Record<'desktop' | 'mobile', { shape: GraphShape; layout: 
   },
 };
 
-/**
- * The in-window toolbar's footprint (top-right): refresh + copy link, plus the
- * zoom row on desktop. Pills are laid out around it (layout `obstacles`).
- */
-const TOOLBAR_FOOTPRINT: Record<'desktop' | 'mobile', { width: number; height: number }> = {
-  desktop: { width: 112, height: 80 },
-  mobile: { width: 84, height: 46 },
-};
-
 interface Props {
   variant?: 'desktop' | 'mobile';
   initialLocation?: MapLocation;
   /** Mobile only: leave map mode. */
   onClose?: () => void;
-  /** Keyword/game search, shown at the top of the section. */
+  /** Keyword/game search: below the header on mobile; a collapsed lens in the map window's top-right on desktop. */
   search?: React.ReactNode;
   /** "Need a spark?" content (the roll/discovery deck), swapped in for the map on demand. */
   spark?: React.ReactNode;
   /** Search actions (Clear, Search) for the map's bottom bar. */
   actions?: React.ReactNode;
-  /** Current user selection, shown with the search actions below the map. */
+  /** Current user selection, floated on the map's bottom-left (desktop). */
   selection?: React.ReactNode;
 }
 
 /**
- * Keyword explorer: 3 category doors → category map (its subcategories as
+ * Keyword explorer: root map (its 3 categories) → category map (its subcategories as
  * nodes) → subcategory map (its keywords) → keyword maps.
  *
  * In the map, clicking a node re-centres on it (explore); adding to the search
@@ -196,8 +192,10 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   }>({ key: '', names: EMPTY_SHOWN, last: EMPTY_SHOWN, round: 0, spin: 1 });
 
   const step: 'categories' | 'map' = category || subcategory || trail.length > 0 ? 'map' : 'categories';
-  const sceneKind: 'category' | 'subcategory' | 'keyword' = trail.length > 0 ? 'keyword' : subcategory ? 'subcategory' : 'category';
-  const { shape, layout } = sceneKind === 'category' ? CATEGORY_SCENE[variant] : VARIANTS[variant];
+  const sceneKind: 'root' | 'category' | 'subcategory' | 'keyword' = trail.length > 0 ? 'keyword' : subcategory ? 'subcategory' : category ? 'category' : 'root';
+  const { shape, layout } = sceneKind === 'root'
+    ? { shape: { level1Count: 3, level2PerParent: 0 }, layout: CATEGORY_SCENE[variant].layout }
+    : sceneKind === 'category' ? CATEGORY_SCENE[variant] : VARIANTS[variant];
 
   // Funnel: entering the map (from a door, a deep link, or a keyword added elsewhere).
   const wasMapRef = useRef(false);
@@ -288,6 +286,12 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
 
   const exploreNode = (node: MapNode) => {
     if (node.level === 0) return;
+    const mainCategory = categoryFromNodeId(node.id);
+    if (mainCategory) {
+      track('map_explore', { category: mainCategory, depth: 0, variant });
+      navigate({ category: mainCategory, subcategory: null, trail: [] });
+      return;
+    }
     const sub = subcategoryFromNodeId(node.id);
     if (sub) {
       track('map_explore', { subcategory: sub.subcategory, depth: 0, variant });
@@ -300,7 +304,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
 
   // ── map data ──────────────────────────────────────────────────────
   const centerKw = trail[trail.length - 1] ?? null;
-  // Centre: a keyword, else the subcategory, else the category — the latter two as stable
+  // Centre: a keyword, else the subcategory, category, or map root — taxonomy nodes use stable
   // negative ids, so the subcategory you open glides from its slot into the centre.
   const center: Kw | null = useMemo(
     () =>
@@ -309,7 +313,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         ? { id: subcategoryNodeId(subcategory), name: subcategory }
         : category
           ? { id: categoryNodeId(category), name: MAIN_CATEGORY_META[category].title }
-          : null),
+          : { id: ROOT_NODE_ID, name: 'Choose a direction' }),
     [centerKw, subcategory, category],
   );
   const centerKey = center ? `${category ?? ''}:${subcategory ?? ''}:${center.id}` : '';
@@ -362,10 +366,21 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         : [],
     [category, subcategory, centerKw],
   );
+  const rootPool = useMemo<MapSeed[]>(
+    () => MAIN_CATEGORIES
+      .filter(mainCategory => CATEGORY_STATS[mainCategory].subcategories.length > 0)
+      .map(mainCategory => ({
+        id: categoryNodeId(mainCategory),
+        name: MAIN_CATEGORY_META[mainCategory].title,
+        score: CATEGORY_STATS[mainCategory].ids.length,
+      })),
+    [],
+  );
   const pool: MapSeed[] = useMemo(() => {
     if (centerKw) return isCategoryFallback ? fallbackKeywords : data?.[centerKw.id] ?? [];
-    return subcategory ? subcategoryPool : categoryPool;
-  }, [centerKw, subcategory, subcategoryPool, categoryPool, data, isCategoryFallback, fallbackKeywords]);
+    if (subcategory) return subcategoryPool;
+    return category ? categoryPool : rootPool;
+  }, [centerKw, subcategory, category, subcategoryPool, categoryPool, rootPool, data, isCategoryFallback, fallbackKeywords]);
 
   // ── Fits-my-search mode ───────────────────────────────────────────
   // Explore wanders freely; "Fits my search" only shows keywords that would
@@ -410,14 +425,26 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         : null,
     [fitActive, fit, keywordFits, keywordFilters],
   );
+  const fitCountForCategory = useCallback(
+    (mainCategory: MainCategory): number | null =>
+      fitActive && fit.complete && fit.status !== 'error'
+        ? CATEGORY_STATS[mainCategory].ids.filter(id => keywordFits(id) && !keywordFilters.has(id)).length
+        : null,
+    [fitActive, fit, keywordFits, keywordFilters],
+  );
   const fits = useCallback(
     (id: number) => {
+      const mainCategory = categoryFromNodeId(id);
+      if (mainCategory) {
+        const n = fitCountForCategory(mainCategory);
+        return n === null || n > 0;
+      }
       const sub = subcategoryFromNodeId(id);
       if (!sub) return keywordFits(id);
       const n = fitCountFor(sub.subcategory);
       return n === null || n > 0;
     },
-    [keywordFits, fitCountFor],
+    [keywordFits, fitCountFor, fitCountForCategory],
   );
   const visiblePool = useMemo(() => (fitActive ? pool.filter(n => fits(n.id)) : pool), [fitActive, pool, fits]);
 
@@ -433,18 +460,81 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   // Map coordinates are CSS pixels of the measured viewport, so text never scales.
   const [viewport, setViewport] = useState<Size | null>(null);
   const resizeObserver = useRef<ResizeObserver | null>(null);
+  const viewportEl = useRef<HTMLDivElement | null>(null);
+
+  // Selection pills and Search float on the map: pass their boxes to the layout as
+  // obstacles so keywords are pushed out from under them.
+  const [obstacles, setObstacles] = useState<Rect[]>([]);
+  const overlayObserver = useRef<ResizeObserver | null>(null);
+  const measureOverlays = useCallback(() => {
+    const vp = viewportEl.current;
+    if (!vp) return;
+    const o = vp.getBoundingClientRect();
+    const pad = 6;
+    const rects = Array.from(vp.querySelectorAll<HTMLElement>(':scope > .kmap-user-selection-filters, :scope > .kmap-user-selection-actions'))
+      .map(el => el.getBoundingClientRect())
+      .filter(r => r.width > 0 && r.height > 0)
+      .map(r => ({
+        x: Math.round(r.left - o.left - pad),
+        y: Math.round(r.top - o.top - pad),
+        width: Math.round(r.width + pad * 2),
+        height: Math.round(r.height + pad * 2),
+      }));
+    const key = (rs: Rect[]) => rs.map(r => `${r.x},${r.y},${r.width},${r.height}`).join('|');
+    setObstacles(prev => (key(prev) === key(rects) ? prev : rects));
+  }, []);
+  const overlayRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      if (!el) return;
+      (overlayObserver.current ??= new ResizeObserver(measureOverlays)).observe(el);
+    },
+    [measureOverlays],
+  );
+  useEffect(() => () => overlayObserver.current?.disconnect(), []);
+
   const viewportRef = useCallback((el: HTMLDivElement | null) => {
     resizeObserver.current?.disconnect();
+    viewportEl.current = el;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
       const width = Math.round(entry.contentRect.width);
       const height = Math.round(entry.contentRect.height);
       setViewport(v => (v && v.width === width && v.height === height ? v : { width, height }));
+      // Overlays are anchored to the viewport's bottom corners, so they move with it.
+      measureOverlays();
     });
     ro.observe(el);
     resizeObserver.current = ro;
-  }, []);
+  }, [measureOverlays]);
   const usable = viewport !== null && viewport.width > 120 && viewport.height > 120;
+
+  // ── taxonomy cards ────────────────────────────────────────────────
+  // Desktop: categories/subcategories are cards (icon, name, description, size) so they
+  // read as places to go, not keywords to add. Sized once per node; text never changes.
+  const cards = useMemo(() => new Map<number, TaxonCard | null>(), [variant]);
+  const cardOf = useCallback(
+    (n: LabelNode): TaxonCard | undefined => {
+      if (variant !== 'desktop' || n.id === undefined || n.id >= 0) return undefined;
+      const hit = cards.get(n.id);
+      if (hit !== undefined) return hit ?? undefined;
+      const mainCategory = categoryFromNodeId(n.id);
+      const sub = mainCategory ? null : subcategoryFromNodeId(n.id);
+      const description = mainCategory
+        ? getCategoryDescription(mainCategory)
+        : sub ? getSubcategoryDescription(sub.category, sub.subcategory) : '';
+      const icon = mainCategory ? MAIN_CATEGORY_META[mainCategory].icon : sub ? getSubcategoryIconComponent(sub.subcategory) : null;
+      // The pill measure is a lighter, smaller font than the card title: pad it.
+      const labelW = (measuredNodeWidth(n) - (n.level === 0 ? PILL_PAD.center : PILL_PAD.other)) * 1.12;
+      const width = Math.max(CARD.minWidth, Math.ceil(labelW + CARD.padX * 2 + (icon ? CARD.icon + CARD.iconGap : 0)));
+      const lines = description ? wrapText(description, width - CARD.padX * 2, CARD.descPx, CARD.maxLines, CARD_DESC_FONT) : [];
+      const card = { width, height: cardHeight(lines.length, Boolean(mainCategory || sub)), lines, icon };
+      cards.set(n.id, card);
+      return card;
+    },
+    [variant, cards],
+  );
+  const nodeWidthOf = useCallback((n: LabelNode) => cardOf(n)?.width ?? measuredNodeWidth(n), [cardOf]);
+  const nodeHeightOf = useCallback((n: LabelNode) => cardOf(n)?.height ?? pillHeight(n), [cardOf]);
 
   // ── layout + transition plan ──────────────────────────────────────
   // Both read the scene last committed to screen; the ref only advances after commit.
@@ -455,12 +545,13 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         ? layoutKeywordMap(graph, {
             ...layout,
             viewport: viewport!,
-            widthOf: measuredNodeWidth,
+            widthOf: nodeWidthOf,
+            heightOf: nodeHeightOf,
             previous: sceneRef.current?.nodes,
-            obstacles: [{ x: viewport!.width - TOOLBAR_FOOTPRINT[variant].width, y: 0, ...TOOLBAR_FOOTPRINT[variant] }],
+            obstacles,
           })
         : [],
-    [graph, viewport, usable, layout, variant],
+    [graph, viewport, usable, layout, variant, obstacles, nodeWidthOf, nodeHeightOf],
   );
   // Same nodes in the same places → same array, so the transition plan isn't recomputed.
   // While the next centre's slice is loading, hold the current scene on screen instead of
@@ -496,24 +587,6 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     [centerKw, data, isCategoryFallback],
   );
   const discoveryMap = useMemo(() => new Map(discoveries.map(d => [d.id, d.games])), [discoveries]);
-
-  // Share this journey: the current URL (which carries the search) plus `?map=`.
-  const [shared, setShared] = useState(false);
-  const shareJourney = async () => {
-    if (!category) return;
-    const encoded = encodeJourney({ category, subcategory, trail }, MAIN_CATEGORIES);
-    if (!encoded) return;
-    const url = journeyUrl(encoded);
-    track('map_journey_share', { variant, depth: trail.length });
-    try {
-      if (variant === 'mobile' && navigator.share) await navigator.share({ title: 'GameFinder keyword map', url });
-      else await navigator.clipboard.writeText(url);
-      setShared(true);
-      window.setTimeout(() => setShared(false), 2000);
-    } catch {
-      /* share sheet dismissed or clipboard blocked */
-    }
-  };
 
   // Exploring a visible neighbour should be instant: warm its slice while idle.
   useEffect(() => {
@@ -565,91 +638,20 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     [currentSearch, fit, keywordFilters],
   );
 
-  const renderCategories = () => {
-    const searching = currentSearch !== null;
-    const checking = searching && fit.status === 'loading' && !fit.stale;
-    return (
-      <div className="kmap-doors">
-        {MAIN_CATEGORIES.filter(cat => getAvailableSubcategories(cat).length > 0).map(cat => {
-          const { title, icon: Icon } = MAIN_CATEGORY_META[cat];
-          const { ids, subcategories } = CATEGORY_STATS[cat];
-          const fitN = fitTally(ids);
-          // With a search, the groups that fit best come first; otherwise curated order.
-          const subs = subcategories.map(sub => ({ sub, fit: fitTally(getAllKeywordsForSubcategory(sub).map(k => k.id)) }));
-          if (fitN !== null) subs.sort((a, b) => (b.fit ?? 0) - (a.fit ?? 0));
-          const shownSubs = subs.slice(0, DOOR_SUBCATEGORY_LIMIT[variant]);
-          const hiddenSubs = subcategories.length - shownSubs.length;
-          const empty = fitN === 0;
-          return (
-            <div key={cat} className={`kmap-door${empty ? ' is-empty' : ''}`}>
-              <button
-                type="button"
-                className="kmap-door-main"
-                onClick={() => navigate({ category: cat, subcategory: null, trail: [] })}
-              >
-                <span className="kmap-door-icon">
-                  <Icon className="h-6 w-6" />
-                </span>
-                <span className="kmap-door-text">
-                  <span className="kmap-door-label">{title}</span>
-                  <span className="kmap-door-desc">{getCategoryDescription(cat)}</span>
-                </span>
-                {fitN !== null ? (
-                  <span className="kmap-door-fit" title="Keywords here that still return games with your current search">
-                    <strong>{fitN}</strong>
-                    <span>fit your search</span>
-                  </span>
-                ) : checking ? (
-                  <span className="kmap-door-fit is-loading">
-                    <strong>…</strong>
-                    <span>checking fit</span>
-                  </span>
-                ) : null}
-                <ArrowRight className="kmap-door-go h-4 w-4" aria-hidden="true" />
-              </button>
-
-              <div className="kmap-door-subs" aria-label={`${title} subcategories`}>
-                {shownSubs.map(({ sub, fit: subFit }) => {
-                  const SubIcon = getSubcategoryIconComponent(sub);
-                  return (
-                    <button
-                      key={sub}
-                      type="button"
-                      className={`kmap-door-sub${subFit === 0 ? ' is-empty' : ''}`}
-                      onClick={() => {
-                        track('map_explore', { subcategory: sub, depth: 0, variant, from: 'door' });
-                        navigate({ category: cat, subcategory: sub, trail: [] });
-                      }}
-                    >
-                      <SubIcon className="h-3 w-3" aria-hidden="true" />
-                      {sub}
-                      {subFit !== null && <span className="kmap-door-sub-count">{subFit}</span>}
-                    </button>
-                  );
-                })}
-                {hiddenSubs > 0 && (
-                  <button type="button" className="kmap-door-sub kmap-door-sub--more" onClick={() => navigate({ category: cat, subcategory: null, trail: [] })}>
-                    +{hiddenSubs} more
-                  </button>
-                )}
-              </div>
-
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  /** Caption under a subcategory node: "12 fit" in Fits mode, else its size. */
+  /** Caption under a taxonomy node: "12 fit" in Fits mode, else its size. */
   const tagFor = (node: MapNode) => {
+    const mainCategory = categoryFromNodeId(node.id);
+    if (mainCategory) {
+      const fitN = fitTally(CATEGORY_STATS[mainCategory].ids);
+      return fitN !== null ? `${fitN} fit` : `${CATEGORY_STATS[mainCategory].ids.length} keywords`;
+    }
     const sub = subcategoryFromNodeId(node.id);
     if (!sub) return undefined;
     const fitN = fitCountFor(sub.subcategory);
     return fitN !== null ? `${fitN} fit` : `${getKeywordCountForSubcategory(sub.subcategory)} keywords`;
   };
 
-  const renderModes = () => {
+  const renderMapControls = () => {
     const disabled = currentSearch === null;
     let note: React.ReactNode = null;
     if (fitMode && disabled) note = 'Add a keyword to your search, then only matching keywords show.';
@@ -661,21 +663,40 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     }
     return (
       <div className="kmap-modes-row">
-        <div className="kmap-modes" role="radiogroup" aria-label="Map mode">
-          <button type="button" role="radio" aria-checked={!fitMode} className="kmap-mode" onClick={() => setFitMode(false)}>
-            <Compass className="h-3.5 w-3.5" aria-hidden="true" />
-            Explore
-          </button>
+        <div className="kmap-modes" aria-label="Map controls">
           <button
             type="button"
-            role="radio"
+            role="switch"
             aria-checked={fitMode}
-            className="kmap-mode"
-            onClick={() => setFitMode(true)}
+            className="kmap-mode kmap-fit-control"
+            onClick={() => setFitMode(!fitMode)}
             title={disabled ? 'Add a keyword to your search first' : 'Only show keywords that still return games'}
           >
             <ListFilter className="h-3.5 w-3.5" aria-hidden="true" />
-            Fits my search
+            Only compatible
+          </button>
+          <button
+            type="button"
+            className="kmap-mode kmap-refresh-control"
+            onClick={() => refresh()}
+            disabled={!canRefresh}
+            aria-label={sceneKind === 'root' ? 'Show other categories' : sceneKind === 'category' ? 'Show other subcategories' : 'Show other keywords'}
+            title={
+              !canRefresh
+                ? 'Nothing else to show'
+                : remaining > 0
+                  ? `Show ${remaining} more ${sceneKind === 'root' ? 'categories' : sceneKind === 'category' ? 'subcategories' : 'keywords'}`
+                  : 'Start over'
+            }
+          >
+            {/* Remounts per round so each refresh (click or swipe) spins it once, in the swipe's direction. */}
+            <RefreshCw
+              key={round}
+              className={`h-3.5 w-3.5${round ? ' kmap-refresh-spin' : ''}`}
+              style={{ '--spin-dir': spin } as React.CSSProperties}
+              aria-hidden="true"
+            />
+            New options
           </button>
         </div>
         {note && (
@@ -705,7 +726,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     else if (!holding && graph.length < 2 && fitActive && pool.length > 0) {
       content = (
         <div className="kmap-empty kmap-empty--fit">
-          <span>{sceneKind === 'category' ? 'No subcategory here fits your search yet.' : 'Nothing here fits your search yet.'}</span>
+          <span>{sceneKind === 'root' ? 'No category fits your search yet.' : sceneKind === 'category' ? 'No subcategory here fits your search yet.' : 'Nothing here fits your search yet.'}</span>
           <button type="button" className="kmap-retry" onClick={() => setFitMode(false)}>
             Show everything
           </button>
@@ -719,7 +740,9 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
           nodes={nodes}
           plan={plan}
           viewport={viewport!}
-          widthOf={measuredNodeWidth}
+          widthOf={nodeWidthOf}
+          heightOf={nodeHeightOf}
+          cardOf={cardOf}
           reduceMotion={reduceMotion}
           sceneKey={nodesRef.current.sceneKey}
           variant={variant}
@@ -746,6 +769,9 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         {holding && <span className="kmap-loading">Mapping {titleCase(center?.name ?? '')}…</span>}
         {content}
         {isCategoryFallback && graph.length > 1 && <span className="kmap-relation-label">Related by category</span>}
+        {/* Floating on the map: selection pills bottom-left (empty until a first pick), Search bottom-right. */}
+        {selection && <div ref={overlayRef} className="kmap-user-selection-filters">{selection}</div>}
+        {actions && <div ref={overlayRef} className="kmap-user-selection-actions">{actions}</div>}
       </div>
     );
   };
@@ -822,8 +848,15 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         }}
         aria-pressed={sparkOpen}
       >
-        <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-        {sparkOpen ? 'Back to map' : 'Need a spark?'}
+        {/* Both labels stay stacked (stable width) and cross-fade; only the visible one is announced. */}
+        <span className="kmap-spark-face kmap-spark-face--spark" aria-hidden={sparkOpen || undefined}>
+          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+          Need a spark?
+        </span>
+        <span className="kmap-spark-face kmap-spark-face--back" aria-hidden={!sparkOpen || undefined}>
+          <MapIcon className="h-3.5 w-3.5" aria-hidden="true" />
+          Back to map
+        </span>
       </button>
     );
     if (step === 'categories') {
@@ -831,7 +864,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         <div className="kmap-header">
           <div className="min-w-0 flex-1">
             <h2 className="kmap-title">What are you in the mood for?</h2>
-            <p className="kmap-subtitle">Search, pick a direction, or roll for a spark.</p>
+            <p className="kmap-subtitle">Pick a direction. You can return here anytime to combine something different.</p>
           </div>
           {sparkButton}
           {close}
@@ -846,65 +879,43 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
 
     return (
       <div className="kmap-header">
-        <button type="button" className="kmap-icon-btn" onClick={() => navigate(ROOT)} aria-label="All categories" title="All categories">
+        <button type="button" className="kmap-icon-btn kmap-root-btn" onClick={() => navigate(ROOT)} aria-label="All categories" title="Pick a different category">
           <Home className="h-4 w-4" />
+          <span>All categories</span>
         </button>
-        <button type="button" className="kmap-icon-btn" onClick={goBack} aria-label="Back">
+        <button type="button" className="kmap-icon-btn kmap-back-btn" onClick={goBack} aria-label="Back">
           <ChevronLeft className="h-4 w-4" />
         </button>
         <nav ref={crumbsRef} className="kmap-crumbs" aria-label="Keyword map path">
-          {crumbs.map((c, i) => {
-            const isLast = i === crumbs.length - 1;
-            return (
-              <React.Fragment key={`${i}-${c.label}`}>
-                {i > 0 && <ChevronRight className="kmap-crumb-sep" aria-hidden="true" />}
-                {isLast ? (
-                  <span className="kmap-crumb kmap-crumb--current" aria-current="page">{c.label}</span>
-                ) : (
-                  <button type="button" className="kmap-crumb" onClick={() => navigate(c.to)}>{c.label}</button>
-                )}
-              </React.Fragment>
-            );
-          })}
+          {/* Crumbs only change at the tail: new ones slide in, dropped ones pop out without shifting the rest. */}
+          <AnimatePresence initial={false} mode="popLayout">
+            {crumbs.map((c, i) => {
+              const isLast = i === crumbs.length - 1;
+              return (
+                <motion.span
+                  key={`${i}-${c.label}`}
+                  className="kmap-crumb-item"
+                  initial={{ opacity: 0, x: 14, filter: 'blur(3px)' }}
+                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, x: 10, filter: 'blur(3px)', transition: { duration: reduceMotion ? 0 : 0.16 } }}
+                  transition={reduceMotion ? { duration: 0 } : { duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {i > 0 && <ChevronRight className="kmap-crumb-sep" aria-hidden="true" />}
+                  {isLast ? (
+                    <span className="kmap-crumb kmap-crumb--current" aria-current="page">{c.label}</span>
+                  ) : (
+                    <button type="button" className="kmap-crumb" onClick={() => navigate(c.to)}>{c.label}</button>
+                  )}
+                </motion.span>
+              );
+            })}
+          </AnimatePresence>
         </nav>
         {sparkButton}
         {close}
       </div>
     );
   };
-
-  /** Map-window toolbar (top-right, inside the map): refresh and copy-link. */
-  const renderToolbar = () => (
-    <div className="kmap-toolbar" role="toolbar" aria-label="Map actions">
-      <button
-        type="button"
-        className="kmap-tool"
-        onClick={() => refresh()}
-        disabled={!canRefresh}
-        aria-label={sceneKind === 'category' ? 'Show other subcategories' : 'Show other keywords'}
-        title={
-          !canRefresh
-            ? 'Nothing else to show'
-            : remaining > 0
-              ? `Show ${remaining} more ${sceneKind === 'category' ? 'subcategories' : 'keywords'}`
-              : 'Start over'
-        }
-      >
-        <RefreshCw className="h-4 w-4" />
-      </button>
-      {category && (
-        <button
-          type="button"
-          className="kmap-tool"
-          onClick={shareJourney}
-          aria-label={shared ? 'Link copied' : 'Copy link to this map'}
-          title={shared ? 'Link copied' : 'Copy a link to this map (includes your search)'}
-        >
-          {shared ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
-        </button>
-      )}
-    </div>
-  );
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key !== 'Escape' || e.defaultPrevented) return;
@@ -923,7 +934,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
       onKeyDown={onKeyDown}
     >
       {renderHeader()}
-      {search && <div className="kmap-search">{search}</div>}
+      {search && variant === 'mobile' && <div className="kmap-search">{search}</div>}
       <div className="kmap-body">
         {sparkOpen && spark ? (
           // The roll/discovery deck in place of the map; rolls add keywords, which the map follows.
@@ -931,28 +942,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         ) : (
           <>
             {/* Desktop: the mode toggle sits inside the map window (top-left). */}
-            {step !== 'categories' && variant === 'mobile' && renderModes()}
-            {step === 'categories' && renderCategories()}
-            {step === 'categories' && selectedFilters.length > 0 && (selection || actions) && (
-              <div className="user-selection kmap-user-selection kmap-doors-selection">
-                <div className="kmap-user-selection-filters">{selection}</div>
-                {actions && <div className="kmap-user-selection-actions">{actions}</div>}
-              </div>
-            )}
-            {step === 'map' && (
-              <div className={`kmap-window kmap-window--${variant}`}>
-                {renderMap()}
-                {variant === 'desktop' && renderModes()}
-                {renderToolbar()}
-                {renderDock()}
-                {(selection || actions) && (
-                  <div className="user-selection kmap-user-selection">
-                    <div className="kmap-user-selection-filters">{selection}</div>
-                    {actions && <div className="kmap-user-selection-actions">{actions}</div>}
-                  </div>
-                )}
-              </div>
-            )}
+            {variant === 'mobile' && renderMapControls()}
+            <div className={`kmap-window kmap-window--${variant}`}>
+              {renderMap()}
+              {variant === 'desktop' && renderMapControls()}
+              {/* Collapsed to a lens; expands on hover/focus (incl. the "/" shortcut). */}
+              {search && variant === 'desktop' && <div className="kmap-search kmap-search--float">{search}</div>}
+              {renderDock()}
+            </div>
           </>
         )}
       </div>

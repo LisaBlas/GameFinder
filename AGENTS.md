@@ -44,6 +44,10 @@ for full detail.
 - Future intent: save user searches/keyword combinations so strong community discoveries can feed Popular and Hidden Gem. Not live yet — see `docs/MEMORY.md` item 4.
 - "Best crafts": keyword/filter combos with a low result count — treated as a signal for niche/unique game discovery.
 
+## Keyword Map Navigation
+- The keyword map is one continuous hierarchy: a map root with the three main categories → subcategories → keywords → related keywords. Do not restore a separate category-card/door screen.
+- Once inside a category, the header keeps an explicit **All categories** action visible so users understand they can return to the root and combine keywords from unrelated directions.
+
 ## SEO Pages
 Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. Game listings (top 10 per page) are cached in Neon (`seo_page_cache`) and injected at render time — refresh via `npm run seo:refresh-cache` on the VPS. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See [docs/ARCHITECTURE.md](/home/blas/projects/GameFinder/docs/ARCHITECTURE.md) for full details.
 

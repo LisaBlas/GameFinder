@@ -40,6 +40,10 @@ rules around these commands.
 - From Slack, mention `@bot projects/GameFinder <task>` to start a session here.
 - After changes, commit and push to `main` when explicitly requested. Render auto-deploys from main.
 
+## Keyword Map Interaction
+- Map-node clicks explore/recenter; adding and avoiding are explicit actions on the centered keyword, with node badges retained as shortcuts.
+- `Only compatible` and `New options` are the map's discovery controls. The current selection floats on the map as bare pills (click a pill to remove it; hidden until a first pick) with a count-aware results CTA bottom-right.
+
 ## Git
 - Branch: work on `main` or feature branches.
 - Push to GitHub only when explicitly requested.

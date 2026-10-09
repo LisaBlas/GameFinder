@@ -16,10 +16,12 @@ Desktop:
   Left panel (40%): KeywordSection
     Sticky desktop Navbar inside KeywordSection
     Desktop action bar with SelectedFilters lanes (Clear/Search live in the map)
-    KeywordMap section: header (home, back, crumbs, "Need a spark?"), built-in
-      KeywordSearch, then category doors -> category map -> keyword maps, drawn in
-      a map window: toolbar top-right (refresh, copy
-      link, zoom), bottom bar with Include/Exclude + Clear/Search
+    KeywordMap section: header (All categories, back, crumbs,
+      "Need a spark?"), built-in KeywordSearch, then root map -> category map
+      -> keyword maps, drawn in a map window: Only compatible / New options
+      controls, Avoid / Add icon buttons on the centre node's ends (on
+      other keywords while hovered), selection pills floating bottom-left
+      (absent until a first pick) and "Show N games" bottom-right
   Right panel (60%): ResultsSection/SearchResults
     Sticky results header with count, FilterBar, sort select
 ```
@@ -31,22 +33,25 @@ Desktop:
 - `Hero` is not part of the active home layout, though the component still
   exists.
 - Desktop left panel is one `KeywordMap` section (`client/src/components/KeywordMap.tsx`)
-  with the search built in (`search` prop) and the roll/discovery deck behind a
+  with the search built in (`search` prop; on desktop a collapsed lens in the map
+  window's top-right that expands on hover/focus) and the roll/discovery deck behind a
   small "Need a spark?" header button (`spark` prop; swaps the body). Steps:
-  3 category doors (full titles + subcategory preview) -> category map (its
+  root map (the 3 categories as nodes) -> category map (its
   subcategories as nodes, 8 per page desktop / 4 mobile, refresh pages; each
   subcategory/category has a stable negative node id from `keywordTaxonomy`
   so opening one glides it into the centre) -> subcategory map -> keyword
-  maps. A home button before Back returns to the doors. The map step is one
-  `.kmap-window`: the toolbar overlays the map's top-right corner and is passed
-  to the layout as an obstacle (`layoutKeywordMap({ obstacles })`, sized by
-  `TOOLBAR_FOOTPRINT`) so pills never sit under it. There is no centre info
+  maps. A labelled "All categories" button before Back returns to the root. All
+  steps share one `.kmap-window`; the selection pills and Search float on its
+  bottom corners (passed to the layout as obstacles). On desktop, category and
+  subcategory nodes are cards (icon, name, taxonomy description wrapped to 3
+  lines, keyword count; `cardOf` in KeywordMap sizes them for the layout), so
+  they never read as addable keyword plates; mobile keeps compact squared nodes. There is no centre info
   overlay (removed 2026-10-07; the centre pill and hover counts carry that
   information). The bottom bar (Include/
   Exclude for the centre, then KeywordSection's Clear/Search via the `actions`
   prop) is docked below the drawing area, which is measured without it. The
-  camera uses identity framing: the layout already fits and avoids overlays in
-  viewport coordinates, so auto pan/zoom would push pills under them. In the
+  scene is drawn 1:1 with no camera or zoom: the layout already fits and
+  avoids overlays in viewport coordinates. In the
   map, clicking a node re-centres on it (explore, does not add); adding is
   explicit via the `+` badge in each pill or Include/Exclude for the centred
   keyword. Refresh brings only keywords not yet shown for the current centre
@@ -75,8 +80,7 @@ Desktop:
   px): radial slots, survivors keep their angle relative to where the new
   centre was, then a deterministic collision pass on canvas-measured pill
   widths (`measureLabel.ts`). The scene component is `KeywordMapScene.tsx`;
-  `useMapCamera` frames the scene and handles zoom (Ctrl/pinch-wheel, buttons),
-  drag-to-pan and swipe; `useMapHistory` makes every map step a history entry
+  `useMapSwipe` handles the mobile swipe; `useMapHistory` makes every map step a history entry
   (`{gamefinder:'kmap', inst, depth}`) so browser Back retraces it.
   Mobile: `KeywordMapSheet.tsx` is a full-screen "map mode" (portalled to
   body), opened from the shelf's "Explore the keyword map" button or the
@@ -107,8 +111,9 @@ Desktop:
   pauses via `data-ambient="paused"` (`useAmbientPause`: tab hidden, offscreen,
   45 s idle). Discoveries (`lib/keywordDiscoveries.ts`): strong pairings few
   games share, curated keywords only, NPMI-preferred. Journeys
-  (`lib/mapJourney.ts`): share button copies the URL + `?map=`; the map takes
-  it on load (desktop map or mobile sheet). Editorial story cards:
+  (`lib/mapJourney.ts`): the map's own copy-link button was removed
+  2026-10-09 (the search Share covers it); incoming `?map=` links are still taken
+  on load (desktop map or mobile sheet). Editorial story cards:
   `lib/keywordStories.ts` (empty registry). The graph data is frozen per
   centre and the current scene is held while the next slice loads, so late
   slices never re-plan a running transition.

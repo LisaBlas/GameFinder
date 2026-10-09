@@ -190,26 +190,6 @@ export function sceneBounds(nodes: MapNode[], widthOf: (n: MapNode) => number, h
   return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }
 
-export interface CameraFrame {
-  focus: Point;
-  scale: number;
-}
-
-/**
- * Frames the scene: fits it with padding, and zooms in a little on sparse
- * graphs so a handful of keywords doesn't float in empty space.
- */
-export function frameScene(bounds: Rect, vp: Size, padding = 16, maxScale = 1.25): CameraFrame {
-  if (!Number.isFinite(bounds.width) || bounds.width <= 0) {
-    return { focus: { x: vp.width / 2, y: vp.height / 2 }, scale: 1 };
-  }
-  const fit = Math.min((vp.width - 2 * padding) / bounds.width, (vp.height - 2 * padding) / bounds.height);
-  return {
-    focus: { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 },
-    scale: Math.min(maxScale, fit),
-  };
-}
-
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
 const DIR: Record<Direction, Point> = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };

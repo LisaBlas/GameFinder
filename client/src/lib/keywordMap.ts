@@ -83,6 +83,17 @@ export const badgeRoom = (node: LabelNode) => (node.level === 0 || isTaxonomy(no
 export const nodeWidth = (node: LabelNode) =>
   nodeLabel(node).length * (node.level === 0 ? 7.2 : CHAR_W) + (node.level === 0 ? PILL_PAD.center : PILL_PAD.other) + badgeRoom(node);
 
+/**
+ * Desktop category/subcategory nodes are cards, not pills: icon + name, a wrapped
+ * description and a size caption. Metrics in px; see KeywordMapScene's card renderer.
+ */
+export const CARD = { minWidth: 196, padX: 12, padY: 9, icon: 14, iconGap: 6, title: 17, line: 13, gap: 3, tag: 13, descPx: 11.5, maxLines: 3 } as const;
+/** Matches the desktop (relic) card description style, so wrapping uses the real glyph widths. */
+export const CARD_DESC_FONT = `italic 400 ${CARD.descPx}px Alegreya, Georgia, serif`;
+
+export const cardHeight = (lines: number, hasTag: boolean) =>
+  CARD.padY * 2 + CARD.title + (lines > 0 ? CARD.gap + lines * CARD.line : 0) + (hasTag ? CARD.gap + CARD.tag : 0);
+
 /** Identity for dedupe: IGDB has distinct ids for the same keyword name. */
 export const nameKey = (name: string) => name.trim().toLowerCase();
 

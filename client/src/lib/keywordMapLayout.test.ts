@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { nodeWidth, selectKeywordGraph, type CooccurrenceData, type GraphNode, type MapNode } from './keywordMap';
-import { frameScene, layoutKeywordMap, nearestInDirection, pillHeight, sceneBounds, type Size } from './keywordMapLayout';
+import { layoutKeywordMap, nearestInDirection, pillHeight, sceneBounds, type Size } from './keywordMapLayout';
 
 // Long labels on purpose: they are what collides at narrow widths.
 const LONG = ['Turn-Based Tactics', 'Roaming Encounters', 'Grid-Based Movement', 'Dungeon Crawler', 'Party-Based', 'Jrpg'];
@@ -78,15 +78,6 @@ test('travelling to a node keeps the old centre on the side you came from', () =
   const c = after.find(n => n.level === 0)!;
   const oldCenter = after.find(n => n.id === 1)!;
   assert.ok(oldCenter.x < c.x, 'old centre ends up to the left, where it was relative to the target');
-});
-
-test('frameScene fits large scenes and gently zooms sparse ones', () => {
-  const vp = { width: 500, height: 400 };
-  const big = frameScene({ x: -50, y: 0, width: 600, height: 300 }, vp);
-  assert.ok(big.scale < 1);
-  const small = frameScene({ x: 200, y: 150, width: 100, height: 60 }, vp);
-  assert.equal(small.scale, 1.25);
-  assert.deepEqual(small.focus, { x: 250, y: 180 });
 });
 
 test('sceneBounds includes pill extents', () => {

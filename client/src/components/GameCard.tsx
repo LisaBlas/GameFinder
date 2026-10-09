@@ -774,6 +774,10 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
           {rarity !== 'common' && (
             <div className="game-card-rarity-ornament" aria-hidden="true" />
           )}
+          {/* Sparks off the seal as it's struck (rare and up; CSS scales the burst per tier). */}
+          {(rarity === 'rare' || rarity === 'epic' || rarity === 'unique') && (
+            <div className="game-card-sparks" aria-hidden="true" />
+          )}
         </div>
       )}
 

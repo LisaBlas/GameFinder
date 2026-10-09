@@ -143,6 +143,12 @@ const buildSubcategoryIds = () => {
 
 export const categoryNodeId = (category: MainCategory) => CATEGORY_ID_BASE - MAIN_CATEGORIES.indexOf(category);
 
+/** The main category behind a map node id, if it is one. */
+export const categoryFromNodeId = (id: number): MainCategory | null => {
+  const index = CATEGORY_ID_BASE - id;
+  return MAIN_CATEGORIES[index] ?? null;
+};
+
 export const subcategoryNodeId = (subcategory: string) => {
   if (!subcategoryIds) buildSubcategoryIds();
   return subcategoryIds!.get(subcategory) ?? SUBCATEGORY_ID_BASE + 1; // -99: unknown, never collides

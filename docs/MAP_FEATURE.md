@@ -44,9 +44,7 @@ I would strengthen that distinction:
 
 Add:
 
-- Drag-to-pan once zoomed.
-- Wheel/pinch zoom, limited to roughly `0.85–1.8×`.
-- Double-click empty space to reset the camera.
+- No pan/zoom (removed 2026-10-09): the layout always fits the viewport.
 - Arrow-key navigation based on spatial direction.
 - `/` to focus keyword search.
 - `Escape` to step back.
@@ -142,7 +140,7 @@ Animation should communicate meaning:
 - Removed nodes leave along their radial vector.
 - Refresh rotates/reseeds the outer constellation rather than crossfading it.
 - Back navigation runs the forward motion in reverse.
-- Including a keyword sends one restrained light pulse from the node toward the persistent search tray.
+- Including a keyword sends one restrained light pulse from the node toward the selection pills floating on the map.
 
 ### 4. Ambient animation
 
@@ -182,7 +180,7 @@ useKeywordMapState()       navigation and selected center
 useKeywordGraphData()      loading, caching, neighbor lookup
 useKeywordMapLayout()      positions and collision handling
 useKeywordMapMotion()      transition phase and direction
-useMapCamera()             framing, pan, zoom
+useMapSwipe()              mobile swipe gesture
 useMapKeyboardNav()        spatial keyboard navigation
 ```
 

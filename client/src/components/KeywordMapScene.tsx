@@ -1,10 +1,10 @@
 import React, { useId, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
-import { Maximize2, Minus, Plus } from 'lucide-react';
+import { Ban, Check, Plus } from 'lucide-react';
 import { BADGE_ROOM, badgeRoom, nodeLabel, titleCase, type LabelNode, type MapNode } from '../lib/keywordMap';
 import { nearestInDirection, pillHeight, type Direction, type Size } from '../lib/keywordMapLayout';
 import { TIMING, type SceneEdge, type TransitionPlan } from '../lib/keywordMapMotion';
-import { useMapCamera, ZOOM_MAX, ZOOM_MIN } from '../hooks/useMapCamera';
+import { useMapSwipe } from '../hooks/useMapSwipe';
 import { formatCount, useSearchCount } from '../lib/searchCount';
 import { useMapLink } from '../lib/mapLink';
 import { getRarity } from '../lib/discoveryCards';
@@ -35,7 +35,7 @@ interface Props {
   viewport: Size;
   widthOf: (n: LabelNode) => number;
   reduceMotion: boolean;
-  /** Changes with the centre and refresh round: replays the pulse, resets user zoom. */
+  /** Changes with the centre and refresh round: replays the pulse. */
   sceneKey: string;
   variant: 'desktop' | 'mobile';
   modeOf: (id: number) => KeywordMode | null;
@@ -60,8 +60,8 @@ interface Props {
 
 /**
  * The map viewport: one long-lived SVG whose nodes and edges keep their
- * identity across layouts (see docs/MAP_FEATURE.md), under a camera that
- * frames the scene automatically and can be zoomed/panned.
+ * identity across layouts (see docs/MAP_FEATURE.md). The layout already fits
+ * the viewport, so the scene is drawn 1:1 in viewport coordinates.
  */
 export const KeywordMapScene: React.FC<Props> = ({
   nodes,
@@ -82,8 +82,6 @@ export const KeywordMapScene: React.FC<Props> = ({
   showFitTags = false,
   tagFor,
 }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const cameraRef = useRef<SVGGElement>(null);
   const nodeEls = useRef(new Map<number, SVGGElement>());
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [focusId, setFocusId] = useState<number | null>(null);
@@ -97,11 +95,7 @@ export const KeywordMapScene: React.FC<Props> = ({
   // Roving tabindex: one tab stop for the whole map, arrows move between nodes.
   const tabStopId = focusId !== null && byId.has(focusId) ? focusId : centerNode.id;
 
-  // Identity framing: the layout already fits the viewport and keeps clear of the overlays
-  // (toolbar, info card) in viewport coordinates; auto pan/zoom would move pills under them.
-  // User zoom/pan still applies on top.
-  const frame = useMemo(() => ({ focus: { x: viewport.width / 2, y: viewport.height / 2 }, scale: 1 }), [viewport]);
-  const camera = useMapCamera(svgRef, cameraRef, { viewport, frame, reduceMotion, resetKey: sceneKey, onSwipe });
+  const swipe = useMapSwipe(onSwipe);
 
   // Results ↔ map: a hovered/expanded game card lights its keywords here.
   const link = useMapLink();
@@ -160,23 +154,17 @@ export const KeywordMapScene: React.FC<Props> = ({
       const from = byId.get(tabStopId) ?? centerNode;
       const next = nearestInDirection(from, nodes, dir);
       if (next) focusNode(next.id);
-      return;
     }
-    if (e.key === '+' || e.key === '=') camera.zoomBy(1.2);
-    else if (e.key === '-' || e.key === '_') camera.zoomBy(1 / 1.2);
-    else if (e.key === '0') camera.reset();
-    else return;
-    e.preventDefault();
   };
 
-  const renderBadge = (node: MapNode, w: number, mode: KeywordMode | null, lit: boolean) => {
+  /** + on a free keyword (mobile), − on an avoided one. Included keywords get no badge. */
+  const renderBadge = (node: MapNode, w: number, mode: KeywordMode | null) => {
     const cx = w / 2 - BADGE_ROOM / 2 - 4;
     const label = mode ? `Remove ${titleCase(node.name)}` : `Add ${titleCase(node.name)} to search`;
     return (
       <g
         className="kmap-badge"
         transform={`translate(${cx} 0)`}
-        opacity={mode || lit || variant === 'mobile' ? 1 : 0}
         aria-hidden="true"
         onClick={e => {
           e.stopPropagation();
@@ -188,9 +176,7 @@ export const KeywordMapScene: React.FC<Props> = ({
         {/* Larger invisible hit area, especially for thumbs. */}
         <circle className="kmap-badge-hit" r={variant === 'mobile' ? 15 : 10} />
         <circle r={7} />
-        {mode === 'include' ? (
-          <polyline points="-3,0 -1,2.5 3,-2.5" />
-        ) : mode === 'exclude' ? (
+        {mode === 'exclude' ? (
           <line x1={-3} y1={0} x2={3} y2={0} />
         ) : (
           <>
@@ -202,19 +188,34 @@ export const KeywordMapScene: React.FC<Props> = ({
     );
   };
 
-  const renderCenterActions = (node: MapNode, w: number, mode: KeywordMode | null) => {
-    const x = w / 2 + 13;
-    const action = (kind: KeywordMode, cy: number, symbol: 'plus' | 'minus') => (
+  /**
+   * Avoid / Add as icon-only buttons centred on the shape's ends (the plate's points, or the
+   * pill's round caps). Always on the centre; on other keywords only while hovered.
+   */
+  const renderEndActions = (node: MapNode, w: number, mode: KeywordMode | null) => {
+    const isCenter = node.level === 0;
+    const tip = variant === 'desktop' ? (w + PLATE_EXTRA) / 2 : w / 2;
+    const r = variant === 'mobile' ? 10 : 9;
+    const action = (kind: KeywordMode, cx: number) => {
+      const active = mode === kind;
+      const Icon = kind === 'include' ? (active ? Check : Plus) : Ban;
+      const icon = kind === 'include' ? 12 : 11;
+      return (
       <g
         className={`kmap-center-action kmap-center-action--${kind}${mode === kind ? ' is-active' : ''}`}
-        transform={`translate(${x} ${cy})`}
+        transform={`translate(${cx} 0)`}
         role="button"
-        tabIndex={0}
+        // Off-centre nodes keep keyboard A/X; a tab stop here would steal focus and unmount it mid-click.
+        tabIndex={isCenter ? 0 : undefined}
+        aria-hidden={isCenter ? undefined : true}
         aria-label={`${kind === 'include' ? 'Include' : 'Exclude'} ${titleCase(node.name)}`}
         aria-pressed={mode === kind}
+        // Hover buttons: keep focus where it is. A focus move blurs the previously focused node,
+        // whose onBlur clears hover and unmounts these buttons between mousedown and click.
+        onMouseDown={isCenter ? undefined : e => e.preventDefault()}
         onClick={e => {
           e.stopPropagation();
-          onToggle(node, kind, 'inspector');
+          onToggle(node, kind, isCenter ? 'inspector' : 'badge');
         }}
         onDoubleClick={e => e.stopPropagation()}
         onKeyDown={e => {
@@ -225,13 +226,14 @@ export const KeywordMapScene: React.FC<Props> = ({
         }}
       >
         <title>{`${kind === 'include' ? 'Include' : 'Exclude'} ${titleCase(node.name)}`}</title>
-        <circle className="kmap-center-action-hit" r={11} />
-        <circle className="kmap-center-action-bg" r={8} />
-        <line x1={-3.5} y1={0} x2={3.5} y2={0} />
-        {symbol === 'plus' && <line x1={0} y1={-3.5} x2={0} y2={3.5} />}
+        <circle className="kmap-center-action-hit" r={variant === 'mobile' ? 16 : 12} />
+        <circle className="kmap-center-action-base" r={r} />
+        <circle className="kmap-center-action-bg" r={r} />
+        <Icon className="kmap-center-action-icon" x={-icon / 2} y={-icon / 2} width={icon} height={icon} strokeWidth={2.5} aria-hidden="true" />
       </g>
-    );
-    return <g className="kmap-center-actions">{action('include', -9, 'plus')}{action('exclude', 9, 'minus')}</g>;
+      );
+    };
+    return <g className="kmap-center-actions">{action('exclude', -tip)}{action('include', tip)}</g>;
   };
 
   const renderEdge = (e: SceneEdge) => {
@@ -281,6 +283,9 @@ export const KeywordMapScene: React.FC<Props> = ({
     const isVirtual = n.id < 0; // category/subcategory node, not a keyword
     const mode = isVirtual ? null : modeOf(n.id);
     const lit = isLit(n);
+    const hoveredHere = hoveredId === n.id;
+    // Text shifts left only when a badge occupies the slot, so it stays put on hover.
+    const badgeSlot = !isCenter && !isVirtual && mode !== 'include' && (variant === 'mobile' || mode === 'exclude');
     // Rarity if added to the search (same tiers as result counts); 0 results → dimmed.
     const ifAdded = !isCenter && !isVirtual && !mode && fitCountOf ? fitCountOf(n.id) : undefined;
     const rarity = ifAdded !== undefined ? getRarity(ifAdded) : null;
@@ -423,7 +428,7 @@ export const KeywordMapScene: React.FC<Props> = ({
             />
           )}
           <text
-            x={-badgeRoom(n) / 2}
+            x={badgeSlot ? -badgeRoom(n) / 2 : 0}
             textAnchor="middle"
             dominantBaseline="central"
             fontSize={isCenter ? 13 : 12}
@@ -431,8 +436,10 @@ export const KeywordMapScene: React.FC<Props> = ({
           >
             {label}
           </text>
-          {!isCenter && !isVirtual && renderBadge(n, w, mode, lit)}
-          {isCenter && !isVirtual && renderCenterActions(n, w, mode)}
+          {/* Included keywords carry no badge (their bright styling says it). Desktop: the badge only marks an
+              avoided keyword, and hover swaps it for the end buttons. Mobile has no hover: the + stays. */}
+          {badgeSlot && (variant === 'mobile' || !hoveredHere) && renderBadge(n, w, mode)}
+          {!isVirtual && (isCenter || (variant === 'desktop' && hoveredHere)) && renderEndActions(n, w, mode)}
           {groupTag && (
             <text className="kmap-count-tag kmap-group-tag" y={h / 2 + 10} textAnchor="middle" dominantBaseline="central" aria-hidden="true">
               {groupTag}
@@ -471,17 +478,16 @@ export const KeywordMapScene: React.FC<Props> = ({
   return (
     <div className={`kmap-viewport-inner kmap-viewport-inner--${variant}`}>
       <svg
-        ref={svgRef}
         viewBox={`0 0 ${viewport.width} ${viewport.height}`}
         width={viewport.width}
         height={viewport.height}
-        className={`kmap-svg${camera.zoom > 1 ? ' is-zoomed' : ''}`}
+        className="kmap-svg"
         role="group"
         aria-label={`Keyword map centred on ${titleCase(centerNode.name)}`}
         aria-describedby={helpId}
         data-transition={plan.direction}
         onKeyDown={onKeyDown}
-        {...camera.handlers}
+        {...swipe}
       >
         <defs>
           <radialGradient id={glowId}>
@@ -491,7 +497,7 @@ export const KeywordMapScene: React.FC<Props> = ({
         </defs>
         {/* Transparent hit layer so drags/double-clicks register on empty space. */}
         <rect className="kmap-bg" width={viewport.width} height={viewport.height} />
-        <g ref={cameraRef}>
+        <g>
           <circle className="kmap-glow" cx={centerNode.x} cy={centerNode.y} r={140} fill={`url(#${glowId})`} />
           {!reduceMotion && (
             <motion.circle
@@ -533,21 +539,8 @@ export const KeywordMapScene: React.FC<Props> = ({
           </g>
         </g>
       </svg>
-      {variant === 'desktop' && (
-        <div className="kmap-controls" role="group" aria-label="Map zoom">
-          <button type="button" className="kmap-control" onClick={() => camera.zoomBy(1.25)} disabled={camera.zoom >= ZOOM_MAX} aria-label="Zoom in">
-            <Plus className="h-3.5 w-3.5" />
-          </button>
-          <button type="button" className="kmap-control" onClick={() => camera.zoomBy(0.8)} disabled={camera.zoom <= ZOOM_MIN} aria-label="Zoom out">
-            <Minus className="h-3.5 w-3.5" />
-          </button>
-          <button type="button" className="kmap-control" onClick={camera.reset} disabled={camera.zoom === 1} aria-label="Reset view">
-            <Maximize2 className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      )}
       <p id={helpId} className="sr-only">
-        Arrow keys move between keywords. Enter explores, A adds, X excludes, Escape goes back, plus and minus zoom.
+        Arrow keys move between keywords. Enter explores, A adds, X excludes, Escape goes back.
       </p>
       <p className="sr-only" aria-live="polite">
         {`${titleCase(centerNode.name)}: ${nodes.length - 1} related keywords`}

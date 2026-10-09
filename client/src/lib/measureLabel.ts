@@ -28,3 +28,41 @@ export function measuredNodeWidth(node: LabelNode): number {
   cache.set(key, width);
   return width;
 }
+
+/**
+ * Word-wraps `text` into at most `maxLines` lines no wider than `maxWidth` px
+ * (canvas-measured in `font`, default the page font; character estimate as
+ * fallback); overflow ends in "…".
+ */
+export function wrapText(text: string, maxWidth: number, fontPx: number, maxLines: number, font?: string): string[] {
+  if (ctx === undefined) measuredNodeWidth({ name: '', level: 1 }); // initialises the canvas
+  const fits = (s: string) => {
+    if (!ctx) return s.length * fontPx * 0.52 <= maxWidth;
+    ctx.font = font ?? `400 ${fontPx}px ${family || 'sans-serif'}`;
+    return ctx.measureText(s).width <= maxWidth;
+  };
+  const lines: string[] = [];
+  let line = '';
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  for (let i = 0; i < words.length; i++) {
+    const next = line ? `${line} ${words[i]}` : words[i];
+    if (fits(next) || !line) {
+      line = next;
+      continue;
+    }
+    lines.push(line);
+    line = words[i];
+    if (lines.length === maxLines - 1) {
+      // Last line: take the rest, trimming to fit with an ellipsis.
+      let rest = words.slice(i).join(' ');
+      if (!fits(rest)) {
+        while (rest.length > 1 && !fits(`${rest}…`)) rest = rest.slice(0, -1).trimEnd();
+        rest = `${rest}…`;
+      }
+      lines.push(rest);
+      return lines;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}

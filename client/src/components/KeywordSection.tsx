@@ -13,6 +13,7 @@ import KeywordSearch from './KeywordSearch';
 import KeywordMap, { takeSharedJourney, type MapLocation } from './KeywordMap';
 import { KeywordMapSheet, openMapSheetEntry, useMapSheetPopClose } from './KeywordMapSheet';
 import { useSelectionCount } from '../hooks/useSelectionCount';
+import { formatCount } from '../lib/searchCount';
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters } from '../context/FilterContext';
 import Navbar from './Navbar';
@@ -734,7 +735,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const renderSearchActions = () => (
     <button
       onClick={searchFresh ? handleDesktopShare : handleDesktopSearch}
-      disabled={(!hasSearchableFilters && !searchFresh) || isLoading}
+      disabled={(!hasSearchableFilters && !searchFresh) || zeroSelection || isLoading}
       className={`hero-button desktop-action-button desktop-action-button-search ${
         hasSearchableFilters || searchFresh
           ? 'desktop-action-button-search-active'
@@ -758,24 +759,18 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       ) : (
         <>
           <Search className="w-4 h-4" />
-          Search
+          {selectionCount.status === 'ready'
+            ? selectionCount.count === 0
+              ? 'No matching games'
+              : `Show ${formatCount(selectionCount.count, selectionCount.capped)}`
+            : 'Search'}
         </>
       )}
     </button>
   );
 
-  /** Selection lanes with Clear sitting on the divider between them (once something is picked). */
-  const renderSelection = () => (
-    <>
-      <SelectedFilters variant="lanes" />
-      {selectedFilters.length > 0 && (
-        <button onClick={handleDesktopClear} className="desktop-action-button desktop-action-button-clear kmap-selection-clear">
-          <X className="w-3.5 h-3.5" />
-          Clear
-        </button>
-      )}
-    </>
-  );
+  /** The selection as bare pills on the map; clear-all appears once there are two. */
+  const renderSelection = () => <SelectedFilters variant="chips" onClear={handleDesktopClear} />;
 
   /** Desktop left panel: one keyword-map section with the search built in and the roll deck on demand. */
   const renderDesktopExplorer = () => (

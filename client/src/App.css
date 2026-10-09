@@ -472,15 +472,6 @@
   transform: translateY(-0.45rem);
 }
 
-.user-selection {
-  min-width: 0;
-  height: 100%;
-  min-height: 0;
-  border-radius: 8px;
-  background: var(--c-surface);
-  overflow: hidden;
-}
-
 .desktop-action-buttons {
   display: flex;
   flex-shrink: 0;
@@ -875,6 +866,58 @@
   border: 1px solid rgba(var(--c-border-rgb), 0.14);
   border-radius: 8px;
   background: rgba(var(--c-bg-rgb), 0.42);
+}
+
+.selected-filter-recipe {
+  display: grid;
+  min-width: 0;
+  border: 1px solid rgba(var(--c-border-rgb), 0.14);
+  border-radius: 8px;
+  background: rgba(var(--c-bg-rgb), 0.42);
+}
+
+.selected-filter-recipe-row {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  min-width: 0;
+  min-height: 2rem;
+  align-items: center;
+}
+
+.selected-filter-recipe-row + .selected-filter-recipe-row {
+  border-top: 1px solid rgba(var(--c-border-rgb), 0.12);
+}
+
+.selected-filter-recipe-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-left: 0.65rem;
+  color: var(--c-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.selected-filter-recipe-row--avoid .selected-filter-recipe-label {
+  color: rgba(var(--c-danger-rgb), 0.86);
+}
+
+.selected-filter-remove {
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--c-dim);
+}
+
+.selected-filter-remove:hover,
+.selected-filter-remove:focus-visible {
+  background: rgba(var(--c-border-rgb), 0.16);
+  color: var(--c-text);
 }
 
 .selected-filter-lane {
@@ -1479,18 +1522,13 @@ h3{
 }
 
 @keyframes card-appear {
-  from {
-    opacity: 0;
-    filter: blur(7px) brightness(0.35);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0) brightness(1);
-  }
+  from { opacity: 0; }
 }
 
+/* Opacity only, and no forwards fill: a lingering filter/transform here would
+   fight the motion layout transform and trap position:fixed descendants. */
 .game-card-appear {
-  animation: card-appear 0.72s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
+  animation: card-appear 0.32s ease-out var(--forge-delay, 0ms) backwards;
 }
 
 .game-card-slot {
@@ -1554,36 +1592,6 @@ h3{
     inset 0 0 0 1px rgba(255, 255, 255, 0.025),
     inset 0 0 16px rgba(var(--forge-rgb), 0.035),
     0 0 0 1px rgba(0, 0, 0, 0.7);
-}
-
-.game-card-forge::before,
-.game-card-forge::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  opacity: 0;
-}
-
-/* The first flash is a white-hot perimeter that cools toward the tier. */
-.game-card-forge::before {
-  border: 2px solid rgba(var(--forge-soft-rgb), 0.9);
-  box-shadow:
-    inset 0 0 12px rgba(255, 255, 255, 0.55),
-    inset 0 0 28px rgba(var(--forge-rgb), 0.35),
-    0 0 7px rgba(255, 255, 255, 0.9),
-    0 0 24px rgba(var(--forge-rgb), 0.72),
-    0 0 56px rgba(var(--forge-rgb), 0.28);
-}
-
-/* A short surface bloom makes the rectangle emerge from the dark stone. */
-.game-card-forge::after {
-  inset: 2px;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.72), transparent 8% 92%, rgba(255, 255, 255, 0.58)),
-    linear-gradient(0deg, rgba(var(--forge-rgb), 0.5), transparent 16% 84%, rgba(255, 255, 255, 0.62)),
-    radial-gradient(ellipse at 50% 50%, rgba(var(--forge-rgb), 0.13), rgba(255, 255, 255, 0.25) 68%, transparent 78%);
-  mix-blend-mode: screen;
 }
 
 .game-card-shell-rarity-uncommon {
@@ -1739,98 +1747,280 @@ h3{
     drop-shadow(0 0 3px rgba(var(--c-unique-rgb), 0.16));
 }
 
-@keyframes forge-edge-heat {
-  0% { opacity: 0; filter: brightness(2.8) saturate(0); }
-  14% { opacity: 1; filter: brightness(2.4) saturate(0.2); }
-  38% { opacity: 0.92; filter: brightness(1.55) saturate(0.75); }
-  72% { opacity: 0.3; filter: brightness(1.05) saturate(1); }
-  100% { opacity: 0; filter: brightness(1) saturate(1); }
+/* Forge reveal ----------------------------------------------------------
+   Plays once per fresh result (SearchResults re-keys slots per search):
+     heat    the frame's own pixels glow white-hot → orange → dull red and cool
+             back to the material. Filters on the border-image, so the glow
+             (drop-shadow) hugs the frame's real silhouette, never its box.
+     strike  at ~30% the seal is hammered on: sparks, and a jolt on epic+.
+     enchant the tier colour flares along the frame as it takes, then settles.
+   Intensity is per tier (variables below); every layer shares --forge-dur so
+   percentages line up. Fill is "backwards" only: nothing lingers afterwards. */
+.game-card-slot {
+  --forge-dur: 0.7s;
+  --heat-bright: 1;
+  --heat-sat: 1;
+  --heat-glow: 0px;
+  --enchant-glow: 0px;
+  --enchant-alpha: 0;
+  --spark-reach: 0.6;
+  --strike: 0px;
+  --emerge-sepia: 0;
 }
 
-@keyframes forge-surface-heat {
-  0%, 8% { opacity: 0; }
-  20% { opacity: 0.86; }
-  48% { opacity: 0.3; }
-  100% { opacity: 0; }
+.game-card-slot-rarity-uncommon {
+  --forge-dur: 1s;
+  --heat-bright: 1.15; /* warm, not hot: dull red iron */
+  --heat-sat: 5;
+  --heat-glow: 2px;
+  --enchant-glow: 3px;
+  --enchant-alpha: 0.35;
+  --emerge-sepia: 0.25;
 }
 
-@keyframes forge-mineral-wake {
-  0%, 12% { opacity: 0; filter: brightness(0.7); }
-  34% { opacity: 0.42; filter: brightness(1.45); }
-  100% { opacity: 0; filter: brightness(1); }
+.game-card-slot-rarity-rare {
+  --forge-dur: 1.3s;
+  --heat-bright: 1.9;
+  --heat-sat: 3;
+  --heat-glow: 7px;
+  --enchant-glow: 7px;
+  --enchant-alpha: 0.65;
+  --spark-reach: 0.62;
+  --strike: 1px;
+  --emerge-sepia: 0.4;
 }
 
-@keyframes forge-epic-settle {
-  0%, 35% { filter: drop-shadow(0 0 0 rgba(var(--forge-rgb), 0)); }
-  58% { filter: drop-shadow(0 0 9px rgba(var(--forge-rgb), 0.55)); }
-  100% { filter: drop-shadow(0 0 1px rgba(var(--forge-rgb), 0.06)); }
+.game-card-slot-rarity-epic {
+  --forge-dur: 1.6s;
+  --heat-bright: 2.4;
+  --heat-sat: 2;
+  --heat-glow: 10px;
+  --enchant-glow: 10px;
+  --enchant-alpha: 0.8;
+  --spark-reach: 0.85;
+  --strike: 2px;
+  --emerge-sepia: 0.5;
 }
 
-@keyframes forge-frame-assembly-awaken {
-  0%, 22% { opacity: 0; transform: scale(0.985); filter: brightness(2.4) saturate(0); }
-  52% { opacity: 1; transform: scale(1.003); filter: brightness(1.5) saturate(0.7); }
+.game-card-slot-rarity-unique {
+  --forge-dur: 2s;
+  --heat-bright: 2.9;
+  --heat-sat: 1.2; /* less saturated = whiter, hotter */
+  --heat-glow: 14px;
+  --enchant-glow: 14px;
+  --enchant-alpha: 0.95;
+  --spark-reach: 1.1;
+  --strike: 3px;
+  --emerge-sepia: 0.6;
+}
+
+/* Same function list in every frame so the filter interpolates smoothly. */
+@keyframes forge-heat {
+  0% {
+    filter: brightness(var(--heat-bright)) sepia(1) saturate(var(--heat-sat)) hue-rotate(-12deg)
+      drop-shadow(0 0 var(--heat-glow) rgba(255, 170, 70, 0.95));
+  }
+  14% {
+    filter: brightness(var(--heat-bright)) sepia(1) saturate(var(--heat-sat)) hue-rotate(-12deg)
+      drop-shadow(0 0 var(--heat-glow) rgba(255, 170, 70, 0.95));
+  }
+  42% {
+    filter: brightness(1.1) sepia(1) saturate(5) hue-rotate(-24deg)
+      drop-shadow(0 0 calc(var(--heat-glow) * 0.5) rgba(220, 60, 20, 0.6));
+  }
+  68% {
+    filter: brightness(1.08) sepia(0) saturate(1.15) hue-rotate(0deg)
+      drop-shadow(0 0 var(--enchant-glow) rgba(var(--forge-rgb), var(--enchant-alpha)));
+  }
   100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: brightness(1) saturate(1);
+    filter: brightness(1) sepia(0) saturate(1) hue-rotate(0deg)
+      drop-shadow(0 0 0 rgba(var(--forge-rgb), 0));
   }
 }
 
-@keyframes forge-materialize {
-  0% { transform: scale(0.975); filter: contrast(0.72) brightness(0.42); }
-  28% { transform: scale(1.004); filter: contrast(1.16) brightness(1.2); }
-  100% { transform: scale(1); filter: contrast(1) brightness(1); }
+/* Common: plain iron, no fire. It just surfaces from the dark. */
+@keyframes forge-cold {
+  from { filter: brightness(0.3); }
 }
 
-.game-card-appear .game-card {
-  animation: forge-materialize 0.82s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
+@keyframes forge-assembly-in {
+  from { opacity: 0; }
 }
 
-.game-card-slot-rarity-rare .game-card-forge::before,
-.game-card-slot-rarity-epic .game-card-forge::before,
-.game-card-slot-rarity-unique .game-card-forge::before {
-  animation: forge-edge-heat 1.25s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
+/* The card face is lit by the forge: dark and warm-cast, then true colour. */
+@keyframes forge-emerge {
+  0%  { filter: brightness(0.22) sepia(var(--emerge-sepia)); }
+  35% { filter: brightness(0.85) sepia(calc(var(--emerge-sepia) * 0.6)); }
+  100% { filter: brightness(1) sepia(0); }
 }
 
-.game-card-slot-rarity-epic .game-card-forge::before {
-  animation-duration: 1.45s;
+/* The seal drops from above and is hammered into the bottom rail. */
+@keyframes forge-stamp {
+  0%, 20% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.9);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.9);
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 12px rgba(255, 190, 90, 0.95));
+  }
+  38% { transform: translate(-50%, -50%) scale(1.05); }
+  48% { transform: translate(-50%, -50%) scale(1); }
+  68% { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 10px rgba(var(--forge-rgb), 0.9)); }
 }
 
-.game-card-slot-rarity-unique .game-card-forge::before {
-  animation-duration: 1.65s;
+/* Particles are one dot's box-shadows; scaling the dot flings them outward. */
+@keyframes forge-sparks {
+  0%, 29% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.12);
+  }
+  31% {
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.1, 0.8, 0.3, 1);
+  }
+  62% { opacity: 0.85; }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 16px)) scale(var(--spark-reach));
+  }
 }
 
-.game-card-slot-rarity-rare .game-card-forge::after,
-.game-card-slot-rarity-epic .game-card-forge::after,
-.game-card-slot-rarity-unique .game-card-forge::after {
-  animation: forge-surface-heat 1.05s ease-out var(--forge-delay, 0ms) both;
+/* Unique only: embers keep rising off the frame after the strike. */
+@keyframes forge-embers {
+  0%, 34% {
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
+  46% { opacity: 1; }
+  70% { opacity: 0.55; }
+  80% { opacity: 0.9; }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 70px));
+  }
 }
 
-.game-card-slot-rarity-uncommon .game-card-forge::after {
-  animation: forge-mineral-wake 0.9s ease-out var(--forge-delay, 0ms) both;
-}
-
-.game-card-slot-rarity-epic .game-card-forge {
-  animation: forge-epic-settle 1.4s ease-out var(--forge-delay, 0ms) both;
+@keyframes forge-strike {
+  0%, 29% { transform: none; }
+  31% { transform: translateY(var(--strike)); }
+  39% { transform: translateY(calc(var(--strike) * -0.35)); }
+  48%, 100% { transform: none; }
 }
 
 .game-card-appear .game-card-frame-assembly {
-  animation: forge-frame-assembly-awaken 1.15s cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) both;
+  animation: forge-assembly-in 0.25s ease-out var(--forge-delay, 0ms) backwards;
+}
+
+.game-card-appear .game-card {
+  animation: forge-emerge calc(var(--forge-dur) * 0.75) cubic-bezier(0.16, 1, 0.3, 1) var(--forge-delay, 0ms) backwards;
+}
+
+.game-card-slot-rarity-common .game-card-forge {
+  animation: forge-cold 0.7s ease-out var(--forge-delay, 0ms) backwards;
+}
+
+:is(.game-card-slot-rarity-uncommon, .game-card-slot-rarity-rare, .game-card-slot-rarity-epic, .game-card-slot-rarity-unique) .game-card-forge {
+  animation: forge-heat var(--forge-dur) cubic-bezier(0.3, 0.6, 0.4, 1) var(--forge-delay, 0ms) backwards;
+}
+
+:is(.game-card-slot-rarity-uncommon, .game-card-slot-rarity-rare, .game-card-slot-rarity-epic, .game-card-slot-rarity-unique) .game-card-rarity-ornament {
+  animation: forge-stamp var(--forge-dur) ease-out var(--forge-delay, 0ms) backwards;
+}
+
+:is(.game-card-slot-rarity-epic, .game-card-slot-rarity-unique) > .game-card-shell {
+  animation: forge-strike var(--forge-dur) ease-out var(--forge-delay, 0ms);
+}
+
+/* Sparks: anchored on the seal at the bottom rail. Mostly hot metal
+   (yellow/orange), a few in the tier's colour: it's a magical forge. */
+.game-card-sparks {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - 9px);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgb(255, 160, 60)) drop-shadow(0 0 8px rgba(255, 110, 30, 0.6));
+  animation: forge-impact var(--forge-dur) ease-out var(--forge-delay, 0ms) backwards;
+}
+
+/* The hammer blow: a flash on the seal, sized by the tier's reach. */
+@keyframes forge-impact {
+  0%, 28% { box-shadow: 0 0 0 0 rgba(255, 214, 150, 0); }
+  31% { box-shadow: 0 0 calc(30px * var(--spark-reach)) calc(14px * var(--spark-reach)) rgba(255, 220, 160, 0.9); }
+  58%, 100% { box-shadow: 0 0 calc(44px * var(--spark-reach)) 0 rgba(255, 140, 50, 0); }
+}
+
+.game-card-sparks::before,
+.game-card-sparks::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.game-card-sparks::before {
+  background: #ffd27a;
+  box-shadow:
+    -110px -40px 0 0 #ff9a3c,
+    -84px -78px 0 0.5px #ffd27a,
+    -52px -104px 0 0 #ff9a3c,
+    -20px -122px 0 0 #ffe7b0,
+    14px -112px 0 0.5px rgb(var(--forge-soft-rgb)),
+    46px -96px 0 0 #ff9a3c,
+    78px -70px 0 0 #ffd27a,
+    108px -36px 0 0.5px #ff6a2b,
+    -128px -8px 0 0 #ff6a2b,
+    126px -6px 0 0 #ff9a3c,
+    -66px -30px 0 0 rgb(var(--forge-soft-rgb)),
+    60px -34px 0 0.5px #ffd27a,
+    -32px -66px 0 0 #ffb347,
+    30px -58px 0 0 rgb(var(--forge-soft-rgb));
+  animation: forge-sparks var(--forge-dur) linear var(--forge-delay, 0ms) backwards;
+}
+
+.game-card-slot-rarity-unique .game-card-sparks::after {
+  width: 2.5px;
+  height: 2.5px;
+  background: #ffe7b0;
+  box-shadow:
+    -150px -10px 0 0 #ffb347,
+    -118px -34px 0 0.5px rgb(var(--forge-soft-rgb)),
+    -84px -12px 0 0 #ff9a3c,
+    -46px -40px 0 0 #ffd27a,
+    -12px -18px 0 0.5px rgb(var(--forge-soft-rgb)),
+    22px -44px 0 0 #ffb347,
+    56px -14px 0 0 #ffd27a,
+    92px -36px 0 0.5px rgb(var(--forge-soft-rgb)),
+    128px -12px 0 0 #ff9a3c,
+    160px -30px 0 0 #ffd27a;
+  animation: forge-embers var(--forge-dur) ease-out var(--forge-delay, 0ms) backwards;
+}
+
+/* Past the first screenful the forge plays unseen: keep those cards cheap. */
+.game-card-slot:nth-child(n + 9) :is(.game-card-forge, .game-card-rarity-ornament, .game-card-sparks),
+.game-card-slot:nth-child(n + 9) .game-card-sparks::before,
+.game-card-slot:nth-child(n + 9) .game-card-sparks::after,
+.game-card-slot:nth-child(n + 9) > .game-card-shell,
+.game-card-slot:nth-child(n + 9) .game-card {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .game-card-appear,
   .game-card-appear .game-card,
-  .game-card-slot-rarity-rare .game-card-forge::before,
-  .game-card-slot-rarity-epic .game-card-forge::before,
-  .game-card-slot-rarity-unique .game-card-forge::before,
-  .game-card-slot-rarity-uncommon .game-card-forge::after,
-  .game-card-slot-rarity-rare .game-card-forge::after,
-  .game-card-slot-rarity-epic .game-card-forge::after,
-  .game-card-slot-rarity-unique .game-card-forge::after,
-  .game-card-slot-rarity-epic .game-card-forge,
-  .game-card-appear .game-card-frame-assembly {
-    animation: none;
+  .game-card-forge,
+  .game-card-rarity-ornament,
+  .game-card-sparks,
+  .game-card-sparks::before,
+  .game-card-sparks::after,
+  .game-card-appear > .game-card-shell {
+    animation: none !important;
   }
 }
 
@@ -4265,7 +4455,17 @@ svg.filter-caret.expanded {
   cursor: not-allowed;
 }
 
+.kmap-root-btn {
+  width: auto;
+  gap: 0.35rem;
+  padding-inline: 0.65rem;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .kmap-crumbs {
+  position: relative; /* anchors crumbs popped out while they animate away */
   display: flex;
   flex: 1;
   align-items: center;
@@ -4534,8 +4734,7 @@ button.kmap-door-sub:focus-visible {
   width: 100%;
 }
 
-/* Desktop: fill the panel's leftover height (not width × ratio), so the
-   selection row below stays in view on wide screens. */
+/* Desktop: fill the panel's leftover height (not width × ratio). */
 .kmap-viewport--desktop {
   flex: 1;
   min-height: 300px;
@@ -4557,14 +4756,6 @@ button.kmap-door-sub:focus-visible {
   height: 100%;
   user-select: none;
   -webkit-user-select: none;
-}
-
-.kmap-svg.is-zoomed {
-  cursor: grab;
-}
-
-.kmap-svg.is-zoomed:active {
-  cursor: grabbing;
 }
 
 /* Thumb gestures (swipe for more) belong to the map, not the page. */
@@ -4598,45 +4789,6 @@ button.kmap-door-sub:focus-visible {
   font-size: 0.68rem;
   line-height: 1rem;
   pointer-events: none;
-}
-
-/* Zoom row sits under the window toolbar (top-right), clear of the docked inspector. */
-.kmap-controls {
-  position: absolute;
-  top: calc(0.5rem + 2rem + 0.25rem);
-  right: 0.5rem;
-  display: flex;
-  gap: 0.25rem;
-  opacity: 0.55;
-  transition: opacity 0.15s;
-}
-
-.kmap-viewport:hover .kmap-controls,
-.kmap-controls:focus-within {
-  opacity: 1;
-}
-
-.kmap-control {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border: 1px solid hsl(var(--border));
-  border-radius: 8px;
-  background: hsl(var(--card) / 0.85);
-  color: var(--c-muted);
-  transition: color 0.15s, border-color 0.15s;
-}
-
-.kmap-control:hover:not(:disabled) {
-  color: var(--c-emerald-soft);
-  border-color: rgba(var(--c-emerald-rgb), 0.5);
-}
-
-.kmap-control:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 .kmap-edge {
@@ -4808,11 +4960,6 @@ button.kmap-door-sub:focus-visible {
 .kmap-badge:hover polyline,
 .kmap-badge:focus-visible line,
 .kmap-badge:focus-visible polyline {
-  stroke: var(--c-bg);
-}
-
-.kmap-node.is-include .kmap-badge circle:not(.kmap-badge-hit) {
-  fill: var(--c-bg);
   stroke: var(--c-bg);
 }
 
@@ -5236,6 +5383,11 @@ button.kmap-door-sub:focus-visible {
   color: var(--c-text);
 }
 
+.kmap-mode:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
 .kmap-mode[aria-checked="true"] {
   background: rgba(var(--c-emerald-rgb), 0.16);
   color: var(--c-emerald-soft);
@@ -5275,9 +5427,11 @@ button.kmap-door-sub:focus-visible {
 
 /* "Need a spark?": a small header pill that swaps the map for the roll deck. */
 .kmap-spark-btn {
-  display: inline-flex;
+  /* Grid: the two labels stack in one cell and cross-fade (see .kmap-spark-face). */
+  display: inline-grid;
   flex-shrink: 0;
-  align-items: center;
+  place-items: center;
+  overflow: hidden;
   gap: 0.3rem;
   padding: 0.3rem 0.65rem;
   border: 1px solid rgba(var(--c-gold-rgb), 0.4);
@@ -5311,6 +5465,44 @@ button.kmap-door-sub:focus-visible {
   font-weight: 600;
 }
 
+/* Desktop category/subcategory cards: a place to open, not a keyword to add. */
+.kmap-node--card .kmap-node-shape {
+  fill: color-mix(in srgb, var(--c-emerald) 6%, var(--c-surface-2));
+  stroke: rgba(var(--c-emerald-rgb), 0.55);
+  stroke-dasharray: none;
+}
+
+.kmap-node--card .kmap-node-rail {
+  fill: none;
+  stroke: rgba(var(--c-emerald-rgb), 0.2);
+  pointer-events: none;
+}
+
+.kmap-node .kmap-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--c-text);
+}
+
+.kmap-node .kmap-card-desc {
+  font-size: 11px;
+  font-weight: 400;
+  fill: var(--c-muted);
+}
+
+.kmap-node .kmap-card-tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  fill: var(--c-emerald-soft);
+}
+
+.kmap-card-icon {
+  color: var(--c-emerald-soft);
+  pointer-events: none;
+}
+
 .kmap-group-tag {
   font-size: 10px;
   font-weight: 600;
@@ -5333,39 +5525,6 @@ button.kmap-door-sub:focus-visible {
   min-height: 0;
 }
 
-.kmap-toolbar {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 3;
-  display: flex;
-  gap: 0.25rem;
-}
-
-.kmap-tool {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid rgba(var(--c-border-rgb), 0.22);
-  border-radius: 10px;
-  background: hsl(var(--card) / 0.85);
-  color: var(--c-muted);
-  transition: color 0.15s, border-color 0.15s;
-}
-
-.kmap-tool:hover:not(:disabled),
-.kmap-tool:focus-visible {
-  border-color: rgba(var(--c-emerald-rgb), 0.5);
-  color: var(--c-emerald-soft);
-}
-
-.kmap-tool:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
 /* Rare pairings and hints live below the map, above its navigation bar. */
 .kmap-dock {
   flex-shrink: 0;
@@ -5381,146 +5540,141 @@ button.kmap-door-sub:focus-visible {
   margin-top: 0.4rem;
 }
 
-/* Current selection and Clear/Search form the map's bottom row. */
-.kmap-user-selection {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  height: auto;
-  min-height: 3.6rem;
-  padding: 0.45rem 0.6rem;
-  border-top: 1px solid rgba(var(--c-border-rgb), 0.14);
-  border-radius: 0;
+/* Selection and Search float on the map: pills bottom-left, Search bottom-right.
+   The wrappers pass pointer events through so the map stays draggable around them. */
+.kmap-user-selection-filters,
+.kmap-user-selection-actions {
+  position: absolute;
+  bottom: 0.9rem;
+  z-index: 3;
+  pointer-events: none;
 }
 
 .kmap-user-selection-filters {
-  position: relative;
-  flex: 1;
-  min-width: 0;
+  left: 0.9rem;
+  max-width: calc(100% - 13.5rem);
+  max-height: 45%;
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
-/* Clear sits on the divider between the include and exclude lanes. */
-.kmap-user-selection .kmap-selection-clear {
-  position: absolute;
-  top: 50%;
-  right: 0.9rem;
-  z-index: 1;
-  height: 1.5rem;
-  padding: 0 0.55rem;
-  gap: 0.25rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--c-surface-2);
-  font-size: 0.75rem;
-  transform: translateY(-50%);
-}
-
-.kmap-user-selection .kmap-selection-clear:hover:not(:disabled) {
-  transform: translateY(-50%);
+/* Nothing selected yet: no trace on the map. */
+.kmap-user-selection-filters:empty,
+.kmap-user-selection-filters:has(> .selected-filter-chips:empty) {
+  display: none;
 }
 
 .kmap-user-selection-actions {
+  right: 0.9rem;
   display: flex;
-  flex-shrink: 0;
   align-items: center;
   gap: 0.4rem;
 }
 
-.kmap-user-selection .desktop-action-button {
+.kmap-user-selection-filters > *,
+.kmap-user-selection-actions > * {
+  pointer-events: auto;
+}
+
+.selected-filter-chips {
+  position: relative; /* anchors pills popped out while they animate away */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.selected-filter-pill--removable {
+  cursor: pointer;
+}
+
+.selected-filter-clear {
+  display: inline-flex;
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(var(--c-surface-rgb), 0.92);
+  box-shadow: 0 0 0 1px rgba(var(--c-border-rgb), 0.2);
+  color: var(--c-dim);
+  transition: color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.selected-filter-clear:hover,
+.selected-filter-clear:focus-visible {
+  box-shadow: 0 0 0 1px rgba(var(--c-danger-rgb), 0.55);
+  color: var(--c-danger);
+}
+
+.kmap-user-selection-actions .desktop-action-button {
   height: 2.25rem;
   padding: 0 0.8rem;
   font-size: 0.8rem;
 }
 
-.kmap-user-selection .desktop-action-button-search {
+.kmap-user-selection-actions .desktop-action-button-search {
   min-width: 0;
 }
 
-/* Discreet tray: the map carries the colour; the selection stays neutral.
-   Mode is read from the lane icon and, for excludes, a strikethrough. */
-.kmap-user-selection .selected-filter-lanes {
-  border-color: rgba(var(--c-border-rgb), 0.1);
-  background: rgba(var(--c-bg-rgb), 0.28);
-}
-
-.kmap-user-selection .selected-filter-lane-mode {
-  width: 1.6rem;
-  height: 1.6rem;
-}
-
-.kmap-user-selection .selected-filter-lane-mode svg {
-  width: 0.95rem;
-  height: 0.95rem;
-}
-
-.kmap-user-selection .selected-filter-lane-mode-include.active,
-.kmap-user-selection .selected-filter-lane-mode-exclude.active {
-  border: 0;
-  background: transparent;
-  color: var(--c-dim);
-}
-
-.kmap-user-selection .selected-filter-pill.keyword,
-.kmap-user-selection .selected-filter-pill.keyword-exclude {
+/* Neutral pills on the map: the map carries the colour. Excludes read via strikethrough. */
+.kmap-user-selection-filters .selected-filter-pill.keyword,
+.kmap-user-selection-filters .selected-filter-pill.keyword-exclude {
   padding: 0.24rem 0.6rem;
   border: 1px solid rgba(var(--c-border-rgb), 0.18);
-  background-color: rgba(var(--c-surface-rgb), 0.6);
+  background-color: rgba(var(--c-surface-rgb), 0.92);
   color: var(--c-text);
   font-size: 0.78rem;
   font-weight: 600;
 }
 
-.kmap-user-selection .selected-filter-pill.keyword-exclude {
+.kmap-user-selection-filters .selected-filter-pill.keyword-exclude {
   color: var(--c-muted);
 }
 
-.kmap-user-selection .selected-filter-pill.keyword-exclude .selected-filter-name {
+.kmap-user-selection-filters .selected-filter-pill.keyword-exclude .selected-filter-name {
   text-decoration: line-through;
   text-decoration-color: rgba(var(--c-danger-rgb), 0.55);
 }
 
-.kmap-user-selection .selected-filter-pill.keyword:hover,
-.kmap-user-selection .selected-filter-pill.keyword-exclude:hover {
+.kmap-user-selection-filters .selected-filter-pill.keyword:hover,
+.kmap-user-selection-filters .selected-filter-pill.keyword-exclude:hover {
   border-color: rgba(var(--c-border-rgb), 0.34);
-  background-color: rgba(var(--c-surface-rgb), 0.9);
+  background-color: rgba(var(--c-surface-rgb), 1);
 }
 
-.kmap-user-selection .selected-filter-pill.keyword svg,
-.kmap-user-selection .selected-filter-pill.keyword-exclude svg {
+.kmap-user-selection-filters .selected-filter-pill.keyword svg,
+.kmap-user-selection-filters .selected-filter-pill.keyword-exclude svg {
   color: var(--c-dim);
 }
 
-.kmap-user-selection .selected-filter-pill.keyword .keyword-mode-chip-button,
-.kmap-user-selection .selected-filter-pill.keyword-exclude .keyword-mode-chip-button {
+.kmap-user-selection-filters .selected-filter-pill.keyword .keyword-mode-chip-button,
+.kmap-user-selection-filters .selected-filter-pill.keyword-exclude .keyword-mode-chip-button {
   background: transparent;
 }
 
-.kmap-user-selection .selected-filter-pill .keyword-mode-chip-button:hover {
+.kmap-user-selection-filters .selected-filter-pill .keyword-mode-chip-button:hover {
   background: rgba(var(--c-border-rgb), 0.16);
 }
 
-.kmap-user-selection .selected-filter-pill .keyword-mode-chip-button:hover svg {
+.kmap-user-selection-filters .selected-filter-pill .keyword-mode-chip-button:hover svg {
   color: var(--c-text);
 }
 
 /* Search: tinted gold instead of a solid, glowing slab. */
-.kmap-user-selection .desktop-action-button-search-active {
+.kmap-user-selection-actions .desktop-action-button-search-active {
   border-color: rgba(var(--c-gold-rgb), 0.45);
   background: rgba(var(--c-gold-rgb), 0.14);
   color: #ffd36a;
   box-shadow: none;
 }
 
-.kmap-user-selection .desktop-action-button-search-active:hover {
+.kmap-user-selection-actions .desktop-action-button-search-active:hover {
   border-color: rgba(var(--c-gold-rgb), 0.7);
   background: rgba(var(--c-gold-rgb), 0.22);
   color: #ffe08f;
   box-shadow: none;
-}
-
-.kmap-user-selection .desktop-action-button-clear {
-  border-color: transparent;
-  background: transparent;
 }
 
 /* Legacy dock groups retained for contextual extensions. */
@@ -5542,10 +5696,24 @@ button.kmap-door-sub:focus-visible {
   fill: transparent;
 }
 
+/* Solid backing so tinted fills (Add) read as opaque as Avoid's card fill. */
+.kmap-center-action-base {
+  fill: hsl(var(--card));
+}
+
 .kmap-center-action-bg {
   fill: hsl(var(--card) / 0.94);
   stroke: rgba(var(--c-border-rgb), 0.45);
   stroke-width: 1;
+}
+
+.kmap-center-action--include {
+  color: var(--c-emerald-soft);
+}
+
+.kmap-center-action--include .kmap-center-action-bg {
+  stroke: rgba(var(--c-emerald-rgb), 0.55);
+  fill: rgba(var(--c-emerald-rgb), 0.1);
 }
 
 .kmap-center-action line {
@@ -6076,4 +6244,190 @@ button.kmap-door-sub:focus-visible {
 }
 .tag-gold-glow {
   animation: tag-gold-glow 3s ease-out forwards;
+}
+
+/* ── Keyword map micro-interactions ─────────────────────────────────
+   Header + map controls: press feedback, icon cues, label swaps. The relic
+   skin adds a plate glint on top (kmap-relic.css). */
+.kmap-icon-btn,
+.kmap-spark-btn,
+.kmap-mode {
+  transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.14s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+:is(.kmap-icon-btn, .kmap-spark-btn, .kmap-mode):active:not(:disabled) {
+  transform: scale(0.94);
+  transition-duration: 0.06s;
+}
+
+:is(.kmap-icon-btn, .kmap-mode, .kmap-spark-face) svg {
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* All categories: the home icon lifts. */
+.kmap-root-btn:hover svg {
+  transform: translateY(-2px) scale(1.08);
+}
+
+/* Back: the chevron keeps nudging the way it goes. */
+.kmap-back-btn:hover:not(:disabled) svg {
+  animation: kmap-back-nudge 0.9s ease-in-out infinite;
+}
+
+@keyframes kmap-back-nudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(-3px); }
+}
+
+/* New options: one full turn per refresh, in the swipe's direction (--spin-dir). */
+.kmap-refresh-spin {
+  animation: kmap-refresh-spin 0.6s cubic-bezier(0.3, 0.8, 0.3, 1);
+}
+
+@keyframes kmap-refresh-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(calc(var(--spin-dir, 1) * 360deg)); }
+}
+
+/* Only compatible: switching on ignites the plate and sifts the filter icon. */
+.kmap-fit-control[aria-checked="true"] {
+  animation: kmap-fit-ignite 0.5s ease-out;
+}
+
+.kmap-fit-control[aria-checked="true"] svg {
+  animation: kmap-fit-sift 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes kmap-fit-ignite {
+  0%   { transform: scale(0.94); filter: brightness(1.8); }
+  45%  { transform: scale(1.04); }
+  100% { transform: none; filter: none; }
+}
+
+@keyframes kmap-fit-sift {
+  0%   { transform: scaleY(0.3); }
+  60%  { transform: scaleY(1.2); }
+  100% { transform: none; }
+}
+
+/* "Need a spark?" ⇄ "Back to map": a flip wheel. Leaving labels exit up,
+   arriving ones rise in from below (and the reverse on the way back). */
+.kmap-spark-face {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: inherit;
+  transition:
+    opacity 0.24s ease,
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.24s ease;
+}
+
+.kmap-spark-face--back,
+.kmap-spark-btn.is-open .kmap-spark-face--spark {
+  opacity: 0;
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.kmap-spark-face--back { transform: translateY(75%); }
+.kmap-spark-btn.is-open .kmap-spark-face--spark { transform: translateY(-75%); }
+
+.kmap-spark-btn.is-open .kmap-spark-face--back {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  pointer-events: auto;
+}
+
+.kmap-spark-btn:hover .kmap-spark-face svg {
+  transform: rotate(-14deg) scale(1.15);
+}
+
+/* Breadcrumbs: each crumb travels with its separator (motion in KeywordMap). */
+.kmap-crumb-item {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: inherit;
+}
+
+/* The new current crumb (deeper or back up) settles in with a brief glow. */
+.kmap-crumb--current {
+  animation: kmap-crumb-settle 0.45s ease-out;
+}
+
+@keyframes kmap-crumb-settle {
+  0%   { opacity: 0.5; }
+  40%  { filter: brightness(1.5); }
+  100% { opacity: 1; filter: none; }
+}
+
+/* Selection pills (motion in SelectedFilters): changing mode re-stamps the
+   pill (class swap restarts the a/b keyframes), avoiding shakes its name,
+   and the mode icon pops in. Transform stays off the pill: motion owns it. */
+.selected-filter-chips .selected-filter-pill.keyword-include {
+  animation: kmap-pill-stamp-a 0.45s ease-out;
+}
+
+.selected-filter-chips .selected-filter-pill.keyword-exclude {
+  animation: kmap-pill-stamp-b 0.45s ease-out;
+}
+
+.selected-filter-chips .selected-filter-pill.keyword-exclude .selected-filter-name {
+  display: inline-block;
+  animation: kmap-pill-shake 0.36s ease-in-out;
+}
+
+.selected-filter-chips .keyword-mode-icon {
+  animation: kmap-icon-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes kmap-pill-stamp-a {
+  0%   { filter: brightness(1.9); }
+  100% { filter: none; }
+}
+
+@keyframes kmap-pill-stamp-b {
+  0%   { filter: brightness(1.9); }
+  100% { filter: none; }
+}
+
+@keyframes kmap-pill-shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-2px); }
+  50%      { transform: translateX(2px); }
+  75%      { transform: translateX(-1px); }
+}
+
+@keyframes kmap-icon-pop {
+  from { opacity: 0; transform: scale(0.3) rotate(-90deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-mode),
+  :is(.kmap-icon-btn, .kmap-mode, .kmap-spark-face) svg,
+  .kmap-spark-face {
+    transition: none;
+  }
+
+  :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-mode):active:not(:disabled),
+  .kmap-root-btn:hover svg,
+  .kmap-spark-btn:hover .kmap-spark-face svg,
+  .kmap-spark-face--back,
+  .kmap-spark-btn.is-open .kmap-spark-face--spark {
+    transform: none;
+  }
+
+  .kmap-back-btn:hover:not(:disabled) svg,
+  .kmap-refresh-spin,
+  .kmap-fit-control[aria-checked="true"],
+  .kmap-fit-control[aria-checked="true"] svg,
+  .kmap-crumb--current,
+  .selected-filter-chips .selected-filter-pill.keyword-include,
+  .selected-filter-chips .selected-filter-pill.keyword-exclude,
+  .selected-filter-chips .selected-filter-pill.keyword-exclude .selected-filter-name,
+  .selected-filter-chips .keyword-mode-icon {
+    animation: none;
+  }
 }
