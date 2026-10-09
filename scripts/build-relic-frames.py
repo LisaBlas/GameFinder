@@ -20,19 +20,20 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-RASTER = Path(__file__).resolve().parent.parent / "client/src/assets/ui/relic/raster"
+ROOT = Path(__file__).resolve().parent.parent
+RASTER = ROOT / "client/src/assets/ui/relic/raster"
+SOURCES = ROOT / "design/sources/ui/relic/raster"  # high-res originals, not bundled
 WORK = 1024  # source art is normalised to this size before measuring
 
 # name, corner size (work px), CSS corner size (px), rows to average (skip mid ornaments)
 FRAMES = [
     ("panel-frame", 288, 88, [(300, 440), (590, 724)]),
-    ("map-frame-filigree", 128, 20, [(140, 884)]),
 ]
 FEATHER = 40  # work px: corner crop fades into the averaged rail
 
 
 def load(name):
-    im = Image.open(RASTER / f"{name}-source.png").convert("RGBA")
+    im = Image.open(SOURCES / f"{name}-source.png").convert("RGBA")
     a = np.asarray(im.resize((WORK, WORK), Image.LANCZOS)).astype(np.float64) / 255
     a[..., :3] *= a[..., 3:]  # premultiply so averaging doesn't fringe
     return a

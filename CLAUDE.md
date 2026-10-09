@@ -43,7 +43,7 @@ rules around these commands.
 ## Keyword Map Interaction
 - Map-node clicks explore/recenter; adding and avoiding are explicit actions on the centered keyword, with node badges retained as shortcuts.
 - `Only compatible` and `New options` are the map's discovery controls. The current selection floats on the map as bare pills (click a pill to remove it; hidden until a first pick) with a count-aware results CTA bottom-right.
-- Desktop keyword-panel structure and controls are skinned in `client/src/styles/kmap-relic.css`; generated frame/background source and optimized WebP assets live in `client/src/assets/ui/relic/raster/`. Keep these changes container-only unless map behavior is explicitly in scope.
+- Desktop keyword-panel structure and controls are skinned in `client/src/styles/kmap-relic.css`; optimized WebP assets live in `client/src/assets/ui/relic/raster/`; their high-res source PNGs live in `design/sources/` (outside `client/`, not bundled). Only keep assets in `client/src/assets/` that CSS/code actually references. Keep these changes container-only unless map behavior is explicitly in scope.
 
 ## Git
 - Branch: work on `main` or feature branches.
