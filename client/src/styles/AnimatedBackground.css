@@ -6,23 +6,45 @@
   overflow: hidden;
   z-index: -1;
   background-color: #0a0706;
-  background-image:
-    radial-gradient(ellipse 58% 20% at 50% 110%, rgba(224, 112, 32, 0.14), rgba(131, 49, 18, 0.06) 42%, transparent 74%),
-    radial-gradient(ellipse 42% 16% at 50% 104%, rgba(255, 169, 67, 0.10), transparent 64%),
-    linear-gradient(180deg, rgba(1, 5, 4, 0.80), rgba(3, 4, 4, 0.82) 52%, rgba(5, 3, 2, 0.88)),
+}
+
+/* The stone table scrolls with the results (AnimatedBackground.tsx shifts it
+   by scrollTop mod one tile) so the carved card sockets stay fixed in it.
+   The light stays put: it's the room's light, not part of the table. Each
+   blend mode needs its own layer once the table is a separate element. */
+.ab-table,
+.ab-light {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.ab-table {
+  bottom: auto;
+  height: calc(100% + 1024px);
+  /* Stone slabs (scripts/build-stone-table.py), tiled at 1x. */
+  background: url("../assets/stone-table.webp") center top / 1024px 1024px repeat;
+  will-change: transform;
+}
+
+.ab-light-soft {
+  background:
     radial-gradient(ellipse 82% 78% at 34% 18%, rgba(47, 33, 22, 0.26), transparent 54%),
-    radial-gradient(ellipse 72% 70% at 76% 32%, rgba(10, 43, 34, 0.22), transparent 62%),
-    url("../assets/leather-background.webp");
-  background-size:
-    100% 100%,
-    100% 100%,
-    100% 100%,
-    100% 100%,
-    100% 100%,
-    760px 760px;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
-  background-position: center, center, center, center, center, center;
-  background-blend-mode: screen, screen, color, soft-light, soft-light, normal;
+    radial-gradient(ellipse 72% 70% at 76% 32%, rgba(10, 43, 34, 0.22), transparent 62%);
+  mix-blend-mode: soft-light;
+}
+
+.ab-light-tint {
+  background: linear-gradient(180deg, rgba(1, 5, 4, 0.55), rgba(3, 4, 4, 0.5) 52%, rgba(5, 3, 2, 0.3));
+  mix-blend-mode: color;
+}
+
+.ab-light-glow {
+  background:
+    radial-gradient(ellipse 58% 20% at 50% 110%, rgba(224, 112, 32, 0.14), rgba(131, 49, 18, 0.06) 42%, transparent 74%),
+    radial-gradient(ellipse 42% 16% at 50% 104%, rgba(255, 169, 67, 0.10), transparent 64%);
+  mix-blend-mode: screen;
 }
 
 /* On desktop the environment belongs to the results surface. The keyword
@@ -45,9 +67,12 @@
 
 .animated-background::before {
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.80), rgba(0, 0, 0, 0.18) 34%, rgba(0, 0, 0, 0.34) 72%, rgba(0, 0, 0, 0.26)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.80), rgba(0, 0, 0, 0.18) 34%, rgba(0, 0, 0, 0.2) 72%, transparent),
     linear-gradient(90deg, rgba(0, 0, 0, 0.80), transparent 20%, transparent 80%, rgba(0, 0, 0, 0.60)),
-    radial-gradient(ellipse at center, rgba(0, 0, 0, 0.70) 24%, rgba(0, 0, 0, 0.76) 100%);
+    /* Grazing light: the stone is dark except where the forge glow at the
+       bottom rakes across it. Kept light enough mid-pane for the stone and the
+       sockets cut into it to read (results-relic.css keys the floors to it). */
+    radial-gradient(ellipse 85% 42% at 50% 104%, transparent, rgba(0, 0, 0, 0.3) 55%, rgba(0, 0, 0, 0.5) 100%);
   z-index: 0;
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import '../styles/AnimatedBackground.css';
 
 const MOBILE_BREAKPOINT = 768;
@@ -6,6 +6,7 @@ const TABLET_BREAKPOINT = 1200;
 const LOW_END_CPU_THRESHOLD = 4;
 const LOW_END_MEMORY_THRESHOLD = 4;
 const EMBER_SESSION_STORAGE_KEY = 'animated-background-ember-count';
+const TABLE_TILE_HEIGHT = 1024; // matches .ab-table background-size
 
 const isLowEndDevice = () => {
   const { hardwareConcurrency, deviceMemory } = navigator as Navigator & {
@@ -152,12 +153,36 @@ const AnimatedBackground: React.FC = () => {
     return () => {
       clearTimeout(timeoutId);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      container.innerHTML = '';
+      container.querySelectorAll('.particle').forEach(particle => particle.remove());
     };
   }, []);
 
+  // Carry the table with the results scroll so card sockets stay put in the
+  // stone. Shifting by scrollTop mod one tile keeps the layer finite.
+  const tableRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const scroller = document.querySelector<HTMLElement>('.results-panel-scroll');
+    const table = tableRef.current;
+    if (!scroller || !table) return;
+
+    // Scroll events already fire once per frame; deferring to rAF would let
+    // the stone trail the sockets by a frame.
+    const sync = () => {
+      table.style.transform = `translate3d(0, ${-(scroller.scrollTop % TABLE_TILE_HEIGHT)}px, 0)`;
+    };
+
+    sync();
+    scroller.addEventListener('scroll', sync, { passive: true });
+    return () => scroller.removeEventListener('scroll', sync);
+  }, []);
+
   return (
-    <div className="animated-background" />
+    <div className="animated-background">
+      <div ref={tableRef} className="ab-table" />
+      <div className="ab-light ab-light-soft" />
+      <div className="ab-light ab-light-tint" />
+      <div className="ab-light ab-light-glow" />
+    </div>
   );
 };
 

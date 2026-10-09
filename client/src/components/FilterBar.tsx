@@ -58,12 +58,12 @@ const FilterBar: React.FC = () => {
               <PopoverContent
                 align="start"
                 sideOffset={8}
-                className="w-[min(420px,calc(100vw-2rem))] border-border bg-card/95 p-3 shadow-2xl backdrop-blur"
+                className="results-filter-popover w-[min(420px,calc(100vw-2rem))] p-3"
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <h3 className="text-sm font-semibold text-foreground">{label}</h3>
+                  <h3 className="results-filter-popover-title">{label}</h3>
                   {selectedCount > 0 && (
-                    <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+                    <span className="results-filter-popover-count">
                       {selectedCount} selected
                     </span>
                   )}
@@ -89,7 +89,7 @@ const FilterBar: React.FC = () => {
           );
         })}
 
-        <div className="flex items-center gap-3 pl-1 border-l border-border ml-1">
+        <div className="results-quality-group flex items-center gap-3 pl-3 ml-1">
           <label className="flex items-center gap-1.5 cursor-pointer group select-none">
             <input
               type="checkbox"

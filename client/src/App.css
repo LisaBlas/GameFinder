@@ -1,5 +1,6 @@
 @import './styles/tokens.css';
 @import './styles/kmap-relic.css';
+@import './styles/results-relic.css';
 
 @tailwind base;
 @tailwind components;
@@ -204,61 +205,6 @@
     drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.92))
     drop-shadow(0 1px 0 rgba(226, 255, 240, 0.16))
     drop-shadow(0 4px 5px rgba(0, 0, 0, 0.68));
-}
-
-.popular-trails {
-  margin-top: 2.25rem;
-}
-
-.popular-trails-label {
-  margin-bottom: 0.8rem;
-  color: rgba(190, 180, 151, 0.62);
-  font-family: 'Alegreya', Georgia, serif;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.popular-trails-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.55rem;
-}
-
-.popular-trail-link {
-  border: 1px solid rgba(137, 110, 61, 0.34);
-  border-radius: 2px;
-  background: linear-gradient(180deg, rgba(15, 25, 21, 0.78), rgba(5, 11, 9, 0.82));
-  padding: 0.45rem 0.72rem;
-  color: rgba(203, 194, 169, 0.72);
-  font-family: 'Alegreya', Georgia, serif;
-  font-size: 0.82rem;
-  line-height: 1;
-  box-shadow: inset 0 1px 0 rgba(226, 189, 120, 0.035);
-  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease, transform 0.14s ease;
-}
-
-.popular-trail-link:hover,
-.popular-trail-link:focus-visible {
-  border-color: rgba(45, 212, 191, 0.48);
-  background: linear-gradient(180deg, rgba(12, 40, 34, 0.84), rgba(5, 20, 17, 0.9));
-  color: #b8eee2;
-  outline: none;
-  transform: translateY(-1px);
-}
-
-@media (max-width: 640px) {
-  .search-placeholder {
-    align-items: flex-start;
-    overflow-y: auto;
-    padding-top: 3rem;
-  }
-
-  .popular-trails {
-    margin-top: 1.75rem;
-  }
 }
 
 /* Filter Pill Styles */
@@ -1876,10 +1822,14 @@ h3{
 
 /* Forge reveal ----------------------------------------------------------
    Plays once per fresh result (SearchResults re-keys slots per search):
-     heat    the frame's own pixels glow white-hot → orange → dull red and cool
-             back to the material. Filters on the border-image, so the glow
-             (drop-shadow) hugs the frame's real silhouette, never its box.
-     strike  at ~30% the seal is hammered on: sparks, and a jolt on epic+.
+     heat    unique only: the frame's own pixels glow white-hot → orange →
+             dull red and cool back to the material. Uncommon to epic flare in
+             their own tier colour instead (forge-enchant). Filters on the
+             border-image, so the glow (drop-shadow) hugs the frame's real
+             silhouette, never its box.
+     strike  at ~30% sparks burst off the seal in the tier colour (hot metal
+             for unique). The seal itself is part of the frame: it appears
+             with it and glows in step (forge-gem).
      enchant the tier colour flares along the frame as it takes, then settles.
    Intensity is per tier (variables below); every layer shares --forge-dur so
    percentages line up. Fill is "backwards" only: nothing lingers afterwards. */
@@ -1891,7 +1841,6 @@ h3{
   --enchant-glow: 0px;
   --enchant-alpha: 0;
   --spark-reach: 0.6;
-  --strike: 0px;
   --emerge-sepia: 0;
 }
 
@@ -1902,7 +1851,7 @@ h3{
   --heat-glow: 2px;
   --enchant-glow: 3px;
   --enchant-alpha: 0.35;
-  --emerge-sepia: 0.25;
+  --emerge-sepia: 0;
 }
 
 .game-card-slot-rarity-rare {
@@ -1913,8 +1862,7 @@ h3{
   --enchant-glow: 7px;
   --enchant-alpha: 0.65;
   --spark-reach: 0.62;
-  --strike: 1px;
-  --emerge-sepia: 0.4;
+  --emerge-sepia: 0;
 }
 
 .game-card-slot-rarity-epic {
@@ -1925,8 +1873,7 @@ h3{
   --enchant-glow: 10px;
   --enchant-alpha: 0.8;
   --spark-reach: 0.85;
-  --strike: 2px;
-  --emerge-sepia: 0.5;
+  --emerge-sepia: 0;
 }
 
 .game-card-slot-rarity-unique {
@@ -1937,7 +1884,6 @@ h3{
   --enchant-glow: 14px;
   --enchant-alpha: 0.95;
   --spark-reach: 1.1;
-  --strike: 3px;
   --emerge-sepia: 0.6;
 }
 
@@ -1966,6 +1912,28 @@ h3{
 }
 
 /* Common: plain iron, no fire. It just surfaces from the dark. */
+/* Uncommon to epic: the frame flares and glows in its own tier colour, with
+   no hot-metal stage (that's unique's alone). Same function list in every
+   frame so the filter interpolates smoothly. */
+@keyframes forge-enchant {
+  0%, 14% {
+    filter: brightness(var(--heat-bright))
+      drop-shadow(0 0 var(--heat-glow) rgba(var(--forge-soft-rgb), 0.95));
+  }
+  42% {
+    filter: brightness(1.15)
+      drop-shadow(0 0 calc(var(--heat-glow) * 0.7) rgba(var(--forge-rgb), 0.8));
+  }
+  68% {
+    filter: brightness(1.08)
+      drop-shadow(0 0 var(--enchant-glow) rgba(var(--forge-rgb), var(--enchant-alpha)));
+  }
+  100% {
+    filter: brightness(1)
+      drop-shadow(0 0 0 rgba(var(--forge-rgb), 0));
+  }
+}
+
 @keyframes forge-cold {
   from { filter: brightness(0.3); }
 }
@@ -1981,20 +1949,16 @@ h3{
   100% { filter: brightness(1) sepia(0); }
 }
 
-/* The seal drops from above and is hammered into the bottom rail. */
-@keyframes forge-stamp {
-  0%, 20% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.9);
+/* The seal is part of the frame: it appears with it (it lives in the frame
+   assembly) and flares in step with the frame's glow (forge-heat/enchant),
+   then settles to its resting drop-shadows. */
+@keyframes forge-gem {
+  0%, 14% {
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 12px rgba(var(--stamp-rgb, var(--forge-soft-rgb)), 0.95));
   }
-  30% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(0.9);
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 12px rgba(255, 190, 90, 0.95));
+  68% {
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 10px rgba(var(--forge-rgb), 0.9));
   }
-  38% { transform: translate(-50%, -50%) scale(1.05); }
-  48% { transform: translate(-50%, -50%) scale(1); }
-  68% { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 10px rgba(var(--forge-rgb), 0.9)); }
 }
 
 /* Particles are one dot's box-shadows; scaling the dot flings them outward. */
@@ -2029,12 +1993,6 @@ h3{
   }
 }
 
-@keyframes forge-strike {
-  0%, 29% { transform: none; }
-  31% { transform: translateY(var(--strike)); }
-  39% { transform: translateY(calc(var(--strike) * -0.35)); }
-  48%, 100% { transform: none; }
-}
 
 .game-card-appear .game-card-frame-assembly {
   animation: forge-assembly-in 0.25s ease-out var(--forge-delay, 0ms) backwards;
@@ -2048,36 +2006,42 @@ h3{
   animation: forge-cold 0.7s ease-out var(--forge-delay, 0ms) backwards;
 }
 
-:is(.game-card-slot-rarity-uncommon, .game-card-slot-rarity-rare, .game-card-slot-rarity-epic, .game-card-slot-rarity-unique) .game-card-forge {
+:is(.game-card-slot-rarity-uncommon, .game-card-slot-rarity-rare, .game-card-slot-rarity-epic) .game-card-forge {
+  animation: forge-enchant var(--forge-dur) cubic-bezier(0.3, 0.6, 0.4, 1) var(--forge-delay, 0ms) backwards;
+}
+
+/* Only unique is forged in fire: white-hot, then orange, then its own colour. */
+.game-card-slot-rarity-unique .game-card-forge {
   animation: forge-heat var(--forge-dur) cubic-bezier(0.3, 0.6, 0.4, 1) var(--forge-delay, 0ms) backwards;
 }
 
 :is(.game-card-slot-rarity-uncommon, .game-card-slot-rarity-rare, .game-card-slot-rarity-epic, .game-card-slot-rarity-unique) .game-card-rarity-ornament {
-  animation: forge-stamp var(--forge-dur) ease-out var(--forge-delay, 0ms) backwards;
+  animation: forge-gem var(--forge-dur) cubic-bezier(0.3, 0.6, 0.4, 1) var(--forge-delay, 0ms) backwards;
 }
 
-:is(.game-card-slot-rarity-epic, .game-card-slot-rarity-unique) > .game-card-shell {
-  animation: forge-strike var(--forge-dur) ease-out var(--forge-delay, 0ms);
-}
-
-/* Sparks: anchored on the seal at the bottom rail. Mostly hot metal
-   (yellow/orange), a few in the tier's colour: it's a magical forge. */
+/* Sparks: anchored on the seal at the bottom rail, in the tier's colours.
+   Unique alone throws hot metal (yellow/orange), with a few in its colour. */
 .game-card-sparks {
+  --spark-hot: rgb(var(--forge-soft-rgb));
+  --spark-mid: rgb(var(--forge-rgb));
+  --spark-deep: rgba(var(--forge-rgb), 0.75);
+  --spark-glow: var(--forge-rgb);
+  --impact-rgb: var(--forge-soft-rgb);
   position: absolute;
   left: 50%;
   top: calc(100% - 9px);
   width: 0;
   height: 0;
   pointer-events: none;
-  filter: drop-shadow(0 0 3px rgb(255, 160, 60)) drop-shadow(0 0 8px rgba(255, 110, 30, 0.6));
+  filter: drop-shadow(0 0 3px rgb(var(--spark-glow))) drop-shadow(0 0 8px rgba(var(--spark-glow), 0.6));
   animation: forge-impact var(--forge-dur) ease-out var(--forge-delay, 0ms) backwards;
 }
 
 /* The hammer blow: a flash on the seal, sized by the tier's reach. */
 @keyframes forge-impact {
-  0%, 28% { box-shadow: 0 0 0 0 rgba(255, 214, 150, 0); }
-  31% { box-shadow: 0 0 calc(30px * var(--spark-reach)) calc(14px * var(--spark-reach)) rgba(255, 220, 160, 0.9); }
-  58%, 100% { box-shadow: 0 0 calc(44px * var(--spark-reach)) 0 rgba(255, 140, 50, 0); }
+  0%, 28% { box-shadow: 0 0 0 0 rgba(var(--impact-rgb), 0); }
+  31% { box-shadow: 0 0 calc(30px * var(--spark-reach)) calc(14px * var(--spark-reach)) rgba(var(--impact-rgb), 0.9); }
+  58%, 100% { box-shadow: 0 0 calc(44px * var(--spark-reach)) 0 rgba(var(--spark-glow), 0); }
 }
 
 .game-card-sparks::before,
@@ -2093,21 +2057,21 @@ h3{
 }
 
 .game-card-sparks::before {
-  background: #ffd27a;
+  background: var(--spark-hot);
   box-shadow:
-    -110px -40px 0 0 #ff9a3c,
-    -84px -78px 0 0.5px #ffd27a,
-    -52px -104px 0 0 #ff9a3c,
-    -20px -122px 0 0 #ffe7b0,
+    -110px -40px 0 0 var(--spark-mid),
+    -84px -78px 0 0.5px var(--spark-hot),
+    -52px -104px 0 0 var(--spark-mid),
+    -20px -122px 0 0 var(--spark-hot),
     14px -112px 0 0.5px rgb(var(--forge-soft-rgb)),
-    46px -96px 0 0 #ff9a3c,
-    78px -70px 0 0 #ffd27a,
-    108px -36px 0 0.5px #ff6a2b,
-    -128px -8px 0 0 #ff6a2b,
-    126px -6px 0 0 #ff9a3c,
+    46px -96px 0 0 var(--spark-mid),
+    78px -70px 0 0 var(--spark-hot),
+    108px -36px 0 0.5px var(--spark-deep),
+    -128px -8px 0 0 var(--spark-deep),
+    126px -6px 0 0 var(--spark-mid),
     -66px -30px 0 0 rgb(var(--forge-soft-rgb)),
-    60px -34px 0 0.5px #ffd27a,
-    -32px -66px 0 0 #ffb347,
+    60px -34px 0 0.5px var(--spark-hot),
+    -32px -66px 0 0 var(--spark-mid),
     30px -58px 0 0 rgb(var(--forge-soft-rgb));
   animation: forge-sparks var(--forge-dur) linear var(--forge-delay, 0ms) backwards;
 }
@@ -2115,19 +2079,31 @@ h3{
 .game-card-slot-rarity-unique .game-card-sparks::after {
   width: 2.5px;
   height: 2.5px;
-  background: #ffe7b0;
+  background: var(--spark-hot);
   box-shadow:
-    -150px -10px 0 0 #ffb347,
+    -150px -10px 0 0 var(--spark-mid),
     -118px -34px 0 0.5px rgb(var(--forge-soft-rgb)),
-    -84px -12px 0 0 #ff9a3c,
-    -46px -40px 0 0 #ffd27a,
+    -84px -12px 0 0 var(--spark-mid),
+    -46px -40px 0 0 var(--spark-hot),
     -12px -18px 0 0.5px rgb(var(--forge-soft-rgb)),
-    22px -44px 0 0 #ffb347,
-    56px -14px 0 0 #ffd27a,
+    22px -44px 0 0 var(--spark-mid),
+    56px -14px 0 0 var(--spark-hot),
     92px -36px 0 0.5px rgb(var(--forge-soft-rgb)),
-    128px -12px 0 0 #ff9a3c,
-    160px -30px 0 0 #ffd27a;
+    128px -12px 0 0 var(--spark-mid),
+    160px -30px 0 0 var(--spark-hot);
   animation: forge-embers var(--forge-dur) ease-out var(--forge-delay, 0ms) backwards;
+}
+
+.game-card-slot-rarity-unique .game-card-sparks {
+  --spark-hot: #ffd27a;
+  --spark-mid: #ff9a3c;
+  --spark-deep: #ff6a2b;
+  --spark-glow: 255, 140, 50;
+  --impact-rgb: 255, 220, 160;
+}
+
+.game-card-slot-rarity-unique .game-card-rarity-ornament {
+  --stamp-rgb: 255, 190, 90;
 }
 
 /* Past the first screenful the forge plays unseen: keep those cards cheap. */
