@@ -59,7 +59,6 @@ export const DESKTOP_SHAPE: GraphShape = { level1Count: LEVEL1_COUNT, level2PerP
 export const MAP_WIDTH = 520;
 export const MAP_HEIGHT = 440;
 
-const LABEL_MAX: Record<GraphNode['level'], number> = { 0: 22, 1: 14, 2: 13 };
 const CHAR_W = 6.2;
 /** Room inside non-centre pills for the add/selected badge. */
 export const BADGE_ROOM = 16;
@@ -71,10 +70,8 @@ export type LabelNode = Pick<GraphNode, 'name' | 'level'> & { id?: number };
 const isTaxonomy = (node: LabelNode) => node.id !== undefined && node.id < 0;
 
 // Taxonomy names are already cased ("Gameplay and Mechanics"); keyword names come lowercase from IGDB.
-export const nodeLabel = (node: LabelNode) =>
-  isTaxonomy(node)
-    ? truncateLabel(node.name, Math.max(LABEL_MAX[node.level], 24))
-    : truncateLabel(titleCase(node.name), LABEL_MAX[node.level]);
+// Shown in full: layout sizes pills from the measured label, so long names just get wider pills.
+export const nodeLabel = (node: LabelNode) => (isTaxonomy(node) ? node.name : titleCase(node.name));
 
 /** Room a non-centre pill keeps for its add badge (taxonomy nodes can't be added). */
 export const badgeRoom = (node: LabelNode) => (node.level === 0 || isTaxonomy(node) ? 0 : BADGE_ROOM);
@@ -187,4 +184,3 @@ export function buildKeywordMap(
 
 export const titleCase = (s: string) => s.replace(/\b\w/g, c => c.toUpperCase());
 
-export const truncateLabel = (s: string, max = 16) => (s.length > max ? `${s.slice(0, max - 1)}…` : s);
