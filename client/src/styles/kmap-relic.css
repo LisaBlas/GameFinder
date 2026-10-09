@@ -146,12 +146,23 @@
   border-bottom: 0;
 }
 
+/* Gilded inscription cut into the stone: Cinzel (Roman inscriptional capitals),
+   a fill that is shadowed at the top of the cut and lit at the bottom, a dark
+   upper edge and a faint lit lower lip. drop-shadow, not text-shadow: with a
+   background-clipped fill, text-shadow paints over the glyphs. */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-brand-title {
-  color: var(--relic-gold-text);
-  font-size: 1.52rem;
-  font-weight: 400;
-  letter-spacing: 0.085em;
-  text-shadow: 0 1px 0 #000, 0 0 18px rgba(240, 196, 110, 0.16);
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 1.42rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: transparent;
+  background: linear-gradient(180deg, #3a2a12 0%, #6e5126 30%, #b88c48 64%, #f1d08e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: none;
+  filter:
+    drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.95))
+    drop-shadow(0 1px 0 rgba(240, 200, 130, 0.2));
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-header-actions {
