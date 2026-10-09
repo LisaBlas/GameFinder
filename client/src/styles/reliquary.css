@@ -64,61 +64,81 @@
 }
 
 /* ── 2. Carving ─────────────────────────────────────────────────── */
-/* The recess is the element: its background is the floor (clipped to the
-   arch by border-radius), ::before lays the generated shading on top, out to
-   the art's 14px overhang. Radii and overhang are fractions of the art size
-   (470x370 arch, 92x132 niche) so they hold at any scale. */
+/* The recess and its ornamental frame are separate layers. The generated v2
+   art stays transparent through the opening; ::after holds the stone floor
+   and rarity light behind it, while ::before draws the frame itself. */
 .reliquary-arch,
 .reliquary-niche {
   --rq-light: transparent;
   position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(60% 48% at 50% 58%, var(--rq-light), transparent 72%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.06) 45%, rgba(0, 0, 0, 0.18)),
-    var(--rq-floor) var(--fx, 0px) var(--fy, 0px) / 1024px 1024px,
-    #070807;
   transition: --rq-light 0.35s ease;
 }
 
 .reliquary-arch::before,
-.reliquary-niche::before {
+.reliquary-niche::before,
+.reliquary-arch::after,
+.reliquary-niche::after {
   content: "";
   position: absolute;
-  z-index: 1;
-  background: center / 100% 100% no-repeat;
   pointer-events: none;
+}
+
+.reliquary-arch::before,
+.reliquary-niche::before {
+  z-index: 2;
+  background: center / contain no-repeat;
+}
+
+.reliquary-arch::after,
+.reliquary-niche::after {
+  z-index: 0;
+  background:
+    radial-gradient(60% 48% at 50% 58%, var(--rq-light), transparent 72%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.08) 45%, rgba(0, 0, 0, 0.25)),
+    var(--rq-floor) var(--fx, 0px) var(--fy, 0px) / 1024px 1024px,
+    #070807;
 }
 
 .reliquary-arch {
   --rq-light: rgba(var(--rq-bronze-rgb), 0.07);
   --fx: -200px;
   --fy: -300px;
-  height: clamp(14rem, 44vh, 28rem);
+  height: clamp(20rem, 48vh, 33rem);
   max-width: 100%;
-  aspect-ratio: 470 / 370;
-  border-radius: 50% 50% 0 0 / 63.51% 63.51% 0 0;
+  aspect-ratio: 1199 / 1312;
   container-type: size;
 }
 
 .reliquary-arch::before {
-  inset: -3.784% -2.979%;
-  background-image: url("../assets/ui/reliquary-arch.webp");
+  inset: 0;
+  background-image: url("../assets/ui/reliquary/reliquary-altar-v2.webp");
+  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.58));
+}
+
+.reliquary-arch::after {
+  inset: 18.5% 13.5% 15.5%;
+  clip-path: polygon(50% 0, 73% 8%, 90% 25%, 100% 43%, 100% 100%, 0 100%, 0 43%, 10% 25%, 27% 8%);
 }
 
 .reliquary-niche {
   display: grid;
   place-items: center;
   width: 100%;
-  aspect-ratio: 92 / 132;
-  border-radius: 50% 50% 0 0 / 34.85% 34.85% 0 0;
+  aspect-ratio: 890 / 1328;
   color: rgba(var(--rq-bronze-rgb), 0.8);
   font-size: 1.85rem;
 }
 
 .reliquary-niche::before {
-  inset: -10.606% -15.217%;
-  background-image: url("../assets/ui/reliquary-niche.webp");
+  inset: -5% -7%;
+  background-image: url("../assets/ui/reliquary/reliquary-vessel-v2.webp");
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.48));
+}
+
+.reliquary-niche::after {
+  inset: 13% 18% 10%;
+  clip-path: polygon(50% 0, 76% 10%, 94% 30%, 100% 43%, 100% 100%, 0 100%, 0 43%, 6% 30%, 24% 10%);
 }
 
 .reliquary-niche svg {
@@ -129,45 +149,9 @@
   transition: color 0.25s ease, filter 0.25s ease;
 }
 
-/* The ledge the altar stands on. */
+/* The v2 altar art includes its own stepped plinth. */
 .reliquary-plinth {
-  position: absolute;
-  z-index: 2;
-  top: 100%;
-  left: -2.1rem;
-  right: -2.1rem;
-  height: 1.9rem;
-  background:
-    linear-gradient(180deg, rgba(214, 222, 216, 0.16) 0, rgba(214, 222, 216, 0.04) 2px, transparent 3px),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.72)),
-    var(--rq-floor) -480px -120px / 1024px 1024px,
-    #0b0d0c;
-  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
-  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.7));
-}
-
-.reliquary-plinth::after {
-  content: "";
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(var(--rq-bronze-rgb), 0.6) 20%, rgba(var(--rq-bronze-rgb), 0.6) 80%, transparent);
-}
-
-/* Keystone at the crown. */
-.reliquary-arch::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: -0.6rem;
-  left: 50%;
-  width: 0.95rem;
-  height: 0.95rem;
-  transform: translateX(-50%) rotate(45deg);
-  background: linear-gradient(160deg, #e2bd78 0%, #8c6a36 38%, #4a3418 62%, #a8803f 100%);
-  box-shadow: 0 0 0 3px #080b0a;
+  display: none;
 }
 
 /* ── 3. Altar ───────────────────────────────────────────────────── */
@@ -185,7 +169,7 @@
   align-items: center;
   justify-content: center;
   gap: 2.4cqh;
-  padding: 16cqh 9cqw 5cqh;
+  padding: 23cqh 16cqw 16cqh;
   text-align: center;
 }
 
