@@ -148,8 +148,9 @@ interface Props {
   onClose?: () => void;
   /** Keyword/game search: below the header on mobile; a collapsed lens in the map window's top-right on desktop. */
   search?: React.ReactNode;
-  /** "Need a spark?" content (the roll/discovery deck), swapped in for the map on demand. */
-  spark?: React.ReactNode;
+  /** "Need a spark?" content, swapped in for the map on demand. A function
+   *  receives `close` so the content can hand the user back to the map. */
+  spark?: React.ReactNode | ((close: () => void) => React.ReactNode);
   /** Search actions (Clear, Search) for the map's bottom bar. */
   actions?: React.ReactNode;
   /** Current user selection, floated on the map's bottom-left (desktop). */
@@ -770,12 +771,19 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         {holding && <span className="kmap-loading">Mapping {titleCase(center?.name ?? '')}…</span>}
         {content}
         {isCategoryFallback && graph.length > 1 && <span className="kmap-relation-label">Related by category</span>}
-        {/* Floating on the map: selection pills bottom-left (empty until a first pick), Search bottom-right. */}
-        {selection && <div ref={overlayRef} className="kmap-user-selection-filters">{selection}</div>}
-        {actions && <div ref={overlayRef} className="kmap-user-selection-actions">{actions}</div>}
+        {renderSelectionOverlays(true)}
       </div>
     );
   };
+
+  /** Floating selection pills bottom-left (empty until a first pick) and Search bottom-right.
+   *  On the map they're also measured as layout obstacles; over the spark deck they just float. */
+  const renderSelectionOverlays = (onMap: boolean) => (
+    <>
+      {selection && <div ref={onMap ? overlayRef : undefined} className="kmap-user-selection-filters">{selection}</div>}
+      {actions && <div ref={onMap ? overlayRef : undefined} className="kmap-user-selection-actions">{actions}</div>}
+    </>
+  );
 
   /** Optional contextual content below the map. Keyword controls live on its centre node. */
   const renderDock = () => {
@@ -943,7 +951,11 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
       <div className="kmap-body">
         {sparkOpen && spark ? (
           // The roll/discovery deck in place of the map; rolls add keywords, which the map follows.
-          <div className="kmap-spark-panel">{spark}</div>
+          // The selection and Search stay put, floating where they sit on the map.
+          <div className={`kmap-spark-stage kmap-spark-stage--${variant}`}>
+            <div className="kmap-spark-panel">{typeof spark === 'function' ? spark(() => setSparkOpen(false)) : spark}</div>
+            {renderSelectionOverlays(false)}
+          </div>
         ) : (
           <>
             {/* Desktop: the mode toggle sits inside the map window (top-left). */}

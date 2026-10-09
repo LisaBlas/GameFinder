@@ -1,6 +1,7 @@
 @import './styles/tokens.css';
 @import './styles/kmap-relic.css';
 @import './styles/results-relic.css';
+@import './styles/reliquary.css';
 
 @tailwind base;
 @tailwind components;
@@ -5329,6 +5330,30 @@ button.kmap-crumb:hover,
 /* Not ".kmap-spark": that's the transition particles (pointer-events: none). */
 .kmap-spark-panel {
   min-height: 0;
+}
+
+/* Spark deck in place of the map: anchors the floating selection + Search
+   exactly where they sit on the map window. */
+.kmap-spark-stage {
+  position: relative;
+}
+
+.kmap-spark-stage--desktop {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.kmap-spark-stage--desktop > .kmap-spark-panel {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+/* Keep the deck's last row scrollable clear of the floating Search. */
+.kmap-spark-stage:has(> .kmap-user-selection-actions) > .kmap-spark-panel {
+  padding-bottom: calc(var(--kmap-inset, 0.9rem) + 3.5rem);
 }
 
 /* Subcategory nodes in a category map: folder-like, not addable. */

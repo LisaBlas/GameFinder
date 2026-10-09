@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reliquary Mockup</title>
+<!-- Static composition mockup for the desktop "Need a spark?" view (the Reliquary).
+     Not wired to the app. Uses the real panel assets and fonts so it reads in context.
+     Two states side by side: dormant (nothing drawn) and revealed (an Epic craft). -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Alegreya:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --a: ../../client/src/assets/ui;
+    --bronze-rgb: 168, 128, 63;
+    --bronze-hi: #e2bd78;
+    --gold-text: #f0c46e;
+    --parchment: #ddd3bd;
+    --dim: #9a927f;
+    --edge: linear-gradient(160deg, #e2bd78 0%, #8c6a36 38%, #4a3418 62%, #a8803f 100%);
+    --face: linear-gradient(180deg, #141a18, #0a0e0d);
+    --epic-rgb: 163, 53, 238;
+    --epic-soft: #c472fa;
+    --unique-rgb: 255, 128, 0;
+    --frame-bleed: 8px;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #050706;
+    color: var(--dim);
+    font-family: 'Alegreya', Georgia, serif;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .state-tag {
+    position: absolute;
+    top: -20px;
+    left: 0;
+    font: 600 11px/1 system-ui, sans-serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5c6a64;
+  }
+
+  svg.i { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+  /* ── Panel shell (copied from kmap-relic.css) ───────────────────── */
+  .panel {
+    position: relative;
+    isolation: isolate;
+    width: 800px;
+    height: 950px;
+    margin-top: 20px;
+    background:
+      radial-gradient(90% 55% at 50% 0%, rgba(45, 212, 191, 0.07), transparent 70%),
+      radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55)),
+      linear-gradient(rgba(4, 10, 8, 0.84), rgba(3, 7, 6, 0.9)),
+      url("../../client/src/assets/ui/relic/raster/relic-chassis.webp") center / cover no-repeat,
+      linear-gradient(180deg, #0b1110, #070a0a);
+    box-shadow: 0 0 0 1px #000, 0 18px 50px rgba(0, 0, 0, 0.6);
+  }
+  .panel::after, .panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    opacity: 0.74;
+    filter: brightness(0.7) saturate(0.62) drop-shadow(0 0 1px rgba(226, 189, 120, 0.24));
+    pointer-events: none;
+  }
+  .panel::after {
+    border: 88px solid transparent;
+    border-image: url("../../client/src/assets/ui/relic/raster/panel-frame-9slice.webp") 176 / 88px / var(--frame-bleed) stretch;
+  }
+  .panel::before {
+    z-index: 31;
+    background:
+      url("../../client/src/assets/ui/relic/raster/panel-frame-diamond-top.webp") 50% calc(-1 * var(--frame-bleed)) / 46px 88px no-repeat,
+      url("../../client/src/assets/ui/relic/raster/panel-frame-diamond-right.webp") right calc(-1 * var(--frame-bleed)) center / 88px 46px no-repeat,
+      url("../../client/src/assets/ui/relic/raster/panel-frame-diamond-bottom.webp") center bottom calc(-1 * var(--frame-bleed)) / 46px 88px no-repeat,
+      url("../../client/src/assets/ui/relic/raster/panel-frame-diamond-left.webp") calc(-1 * var(--frame-bleed)) 50% / 88px 46px no-repeat;
+  }
+  .medallion {
+    position: absolute;
+    top: -13px; left: -13px;
+    z-index: 32;
+    width: 82px; height: 82px;
+    background: url("../../client/src/assets/ui/relic/raster/corner-medallion.webp") center / contain no-repeat;
+    opacity: 0.82;
+    filter: brightness(0.72) saturate(0.72) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.82));
+  }
+
+  /* ── Header ─────────────────────────────────────────────────────── */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 2rem 3rem 0 5.4rem;
+    height: 92px;
+  }
+  .brand {
+    flex: 1;
+    margin: 0;
+    font: 700 1.42rem/1 'Cinzel', Georgia, serif;
+    letter-spacing: 0.16em;
+    color: transparent;
+    background: linear-gradient(180deg, #3a2a12 0%, #6e5126 30%, #b88c48 64%, #f1d08e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.95)) drop-shadow(0 1px 0 rgba(240, 200, 130, 0.2));
+  }
+  .crumbs { flex: 1; display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; color: #8f8a7c; }
+  .crumbs b { color: var(--gold-text); font-weight: 700; }
+
+  /* Hex plate primitive: element = bronze rim, ::before = dark face. */
+  .plate {
+    --cut: 12px;
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    height: 2.35rem;
+    padding: 0 1.1rem;
+    border: 0;
+    background: linear-gradient(160deg, #8f7442 0%, #5f4a29 42%, #2b2113 72%, #68522d 100%);
+    clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%);
+    font: 700 0.95rem/1 'Alegreya', Georgia, serif;
+    color: #cfb67d;
+    text-shadow: 0 1px 0 #000;
+    white-space: nowrap;
+  }
+  .plate::before {
+    content: "";
+    position: absolute;
+    inset: 1.5px;
+    z-index: -1;
+    background: linear-gradient(180deg, #121411, #080a08);
+    clip-path: inherit;
+  }
+  .plate--lit { background: linear-gradient(160deg, #ffe7b0 0%, #d9a24a 35%, #7a5620 65%, #f0bf62 100%); color: #ffe3a6; }
+  .plate--sm { --cut: 7px; height: 1.6rem; padding: 0 0.8rem; font-size: 0.82rem; }
+
+  /* ── Altar ──────────────────────────────────────────────────────── */
+  .altar {
+    position: relative;
+    margin: 0.9rem auto 0;
+    width: 470px;
+    height: 404px;
+  }
+  /* The arched recess: lit from above, so the top inner edge falls into shadow
+     and the lower lip catches light (same rule as the result sockets). */
+  .arch {
+    position: absolute;
+    inset: 0 0 34px;
+    border-radius: 235px 235px 6px 6px / 200px 200px 6px 6px;
+    background:
+      radial-gradient(60% 46% at 50% 58%, var(--altar-light, rgba(var(--bronze-rgb), 0.07)), transparent 72%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.18) 45%, rgba(0, 0, 0, 0.3)),
+      url("../../client/src/assets/ui/stone-socket-floor.webp") -200px -300px / 1024px 1024px,
+      #070807;
+    box-shadow:
+      inset 0 14px 24px rgba(0, 0, 0, 0.85),
+      inset 0 -2px 0 rgba(214, 222, 216, 0.08),
+      0 0 0 1px rgba(var(--bronze-rgb), 0.38),
+      0 0 0 5px rgba(8, 11, 10, 0.9),
+      0 0 0 6px rgba(var(--bronze-rgb), 0.16);
+  }
+  /* Keystone ornament at the arch's crown. */
+  .arch::before {
+    content: "";
+    position: absolute;
+    top: -9px; left: 50%;
+    width: 16px; height: 16px;
+    transform: translateX(-50%) rotate(45deg);
+    background: var(--edge);
+    box-shadow: 0 0 0 3px #080b0a;
+  }
+  /* The plinth the relic rests on. */
+  .plinth {
+    position: absolute;
+    left: -34px; right: -34px; bottom: 6px;
+    height: 34px;
+    background:
+      linear-gradient(180deg, rgba(214, 222, 216, 0.16) 0, rgba(214, 222, 216, 0.04) 2px, transparent 3px),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.75)),
+      url("../../client/src/assets/ui/stone-socket-floor.webp") -480px -120px / 1024px 1024px,
+      #0b0d0c;
+    clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+  }
+  .plinth::after {
+    content: "";
+    position: absolute;
+    left: 14px; right: 14px; top: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--bronze-rgb), 0.6) 20%, rgba(var(--bronze-rgb), 0.6) 80%, transparent);
+  }
+
+  .altar-content {
+    position: absolute;
+    inset: 0 0 34px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 3.2rem 2.6rem 1.6rem;
+    text-align: center;
+  }
+
+  /* Dormant: a cold seal and an invitation. */
+  .seal {
+    display: grid;
+    place-items: center;
+    width: 112px; height: 112px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 38%, #2a2418, #120f0a 70%);
+    box-shadow:
+      0 0 0 2px #0a0c0b,
+      0 0 0 3px rgba(var(--bronze-rgb), 0.55),
+      0 0 0 9px rgba(10, 12, 11, 0.9),
+      0 0 0 10px rgba(var(--bronze-rgb), 0.22),
+      inset 0 3px 8px rgba(0, 0, 0, 0.8),
+      0 0 40px rgba(var(--bronze-rgb), 0.1);
+    color: rgba(var(--bronze-rgb), 0.85);
+    font-size: 46px;
+  }
+  .seal svg.i { stroke-width: 1.2; filter: drop-shadow(0 -1px 0 #000); }
+  .altar-title {
+    margin: 0.9rem 0 0;
+    font: 700 1.5rem/1.15 'Cinzel', Georgia, serif;
+    letter-spacing: 0.08em;
+    color: #cbbf9f;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9), 0 1px 0 rgba(240, 200, 130, 0.08);
+  }
+  .altar-hint { margin: 0; max-width: 18rem; font-size: 0.95rem; line-height: 1.35; color: var(--dim); }
+
+  /* Revealed: the relic, large, in its rarity's light. */
+  .altar--epic { --altar-light: rgba(var(--epic-rgb), 0.3); }
+  .relic-kind {
+    display: flex; align-items: center; gap: 0.45rem;
+    font: 700 0.7rem/1 'Cinzel', Georgia, serif;
+    letter-spacing: 0.22em;
+    color: #b99a63;
+  }
+  .rarity {
+    --cut: 7px;
+    height: 1.5rem;
+    padding: 0 0.85rem;
+    background: rgba(var(--epic-rgb), 0.85);
+    font: 700 0.66rem/1 'Cinzel', Georgia, serif;
+    letter-spacing: 0.18em;
+    color: var(--epic-soft);
+  }
+  .relic-name {
+    margin: 0.2rem 0 0;
+    font: 700 2.05rem/1.08 'Cinzel', Georgia, serif;
+    letter-spacing: 0.05em;
+    color: #e3c4ff;
+    text-shadow:
+      0 -1px 0 rgba(0, 0, 0, 0.9),
+      0 0 24px rgba(var(--epic-rgb), 0.55);
+  }
+  .relic-name small { display: block; margin: 0.15rem 0; font-size: 0.8em; line-height: 1; color: #f0c46e; text-shadow: 0 0 12px rgba(240, 196, 110, 0.5); }
+  .relic-count {
+    display: flex; align-items: center; gap: 0.7rem;
+    font-size: 1.02rem; color: var(--parchment);
+  }
+  .relic-count::before, .relic-count::after {
+    content: ""; width: 3rem; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--epic-rgb), 0.6));
+  }
+  .relic-count::after { transform: scaleX(-1); }
+  /* Sparks still hanging in the air after the strike. */
+  .embers {
+    position: absolute; inset: 0 0 34px;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle, #f3d7ff 0 1.2px, transparent 2px) 22% 30% / 100% 100% no-repeat,
+      radial-gradient(circle, #c472fa 0 1px, transparent 1.8px) 74% 24% / 100% 100% no-repeat,
+      radial-gradient(circle, #e9c6ff 0 1.4px, transparent 2.2px) 84% 52% / 100% 100% no-repeat,
+      radial-gradient(circle, #c472fa 0 1px, transparent 1.8px) 14% 62% / 100% 100% no-repeat,
+      radial-gradient(circle, #f3d7ff 0 1px, transparent 1.6px) 62% 14% / 100% 100% no-repeat,
+      radial-gradient(circle, #a335ee 0 1.2px, transparent 2px) 34% 78% / 100% 100% no-repeat;
+    filter: drop-shadow(0 0 3px rgba(var(--epic-rgb), 0.9));
+  }
+
+  .altar-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    height: 2.35rem;
+    margin-top: 0.75rem;
+  }
+  .altar-actions .ghost { background: rgba(var(--bronze-rgb), 0.35); color: #a99a78; }
+
+  /* ── Vessels ────────────────────────────────────────────────────── */
+  .vessels {
+    display: grid;
+    grid-template-columns: repeat(2, 92px) 18px repeat(2, 104px) 18px repeat(2, 92px);
+    justify-content: center;
+    column-gap: 14px;
+    margin-top: 1.9rem;
+  }
+  .group-label {
+    display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+    margin-bottom: 0.65rem;
+    font: 700 0.66rem/1 'Cinzel', Georgia, serif;
+    letter-spacing: 0.22em;
+    color: #b99a63;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9);
+  }
+  .group-label::before, .group-label::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--bronze-rgb), 0.45));
+  }
+  .group-label::after { transform: scaleX(-1); }
+  .group-label--keys { grid-column: 1 / 3; }
+  .group-label--uniques { grid-column: 4 / 6; color: var(--gold-text); }
+  .group-label--uniques::before, .group-label--uniques::after { background: linear-gradient(90deg, transparent, rgba(240, 196, 110, 0.55)); }
+  .group-label--crafts { grid-column: 7 / 9; }
+  .spacer { grid-row: 2; }
+
+  .vessel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    grid-row: 2;
+  }
+  .niche {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 132px;
+    margin-top: 18px;
+    border-radius: 46px 46px 4px 4px / 40px 40px 4px 4px;
+    background:
+      radial-gradient(70% 55% at 50% 64%, var(--niche-light, transparent), transparent 75%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.16) 50%, rgba(0, 0, 0, 0.3)),
+      url("../../client/src/assets/ui/stone-socket-floor.webp") var(--fx, 0) var(--fy, 0) / 1024px 1024px,
+      #070807;
+    box-shadow:
+      inset 0 10px 16px rgba(0, 0, 0, 0.85),
+      inset 0 -2px 0 rgba(214, 222, 216, 0.09),
+      0 0 0 1px rgba(var(--bronze-rgb), 0.3),
+      0 0 0 4px rgba(8, 11, 10, 0.9),
+      0 0 0 5px rgba(var(--bronze-rgb), 0.12);
+    color: rgba(var(--bronze-rgb), 0.8);
+    font-size: 30px;
+  }
+  .niche svg.i { stroke-width: 1.35; filter: drop-shadow(0 -1px 0 #000); }
+  /* Sill under each niche. */
+  .niche::after {
+    content: "";
+    position: absolute;
+    left: -7px; right: -7px; bottom: -9px;
+    height: 9px;
+    background: linear-gradient(180deg, rgba(214, 222, 216, 0.14) 0, #121513 1px, #070908);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 4px 100%);
+  }
+  .vessel-name {
+    margin-top: 0.55rem;
+    font: 700 0.74rem/1.15 'Cinzel', Georgia, serif;
+    letter-spacing: 0.06em;
+    text-align: center;
+    color: #cbbf9f;
+  }
+  .vessel-meta { font-size: 0.78rem; line-height: 1; color: rgba(var(--bronze-rgb), 0.95); }
+  .pips { display: inline-flex; gap: 3px; vertical-align: middle; margin-right: 4px; }
+  .pips i { width: 4px; height: 4px; border-radius: 50%; background: rgba(var(--bronze-rgb), 0.35); }
+  .pips i:first-child { width: 10px; border-radius: 2px; background: linear-gradient(180deg, #f1d08e, #a8803f); }
+
+  /* Uniques: taller, gilded rim, gold in the stone. */
+  .vessel--unique .niche {
+    height: 150px;
+    margin-top: 0;
+    --niche-light: rgba(240, 196, 110, 0.12);
+    color: rgba(240, 196, 110, 0.85);
+    box-shadow:
+      inset 0 10px 16px rgba(0, 0, 0, 0.85),
+      inset 0 -2px 0 rgba(240, 214, 160, 0.12),
+      0 0 0 1px rgba(240, 196, 110, 0.55),
+      0 0 0 4px rgba(8, 11, 10, 0.9),
+      0 0 0 5px rgba(240, 196, 110, 0.22),
+      0 0 22px rgba(240, 160, 60, 0.08);
+  }
+  .vessel--unique .vessel-name { color: #f0d69a; }
+
+  /* Hover (shown on one niche in the dormant state). */
+  .vessel--hover .niche {
+    --niche-light: rgba(var(--bronze-rgb), 0.3);
+    color: var(--bronze-hi);
+  }
+  .vessel--hover .niche svg.i { filter: drop-shadow(0 0 6px rgba(226, 189, 120, 0.45)); }
+  .vessel--hover .vessel-name { color: #f1e4c6; }
+
+  /* The vessel the current relic came from: open, its light spent into the altar. */
+  .vessel--drawn .niche {
+    --niche-light: rgba(var(--epic-rgb), 0.35);
+    color: var(--epic-soft);
+    box-shadow:
+      inset 0 10px 16px rgba(0, 0, 0, 0.85),
+      inset 0 -2px 0 rgba(214, 222, 216, 0.09),
+      0 0 0 1px rgba(var(--epic-rgb), 0.6),
+      0 0 0 4px rgba(8, 11, 10, 0.9),
+      0 0 0 5px rgba(var(--epic-rgb), 0.22);
+  }
+  .vessel--drawn .vessel-name { color: #e3c4ff; }
+
+  /* ── Shelf of past draws ────────────────────────────────────────── */
+  .shelf {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    margin: 2rem 3.4rem 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(var(--bronze-rgb), 0.2);
+  }
+  .shelf-label { margin-right: 0.3rem; font: 700 0.62rem/1 'Cinzel', Georgia, serif; letter-spacing: 0.2em; color: #7d735c; }
+  .shelf .plate { --cut: 8px; height: 1.75rem; padding: 0 0.9rem; font-size: 0.85rem; color: #c8bea4; background: rgba(var(--bronze-rgb), 0.5); }
+  .shelf .plate[data-r="rare"] { background: rgba(0, 119, 255, 0.7); color: #9ccbff; }
+  .shelf .plate[data-r="uncommon"] { background: rgba(32, 230, 167, 0.55); color: #a6f3d8; }
+  .shelf-empty { font-size: 0.88rem; color: #6d6656; }
+
+  /* ── Floating selection + Search (as in the app) ────────────────── */
+  .tray {
+    position: absolute;
+    left: 37px; right: 37px; bottom: 37px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .pill { --cut: 8px; height: 1.6rem; padding: 0 0.85rem; font-size: 0.85rem; color: #1a1a17; background: #d9d8d0; }
+  .pill::before { background: linear-gradient(180deg, #ecebe4, #c3c2ba); }
+  .search { --cut: 16px; height: 3rem; padding: 0 1.6rem; font-size: 1.15rem; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="sparkles" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4M22 5h-4M4 17v2M5 18H3"/></symbol>
+    <symbol id="dices" viewBox="0 0 24 24"><rect x="2" y="10" width="12" height="12" rx="2"/><path d="m17.92 14 3.5-3.5a2.24 2.24 0 0 0 0-3l-5-4.92a2.24 2.24 0 0 0-3 0L10 6"/><path d="M6 18h.01M10 14h.01M15 6h.01M18 9h.01"/></symbol>
+    <symbol id="shuffle" viewBox="0 0 24 24"><path d="m18 14 4 4-4 4M18 2l4 4-4 4M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-7.6a4 4 0 0 1 3.3-1.7H22M2 6h1.972a4 4 0 0 1 3.6 2.2M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"/></symbol>
+    <symbol id="wand" viewBox="0 0 24 24"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72M14 7l3 3M5 6v4M19 14v4M10 2v2M7 8H3M21 16h-4M11 3H9"/></symbol>
+    <symbol id="gem" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 13L2 9ZM11 3 8 9l4 13 4-13-3-6M2 9h20"/></symbol>
+    <symbol id="key" viewBox="0 0 24 24"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5"/></symbol>
+    <symbol id="hammer" viewBox="0 0 24 24"><path d="m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9M18 15l4-4M21.5 11.5l-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-1.13a6 6 0 0 0-3.2-.87H10l1 1a5 5 0 0 1 1.5 3.5v.5l2 2h1.172a2 2 0 0 1 1.414.586L19 14.5"/></symbol>
+    <symbol id="star" viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.12 2.12 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.12 2.12 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.12 2.12 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.12 2.12 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.12 2.12 0 0 0 1.597-1.16z"/></symbol>
+    <symbol id="map" viewBox="0 0 24 24"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0zM15 5.764v15M9 3.236v15"/></symbol>
+    <symbol id="refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5"/></symbol>
+    <symbol id="heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></symbol>
+  </defs>
+</svg>
+
+<!-- ═══════════════ State 1: dormant ═══════════════ -->
+<section class="panel">
+  <span class="state-tag">Dormant: nothing drawn yet (hover on "Roll any key")</span>
+  <div class="medallion"></div>
+  <header class="header">
+    <h1 class="brand">GameFinder</h1>
+    <span class="plate plate--lit"><svg class="i"><use href="#map"/></svg>Back to map</span>
+    <span class="plate"><svg class="i" style="color:#e88a9a"><use href="#heart"/></svg>Saved</span>
+  </header>
+
+  <div class="altar">
+    <div class="arch"></div>
+    <div class="plinth"></div>
+    <div class="altar-content">
+      <div class="seal"><svg class="i"><use href="#sparkles"/></svg></div>
+      <p class="altar-title">Draw a relic</p>
+      <p class="altar-hint">Unseal a vessel below. Keys open a place on the map; crafts are ready-made recipes.</p>
+    </div>
+  </div>
+
+  <div class="vessels">
+    <div class="group-label group-label--keys"><svg class="i"><use href="#key"/></svg>Keys</div>
+    <div class="group-label group-label--uniques"><svg class="i"><use href="#star"/></svg>Uniques</div>
+    <div class="group-label group-label--crafts"><svg class="i"><use href="#hammer"/></svg>Crafts</div>
+
+    <div class="vessel" style="grid-column:1"><div class="niche" style="--fx:-40px;--fy:-80px"><svg class="i"><use href="#dices"/></svg></div><span class="vessel-name">Popular</span><span class="vessel-meta">1 / 2</span></div>
+    <div class="vessel vessel--hover" style="grid-column:2"><div class="niche" style="--fx:-300px;--fy:-200px"><svg class="i"><use href="#shuffle"/></svg></div><span class="vessel-name">Any key</span><span class="vessel-meta">∞</span></div>
+    <div class="vessel vessel--unique" style="grid-column:4"><div class="niche" style="--fx:-520px;--fy:-60px"><svg class="i"><use href="#sparkles"/></svg></div><span class="vessel-name">Unique key</span><span class="vessel-meta"><span class="pips"><i></i><i></i><i></i><i></i></span>01 / 30</span></div>
+    <div class="vessel vessel--unique" style="grid-column:5"><div class="niche" style="--fx:-700px;--fy:-420px"><svg class="i"><use href="#wand"/></svg></div><span class="vessel-name">Unique craft</span><span class="vessel-meta"><span class="pips"><i></i><i></i><i></i><i></i></span>01 / 05</span></div>
+    <div class="vessel" style="grid-column:7"><div class="niche" style="--fx:-150px;--fy:-640px"><svg class="i"><use href="#wand"/></svg></div><span class="vessel-name">Curated</span><span class="vessel-meta">1 / 7</span></div>
+    <div class="vessel" style="grid-column:8"><div class="niche" style="--fx:-860px;--fy:-760px"><svg class="i"><use href="#gem"/></svg></div><span class="vessel-name">Gem</span><span class="vessel-meta">1 / 1</span></div>
+  </div>
+
+  <div class="shelf">
+    <span class="shelf-label">Last drawn</span>
+    <span class="shelf-empty">Your draws will rest here.</span>
+  </div>
+
+  <div class="tray">
+    <span></span>
+    <span class="plate search" style="opacity:.55"><svg class="i"><use href="#search"/></svg>Search</span>
+  </div>
+</section>
+
+<!-- ═══════════════ State 2: revealed ═══════════════ -->
+<section class="panel">
+  <span class="state-tag">Revealed: an Epic craft just drawn from "Curated"</span>
+  <div class="medallion"></div>
+  <header class="header">
+    <div class="crumbs" style="padding-left:0">Setting <span>›</span> <b>Cosmic Horror</b></div>
+    <span class="plate plate--lit"><svg class="i"><use href="#map"/></svg>Back to map</span>
+    <span class="plate"><svg class="i" style="color:#e88a9a"><use href="#heart"/></svg>Saved</span>
+  </header>
+
+  <div class="altar altar--epic">
+    <div class="arch"></div>
+    <div class="embers"></div>
+    <div class="plinth"></div>
+    <div class="altar-content">
+      <span class="relic-kind"><svg class="i"><use href="#hammer"/></svg>Craft · Curated</span>
+      <span class="plate rarity">Epic</span>
+      <p class="relic-name">Cosmic Horror<small>+</small>Indie</p>
+      <span class="relic-count">3 games</span>
+      <div class="altar-actions">
+        <span class="plate plate--lit"><svg class="i"><use href="#map"/></svg>Explore on map</span>
+        <span class="plate ghost"><svg class="i"><use href="#refresh"/></svg>Draw again</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="vessels">
+    <div class="group-label group-label--keys"><svg class="i"><use href="#key"/></svg>Keys</div>
+    <div class="group-label group-label--uniques"><svg class="i"><use href="#star"/></svg>Uniques</div>
+    <div class="group-label group-label--crafts"><svg class="i"><use href="#hammer"/></svg>Crafts</div>
+
+    <div class="vessel" style="grid-column:1"><div class="niche" style="--fx:-40px;--fy:-80px"><svg class="i"><use href="#dices"/></svg></div><span class="vessel-name">Popular</span><span class="vessel-meta">2 / 2</span></div>
+    <div class="vessel" style="grid-column:2"><div class="niche" style="--fx:-300px;--fy:-200px"><svg class="i"><use href="#shuffle"/></svg></div><span class="vessel-name">Any key</span><span class="vessel-meta">∞</span></div>
+    <div class="vessel vessel--unique" style="grid-column:4"><div class="niche" style="--fx:-520px;--fy:-60px"><svg class="i"><use href="#sparkles"/></svg></div><span class="vessel-name">Unique key</span><span class="vessel-meta"><span class="pips"><i></i><i></i><i></i><i></i></span>01 / 30</span></div>
+    <div class="vessel vessel--unique" style="grid-column:5"><div class="niche" style="--fx:-700px;--fy:-420px"><svg class="i"><use href="#wand"/></svg></div><span class="vessel-name">Unique craft</span><span class="vessel-meta"><span class="pips"><i></i><i></i><i></i><i></i></span>01 / 05</span></div>
+    <div class="vessel vessel--drawn" style="grid-column:7"><div class="niche" style="--fx:-150px;--fy:-640px"><svg class="i"><use href="#wand"/></svg></div><span class="vessel-name">Curated</span><span class="vessel-meta">2 / 7</span></div>
+    <div class="vessel" style="grid-column:8"><div class="niche" style="--fx:-860px;--fy:-760px"><svg class="i"><use href="#gem"/></svg></div><span class="vessel-name">Gem</span><span class="vessel-meta">1 / 1</span></div>
+  </div>
+
+  <div class="shelf">
+    <span class="shelf-label">Last drawn</span>
+    <span class="plate" data-r="rare">Hiking</span>
+    <span class="plate" data-r="uncommon">Roguelite</span>
+    <span class="plate">Cozy</span>
+  </div>
+
+  <div class="tray">
+    <span style="display:flex;gap:.5rem">
+      <span class="plate pill">Cosmic Horror <svg class="i"><use href="#x"/></svg></span>
+      <span class="plate pill">Indie <svg class="i"><use href="#x"/></svg></span>
+    </span>
+    <span class="plate plate--lit search"><svg class="i"><use href="#search"/></svg>Show 3 games</span>
+  </div>
+</section>
+
+</body>
+</html>

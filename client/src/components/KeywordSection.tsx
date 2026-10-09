@@ -13,9 +13,11 @@ import KeywordSearch from './KeywordSearch';
 import KeywordMap, { takeSharedJourney, type MapLocation } from './KeywordMap';
 import { KeywordMapSheet, openMapSheetEntry, useMapSheetPopClose } from './KeywordMapSheet';
 import { useSelectionCount } from '../hooks/useSelectionCount';
-import { formatCount } from '../lib/searchCount';
+import { formatCount, type CountResult } from '../lib/searchCount';
 import { SelectedFilters } from './SelectedFilters';
-import { useFilters } from '../context/FilterContext';
+import { useFilters, type Filter as FilterItem } from '../context/FilterContext';
+import { Reliquary, type RelicDraw, type Vessel } from './Reliquary';
+import { track } from '../lib/funnel';
 import { DiscoveryCard } from './DiscoveryCard';
 import { DISCOVERY_CARD_META, getRarity } from '../lib/discoveryCards';
 import type { RevealCard, RarityTier } from '../lib/discoveryCards';
@@ -158,6 +160,12 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const [postClickCardId, setPostClickCardId] = useState<RevealCard | null>(null);
   const [uniqueLimits, setUniqueLimits] = useState<UniqueLimitsStore>(() => ({ date: new Date().toISOString().split('T')[0], kwUsed: 0, comboUsed: 0 }));
   const [browseOpen, setBrowseOpen] = useState(false);
+  // Reliquary (desktop spark view): the relic on the altar and this session's draws.
+  const [relic, setRelic] = useState<RelicDraw | null>(null);
+  const [relicHistory, setRelicHistory] = useState<RelicDraw[]>([]);
+  const relicSeqRef = useRef(0);
+  const relicDrawnAtRef = useRef(0);
+  const relicFiltersRef = useRef(new Map<number, FilterItem[]>());
   const kwRevealed = uniqueLimits.kwUsed > 0 ? { name: uniqueLimits.lastKwName ?? '', emoji: uniqueLimits.lastKwEmoji ?? '' } : null;
   const comboRevealed = uniqueLimits.comboUsed > 0 ? { title: uniqueLimits.lastComboTitle ?? '' } : null;
   const isKwRevealedState = !!kwRevealed;
@@ -382,28 +390,54 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   const getActiveRarity = (card: RevealCard): RarityTier | null =>
     cardRarities[card] ?? null;
 
+  /** Puts a fresh draw on the altar; its count is locked once known (see the identify effect). */
+  const recordDraw = (card: RevealCard, filters: FilterItem[], title?: string) => {
+    const draw: RelicDraw = { id: ++relicSeqRef.current, card, title, parts: filters.map(f => f.name) };
+    relicFiltersRef.current.set(draw.id, filters);
+    relicDrawnAtRef.current = Date.now();
+    setRelic(draw);
+    setRelicHistory(prev => [draw, ...prev].slice(0, 8));
+    track('reliquary_draw', { card });
+  };
+
+  /** Shelf: put an earlier draw back on the altar, with its filters. */
+  const restoreRelic = (draw: RelicDraw) => {
+    const filters = relicFiltersRef.current.get(draw.id);
+    if (!filters) return;
+    clearAllFilters();
+    filters.forEach(f => addFilter(f));
+    setRelic(draw);
+    setRelicHistory(prev => [draw, ...prev.filter(d => d.id !== draw.id)]);
+    track('reliquary_restore', { card: draw.card });
+  };
+
+  const comboFilters = (suggestion: KeywordComboSuggestion): FilterItem[] =>
+    suggestion.filters.map(filter => ({
+      id: filter.id,
+      name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
+      category: filter.category,
+      mode: filter.category === category ? filter.mode || "include" : undefined,
+    }));
+
   const applyCommonKeyword = () => {
     activateDiscoveryCard("common-keyword");
     clearAllFilters();
     const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
     const name = kw.name.replace(/\b\w/g, c => c.toUpperCase());
-    addFilter({ id: kw.id, name, category, mode: "include" });
+    const filter: FilterItem = { id: kw.id, name, category, mode: "include" };
+    addFilter(filter);
     setCommonKeywordRevealed({ name });
+    recordDraw("common-keyword", [filter]);
   };
 
   const applyRareCombo = () => {
     activateDiscoveryCard("rare-combo");
     clearAllFilters();
     const suggestion = keywordComboSuggestions[activeSuggestionIndex];
-    suggestion.filters.forEach(filter => {
-      addFilter({
-        id: filter.id,
-        name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
-        category: filter.category,
-        mode: filter.category === category ? filter.mode || "include" : undefined,
-      });
-    });
+    const filters = comboFilters(suggestion);
+    filters.forEach(f => addFilter(f));
     setRareComboRevealed({ title: suggestion.title });
+    recordDraw("rare-combo", filters, suggestion.title);
     setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
   };
 
@@ -411,7 +445,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     activateDiscoveryCard("unique-keyword");
     clearAllFilters();
     const kw = uniqueKeywords[activeUniqueKeywordIndex];
-    addFilter({ id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" });
+    const filter: FilterItem = { id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" };
+    addFilter(filter);
+    recordDraw("unique-keyword", [filter]);
     const newLimits: UniqueLimitsStore = {
       ...uniqueLimits,
       kwUsed: activeUniqueKeywordIndex + 1,
@@ -429,14 +465,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     activateDiscoveryCard("unique-combo");
     clearAllFilters();
     const suggestion = uniqueComboSuggestions[activeUniqueComboIndex];
-    suggestion.filters.forEach(filter => {
-      addFilter({
-        id: filter.id,
-        name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
-        category: filter.category,
-        mode: filter.category === category ? filter.mode || "include" : undefined,
-      });
-    });
+    const filters = comboFilters(suggestion);
+    filters.forEach(f => addFilter(f));
+    recordDraw("unique-combo", filters, suggestion.title);
     const newLimits: UniqueLimitsStore = {
       ...uniqueLimits,
       kwUsed: 0,
@@ -454,17 +485,23 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     activateDiscoveryCard("popular");
     clearAllFilters();
     const kw = popularSuggestions[activePopularIndex];
-    addFilter({ id: kw.id, name: kw.name, category, mode: "include" });
+    const filter: FilterItem = { id: kw.id, name: kw.name, category, mode: "include" };
+    addFilter(filter);
     setPopularRevealed({ name: kw.name });
+    recordDraw("popular", [filter]);
     setActivePopularIndex(i => (i + 1) % popularSuggestions.length);
   };
 
   const applyUserCrafts = () => {
     activateDiscoveryCard("user-crafts");
     clearAllFilters();
-    addFilter({ id: 2379, name: "Cosmic Horror", category, mode: "include" });
-    addFilter({ id: 32, name: "Indie", category: "genres" });
+    const filters: FilterItem[] = [
+      { id: 2379, name: "Cosmic Horror", category, mode: "include" },
+      { id: 32, name: "Indie", category: "genres" },
+    ];
+    filters.forEach(f => addFilter(f));
     setUserCraftsRevealed(true);
+    recordDraw("user-crafts", filters);
   };
 
   useEffect(() => {
@@ -509,6 +546,32 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       resultCapturedRef.current = true;
     }
   }, [searchFresh, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Identify the relic on the altar: lock its game count once the preview for
+  // the drawn selection is ready (or the search total, if the user searched
+  // first). A short beat keeps "Unidentified" readable when the count is cached.
+  const previewCount = selectionCount.status === 'ready' ? selectionCount.count : null;
+  const previewCapped = selectionCount.status === 'ready' && selectionCount.capped;
+  useEffect(() => {
+    if (!relic || relic.count) return;
+    let count: CountResult | null = null;
+    if (previewCount !== null) count = { count: previewCount, capped: previewCapped };
+    else if (searchFresh && !isLoading) count = { count: totalCount ?? gameResults.length, capped: false };
+    if (!count) return;
+    const locked = count;
+    const id = relic.id;
+    const timer = window.setTimeout(() => {
+      const identify = (d: RelicDraw) => (d.id === id ? { ...d, count: locked } : d);
+      setRelic(d => d && identify(d));
+      setRelicHistory(h => h.map(identify));
+    }, Math.max(0, relicDrawnAtRef.current + 750 - Date.now()));
+    return () => clearTimeout(timer);
+  }, [relic, previewCount, previewCapped, searchFresh, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Clearing the selection empties the altar (the draw stays on the shelf).
+  useEffect(() => {
+    if (selectedFilters.length === 0) setRelic(null);
+  }, [selectedFilters.length]);
 
   useEffect(() => {
     return () => {
@@ -776,7 +839,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     <section className="hidden lg:flex lg:flex-1 lg:min-h-0 lg:flex-col">
       <KeywordMap
         search={<KeywordSearch inputRef={desktopSearchRef} onKeywordSelect={() => {}} />}
-        spark={renderDiscoveryDeck()}
+        spark={renderReliquary}
         actions={renderSearchActions()}
         selection={renderSelection()}
       />
@@ -948,6 +1011,52 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
           {isKeyword ? renderQsKeywordPanel() : renderQsComboPanel()}
         </div>
       </motion.div>
+    );
+  };
+
+  /** Desktop spark view: the six draw sources as Reliquary vessels (same handlers as the deck). */
+  const renderReliquary = (closeSpark: () => void) => {
+    const vessels: Vessel[] = [
+      { id: 'popular', name: 'Popular', verb: 'Roll popular', icon: Dices, group: 'keys', meta: popularStep, onDraw: applyPopular },
+      {
+        id: 'common-keyword', name: 'Any key', verb: 'Roll any key', icon: Shuffle, group: 'keys',
+        meta: <InfinityIcon className="qs-step-icon" aria-label="infinite" />, onDraw: applyCommonKeyword,
+      },
+      {
+        id: 'unique-keyword', name: 'Unique key', verb: 'Discover unique', icon: Sparkles, group: 'uniques',
+        meta: (
+          <span className="qs-sequence-track">
+            {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
+            <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
+          </span>
+        ),
+        onDraw: applyUniqueKeyword,
+      },
+      {
+        id: 'unique-combo', name: 'Unique craft', verb: 'Craft unique', icon: Wand2, group: 'uniques',
+        meta: (
+          <span className="qs-sequence-track">
+            {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
+            <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
+          </span>
+        ),
+        onDraw: applyUniqueCombo,
+      },
+      { id: 'rare-combo', name: 'Curated', verb: 'Craft curated', icon: Wand2, group: 'crafts', meta: craftedStep, onDraw: applyRareCombo },
+      { id: 'user-crafts', name: 'Gem', verb: 'Reveal gem', icon: Gem, group: 'crafts', meta: '1/1', onDraw: applyUserCrafts },
+    ];
+    return (
+      <Reliquary
+        vessels={vessels}
+        relic={relic}
+        history={relicHistory}
+        onExplore={() => {
+          track('reliquary_explore', { card: relic?.card });
+          closeSpark();
+        }}
+        onDrawAgain={() => vessels.find(v => v.id === relic?.card)?.onDraw()}
+        onRestore={restoreRelic}
+      />
     );
   };
 
