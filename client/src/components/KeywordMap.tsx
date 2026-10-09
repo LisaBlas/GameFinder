@@ -49,6 +49,7 @@ import { storyFor } from '../lib/keywordStories';
 import { JOURNEY_PARAM, decodeJourney } from '../lib/mapJourney';
 import { useAmbientPause } from '../hooks/useAmbientPause';
 import { MAX_PROBE, useKeywordFit } from '../lib/keywordFit';
+import { SavedGamesControl } from './Navbar';
 
 const FIT_MODE_KEY = 'kmap-fit-mode';
 const readFitMode = () => {
@@ -859,15 +860,20 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         </span>
       </button>
     );
+    const headerActions = (
+      <div className="kmap-header-actions">
+        {sparkButton}
+        {variant === 'desktop' && <SavedGamesControl className="kmap-saved-btn" />}
+        {close}
+      </div>
+    );
     if (step === 'categories') {
       return (
         <div className="kmap-header">
           <div className="min-w-0 flex-1">
-            <h2 className="kmap-title">What are you in the mood for?</h2>
-            <p className="kmap-subtitle">Pick a direction. You can return here anytime to combine something different.</p>
+            <h1 className="kmap-brand-title font-brand">GameFinder</h1>
           </div>
-          {sparkButton}
-          {close}
+          {headerActions}
         </div>
       );
     }
@@ -911,8 +917,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
             })}
           </AnimatePresence>
         </nav>
-        {sparkButton}
-        {close}
+        {headerActions}
       </div>
     );
   };

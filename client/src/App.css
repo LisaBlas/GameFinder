@@ -98,6 +98,78 @@
   pointer-events: none;
 }
 
+/* Application chrome now uses the same dark metal / bronze language as the
+   keyword relic instead of the previous generic translucent navbar. */
+.mobile-relic-masthead {
+  border-bottom: 1px solid rgba(168, 128, 63, 0.28);
+  background:
+    radial-gradient(80% 180% at 20% 0%, rgba(45, 212, 191, 0.055), transparent 68%),
+    linear-gradient(180deg, rgba(13, 19, 17, 0.98), rgba(4, 8, 7, 0.98));
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, 0.82),
+    0 6px 18px rgba(0, 0, 0, 0.24);
+}
+
+.relic-brand-plaque {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.15rem;
+  padding: 0.2rem 1.05rem;
+  background: linear-gradient(155deg, #d0aa62, #6f5229 48%, #2d2112 72%, #98743a);
+  clip-path: polygon(9px 0, calc(100% - 9px) 0, 100% 50%, calc(100% - 9px) 100%, 9px 100%, 0 50%);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.55));
+}
+
+.relic-brand-plaque::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: linear-gradient(180deg, #111816, #080c0b);
+  clip-path: inherit;
+}
+
+.relic-brand-wordmark {
+  color: #dfbd78;
+  line-height: 1;
+  text-shadow: 0 1px 0 #000, 0 0 15px rgba(226, 189, 120, 0.16);
+}
+
+.relic-saved-button {
+  display: inline-flex;
+  min-height: 2.15rem;
+  align-items: center;
+  gap: 0.48rem;
+  border: 1px solid rgba(168, 128, 63, 0.48);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(20, 28, 25, 0.96), rgba(7, 12, 10, 0.98));
+  padding: 0.25rem 0.8rem;
+  color: #cbb47e;
+  font-family: 'Alegreya', Georgia, serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: inset 0 1px 0 rgba(226, 189, 120, 0.08), 0 3px 8px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease, transform 0.14s ease;
+}
+
+.relic-saved-button:hover {
+  border-color: rgba(226, 189, 120, 0.72);
+  background: linear-gradient(180deg, rgba(29, 39, 35, 0.98), rgba(9, 15, 13, 0.98));
+  color: #f0c46e;
+}
+
+.relic-saved-button:active {
+  transform: scale(0.96);
+}
+
+.relic-saved-button svg {
+  color: #b97878;
+  filter: drop-shadow(0 0 6px rgba(185, 120, 120, 0.18));
+}
+
 .etched-placeholder-title,
 .etched-placeholder-subtitle {
   color: rgba(70, 116, 99, 0.46);
@@ -132,6 +204,61 @@
     drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.92))
     drop-shadow(0 1px 0 rgba(226, 255, 240, 0.16))
     drop-shadow(0 4px 5px rgba(0, 0, 0, 0.68));
+}
+
+.popular-trails {
+  margin-top: 2.25rem;
+}
+
+.popular-trails-label {
+  margin-bottom: 0.8rem;
+  color: rgba(190, 180, 151, 0.62);
+  font-family: 'Alegreya', Georgia, serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.popular-trails-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.popular-trail-link {
+  border: 1px solid rgba(137, 110, 61, 0.34);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(15, 25, 21, 0.78), rgba(5, 11, 9, 0.82));
+  padding: 0.45rem 0.72rem;
+  color: rgba(203, 194, 169, 0.72);
+  font-family: 'Alegreya', Georgia, serif;
+  font-size: 0.82rem;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(226, 189, 120, 0.035);
+  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease, transform 0.14s ease;
+}
+
+.popular-trail-link:hover,
+.popular-trail-link:focus-visible {
+  border-color: rgba(45, 212, 191, 0.48);
+  background: linear-gradient(180deg, rgba(12, 40, 34, 0.84), rgba(5, 20, 17, 0.9));
+  color: #b8eee2;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .search-placeholder {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding-top: 3rem;
+  }
+
+  .popular-trails {
+    margin-top: 1.75rem;
+  }
 }
 
 /* Filter Pill Styles */
@@ -2591,52 +2718,32 @@ svg.filter-caret.expanded {
 
 .keyword-build-panel {
   background:
-    radial-gradient(ellipse 78% 46% at 24% 8%, rgba(67, 91, 68, 0.12), transparent 68%),
-    linear-gradient(90deg, rgba(2, 8, 6, 0.52), rgba(9, 17, 12, 0.22) 74%, rgba(0, 0, 0, 0.68)),
-    linear-gradient(180deg, rgba(3, 10, 7, 0.18), rgba(0, 0, 0, 0.48)),
-    url("./assets/ui/search-panel-leather-v1.png"),
-    #07100c !important;
-  background-size: 100% 100%, 100% 100%, 100% 100%, 680px 680px, auto;
-  background-blend-mode: screen, multiply, multiply, normal, normal;
+    radial-gradient(ellipse 85% 42% at 24% 0%, rgba(45, 212, 191, 0.045), transparent 72%),
+    #030807 !important;
   border: 0 !important;
-  box-shadow:
-    22px 0 42px rgba(0, 0, 0, 0.68),
-    7px 0 14px rgba(0, 0, 0, 0.58),
-    inset -18px 0 34px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(238, 218, 164, 0.035);
+  box-shadow: 10px 0 24px rgba(0, 0, 0, 0.28);
 }
 
 @media (min-width: 1024px) {
   .keyword-build-panel {
     position: relative;
     z-index: 20;
-    padding-right: 13px;
-  }
-
-  .keyword-build-panel::before,
-  .keyword-build-panel::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .keyword-build-panel::before {
-    inset: 8px 13px 8px 8px;
-    z-index: 0;
-    border: 1px solid rgba(191, 151, 72, 0.075);
-    box-shadow:
-      inset 0 0 0 1px rgba(0, 0, 0, 0.56),
-      inset 0 0 28px rgba(0, 0, 0, 0.2),
-      0 0 0 1px rgba(227, 238, 221, 0.018);
-  }
-
-  .keyword-build-panel::after {
-    display: none;
   }
 
   .keyword-build-panel-scroll {
     position: relative;
     z-index: 1;
+  }
+
+  /* The relic is the left pane, not a card inside it. Let its outer frame meet
+     the workspace edges and float the decorative scrollbar over that frame. */
+  .keyword-build-panel-scroll .fantasy-scroll-viewport {
+    padding-right: 0;
+  }
+
+  .keyword-build-panel-scroll .fantasy-scrollbar {
+    right: 3px;
+    z-index: 40;
   }
 
   /* Fill chain: scroll content → keyword section → map → map window, so the
@@ -4414,6 +4521,21 @@ svg.filter-caret.expanded {
   min-height: 3.75rem;
   padding: 0.75rem 1rem 0.75rem 1.25rem;
   border-bottom: 1px solid hsl(var(--border) / 0.8);
+}
+
+.kmap-header-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.kmap-brand-title {
+  color: var(--c-gold);
+  font-size: 1.55rem;
+  font-weight: 400;
+  letter-spacing: 0.075em;
+  line-height: 1;
 }
 
 .kmap-title {

@@ -16,7 +16,6 @@ import { useSelectionCount } from '../hooks/useSelectionCount';
 import { formatCount } from '../lib/searchCount';
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters } from '../context/FilterContext';
-import Navbar from './Navbar';
 import { DiscoveryCard } from './DiscoveryCard';
 import { DISCOVERY_CARD_META, getRarity } from '../lib/discoveryCards';
 import type { RevealCard, RarityTier } from '../lib/discoveryCards';
@@ -1263,9 +1262,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
           />
         )}
       </AnimatePresence>
-      <Navbar />
-
-      <div className="flex-1 min-h-0 p-3 lg:flex lg:flex-col">
+      <div className="flex-1 min-h-0 p-3 lg:flex lg:flex-col lg:p-0">
         <div className="flex h-full min-h-0 flex-col gap-5 lg:h-auto lg:flex-1">
           {renderDesktopExplorer()}
           {renderMobileShelves()}

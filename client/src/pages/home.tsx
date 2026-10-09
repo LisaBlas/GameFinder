@@ -6,20 +6,10 @@ import BottomBar from '../components/BottomBar';
 import AnimatedBackground from '../components/AnimatedBackground';
 import SavedGamesPanel from '../components/SavedGamesPanel';
 import GameCardModal from '../components/GameCardModal';
-import { FaGithub, FaHeart } from 'react-icons/fa';
-import { FaXTwitter, FaGlobe } from 'react-icons/fa6';
+import { FaHeart } from 'react-icons/fa';
 import { useSavedGames } from '../context/SavedGamesContext';
 import { motion } from 'framer-motion';
 import FantasyScrollArea from '../components/FantasyScrollArea';
-
-const homepageSeoLinks = [
-  { href: '/best/cozy-games', label: 'Cozy games' },
-  { href: '/best/survival-crafting-games', label: 'Survival crafting' },
-  { href: '/best/dark-fantasy-rpg-games', label: 'Dark fantasy RPGs' },
-  { href: '/best/souls-like-games', label: 'Souls-like games' },
-  { href: '/best/mystery-adventure-games', label: 'Mystery adventures' },
-  { href: '/best/city-builder-games', label: 'City builders' },
-];
 
 const HomeContent: React.FC = () => {
   const { gameResults, totalCount, countIsCapped } = useFilters();
@@ -81,21 +71,21 @@ const HomeContent: React.FC = () => {
       <AnimatedBackground />
 
       {/* App header - mobile only; desktop header lives inside the keyword section panel */}
-      <div className="lg:hidden shrink-0 px-4 py-3 bg-background/80 backdrop-blur-sm border-b border-border/40">
+      <div className="mobile-relic-masthead lg:hidden shrink-0 px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <h1 className="brand-wordmark font-brand text-[1.08rem] font-normal tracking-[0.075em]">
+          <div className="relic-brand-plaque">
+            <h1 className="relic-brand-wordmark font-brand text-[1.08rem] font-normal tracking-[0.075em]">
               GameFinder
             </h1>
-            <span className="font-cinzel text-[0.55rem] tracking-[0.2em] uppercase text-muted-foreground/70">Taste-first game discovery</span>
           </div>
           <button
             type="button"
             onClick={() => handlePanelOpenChange(true)}
-            className="relative text-[var(--c-emerald-soft)] hover:text-rose-400 transition-colors p-1"
+            className="relic-saved-button relative"
             aria-label="Saved games"
           >
-            <FaHeart size={18} />
+            <FaHeart size={14} />
+            <span>Saved</span>
             {savedGames.length > 0 && (
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white leading-none">
                 {savedGames.length > 9 ? '9+' : savedGames.length}
@@ -191,32 +181,6 @@ const HomeContent: React.FC = () => {
           />
         </div>
       </motion.div>
-
-      {/* Full-width footer - desktop only */}
-      <div className="hidden lg:flex shrink-0 items-center justify-between border-t border-border/40 px-6 py-2.5">
-        <nav className="flex flex-wrap gap-x-4 gap-y-1" aria-label="Popular game searches">
-          {homepageSeoLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-xs text-muted-foreground hover:text-primary transition-colors"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-        <div className="flex items-center gap-4 shrink-0">
-          <a href="https://lisablas.github.io/BleepBloop/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Website">
-            <FaGlobe size={16} />
-          </a>
-          <a href="https://github.com/LisaBlas/GameFinder" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="GitHub">
-            <FaGithub size={16} />
-          </a>
-          <a href="https://x.com/BerliozGordon" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="X / Twitter">
-            <FaXTwitter size={16} />
-          </a>
-        </div>
-      </div>
 
       {/* Action bar - fixed bottom drawer on mobile; desktop version lives inside the left panel */}
       <BottomBar

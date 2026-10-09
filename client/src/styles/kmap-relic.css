@@ -4,11 +4,12 @@
      2. header    — bronze plates, serif crumbs, ornate spark button
      3. search    — recessed 9-slice field, gold lens, compass glyph
      4. modes     — hex plate tabs, teal active plate
-     5. window    — inner 9-slice frame, plain dark field, plate tools
+     5. window    — flush to the panel frame, top rail only, plain dark field, plate tools
      6. nodes     — hex plates (KeywordMapScene, desktop), colour via --plate-rgb; gold links
      7. tray      — recessed selection field, teal pills, gold 9-slice Search plate
      8. doors     — category step in the same language (not in the reference)
-   Assets live in assets/ui/relic/*.svg (vector, hand-editable).
+   Structural assets live in assets/ui/relic/*.svg; generated surface art lives
+   in assets/ui/relic/raster/.
    Scoped to the desktop panel; the mobile sheet keeps the base styles. */
 
 .keyword-build-panel .kmap:not(.kmap--mobile) {
@@ -18,6 +19,13 @@
   --relic-gold-text: #f0c46e;
   --relic-teal: #2dd4bf;
   --relic-ink: #070b0a;
+  /* Clearance between controls floating on the map and the frames. */
+  --kmap-inset: 1.75rem;
+  /* The frame art has ~8px of transparent margin outside the rail; bleed it
+     past the panel edge so the rail meets the edge with no stone band behind.
+     Bleed via border-image-outset / background offsets, never a negative
+     inset: those count as scrollable overflow and summon the panel scrollbar. */
+  --frame-bleed: 8px;
 
   position: relative;
   isolation: isolate;
@@ -26,48 +34,74 @@
   background:
     radial-gradient(90% 55% at 50% 0%, rgba(45, 212, 191, 0.07), transparent 70%),
     radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55)),
-    url("../assets/ui/relic/stone-grain.svg") 0 0 / 240px 240px,
+    /* Heavy veil: the shell stays calm so the map field is the only textured surface. */
+    linear-gradient(rgba(4, 10, 8, 0.84), rgba(3, 7, 6, 0.9)),
+    url("../assets/ui/relic/raster/relic-chassis.webp") center / cover no-repeat,
     linear-gradient(180deg, #0b1110, #070a0a);
   box-shadow:
     0 0 0 1px #000,
     0 18px 50px rgba(0, 0, 0, 0.6);
 }
 
-/* Bronze frame: a 9-slice drawn over the content, never intercepting clicks. */
-.keyword-build-panel .kmap:not(.kmap--mobile)::after {
+/* Generated bronze frame, drawn over the content and never intercepting clicks.
+   The 9-slice corners hold the whole ornament and the edges are a uniform rail,
+   so stretching to any panel height stays clean. Regenerate with
+   scripts/build-relic-frames.py (slice/width values come from its output). */
+.keyword-build-panel .kmap:not(.kmap--mobile)::after,
+.keyword-build-panel .kmap:not(.kmap--mobile)::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 30;
-  border: 30px solid transparent;
-  border-image: url("../assets/ui/relic/frame-outer.svg") 48 / 30px stretch;
-  opacity: 0.52;
-  filter: brightness(0.65) saturate(0.55);
+  opacity: 0.74;
+  filter:
+    brightness(0.7)
+    saturate(0.62)
+    drop-shadow(0 0 1px rgba(226, 189, 120, 0.24));
   pointer-events: none;
 }
 
-/* Medallion straddling the top-left corner. */
+.keyword-build-panel .kmap:not(.kmap--mobile)::after {
+  border: 88px solid transparent;
+  border-image: url("../assets/ui/relic/raster/panel-frame-9slice.webp") 176 / 88px / var(--frame-bleed) stretch;
+}
+
+/* Mid-side diamonds at natural size, above the rail (::after). */
 .keyword-build-panel .kmap:not(.kmap--mobile)::before {
+  z-index: 31;
+  background:
+    url("../assets/ui/relic/raster/panel-frame-diamond-top.webp") 50% calc(-1 * var(--frame-bleed)) / 46px 88px no-repeat,
+    url("../assets/ui/relic/raster/panel-frame-diamond-right.webp") right calc(-1 * var(--frame-bleed)) center / 88px 46px no-repeat,
+    url("../assets/ui/relic/raster/panel-frame-diamond-bottom.webp") center bottom calc(-1 * var(--frame-bleed)) / 46px 88px no-repeat,
+    url("../assets/ui/relic/raster/panel-frame-diamond-left.webp") calc(-1 * var(--frame-bleed)) 50% / 88px 46px no-repeat;
+}
+
+/* Generated compass medallion straddling the top-left corner. Hosted on the
+   header, which is unpositioned, so it still places against .kmap. */
+.keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header::before {
   content: "";
   position: absolute;
-  top: -7px;
-  left: -7px;
-  z-index: 31;
-  width: 58px;
-  height: 58px;
-  background: url("../assets/ui/relic/medallion.svg") center / contain no-repeat;
-  opacity: 0.78;
-  filter: brightness(0.8) saturate(0.72) drop-shadow(0 3px 7px rgba(0, 0, 0, 0.75));
+  top: -13px;
+  left: -13px;
+  z-index: 32;
+  width: 82px;
+  height: 82px;
+  background: url("../assets/ui/relic/raster/corner-medallion.webp") center / contain no-repeat;
+  opacity: 0.82;
+  filter: brightness(0.72) saturate(0.72) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.82));
   pointer-events: none;
 }
 
-/* Content clears the frame rail (~22px) and the medallion. */
+/* Content clears the frame rail and corner ornaments (~27px in) and the medallion. */
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header {
-  padding: 1.45rem 2rem 0.8rem 3.8rem;
+  padding: 2rem 3rem 1.1rem 5.4rem;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-body {
-  padding: 0.8rem 1.35rem 1.25rem;
+  /* Flush to the frame: the map edge tucks under the rail's inner gold line
+     (~17.7px into the frame art, minus the bleed). The frame is drawn at 0.74
+     opacity, so a map edge further out would show through the rail. */
+  padding: 0 calc(17px - var(--frame-bleed)) calc(17px - var(--frame-bleed));
 }
 
 /* ── Plate primitive ─────────────────────────────────────────────
@@ -79,7 +113,7 @@
   --face-dark: linear-gradient(180deg, #141a18, #0a0e0d);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-mode) {
+.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode) {
   --cut: 9px;
   --rim: 1.5px;
   /* Shapes live on the plate itself so var(--cut) resolves per element. */
@@ -94,7 +128,7 @@
   /* Note: any filter here would be clipped too; shadows go on the parent. */
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-mode)::before {
+.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::before {
   content: "";
   position: absolute;
   inset: var(--rim);
@@ -108,9 +142,20 @@
 .keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header {
   gap: 0.6rem;
   min-height: 3.8rem;
-  border-bottom: 1px solid;
-  border-image: linear-gradient(90deg, transparent, rgba(112, 91, 53, 0.34) 12%, rgba(112, 91, 53, 0.34) 88%, transparent) 1;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.7);
+  /* The map window's top rail is the header divider. */
+  border-bottom: 0;
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-brand-title {
+  color: var(--relic-gold-text);
+  font-size: 1.52rem;
+  font-weight: 400;
+  letter-spacing: 0.085em;
+  text-shadow: 0 1px 0 #000, 0 0 18px rgba(240, 196, 110, 0.16);
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-header-actions {
+  gap: 0.55rem;
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-icon-btn {
@@ -202,6 +247,30 @@
   text-shadow: 0 1px 0 #000;
 }
 
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-saved-btn {
+  --plate-shape: var(--plate-hex);
+  --cut: 12px;
+  --rim: 1.5px;
+  height: 2.35rem;
+  min-height: 2.35rem;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(160deg, #8f7442 0%, #5f4a29 42%, #2b2113 72%, #68522d 100%);
+  padding: 0 1rem;
+  color: #cfb67d;
+  box-shadow: none;
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-saved-btn::before {
+  background: linear-gradient(180deg, #121411, #080a08);
+}
+
+.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-saved-btn:hover {
+  border: 0;
+  background: linear-gradient(160deg, #ffe7b0 0%, #d9a24a 35%, #7a5620 65%, #f0bf62 100%);
+  color: #ffe3a6;
+}
+
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-spark-btn::before {
   background:
     radial-gradient(80% 120% at 50% 0%, rgba(147, 119, 65, 0.08), transparent 70%),
@@ -224,8 +293,8 @@
    while typing and while the results dropdown is in use. */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: var(--kmap-inset);
+  right: var(--kmap-inset);
   z-index: 6; /* above the inner frame (4) and the mode toggle row (5) */
   width: 2.1rem;
   max-width: calc(100% - 2rem);
@@ -288,14 +357,14 @@
 /* Top inset: the camera frames nodes below the overlay row (toggle + note,
    toolbar), so they never sit under it. */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window {
-  padding-top: 4.2rem;
+  padding-top: calc(var(--kmap-inset) + 3.2rem);
 }
 
 /* Overlaid on the map window's top-left, clear of the inner frame. */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window .kmap-modes-row {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
+  top: var(--kmap-inset);
+  left: var(--kmap-inset);
   z-index: 5;
   flex-direction: column;
   align-items: flex-start;
@@ -374,9 +443,11 @@
   border: 0;
   border-radius: 0;
   background:
-    radial-gradient(70% 60% at 50% 50%, rgba(45, 212, 191, 0.06), transparent 70%),
+    radial-gradient(70% 60% at 50% 50%, rgba(45, 212, 191, 0.035), transparent 70%),
+    linear-gradient(rgba(5, 10, 9, 0.42), rgba(3, 7, 6, 0.64)),
+    url("../assets/ui/relic/raster/map-field-v2.webp") center / cover no-repeat,
     linear-gradient(180deg, #0a0f0e, #070a09);
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.75);
+  box-shadow: inset 0 0 52px rgba(0, 0, 0, 0.82);
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window::after {
@@ -384,8 +455,19 @@
   position: absolute;
   inset: 0;
   z-index: 4;
-  border: 40px solid transparent;
-  border-image: url("../assets/ui/relic/frame-inner.svg") 40 / 40px stretch;
+  /* Thin blackened-metal casing along the top edge (also the header divider):
+     a faint cold highlight, a dark body, a lit lower lip, then a soft shadow
+     falling onto the map. Its ends run under the panel frame. */
+  background:
+    linear-gradient(180deg,
+      rgba(150, 160, 155, 0.22) 0,
+      #191d1c 1px,
+      #0a0d0c 3px,
+      #050706 5px,
+      rgba(120, 104, 74, 0.28) 5px,
+      rgba(120, 104, 74, 0.28) 6px,
+      transparent 6px) top / 100% 6px no-repeat,
+    linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent) 0 6px / 100% 12px no-repeat;
   pointer-events: none;
 }
 
@@ -608,16 +690,16 @@
 /* ── 7. Selection + Search (floating on the map) ─────────────────── */
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters,
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions {
-  bottom: 1rem;
+  bottom: var(--kmap-inset);
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters {
-  left: 1rem;
+  left: var(--kmap-inset);
   max-width: calc(100% - 14.5rem);
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions {
-  right: 1rem;
+  right: var(--kmap-inset);
 }
 
 .keyword-build-panel .kmap:not(.kmap--mobile) .selected-filter-clear {
@@ -870,7 +952,7 @@
   to   { background-position: 0 0; opacity: 1; }
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-mode)::after {
+.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -881,7 +963,7 @@
   pointer-events: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-mode):hover:not(:disabled)::after {
+.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode):hover:not(:disabled)::after {
   animation: kmap-glint 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -920,7 +1002,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-mode)::after,
+  .keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::after,
   .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search::before {
     animation: none !important;
     opacity: 0;
