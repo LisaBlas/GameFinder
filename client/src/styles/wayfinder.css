@@ -142,11 +142,21 @@
     calc((var(--gx) - var(--wf-gem-r)) / (1 - 2 * var(--wf-gem-r)) * 100%)
     calc((var(--gy) - var(--wf-gem-r)) / (1 - 2 * var(--wf-gem-r)) * 100%);
   position: absolute;
+  z-index: 4;
   left: calc((var(--gx) - var(--wf-gem-r)) * 100%);
   top: calc((var(--gy) - var(--wf-gem-r)) * 100%);
+  display: grid;
   width: calc(var(--wf-gem-r) * 200%);
   aspect-ratio: 1;
+  padding: 0;
+  place-items: center;
+  border: 0;
   background: var(--wf-socket-art) var(--wf-gem-art-pos) / var(--wf-gem-art-size) no-repeat;
+  color: #d2aa63;
+  cursor: pointer;
+  opacity: 1;
+  pointer-events: auto;
+  animation: wf-bearing-arrive 0.62s calc(0.2s + var(--bearing-index) * 0.055s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* The clicked bearing's gem catches the light once the keyword is set and the
@@ -160,6 +170,7 @@
   mix-blend-mode: screen;
   -webkit-mask: var(--wf-socket-art) var(--wf-gem-art-pos) / var(--wf-gem-art-size) no-repeat;
   mask: var(--wf-socket-art) var(--wf-gem-art-pos) / var(--wf-gem-art-size) no-repeat;
+  pointer-events: none;
 }
 .wayfinder[data-gems-lit] .wayfinder-gem[data-lit] {
   animation: wf-gem-glint 1.4s ease-out both;
@@ -257,89 +268,61 @@
   animation: wf-route-trace 0.9s ease-out both;
 }
 
-.wayfinder-bearing {
-  position: absolute;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  width: 10.5rem;
-  padding: 0.38rem 0.55rem;
-  border: 0;
-  background: transparent;
-  color: #b9af99;
-  text-align: left;
-  cursor: pointer;
-  opacity: 0;
-  animation: wf-bearing-arrive 0.62s calc(0.2s + var(--bearing-index) * 0.055s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.wayfinder-bearing:nth-child(1) { left: 50%; top: 3%; flex-direction: column; transform: translateX(-50%); text-align: center; }
-.wayfinder-bearing:nth-child(2) { left: 11%; top: 24%; flex-direction: row-reverse; text-align: right; }
-.wayfinder-bearing:nth-child(3) { left: 11%; bottom: 21%; flex-direction: row-reverse; text-align: right; }
-.wayfinder-bearing:nth-child(4) { left: 50%; bottom: 2%; flex-direction: column-reverse; transform: translateX(-50%); text-align: center; }
-.wayfinder-bearing:nth-child(5) { right: 11%; bottom: 21%; }
-.wayfinder-bearing:nth-child(6) { right: 11%; top: 24%; }
-
 .wayfinder-bearing-sigil {
   position: relative;
   display: grid;
-  flex: 0 0 auto;
-  width: 3.75rem;
-  height: 3.75rem;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
   place-items: center;
-  border: 1px solid rgba(var(--wf-brass), 0.78);
-  border-radius: 50%;
-  background: radial-gradient(circle at 48% 40%, #17231c, #070b09 68%);
-  box-shadow: 0 0 0 4px rgba(4, 8, 6, 0.9), 0 0 0 5px rgba(var(--wf-brass), 0.26), inset 0 0 12px #000;
-  color: #c29a58;
-  transition: color 0.2s, border-color 0.2s, box-shadow 0.25s, transform 0.25s;
+  color: inherit;
+  filter: drop-shadow(0 1px 2px #000) drop-shadow(0 0 5px rgba(0, 0, 0, 0.9));
+  transition: color 0.2s, filter 0.25s, transform 0.25s;
 }
-
-.wayfinder-bearing-sigil::before,
-.wayfinder-bearing-sigil::after {
-  content: "";
-  position: absolute;
-  background: rgb(var(--wf-brass));
-  opacity: 0.48;
-}
-.wayfinder-bearing-sigil::before { width: 0.34rem; height: 1px; left: -0.4rem; top: 50%; }
-.wayfinder-bearing-sigil::after { width: 1px; height: 0.34rem; top: -0.4rem; left: 50%; }
-.wayfinder-bearing-sigil svg { width: 1.25rem; height: 1.25rem; stroke-width: 1.45; }
+.wayfinder-bearing-sigil svg { width: 38%; height: 38%; stroke-width: 1.8; }
+/* Optical corrections for asymmetric glyphs inside the faceted stones. The
+   SVG viewBoxes are geometrically centred, but these three read high. */
+.wayfinder-gem[data-gem="1"] .wayfinder-bearing-sigil svg { transform: translate(1px, 2px); }
+.wayfinder-gem[data-gem="4"] .wayfinder-bearing-sigil svg,
+.wayfinder-gem[data-gem="5"] .wayfinder-bearing-sigil svg { transform: translateY(2px); }
 
 .wayfinder-bearing-copy {
+  position: absolute;
   display: flex;
-  min-width: 0;
+  width: max-content;
+  max-width: 8rem;
   flex-direction: column;
-  padding: 0.28rem 0.45rem 0.22rem;
-  border: 1px solid rgba(var(--wf-brass), 0.14);
-  border-radius: 3px;
-  background: linear-gradient(90deg, rgba(2, 8, 6, 0.78), rgba(2, 8, 6, 0.35));
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+  align-items: center;
+  color: #b9af99;
+  pointer-events: none;
+  text-align: center;
+  text-shadow: 0 2px 5px #000, 0 0 9px #000;
 }
-.wayfinder-bearing:nth-child(1) .wayfinder-bearing-copy,
-.wayfinder-bearing:nth-child(4) .wayfinder-bearing-copy {
-  background: linear-gradient(180deg, rgba(2, 8, 6, 0.78), rgba(2, 8, 6, 0.36));
-}
+.wayfinder-gem[data-gem="0"] .wayfinder-bearing-copy { left: 50%; bottom: calc(100% + 0.28rem); transform: translateX(-50%); }
+.wayfinder-gem[data-gem="1"] .wayfinder-bearing-copy,
+.wayfinder-gem[data-gem="2"] .wayfinder-bearing-copy { right: calc(100% + 0.45rem); top: 50%; align-items: flex-end; transform: translateY(-50%); text-align: right; }
+.wayfinder-gem[data-gem="3"] .wayfinder-bearing-copy { left: 50%; top: calc(100% + 0.28rem); transform: translateX(-50%); }
+.wayfinder-gem[data-gem="4"] .wayfinder-bearing-copy,
+.wayfinder-gem[data-gem="5"] .wayfinder-bearing-copy { left: calc(100% + 0.45rem); top: 50%; align-items: flex-start; transform: translateY(-50%); text-align: left; }
 .wayfinder-bearing-copy strong {
   font: 700 0.68rem/1.15 'Cinzel', Georgia, serif;
   letter-spacing: 0.11em;
   text-transform: uppercase;
 }
-.wayfinder-bearing-copy small { min-height: 0.85rem; margin-top: 0.28rem; color: #8e7448; font-size: 0.72rem; }
 
 .wayfinder-bearing:hover .wayfinder-bearing-sigil,
 .wayfinder-bearing:focus-visible .wayfinder-bearing-sigil,
 .wayfinder-bearing[data-active] .wayfinder-bearing-sigil {
   color: #ffe1a1;
-  border-color: rgb(var(--wf-gold));
-  box-shadow: 0 0 0 5px rgba(4, 8, 6, 0.9), 0 0 0 6px rgba(var(--wf-gold), 0.62), 0 0 24px rgba(var(--wf-gold), 0.25), inset 0 0 12px #000;
+  filter: drop-shadow(0 1px 2px #000) drop-shadow(0 0 6px rgba(var(--wf-gold), 0.75));
   transform: scale(1.07);
 }
-.wayfinder-bearing:focus-visible { outline: none; }
+.wayfinder-bearing:hover .wayfinder-bearing-copy strong,
+.wayfinder-bearing:focus-visible .wayfinder-bearing-copy strong,
+.wayfinder-bearing[data-active] .wayfinder-bearing-copy strong { color: #ead09b; }
+.wayfinder-bearing:focus-visible { outline: 2px solid rgb(var(--wf-gold)); outline-offset: 2px; border-radius: 50%; }
 .wayfinder-bearing[data-pending] .wayfinder-bearing-sigil { animation: wf-bearing-pulse 0.9s ease-in-out infinite; }
 .wayfinder-bearing[data-rarity] .wayfinder-bearing-sigil {
-  border-color: rgba(var(--wf-item-route), 0.9);
   color: rgb(var(--wf-item-route));
 }
 
@@ -899,15 +882,11 @@
   .wayfinder { padding-top: 0.6rem; }
   .wayfinder-heading p { display: none; }
   .wayfinder-instrument { min-height: 25rem; }
-  .wayfinder-bearing-sigil { width: 2.9rem; height: 2.9rem; }
   .wayfinder-trail { min-height: 1.9rem; }
 }
 
-/* Phone: a portrait screen has no room beside the ring, so the six bearings
-   form a row above it (Any key, Popular, Gem) and a row below it (Unique key,
-   Unique craft, Curated), each still on its own side of the ring. The
-   instrument is a size container: the chassis takes the largest circle that
-   fits between the rows, and the core, orbits and gems scale with it. */
+/* Phone: controls remain seated in the six gems. Labels turn inward so they
+   stay on-screen, with keyword rolls above and combination rolls below. */
 @media (max-width: 1023px) {
   .wayfinder {
     padding: 0.7rem 0.75rem 0.6rem;
@@ -917,7 +896,7 @@
   .wayfinder-kicker { font-size: 0.7rem; }
 
   .wayfinder-instrument {
-    --wf-ring: min(96cqw, calc(100cqh - 10.4rem));
+    --wf-ring: min(96cqw, calc(100cqh - 3rem));
     container-type: size;
     width: 100%;
     min-height: 22rem;
@@ -946,46 +925,26 @@
   .wayfinder-core-gem { width: 2.3rem; }
   .wayfinder-route-flare { width: 1.6rem; height: 1.6rem; right: -0.2rem; }
 
-  .wayfinder-bearing {
-    width: 33.333%;
-    gap: 0.3rem;
-    align-items: center;
-    padding: 0.2rem 0.15rem;
-    text-align: center;
-  }
+  .wayfinder-bearing-sigil svg { width: 44%; height: 44%; }
+  .wayfinder-bearing-copy { width: 5.2rem; }
+  .wayfinder-bearing-copy strong { font-size: 0.54rem; letter-spacing: 0.07em; white-space: nowrap; }
 
-  /* Rows hug the ring (5rem ≈ one bearing's height), not the instrument's edges. */
-  .wayfinder-bearing:nth-child(n) { transform: none; text-align: center; }
-  .wayfinder-bearing:is(:nth-child(1), :nth-child(2), :nth-child(6)) {
-    top: max(0px, calc(50cqh - var(--wf-ring) / 2 - 4.6rem));
-    bottom: auto;
-    flex-direction: column;
+  .wayfinder-gem[data-gem="0"] .wayfinder-bearing-copy {
+    left: 50%; bottom: calc(100% + 0.12rem); top: auto; transform: translateX(-50%);
   }
-  .wayfinder-bearing:is(:nth-child(3), :nth-child(4), :nth-child(5)) {
-    top: auto;
-    bottom: max(0px, calc(50cqh - var(--wf-ring) / 2 - 4.6rem));
-    flex-direction: column-reverse;
+  .wayfinder-gem[data-gem="1"] .wayfinder-bearing-copy,
+  .wayfinder-gem[data-gem="5"] .wayfinder-bearing-copy {
+    left: 50%; right: auto; top: calc(100% + 0.12rem); bottom: auto;
+    align-items: center; transform: translateX(-50%); text-align: center;
   }
-  .wayfinder-bearing:is(:nth-child(2), :nth-child(3)) { left: 0; right: auto; }
-  .wayfinder-bearing:is(:nth-child(1), :nth-child(4)) { left: 33.333%; right: auto; }
-  .wayfinder-bearing:is(:nth-child(5), :nth-child(6)) { right: 0; left: auto; }
-
-  .wayfinder-bearing-sigil {
-    width: 2.7rem;
-    height: 2.7rem;
-    box-shadow: 0 0 0 3px rgba(4, 8, 6, 0.9), 0 0 0 4px rgba(var(--wf-brass), 0.26), inset 0 0 10px #000;
+  .wayfinder-gem[data-gem="2"] .wayfinder-bearing-copy,
+  .wayfinder-gem[data-gem="4"] .wayfinder-bearing-copy {
+    left: 50%; right: auto; top: auto; bottom: calc(100% + 0.12rem);
+    align-items: center; transform: translateX(-50%); text-align: center;
   }
-
-  .wayfinder-bearing-sigil svg { width: 1.05rem; height: 1.05rem; }
-
-  .wayfinder-bearing-copy {
-    align-items: center;
-    padding: 0.2rem 0.35rem 0.16rem;
-    background: linear-gradient(180deg, rgba(2, 8, 6, 0.78), rgba(2, 8, 6, 0.36));
+  .wayfinder-gem[data-gem="3"] .wayfinder-bearing-copy {
+    left: 50%; top: calc(100% + 0.12rem); bottom: auto; transform: translateX(-50%);
   }
-
-  .wayfinder-bearing-copy strong { font-size: 0.58rem; letter-spacing: 0.08em; white-space: nowrap; }
-  .wayfinder-bearing-copy small { min-height: 0.75rem; margin-top: 0.18rem; font-size: 0.64rem; }
 
   /* Recent routes: one swipeable line, not a wrapping block. */
   .wayfinder-trail {

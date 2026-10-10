@@ -33,7 +33,6 @@ export interface WayfinderBearing {
   verb: string;
   icon: LucideIcon;
   group: 'keys' | 'uniques' | 'crafts';
-  meta: React.ReactNode;
   onDraw: () => void;
 }
 
@@ -89,7 +88,7 @@ export const Wayfinder: React.FC<Props> = ({
       </div>
 
       <div className="wayfinder-instrument" aria-label="Random discovery wayfinder">
-        <div className="wayfinder-chassis" data-style="arcane" aria-hidden="true">
+        <div className="wayfinder-chassis" data-style="arcane" role="group" aria-label="Choose a bearing">
           <span className="wayfinder-chassis-layer wayfinder-chassis-layer--outer" />
           <span className="wayfinder-chassis-layer wayfinder-chassis-layer--mechanism" />
           {/* Keyed per draw so every click restarts the spin on top of the idle tick. */}
@@ -104,20 +103,6 @@ export const Wayfinder: React.FC<Props> = ({
             <span className="wayfinder-chassis-layer wayfinder-chassis-layer--inner" />
           </span>
           <span className="wayfinder-chassis-layer wayfinder-chassis-layer--spokes" />
-          {bearings.map((bearing, index) => (
-            <span
-              key={bearing.id}
-              className="wayfinder-gem"
-              data-gem={index}
-              data-lit={destination?.card === bearing.id || undefined}
-            />
-          ))}
-        </div>
-        <span className="wayfinder-orbit wayfinder-orbit--outer" aria-hidden="true" />
-        <span className="wayfinder-orbit wayfinder-orbit--inner" aria-hidden="true" />
-        <span className="wayfinder-crosshair" aria-hidden="true" />
-
-        <div className="wayfinder-bearings" role="group" aria-label="Choose a bearing">
           {bearings.map((bearing, index) => {
             const Icon = bearing.icon;
             const active = destination?.card === bearing.id;
@@ -125,8 +110,10 @@ export const Wayfinder: React.FC<Props> = ({
               <button
                 key={bearing.id}
                 type="button"
-                className={`wayfinder-bearing wayfinder-bearing--${bearing.group}`}
+                className={`wayfinder-gem wayfinder-bearing wayfinder-bearing--${bearing.group}`}
                 style={{ '--bearing-index': index } as React.CSSProperties}
+                data-gem={index}
+                data-lit={active || undefined}
                 data-active={active || undefined}
                 data-pending={active && state === 'charting' ? true : undefined}
                 data-rarity={active ? rarity ?? undefined : undefined}
@@ -137,12 +124,14 @@ export const Wayfinder: React.FC<Props> = ({
                 <span className="wayfinder-bearing-sigil"><Icon aria-hidden="true" /></span>
                 <span className="wayfinder-bearing-copy">
                   <strong>{bearing.name}</strong>
-                  <small>{bearing.meta}</small>
                 </span>
               </button>
             );
           })}
         </div>
+        <span className="wayfinder-orbit wayfinder-orbit--outer" aria-hidden="true" />
+        <span className="wayfinder-orbit wayfinder-orbit--inner" aria-hidden="true" />
+        <span className="wayfinder-crosshair" aria-hidden="true" />
 
         <section className="wayfinder-core" aria-live="polite" aria-label="Wayfinder destination">
           <span className="wayfinder-needle" aria-hidden="true" />

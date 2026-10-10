@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
 import {
-  Sparkles, Wand2, Dices, Gem,
+  Sparkles, WandSparkles, Flame, Gem,
   Search, Share2, Check, ScrollText,
-  Shuffle, Infinity as InfinityIcon,
+  Shuffle,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
 import KeywordMap from './KeywordMap';
@@ -191,24 +191,6 @@ const uniqueComboSuggestions: KeywordComboSuggestion[] = [
 ];
 
 const titleCase = (name: string) => name.replace(/\b\w/g, c => c.toUpperCase());
-const getStepLabel = (index: number, total: number) => `${index + 1}/${total}`;
-const getPaddedStepLabel = (index: number, total: number) =>
-  `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
-
-const renderSequencePips = (index: number, total: number) => {
-  const pipCount = Math.min(5, total);
-  const activePip = Math.min(pipCount - 1, Math.floor((index / Math.max(total - 1, 1)) * pipCount));
-  return (
-    <span className="qs-sequence-pips" aria-hidden="true">
-      {Array.from({ length: pipCount }, (_, pipIndex) => (
-        <span
-          key={pipIndex}
-          className={`qs-sequence-pip${pipIndex === activePip ? ' qs-sequence-pip-active' : ''}`}
-        />
-      ))}
-    </span>
-  );
-};
 
 const comboFilters = (suggestion: KeywordComboSuggestion): FilterItem[] =>
   suggestion.filters.map(filter => ({
@@ -266,17 +248,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults })
   const relicSeqRef = useRef(0);
   const relicDrawnAtRef = useRef(0);
   const relicFiltersRef = useRef(new Map<number, FilterItem[]>());
-
-  const popularStep = getStepLabel(activePopularIndex, popularSuggestions.length);
-  const craftedStep = getStepLabel(activeSuggestionIndex, keywordComboSuggestions.length);
-  const uniqueKeywordDisplayIndex = uniqueLimits.kwUsed > 0
-    ? Math.max(0, Math.min(uniqueLimits.kwUsed - 1, uniqueKeywords.length - 1))
-    : activeUniqueKeywordIndex;
-  const uniqueComboDisplayIndex = uniqueLimits.comboUsed > 0
-    ? Math.max(0, Math.min(uniqueLimits.comboUsed - 1, uniqueComboSuggestions.length - 1))
-    : activeUniqueComboIndex;
-  const uniqueKeywordDisplayStep = getPaddedStepLabel(uniqueKeywordDisplayIndex, uniqueKeywords.length);
-  const uniqueComboDisplayStep = getPaddedStepLabel(uniqueComboDisplayIndex, uniqueComboSuggestions.length);
 
   /** A draw from one bearing resets the other unique sequence's "last drawn" marker. */
   const resetOtherUniques = (card: RevealCard) => {
@@ -500,34 +471,15 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults })
 
   /** "Need a spark?": six bearings on the Wayfinder. */
   const renderWayfinder = (closeSpark: () => void) => {
+    // Clockwise from the top: the top three sockets are single-keyword rolls,
+    // while the bottom three sockets are combination rolls.
     const bearings: WayfinderBearing[] = [
-      { id: 'popular', name: 'Popular', verb: 'Roll popular', icon: Dices, group: 'keys', meta: popularStep, onDraw: applyPopular },
-      {
-        id: 'common-keyword', name: 'Any key', verb: 'Roll any key', icon: Shuffle, group: 'keys',
-        meta: <InfinityIcon className="qs-step-icon" aria-label="infinite" />, onDraw: applyCommonKeyword,
-      },
-      {
-        id: 'unique-keyword', name: 'Unique key', verb: 'Discover unique', icon: Sparkles, group: 'uniques',
-        meta: (
-          <span className="qs-sequence-track">
-            {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
-            <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
-          </span>
-        ),
-        onDraw: applyUniqueKeyword,
-      },
-      {
-        id: 'unique-combo', name: 'Unique craft', verb: 'Craft unique', icon: Wand2, group: 'uniques',
-        meta: (
-          <span className="qs-sequence-track">
-            {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
-            <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
-          </span>
-        ),
-        onDraw: applyUniqueCombo,
-      },
-      { id: 'rare-combo', name: 'Curated', verb: 'Craft curated', icon: Wand2, group: 'crafts', meta: craftedStep, onDraw: applyRareCombo },
-      { id: 'user-crafts', name: 'Gem', verb: 'Reveal gem', icon: Gem, group: 'crafts', meta: '1/1', onDraw: applyUserCrafts },
+      { id: 'popular', name: 'Popular', verb: 'Roll popular', icon: Flame, group: 'keys', onDraw: applyPopular },
+      { id: 'common-keyword', name: 'Any key', verb: 'Roll any key', icon: Shuffle, group: 'keys', onDraw: applyCommonKeyword },
+      { id: 'unique-combo', name: 'Unique craft', verb: 'Roll unique craft', icon: WandSparkles, group: 'uniques', onDraw: applyUniqueCombo },
+      { id: 'rare-combo', name: 'Curated', verb: 'Roll curated', icon: ScrollText, group: 'crafts', onDraw: applyRareCombo },
+      { id: 'user-crafts', name: 'Hidden gem', verb: 'Roll hidden gem', icon: Gem, group: 'crafts', onDraw: applyUserCrafts },
+      { id: 'unique-keyword', name: 'Unique key', verb: 'Roll unique key', icon: Sparkles, group: 'uniques', onDraw: applyUniqueKeyword },
     ];
     return (
       <Wayfinder

@@ -2848,52 +2848,6 @@ svg.filter-caret.expanded {
   padding-top: 0.7rem;
 }
 
-.qs-step-icon {
-  width: 0.62rem;
-  height: 0.62rem;
-  stroke-width: 2.4;
-}
-
-.qs-sequence-track {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 0.38rem;
-  margin-left: auto;
-}
-
-.qs-sequence-pips {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.18rem;
-}
-
-.qs-sequence-pip {
-  width: 0.26rem;
-  height: 0.26rem;
-  border-radius: 999px;
-  background: rgba(162, 177, 172, 0.3);
-  /* Tiny deboss — pip reads as pressed into the stone */
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.35);
-}
-
-.qs-sequence-pip-active {
-  width: 0.68rem;          /* wider shape still distinguishes active from inactive */
-  background: rgba(190, 204, 199, 0.72);
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.25);
-}
-
-.qs-sequence-count {
-  color: rgba(172, 190, 185, 0.62);
-  font-size: 0.58rem;
-  font-weight: 850;
-  line-height: 1;
-  white-space: nowrap;
-  text-shadow:
-    0 -1px 0px rgba(0, 0, 0, 0.40),
-    0  1px 0px rgba(255, 255, 255, 0.04);
-}
-
 /* ── end Mobile category segmented control ───────────────────── */
 
 /* ── Desktop keyword map explorer (KeywordMap.tsx) ───────────────
@@ -3746,10 +3700,9 @@ button.kmap-crumb:hover,
   margin-top: 0.4rem;
 }
 
-/* Selection and Search float on the map: pills bottom-left, Search bottom-right.
-   The wrappers pass pointer events through so the map stays draggable around them.
-   z-index clears .kmap-spark-stage (12) so both stay usable over the Wayfinder too. */
-.kmap-user-selection-filters,
+/* Refresh and Search share the bottom-right cluster. The wrapper passes pointer
+   events through so the map stays draggable around it. z-index clears
+   .kmap-spark-stage (12) so Search stays usable over the Wayfinder too. */
 .kmap-user-selection-actions {
   position: absolute;
   bottom: 0.9rem;
@@ -3757,15 +3710,23 @@ button.kmap-crumb:hover,
   pointer-events: none;
 }
 
-.kmap-user-selection-filters {
-  left: 0.9rem;
-  max-width: calc(100% - 13.5rem);
-  max-height: 45%;
-  overflow-y: auto;
+/* Selection pills now occupy the former New options slot in the top controls. */
+.kmap-modes .kmap-user-selection-filters--controls {
+  position: static;
+  min-width: 0;
+  max-width: min(28rem, 55vw);
+  max-height: 2.25rem;
+  overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: none;
+  pointer-events: auto;
 }
 
-/* Nothing selected yet: no trace on the map. */
+.kmap-modes .kmap-user-selection-filters--controls .selected-filter-chips {
+  flex-wrap: nowrap;
+}
+
+/* Nothing selected yet: no trace in the controls. */
 .kmap-user-selection-filters:empty,
 .kmap-user-selection-filters:has(> .selected-filter-chips:empty) {
   display: none;

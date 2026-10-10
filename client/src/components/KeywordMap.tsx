@@ -484,7 +484,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     if (!vp) return;
     const o = vp.getBoundingClientRect();
     const pad = 6;
-    const rects = Array.from(vp.querySelectorAll<HTMLElement>(':scope > .kmap-user-selection-filters, :scope > .kmap-user-selection-actions'))
+    const rects = Array.from(vp.querySelectorAll<HTMLElement>(':scope > .kmap-user-selection-actions'))
       .map(el => el.getBoundingClientRect())
       .filter(r => r.width > 0 && r.height > 0)
       .map(r => ({
@@ -624,6 +624,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   const shownNow = useMemo(() => new Set(Array.from(seen).concat(Array.from(onMap))), [seen, onMap]);
   const remaining = visiblePool.filter(n => !shownNow.has(nameKey(n.name))).length;
   const canRefresh = visiblePool.length > shape.level1Count;
+  const refreshActivatedRef = useRef(false);
+  const [refreshActivatedOnce, setRefreshActivatedOnce] = useState(false);
+  const [refreshAcknowledged, setRefreshAcknowledged] = useState(false);
+  useEffect(() => {
+    if (!canRefresh || refreshActivatedRef.current) return;
+    refreshActivatedRef.current = true;
+    setRefreshActivatedOnce(true);
+  }, [canRefresh]);
 
   const refresh = (dir: 1 | -1 = 1) => {
     if (!canRefresh) return;
@@ -691,29 +699,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
             <ListFilter className="h-3.5 w-3.5" aria-hidden="true" />
             Only compatible
           </button>
-          <button
-            type="button"
-            className="kmap-mode kmap-refresh-control"
-            onClick={() => refresh()}
-            disabled={!canRefresh}
-            aria-label={sceneKind === 'root' ? 'Show other categories' : sceneKind === 'category' ? 'Show other subcategories' : 'Show other keywords'}
-            title={
-              !canRefresh
-                ? 'Nothing else to show'
-                : remaining > 0
-                  ? `Show ${remaining} more ${sceneKind === 'root' ? 'categories' : sceneKind === 'category' ? 'subcategories' : 'keywords'}`
-                  : 'Start over'
-            }
-          >
-            {/* Remounts per round so each refresh (click or swipe) spins it once, in the swipe's direction. */}
-            <RefreshCw
-              key={round}
-              className={`h-3.5 w-3.5${round ? ' kmap-refresh-spin' : ''}`}
-              style={{ '--spin-dir': spin } as React.CSSProperties}
-              aria-hidden="true"
-            />
-            New options
-          </button>
+          {selection && <div className="kmap-user-selection-filters kmap-user-selection-filters--controls">{selection}</div>}
         </div>
         {note && (
           <span className={`kmap-modes-note${fit.status === 'loading' ? ' is-loading' : ''}`} role="status">
@@ -723,6 +709,37 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
       </div>
     );
   };
+
+  const renderRefreshButton = () => (
+    <button
+      type="button"
+      className={`kmap-refresh-control kmap-refresh-compact${refreshActivatedOnce ? ' kmap-refresh-compact--first-active' : ''}${canRefresh && !refreshAcknowledged ? ' kmap-refresh-compact--awaiting-click' : ''}`}
+      onClick={() => {
+        setRefreshAcknowledged(true);
+        refresh();
+      }}
+      disabled={!canRefresh}
+      aria-label={sceneKind === 'root' ? 'Show other categories' : sceneKind === 'category' ? 'Show other subcategories' : 'Show other keywords'}
+      title={
+        !canRefresh
+          ? 'Nothing else to show'
+          : remaining > 0
+            ? `Show ${remaining} more ${sceneKind === 'root' ? 'categories' : sceneKind === 'category' ? 'subcategories' : 'keywords'}`
+            : 'Start over'
+      }
+    >
+      {/* Remounts per round so each refresh (click or swipe) spins it once, in the swipe's direction. */}
+      <RefreshCw
+        key={round}
+        className={round ? 'kmap-refresh-spin' : undefined}
+        style={{ '--spin-dir': spin } as React.CSSProperties}
+        aria-hidden="true"
+      />
+      <span className="kmap-refresh-embers" aria-hidden="true">
+        <i /><i /><i /><i /><i /><i /><i /><i /><i /><i />
+      </span>
+    </button>
+  );
 
   const renderMap = () => {
     let content: React.ReactNode = null;
@@ -802,12 +819,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     );
   };
 
-  /** Floating selection pills bottom-left (empty until a first pick) and Search bottom-right,
-   *  measured as layout obstacles so keywords are pushed out from under them. */
+  /** Refresh and Search share the bottom-right action cluster, measured as one
+   *  layout obstacle so keywords are pushed out from under it. */
   const renderSelectionOverlays = () => (
     <>
-      {selection && <div ref={overlayRef} className="kmap-user-selection-filters">{selection}</div>}
-      {actions && <div ref={overlayRef} className="kmap-user-selection-actions">{actions}</div>}
+      <div ref={overlayRef} className="kmap-user-selection-actions">
+        {renderRefreshButton()}
+        {actions}
+      </div>
     </>
   );
 

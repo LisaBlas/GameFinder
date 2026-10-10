@@ -664,6 +664,24 @@
   fill: rgba(226, 227, 220, 0.16);
 }
 
+/* Desktop pointer feedback mirrors Exclude's red hover: the neutral Add
+   control kindles emerald only when the user deliberately points at it. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .keyword-build-panel .kmap .kmap-center-action--include,
+  .keyword-build-panel .kmap .kmap-center-action--include .kmap-center-action-bg {
+    transition: color 0.18s ease, fill 0.18s ease, stroke 0.18s ease;
+  }
+
+  .keyword-build-panel .kmap .kmap-center-action--include:hover {
+    color: #73f4d9;
+  }
+
+  .keyword-build-panel .kmap .kmap-center-action--include:hover .kmap-center-action-bg {
+    stroke: rgb(var(--c-emerald-rgb));
+    fill: rgba(var(--c-emerald-rgb), 0.2);
+  }
+}
+
 .keyword-build-panel .kmap .kmap-node.is-cause .kmap-node-shape {
   stroke-width: 2;
   filter: drop-shadow(0 0 6px rgba(var(--c-gold-rgb), 0.55));
@@ -717,18 +735,16 @@
 }
 
 /* ── 7. Selection + Search (floating on the map) ─────────────────── */
-.keyword-build-panel .kmap .kmap-user-selection-filters,
 .keyword-build-panel .kmap .kmap-user-selection-actions {
   bottom: var(--kmap-inset);
 }
 
-.keyword-build-panel .kmap .kmap-user-selection-filters {
-  left: var(--kmap-inset);
-  max-width: calc(100% - 14.5rem);
-}
-
 .keyword-build-panel .kmap .kmap-user-selection-actions {
   right: var(--kmap-inset);
+}
+
+.keyword-build-panel .kmap .kmap-window .kmap-modes .kmap-user-selection-filters--controls {
+  max-width: min(28rem, calc(100% - 8.5rem));
 }
 
 .keyword-build-panel .kmap .selected-filter-clear {
@@ -808,17 +824,17 @@
    (pointed ends included) without changing layout; ::before stays the shine. */
 /* Fixed width: Search / Searching... / Share / Copied! never resize the plate. */
 .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search {
-  width: 10.5rem;
-  height: 3rem;
-  padding: 0 1.2rem;
+  width: 14.7rem;
+  height: 4.2rem;
+  padding: 0 1.68rem;
   white-space: nowrap;
   border: 1px solid transparent;
-  border-image: url("../assets/ui/relic/frame-cta.svg") 24 fill / 24px stretch;
+  border-image: url("../assets/ui/relic/frame-cta.svg") 24 fill / 33.6px stretch;
   border-radius: 0;
   background: none;
   box-shadow: none;
   font-family: 'Alegreya', Georgia, serif;
-  font-size: 1.15rem;
+  font-size: 1.61rem;
   font-weight: 700;
   color: #ffd27a;
   text-shadow: 0 0 10px rgba(255, 179, 71, 0.45), 0 1px 0 #000;
@@ -827,8 +843,8 @@
 }
 
 .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search svg {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.61rem;
+  height: 1.61rem;
 }
 
 .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search-active:hover {
@@ -846,6 +862,150 @@
 
 .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search-zero {
   filter: drop-shadow(0 0 8px rgba(var(--c-danger-rgb), 0.5));
+}
+
+/* Compact sibling to the Search plate: same height and forged frame, but a
+   darker copper face so refresh remains clearly secondary. */
+.keyword-build-panel .kmap .kmap-refresh-compact {
+  position: relative;
+  display: grid;
+  flex: 0 0 5.25rem;
+  width: 5.25rem;
+  height: 4.2rem;
+  padding: 0;
+  place-items: center;
+  border: 1px solid transparent;
+  border-image: url("../assets/ui/relic/frame-cta.svg") 24 fill / 33.6px stretch;
+  border-radius: 0;
+  background: none;
+  color: #d59a58;
+  filter: sepia(0.18) brightness(0.78) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.65));
+  isolation: isolate;
+  overflow: visible;
+  cursor: pointer;
+  transition: color 0.2s, filter 0.2s, transform 0.2s;
+}
+
+.keyword-build-panel .kmap .kmap-refresh-compact::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 5.6px 7px;
+  clip-path: polygon(18.9px 0, calc(100% - 18.9px) 0, 100% 50%, calc(100% - 18.9px) 100%, 18.9px 100%, 0 50%);
+  background:
+    radial-gradient(circle at 50% 62%, rgba(185, 87, 29, 0.24), transparent 64%),
+    linear-gradient(180deg, rgba(43, 25, 12, 0.72), rgba(21, 13, 7, 0.86));
+  pointer-events: none;
+}
+
+/* Separate from the ignition layer so this can breathe until acknowledged
+   without replaying the initial burn. The glow follows the clipped plate. */
+.keyword-build-panel .kmap .kmap-refresh-compact::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 4.2px 5.6px;
+  clip-path: polygon(20.3px 0, calc(100% - 20.3px) 0, 100% 50%, calc(100% - 20.3px) 100%, 20.3px 100%, 0 50%);
+  background: radial-gradient(ellipse at center, rgba(255, 151, 63, 0.2), rgba(255, 104, 31, 0.06) 58%, transparent 72%);
+  filter: drop-shadow(0 0 5px rgba(255, 119, 38, 0.55));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.keyword-build-panel .kmap .kmap-refresh-compact > svg {
+  z-index: 2;
+  width: 1.51rem;
+  height: 1.51rem;
+  filter: drop-shadow(0 0 5px rgba(226, 129, 52, 0.28));
+}
+
+.keyword-build-panel .kmap .kmap-refresh-compact:hover:not(:disabled) {
+  color: #ffc477;
+  filter: sepia(0.08) brightness(0.96) drop-shadow(0 0 10px rgba(218, 119, 42, 0.3)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.65));
+}
+
+.keyword-build-panel .kmap .kmap-refresh-compact:hover:not(:disabled)::before {
+  background:
+    radial-gradient(circle at 50% 58%, rgba(220, 112, 39, 0.34), transparent 66%),
+    linear-gradient(180deg, rgba(53, 30, 13, 0.76), rgba(24, 14, 7, 0.88));
+}
+
+.keyword-build-panel .kmap .kmap-refresh-compact:disabled {
+  color: rgba(191, 151, 101, 0.42);
+  filter: grayscale(0.65) brightness(0.55) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.55));
+  cursor: default;
+}
+
+.keyword-build-panel .kmap .kmap-refresh-compact--first-active::before {
+  animation: kmap-refresh-soft-burn 1.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.keyword-build-panel .kmap .kmap-refresh-compact--first-active > svg {
+  animation: kmap-refresh-icon-ignite 1.35s 0.08s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.keyword-build-panel .kmap .kmap-refresh-compact--awaiting-click::after {
+  animation: kmap-refresh-ready-glow 1.9s ease-in-out infinite;
+}
+
+.kmap-refresh-embers {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.kmap-refresh-embers i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5.6px;
+  height: 5.6px;
+  border-radius: 50%;
+  background: #ffd08a;
+  box-shadow: 0 0 7px #ff8a2a;
+  opacity: 0;
+}
+
+.kmap-refresh-compact--first-active .kmap-refresh-embers i {
+  animation: kmap-refresh-ember 1.2s 0.12s ease-out both;
+}
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(1)  { left: 24%; top: 20%; --ember-x: -15px; --ember-y: -18px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(2)  { left: 50%; top: 12%; animation-delay: 0.2s; --ember-x: 0px; --ember-y: -23px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(3)  { left: 76%; top: 20%; animation-delay: 0.28s; --ember-x: 15px; --ember-y: -18px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(4)  { left: 91%; top: 48%; animation-delay: 0.36s; --ember-x: 20px; --ember-y: -3px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(5)  { left: 78%; top: 80%; animation-delay: 0.44s; --ember-x: 15px; --ember-y: 16px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(6)  { left: 50%; top: 90%; animation-delay: 0.52s; --ember-x: 0px; --ember-y: 19px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(7)  { left: 22%; top: 80%; animation-delay: 0.6s; --ember-x: -15px; --ember-y: 16px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(8)  { left: 9%; top: 48%; animation-delay: 0.32s; --ember-x: -20px; --ember-y: -3px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(9)  { left: 14%; top: 34%; animation-delay: 0.48s; --ember-x: -18px; --ember-y: -13px; }
+.kmap-refresh-compact--first-active .kmap-refresh-embers i:nth-child(10) { left: 86%; top: 34%; animation-delay: 0.56s; --ember-x: 18px; --ember-y: -13px; }
+
+@keyframes kmap-refresh-soft-burn {
+  0%   { opacity: 0.28; filter: brightness(0.58); }
+  24%  { opacity: 1; filter: brightness(2.35) saturate(1.75) drop-shadow(0 0 11px rgba(255, 101, 20, 0.92)); }
+  48%  { opacity: 0.84; filter: brightness(1.48) saturate(1.45) drop-shadow(0 0 8px rgba(255, 128, 35, 0.68)); }
+  68%  { opacity: 1; filter: brightness(1.9) saturate(1.55) drop-shadow(0 0 9px rgba(255, 91, 15, 0.76)); }
+  100% { opacity: 1; filter: none; }
+}
+
+@keyframes kmap-refresh-icon-ignite {
+  0%   { color: #86522a; filter: brightness(0.6); transform: scale(0.82); }
+  28%  { color: #fff0bc; filter: brightness(1.8) drop-shadow(0 0 8px #ff7a21); transform: scale(1.24); }
+  58%  { color: #ffc16f; filter: brightness(1.25) drop-shadow(0 0 5px #ff8b2d); transform: scale(1.08); }
+  100% { color: inherit; filter: drop-shadow(0 0 5px rgba(226, 129, 52, 0.28)); transform: scale(1); }
+}
+
+@keyframes kmap-refresh-ready-glow {
+  0%, 100% { opacity: 0.28; filter: brightness(0.9) drop-shadow(0 0 4px rgba(255, 119, 38, 0.42)); }
+  50%      { opacity: 0.82; filter: brightness(1.45) drop-shadow(0 0 9px rgba(255, 126, 42, 0.82)); }
+}
+
+@keyframes kmap-refresh-ember {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
+  18%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--ember-x, 0px)), calc(-50% + var(--ember-y, -20px))) scale(0.08); }
 }
 
 /* ── 8. Glints ─────────────────────────────────────────────────────
@@ -889,14 +1049,14 @@
    the whole box. Here it's confined to frame-cta.svg's face instead: 4px/5px
    inside the rim, pointed ends 13.5px deep (the frame renders 1:1 at 3rem tall). */
 .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search::before {
-  top: 4px;
-  right: 5px;
-  bottom: 4px;
-  left: 5px;
+  top: 5.6px;
+  right: 7px;
+  bottom: 5.6px;
+  left: 7px;
   width: auto;
   height: auto;
   transform: none;
-  clip-path: polygon(13.5px 0, calc(100% - 13.5px) 0, 100% 50%, calc(100% - 13.5px) 100%, 13.5px 100%, 0 50%);
+  clip-path: polygon(18.9px 0, calc(100% - 18.9px) 0, 100% 50%, calc(100% - 18.9px) 100%, 18.9px 100%, 0 50%);
   background:
     linear-gradient(105deg, transparent 36%, rgba(255, 241, 181, 0.34) 48%, rgba(121, 255, 210, 0.26) 52%, transparent 64%)
     no-repeat;
@@ -1065,6 +1225,15 @@
     max-width: calc(100% - 2 * var(--kmap-inset) - 2.75rem);
   }
 
+  .keyword-build-panel .kmap .kmap-window .kmap-modes {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
   .keyword-build-panel .kmap .kmap-mode {
     --cut: 9px;
     gap: 0.3rem;
@@ -1073,8 +1242,81 @@
     font-size: 0.8rem;
   }
 
-  .keyword-build-panel .kmap .kmap-modes-note {
-    font-size: 0.74rem;
+  .keyword-build-panel .kmap .kmap-modes-note { display: none; }
+
+  .keyword-build-panel .kmap .kmap-window .kmap-modes .kmap-user-selection-filters--controls {
+    width: 100%;
+    max-width: 100%;
+    max-height: 1.3rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .keyword-build-panel .kmap .kmap-window .kmap-modes .kmap-user-selection-filters--controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-chips {
+    width: max-content;
+    min-width: 100%;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+  }
+
+  /* Mobile chips echo the pointed keyword plates, scaled down into one swipeable lane. */
+  .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-pill {
+    --pill-rgb: var(--c-emerald-rgb);
+    position: relative;
+    isolation: isolate;
+    height: 1.15rem;
+    padding: 0 0.65rem;
+    border: 0;
+    border-radius: 0;
+    background: rgb(var(--pill-rgb));
+    clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 7px 100%, 0 50%);
+    color: #d8fff3;
+    font-size: 0.69rem;
+    line-height: 1;
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-pill::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 60%),
+      color-mix(in srgb, rgb(var(--pill-rgb)) 24%, #07120f);
+    clip-path: inherit;
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-pill.keyword-exclude {
+    --pill-rgb: var(--c-danger-rgb);
+    color: #f3c9c9;
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-pill .keyword-mode-chip-button {
+    width: 0.78rem;
+    height: 0.78rem;
+    margin-left: 0.22rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-pill svg {
+    width: 0.62rem;
+    height: 0.62rem;
+    color: rgb(var(--pill-rgb));
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-clear {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-map-layer:has(.kmap-user-selection-filters--controls:not(:has(> .selected-filter-chips:empty))) .kmap-viewport {
+    margin-top: calc(var(--kmap-inset) + 4rem);
   }
 
   .keyword-build-panel .kmap .kmap-search--float {
@@ -1097,13 +1339,48 @@
 
   .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search {
     width: 8.6rem;
+    height: 3rem;
     padding: 0 0.9rem;
+    border-image-width: 24px;
     font-size: 1rem;
   }
 
   .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search svg {
     width: 1rem;
     height: 1rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search::before {
+    inset: 4px 5px;
+    clip-path: polygon(13.5px 0, calc(100% - 13.5px) 0, 100% 50%, calc(100% - 13.5px) 100%, 13.5px 100%, 0 50%);
+  }
+
+  .keyword-build-panel .kmap .kmap-refresh-compact {
+    flex-basis: 3.75rem;
+    width: 3.75rem;
+    height: 3rem;
+    border-image-width: 24px;
+  }
+
+  .keyword-build-panel .kmap .kmap-refresh-compact::before {
+    inset: 4px 5px;
+    clip-path: polygon(13.5px 0, calc(100% - 13.5px) 0, 100% 50%, calc(100% - 13.5px) 100%, 13.5px 100%, 0 50%);
+  }
+
+  .keyword-build-panel .kmap .kmap-refresh-compact::after {
+    inset: 3px 4px;
+    clip-path: polygon(14.5px 0, calc(100% - 14.5px) 0, 100% 50%, calc(100% - 14.5px) 100%, 14.5px 100%, 0 50%);
+  }
+
+  .keyword-build-panel .kmap .kmap-refresh-compact > svg {
+    width: 1.08rem;
+    height: 1.08rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-refresh-embers i {
+    width: 4px;
+    height: 4px;
+    box-shadow: 0 0 5px #ff8a2a;
   }
 }
 
@@ -1112,5 +1389,16 @@
   .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search::before {
     animation: none !important;
     opacity: 0;
+  }
+
+  .keyword-build-panel .kmap .kmap-refresh-compact--first-active::before,
+  .keyword-build-panel .kmap .kmap-refresh-compact--first-active > svg,
+  .keyword-build-panel .kmap .kmap-refresh-compact--awaiting-click::after,
+  .keyword-build-panel .kmap .kmap-refresh-compact--first-active .kmap-refresh-embers i {
+    animation: none !important;
+  }
+
+  .keyword-build-panel .kmap .kmap-refresh-compact--awaiting-click::after {
+    opacity: 0.42;
   }
 }
