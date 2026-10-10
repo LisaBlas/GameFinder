@@ -36,6 +36,13 @@ display names via `idToFilterName`, built from `game-filters.json` at module
 load. If a filter pill shows a raw number instead of a name, the ID is missing
 from `game-filters.json`.
 
+## Keyword URL hydration is async; set sort and filters together
+`FilterContext` builds the keyword slug map lazily (dynamic import of the
+taxonomy JSON) only when the URL has `kw` / `kw-ex`. In that case hydration
+must call `setSortBy` and `setSelectedFilters` together, after the map loads.
+If sort is set earlier, the URL-sync effect fires with no keyword filters and
+rewrites the URL, erasing `kw` / `kw-ex` before they hydrate.
+
 ## IGDB exclusion filters cannot use `!=`
 `keywords != (id)` in Apicalypse does not mean "does not contain id" — it
 means "the array is not equal to (id)," which is almost always true and does

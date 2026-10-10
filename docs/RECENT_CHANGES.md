@@ -12,10 +12,24 @@ than 7 days.
 - Documentation maintenance: pruned expired change history, corrected the
   affiliate marketplace list, static Popular-card labeling, and stale
   pre-commit runtime guidance; reopened the ongoing change-log hygiene task.
+- YouTube trailer thumbnail in `GameCard` now fetches `hqdefault.jpg` directly
+  with `loading="lazy"` / `decoding="async"` (was `maxresdefault` with an
+  `onError` fallback to `hqdefault`; the fallback chain cost a wasted request
+  when no maxres image existed).
+- `FilterContext` no longer imports the keyword taxonomy JSON at module load.
+  The `slugToKeyword` map is built on first use via dynamic import, only when
+  the URL has `kw` / `kw-ex` params. URL hydration with keyword params is now
+  async. `KeywordSection` still imports the same JSON statically, so `Home`
+  needs it on mount; the gain is only that the entry chunk no longer carries it.
 
 ## 2026-10-09
-- Desktop "Need a spark?" view rebuilt as the Reliquary: altar with the drawn
-  relic (identified from the live selection count), six carved vessel niches,
-  shelf of session draws, "Explore on map" back to the map. Selection pills and
-  Search now float over it as on the map. Mobile deck unchanged.
-  `Reliquary.tsx`, `KeywordSection.tsx`, `reliquary.css`, `build-reliquary.py`.
+- Desktop "Need a spark?" view rebuilt (Reliquary, then replaced by the
+  Wayfinder: six bearings around a layered clockwork ring over the dimmed,
+  still-mounted map). `Wayfinder.tsx`, `wayfinder.css`, `split-wayfinder.py`.
+
+## 2026-10-10
+- Mobile rebuilt on the desktop relic UI: one KeywordMap (thumb layout), the
+  Wayfinder in a portrait layout, a Map view and a Results view with a relic
+  header, sockets at every width. Old mobile shelf/deck/sheet/drawer removed
+  with ~1.8k lines of dead CSS. Desktop taxonomy cards now render; path morphs
+  tween (no NaN); narrow-pane header no longer overflows.

@@ -5,21 +5,36 @@ import { attributeSearch } from "../lib/funnel";
 import { JOURNEY_PARAM } from "../lib/mapJourney";
 
 declare const gtag: (...args: any[]) => void;
-import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
-import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
 import gameFilters from "../assets/game-filters.json";
 
 const toSlug = (name: string) =>
   name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
-const slugToKeyword: Record<string, { id: number; name: string }> = {};
-[
-  ...Object.values(topKeywordsByCategory as unknown as Record<string, Array<{ id: number; name: string }>>).flat(),
-  ...Object.values(extendedKeywordsByCategory as unknown as Record<string, Array<{ id: number; name: string }>>).flat(),
-].forEach(kw => {
-  const slug = toSlug(kw.name);
-  if (!slugToKeyword[slug]) slugToKeyword[slug] = { id: kw.id, name: kw.name };
-});
+type KeywordsByCategory = Record<string, Array<{ id: number; name: string }>>;
+
+// The keyword taxonomy JSON is large (~370KB), so the slug map is built on
+// first use (URL hydration with `kw` / `kw-ex` params) instead of at module load.
+let slugToKeywordPromise: Promise<Record<string, { id: number; name: string }>> | null = null;
+const loadSlugToKeyword = () => {
+  slugToKeywordPromise ??= Promise.all([
+    import("../assets/top_keywords_by_category.json"),
+    import("../assets/extended_keywords_by_category.json"),
+  ]).then(([top, extended]) => {
+    const map: Record<string, { id: number; name: string }> = {};
+    [
+      ...Object.values(top.default as unknown as KeywordsByCategory).flat(),
+      ...Object.values(extended.default as unknown as KeywordsByCategory).flat(),
+    ].forEach(kw => {
+      const slug = toSlug(kw.name);
+      if (!map[slug]) map[slug] = { id: kw.id, name: kw.name };
+    });
+    return map;
+  }).catch(err => {
+    slugToKeywordPromise = null; // allow a retry after a failed chunk fetch
+    throw err;
+  });
+  return slugToKeywordPromise;
+};
 
 const gf = gameFilters as Record<string, Array<{ id: number | string; name: string; isParentOnly?: boolean; children?: Array<{ id: number; name: string }> }>>;
 const idToFilterName: Record<string, string> = {};
@@ -625,39 +640,60 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     const params = new URLSearchParams(window.location.search);
     if (!params.toString()) return;
 
-    const hydrated: Filter[] = [];
-
     const kwSlugs = params.get('kw')?.split(',').filter(Boolean) ?? [];
     const kwExSlugs = params.get('kw-ex')?.split(',').filter(Boolean) ?? [];
 
-    kwSlugs.forEach(slug => {
-      const kw = slugToKeyword[slug];
-      if (kw) hydrated.push({ id: kw.id, name: kw.name, category: 'Keywords', mode: 'include', slug });
-    });
-    kwExSlugs.forEach(slug => {
-      const kw = slugToKeyword[slug];
-      if (kw) hydrated.push({ id: kw.id, name: kw.name, category: 'Keywords', mode: 'exclude', slug });
-    });
+    const hydrate = (keywordFilters: Filter[]) => {
+      const hydrated: Filter[] = [...keywordFilters];
 
-    const categoryMap: Record<string, string> = {
-      genre: 'genres',
-      platform: 'platforms',
-      theme: 'themes',
-      mode: 'Game Mode',
-      perspective: 'Perspective',
+      const categoryMap: Record<string, string> = {
+        genre: 'genres',
+        platform: 'platforms',
+        theme: 'themes',
+        mode: 'Game Mode',
+        perspective: 'Perspective',
+      };
+      for (const [key, category] of Object.entries(categoryMap)) {
+        const val = params.get(key);
+        if (val) hydrated.push({ id: Number(val), name: idToFilterName[val] ?? val, category });
+      }
+
+      const sort = params.get('sort');
+      if (sort) setSortBy(sort);
+
+      if (hydrated.length) {
+        setSelectedFilters(hydrated);
+        autoSearchRef.current = true;
+      }
     };
-    for (const [key, category] of Object.entries(categoryMap)) {
-      const val = params.get(key);
-      if (val) hydrated.push({ id: Number(val), name: idToFilterName[val] ?? val, category });
+
+    if (!kwSlugs.length && !kwExSlugs.length) {
+      hydrate([]);
+      return;
     }
 
-    const sort = params.get('sort');
-    if (sort) setSortBy(sort);
-
-    if (hydrated.length) {
-      setSelectedFilters(hydrated);
-      autoSearchRef.current = true;
-    }
+    // Keyword slugs need the taxonomy; state (incl. sort) is set only after it
+    // loads so the URL-sync effect cannot rewrite the URL without the keywords.
+    let cancelled = false;
+    loadSlugToKeyword()
+      .then(slugToKeyword => {
+        if (cancelled) return;
+        const keywordFilters: Filter[] = [];
+        kwSlugs.forEach(slug => {
+          const kw = slugToKeyword[slug];
+          if (kw) keywordFilters.push({ id: kw.id, name: kw.name, category: 'Keywords', mode: 'include', slug });
+        });
+        kwExSlugs.forEach(slug => {
+          const kw = slugToKeyword[slug];
+          if (kw) keywordFilters.push({ id: kw.id, name: kw.name, category: 'Keywords', mode: 'exclude', slug });
+        });
+        hydrate(keywordFilters);
+      })
+      .catch(err => {
+        console.error('[FilterContext] Failed to load keyword taxonomy for URL hydration:', err);
+        if (!cancelled) hydrate([]);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   // Auto-search once after hydration from URL
