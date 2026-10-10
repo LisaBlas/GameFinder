@@ -366,10 +366,12 @@
 }
 
 /* ── 4. Mode toggle ─────────────────────────────────────────────── */
-/* Top inset: the camera frames nodes below the overlay row (toggle + note,
-   toolbar), so they never sit under it. */
-.keyword-build-panel .kmap .kmap-window {
-  padding-top: calc(var(--kmap-inset) + 3.2rem);
+/* Top inset: the drawing area starts below the overlay row (toggle + note,
+   search lens), so nodes never sit under it. On the viewport, not the window:
+   the overlays are positioned in the (animated) map layer, which is the
+   window's content box. */
+.keyword-build-panel .kmap .kmap-viewport {
+  margin-top: calc(var(--kmap-inset) + 3.2rem);
 }
 
 /* Overlaid on the map window's top-left, clear of the inner frame. */
@@ -409,6 +411,7 @@
   font-family: 'Alegreya', Georgia, serif;
   font-size: 0.9rem;
   font-weight: 500;
+  white-space: nowrap;
   color: #d9d2bd;
 }
 
@@ -909,7 +912,42 @@
   animation: kmap-glint-b 1.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* ── 9. Mobile ─────────────────────────────────────────────────────
+/* ── 9. Narrow pane ────────────────────────────────────────────────
+   The desktop pane is 40-50% of the window, so at small desktop widths a
+   keyword step's header (root, back, crumbs, spark, saved) would push its
+   actions past the frame. Sized by the pane, not the viewport: "All
+   categories" and "Need a spark?" become icon plates and the crumbs keep room. */
+.keyword-build-panel .kmap {
+  container: kmap / inline-size;
+}
+
+@container kmap (max-width: 700px) {
+  .kmap-root-btn {
+    width: 2.6rem;
+    padding-inline: 0;
+  }
+
+  .kmap-root-btn span {
+    display: none;
+  }
+
+  .kmap-spark-btn {
+    width: 3rem;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .kmap-spark-face {
+    gap: 0;
+  }
+
+  .kmap-mode {
+    padding: 0 0.85rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ── 10. Mobile ────────────────────────────────────────────────────
    The map is the whole screen. Same skin, rescaled: the frame at half size,
    icon-only header plates, a tighter inset for the floating controls, and a
    16px search field (smaller makes iOS zoom the page on focus). */
@@ -1018,8 +1056,8 @@
     font-size: 10px;
   }
 
-  .keyword-build-panel .kmap .kmap-window {
-    padding-top: calc(var(--kmap-inset) + 2.5rem);
+  .keyword-build-panel .kmap .kmap-viewport {
+    margin-top: calc(var(--kmap-inset) + 2.5rem);
   }
 
   /* The lens sits beside the toggles, so they stop short of it. */

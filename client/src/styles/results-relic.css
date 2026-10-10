@@ -48,6 +48,15 @@
     pointer-events: none;
   }
 
+  /* The triggers scroll sideways in a narrow pane (scrollbar hidden): fade the
+     right edge so a clipped trigger reads as "more", over padding that only
+     shows when everything fits. */
+  .results-sticky-header .results-filter-scroll {
+    padding-right: 1.5rem;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 1.5rem), transparent);
+  }
+
   .results-sticky-header .results-filter-trigger {
     border: 0;
     background: none;

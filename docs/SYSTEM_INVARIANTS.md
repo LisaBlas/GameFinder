@@ -96,3 +96,17 @@ journey's `?map=` would be dropped before the map reads it. The sync copies
 - Affiliate marketplace prices (Eneba, G2A, Kinguin, Instant Gaming) are not
   fetchable — those stores have no public pricing API. Only the official
   Steam price is live (`GET /api/steam-price`, 6h in-memory cache).
+
+## Never spring an SVG path `d` in framer-motion
+framer-motion cannot spring-interpolate a path string: it writes `NaN`
+coordinates for the first frames (console: `<path> attribute d: Expected
+number`). `KeywordMapScene` animates node positions with a spring but the
+plate/card outlines (`d`) with a tween (`morph()`). Keep shape morphs on a
+tween.
+
+## Keyword map overlays live in the animated map layer
+`kmap-map-layer` (scaled/blurred while the Wayfinder is open) is the
+containing block for the toolbar, search lens and floating selection/Search.
+Clearance for the toolbar is therefore a `margin-top` on `.kmap-viewport`
+(kmap-relic.css), not padding on `.kmap-window`; padding on the window sits
+above the toolbar and lets nodes slide under it.

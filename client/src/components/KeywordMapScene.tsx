@@ -1,8 +1,8 @@
 import React, { useId, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
-import { Ban, Check, Plus } from 'lucide-react';
-import { BADGE_ROOM, badgeRoom, nodeLabel, titleCase, type LabelNode, type MapNode } from '../lib/keywordMap';
-import { nearestInDirection, pillHeight, type Direction, type Size } from '../lib/keywordMapLayout';
+import { Ban, Check, Plus, type LucideIcon } from 'lucide-react';
+import { BADGE_ROOM, CARD, badgeRoom, nodeLabel, titleCase, type LabelNode, type MapNode } from '../lib/keywordMap';
+import { nearestInDirection, type Direction, type Size } from '../lib/keywordMapLayout';
 import { TIMING, type SceneEdge, type TransitionPlan } from '../lib/keywordMapMotion';
 import { useMapSwipe } from '../hooks/useMapSwipe';
 import { formatCount, useSearchCount } from '../lib/searchCount';
@@ -29,11 +29,31 @@ const platePath = (w: number, h: number, inset = 0) => {
   return `M${-x + c} ${-y}H${x - c}L${x} 0L${x - c} ${y}H${-x + c}L${-x} 0Z`;
 };
 
+/** Taxonomy card (desktop category/subcategory): a chamfered tablet, `inset` px inside a w×h box. */
+const cardPath = (w: number, h: number, inset = 0) => {
+  const x = w / 2 - inset;
+  const y = h / 2 - inset;
+  const c = Math.max(3, 8 - inset);
+  return `M${-x + c} ${-y}H${x - c}L${x} ${-y + c}V${y - c}L${x - c} ${y}H${-x + c}L${-x} ${y - c}V${-y + c}Z`;
+};
+
+/** A category/subcategory drawn as a card (KeywordMap sizes it; the layout uses the same box). */
+export interface TaxonCard {
+  width: number;
+  height: number;
+  /** Description, already wrapped to the card width. */
+  lines: string[];
+  icon: LucideIcon | null;
+}
+
 interface Props {
   nodes: MapNode[];
   plan: TransitionPlan;
   viewport: Size;
   widthOf: (n: LabelNode) => number;
+  heightOf: (n: LabelNode) => number;
+  /** Desktop: taxonomy nodes drawn as cards (undefined: a plate). */
+  cardOf?: (n: LabelNode) => TaxonCard | undefined;
   reduceMotion: boolean;
   /** Changes with the centre and refresh round: replays the pulse. */
   sceneKey: string;
@@ -68,6 +88,8 @@ export const KeywordMapScene: React.FC<Props> = ({
   plan,
   viewport,
   widthOf,
+  heightOf,
+  cardOf,
   reduceMotion,
   sceneKey,
   variant,
@@ -143,6 +165,8 @@ export const KeywordMapScene: React.FC<Props> = ({
   // Position springs, opacity tweens; reduced motion repositions instantly.
   const move = (delay: number): Transition => (reduceMotion ? { duration: 0 } : { ...POSITION_SPRING, delay });
   const fade = (delay: number): Transition => ({ duration: reduceMotion ? 0.15 : 0.22, delay: reduceMotion ? 0 : delay });
+  // Shape outlines tween: framer-motion can't spring a path string (it emits NaN coordinates).
+  const morph = (delay: number): Transition => (reduceMotion ? { duration: 0 } : { duration: 0.42, ease: [0.22, 1, 0.36, 1], delay });
   const delayOf = (id: number) => plan.nodes.get(id)?.delay ?? 0;
 
   const focusNode = (id: number) => nodeEls.current.get(id)?.focus();
@@ -274,10 +298,50 @@ export const KeywordMapScene: React.FC<Props> = ({
     );
   };
 
+  /** Card body: icon + name, wrapped description, size caption ("65 keywords" / "12 fit"). A bare
+   *  title (the root's "Choose a direction") is centred; otherwise the text is left-aligned. */
+  const renderCardContent = (card: TaxonCard, name: string, w: number, h: number, tag: string | undefined) => {
+    const Icon = card.icon;
+    const x0 = -w / 2 + CARD.padX;
+    const top = -h / 2 + CARD.padY;
+    const centred = !Icon && card.lines.length === 0 && !tag;
+    const titleX = centred ? 0 : Icon ? x0 + CARD.icon + CARD.iconGap : x0;
+    return (
+      <>
+        {Icon && (
+          <Icon
+            className="kmap-card-icon"
+            x={x0}
+            y={top + (CARD.title - CARD.icon) / 2}
+            width={CARD.icon}
+            height={CARD.icon}
+            strokeWidth={2}
+            aria-hidden="true"
+          />
+        )}
+        <text className="kmap-card-title" x={titleX} y={top + CARD.title / 2} textAnchor={centred ? 'middle' : 'start'} dominantBaseline="central">
+          {name}
+        </text>
+        {card.lines.map((line, i) => (
+          <text key={i} className="kmap-card-desc" x={x0} y={top + CARD.title + CARD.gap + CARD.line * (i + 0.5)} dominantBaseline="central">
+            {line}
+          </text>
+        ))}
+        {tag && (
+          <text className="kmap-card-tag" x={x0} y={h / 2 - CARD.padY - CARD.tag / 2} dominantBaseline="central" aria-hidden="true">
+            {tag}
+          </text>
+        )}
+      </>
+    );
+  };
+
   const renderNode = (n: MapNode) => {
     const label = nodeLabel(n);
+    const card = cardOf?.(n);
     const w = widthOf(n);
-    const h = pillHeight(n);
+    const h = heightOf(n);
+    const shapeD = (inset = 0) => (card ? cardPath(w, h, inset) : platePath(w + PLATE_EXTRA, h, inset));
     const isCenter = n.level === 0;
     const isVirtual = n.id < 0; // category/subcategory node, not a keyword
     const mode = isVirtual ? null : modeOf(n.id);
@@ -294,6 +358,7 @@ export const KeywordMapScene: React.FC<Props> = ({
       isCenter ? 'kmap-node--center' : 'kmap-node--explorable',
       isVirtual && 'kmap-node--virtual',
       isVirtual && !isCenter && 'kmap-node--group',
+      card && 'kmap-node--card',
       mode && `is-${mode}`,
       linkClass(n.id),
       discoveries?.has(n.id) && 'is-discovery',
@@ -340,8 +405,8 @@ export const KeywordMapScene: React.FC<Props> = ({
         <motion.path
           className="kmap-node-backdrop"
           initial={false}
-          animate={{ d: platePath(w + PLATE_EXTRA, h) }}
-          transition={move(delay)}
+          animate={{ d: shapeD() }}
+          transition={morph(delay)}
           aria-hidden="true"
         />
         <g
@@ -391,34 +456,38 @@ export const KeywordMapScene: React.FC<Props> = ({
           onBlur={() => hover(null)}
         >
           {!isCenter && <title>{`${isVirtual ? 'Open' : 'Explore'} ${name}${rareGames ? ` — rare pairing: ${rareGames} games share both` : ''}`}</title>}
-          {/* Shape morphs when a neighbour becomes the centre: hex plate with inner rail and a bottom stud. */}
+          {/* Shape morphs when a neighbour becomes the centre: hex plate (or card tablet) with inner rail and a bottom stud. */}
           <motion.path
             className="kmap-node-shape"
             initial={false}
-            animate={{ d: platePath(w + PLATE_EXTRA, h) }}
-            transition={move(delay)}
+            animate={{ d: shapeD() }}
+            transition={morph(delay)}
           />
           <motion.path
             className="kmap-node-rail"
             initial={false}
-            animate={{ d: platePath(w + PLATE_EXTRA, h, 3) }}
-            transition={move(delay)}
+            animate={{ d: shapeD(3) }}
+            transition={morph(delay)}
           />
           <path className="kmap-node-stud" transform={`translate(0 ${h / 2})`} d="M0 -4 L3.2 0 L0 4 L-3.2 0 Z" />
-          <text
-            x={badgeSlot ? -badgeRoom(n) / 2 : 0}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize={isCenter ? 13 : 12}
-            fontWeight={isCenter ? 600 : 400}
-          >
-            {label}
-          </text>
+          {card ? (
+            renderCardContent(card, name, w, h, groupTag)
+          ) : (
+            <text
+              x={badgeSlot ? -badgeRoom(n) / 2 : 0}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize={isCenter ? 13 : 12}
+              fontWeight={isCenter ? 600 : 400}
+            >
+              {label}
+            </text>
+          )}
           {/* Included keywords carry no badge (their bright styling says it). Desktop: the badge only marks an
               avoided keyword, and hover swaps it for the end buttons. Mobile has no hover: the + stays. */}
           {badgeSlot && (variant === 'mobile' || !hoveredHere) && renderBadge(n, w, mode)}
           {!isVirtual && (isCenter || (variant === 'desktop' && hoveredHere)) && renderEndActions(n, w, mode)}
-          {groupTag && (
+          {groupTag && !card && (
             <text className="kmap-count-tag kmap-group-tag" y={h / 2 + 10} textAnchor="middle" dominantBaseline="central" aria-hidden="true">
               {groupTag}
             </text>

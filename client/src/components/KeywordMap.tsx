@@ -520,11 +520,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   // ── taxonomy cards ────────────────────────────────────────────────
   // Desktop: categories/subcategories are cards (icon, name, description, size) so they
   // read as places to go, not keywords to add. Sized once per node; text never changes.
-  const cards = useMemo(() => new Map<number, TaxonCard | null>(), [variant]);
+  // Keyed by id and level: the subcategory you open glides into the centre as the same id,
+  // and the centre card has no size caption.
+  const cards = useMemo(() => new Map<string, TaxonCard | null>(), [variant]);
   const cardOf = useCallback(
     (n: LabelNode): TaxonCard | undefined => {
       if (variant !== 'desktop' || n.id === undefined || n.id >= 0) return undefined;
-      const hit = cards.get(n.id);
+      const key = `${n.id}:${n.level}`;
+      const hit = cards.get(key);
       if (hit !== undefined) return hit ?? undefined;
       const mainCategory = categoryFromNodeId(n.id);
       const sub = mainCategory ? null : subcategoryFromNodeId(n.id);
@@ -536,8 +539,8 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
       const labelW = (measuredNodeWidth(n) - (n.level === 0 ? PILL_PAD.center : PILL_PAD.other)) * 1.12;
       const width = Math.max(CARD.minWidth, Math.ceil(labelW + CARD.padX * 2 + (icon ? CARD.icon + CARD.iconGap : 0)));
       const lines = description ? wrapText(description, width - CARD.padX * 2, CARD.descPx, CARD.maxLines, CARD_DESC_FONT) : [];
-      const card = { width, height: cardHeight(lines.length, Boolean(mainCategory || sub)), lines, icon };
-      cards.set(n.id, card);
+      const card = { width, height: cardHeight(lines.length, Boolean(mainCategory || sub) && n.level !== 0), lines, icon };
+      cards.set(key, card);
       return card;
     },
     [variant, cards],
