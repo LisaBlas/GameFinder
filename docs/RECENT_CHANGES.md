@@ -33,3 +33,12 @@ than 7 days.
   header, sockets at every width. Old mobile shelf/deck/sheet/drawer removed
   with ~1.8k lines of dead CSS. Desktop taxonomy cards now render; path morphs
   tween (no NaN); narrow-pane header no longer overflows.
+- Fixed: the floating Search button (and selection pills) were unreachable
+  (desktop: dimmed + `inert`; mobile: effectively invisible) while the
+  Wayfinder ("Need a spark?") was open, since a draw applies its filters
+  immediately and the old code made the whole map layer — overlays included —
+  recede and go inert as one unit. Split the recede/inert treatment onto two
+  new wrappers, `.kmap-viewport-content` (map scene) and `.kmap-map-chrome`
+  (toolbar/search lens/dock), and left the selection overlay out of both;
+  raised its z-index to 13 to clear `.kmap-spark-stage` (12). `KeywordMap.tsx`,
+  `App.css`.

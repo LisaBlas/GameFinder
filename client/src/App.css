@@ -3701,7 +3701,10 @@ button.kmap-crumb:hover,
 }
 
 /* The map remains mounted beneath the Wayfinder, preserving the explorer's
-   location while the divination layer opens and closes. */
+   location while the divination layer opens and closes. Its content and chrome
+   recede into the background, but the selection pills and Search float above
+   both (see .kmap-user-selection-filters/.kmap-user-selection-actions) — a
+   Wayfinder draw applies its filters immediately, so Search must stay live. */
 .kmap-map-layer {
   position: relative;
   display: flex;
@@ -3709,10 +3712,24 @@ button.kmap-crumb:hover,
   min-width: 0;
   min-height: 0;
   flex-direction: column;
+}
+
+/* Wraps the map scene/empty-states inside .kmap-viewport (dimmed/inert while
+   the Wayfinder is open). Fills the viewport exactly like the old inner layer. */
+.kmap-viewport-content {
+  position: absolute;
+  inset: 0;
   transform-origin: 50% 50%;
 }
 
-.kmap-window.is-spark-open .kmap-map-layer {
+/* Wraps the toolbar, search lens and dock (dimmed/inert while the Wayfinder
+   is open), sitting beside .kmap-viewport inside .kmap-map-layer. */
+.kmap-map-chrome {
+  transform-origin: 50% 50%;
+}
+
+.kmap-window.is-spark-open .kmap-viewport-content,
+.kmap-window.is-spark-open .kmap-map-chrome {
   pointer-events: none;
 }
 
@@ -3730,12 +3747,13 @@ button.kmap-crumb:hover,
 }
 
 /* Selection and Search float on the map: pills bottom-left, Search bottom-right.
-   The wrappers pass pointer events through so the map stays draggable around them. */
+   The wrappers pass pointer events through so the map stays draggable around them.
+   z-index clears .kmap-spark-stage (12) so both stay usable over the Wayfinder too. */
 .kmap-user-selection-filters,
 .kmap-user-selection-actions {
   position: absolute;
   bottom: 0.9rem;
-  z-index: 3;
+  z-index: 13;
   pointer-events: none;
 }
 

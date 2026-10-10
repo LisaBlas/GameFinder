@@ -182,14 +182,18 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   });
   const { location, navigate, depthRef } = useMapHistory<MapLocation>(variant, start.location);
   const sectionRef = useRef<HTMLElement>(null);
-  const mapLayerRef = useRef<HTMLDivElement>(null);
+  // The receded map is visual context only while the Wayfinder is open: its
+  // graph/content and its chrome (toolbar, search lens, dock) recede and go
+  // inert. The floating selection pills and Search stay live and on top —
+  // Wayfinder draws apply their filters immediately, so Search must still work.
+  const mapContentRef = useRef<HTMLDivElement>(null);
+  const mapChromeRef = useRef<HTMLDivElement>(null);
   const ambientPaused = useAmbientPause(sectionRef);
   const { category, subcategory, trail } = location;
 
-  // The receded map is visual context only while the Wayfinder is open. Keep
-  // its controls out of keyboard and assistive-tech navigation until it closes.
   useEffect(() => {
-    if (mapLayerRef.current) mapLayerRef.current.inert = sparkOpen;
+    if (mapContentRef.current) mapContentRef.current.inert = sparkOpen;
+    if (mapChromeRef.current) mapChromeRef.current.inert = sparkOpen;
   }, [sparkOpen]);
   /** Keyword names already shown for the current centre, so refresh only brings new ones. */
   const [shown, setShown] = useState<{
@@ -778,9 +782,21 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         data-texture={category ? CATEGORY_TEXTURE[category] : undefined}
         aria-busy={holding || undefined}
       >
-        {holding && <span className="kmap-loading">Mapping {titleCase(center?.name ?? '')}…</span>}
-        {content}
-        {isCategoryFallback && graph.length > 1 && <span className="kmap-relation-label">Related by category</span>}
+        {/* Only the graph recedes/goes inert behind the Wayfinder — the
+            selection pills and Search below stay live, outside this layer. */}
+        <motion.div
+          ref={mapContentRef}
+          className="kmap-viewport-content"
+          animate={sparkOpen
+            ? { opacity: 0.42, scale: reduceMotion ? 1 : 1.045, filter: reduceMotion ? 'none' : 'blur(1px)' }
+            : { opacity: 1, scale: 1, filter: 'none' }}
+          transition={{ duration: reduceMotion ? 0.01 : 0.48, ease: [0.22, 1, 0.36, 1] }}
+          aria-hidden={sparkOpen || undefined}
+        >
+          {holding && <span className="kmap-loading">Mapping {titleCase(center?.name ?? '')}…</span>}
+          {content}
+          {isCategoryFallback && graph.length > 1 && <span className="kmap-relation-label">Related by category</span>}
+        </motion.div>
         {renderSelectionOverlays()}
       </div>
     );
@@ -960,21 +976,25 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
       <div className="kmap-body">
         {/* The map stays mounted under the Wayfinder, so closing it restores the exact location. */}
         <div className={`kmap-window kmap-window--${variant}${sparkOpen ? ' is-spark-open' : ''}`}>
-          <motion.div
-            ref={mapLayerRef}
-            className="kmap-map-layer"
-            animate={sparkOpen
-              ? { opacity: 0.42, scale: reduceMotion ? 1 : 1.045, filter: reduceMotion ? 'none' : 'blur(1px)' }
-              : { opacity: 1, scale: 1, filter: 'none' }}
-            transition={{ duration: reduceMotion ? 0.01 : 0.48, ease: [0.22, 1, 0.36, 1] }}
-            aria-hidden={sparkOpen || undefined}
-          >
+          <div className="kmap-map-layer">
+            {/* renderMap() keeps the selection pills + Search as direct, always-live
+                children of .kmap-viewport (its own content recedes separately). */}
             {renderMap()}
-            {renderMapControls()}
-            {/* Collapsed to a lens; expands on hover/focus (incl. the "/" shortcut). */}
-            {search && <div className="kmap-search kmap-search--float">{search}</div>}
-            {renderDock()}
-          </motion.div>
+            <motion.div
+              ref={mapChromeRef}
+              className="kmap-map-chrome"
+              animate={sparkOpen
+                ? { opacity: 0.42, scale: reduceMotion ? 1 : 1.045, filter: reduceMotion ? 'none' : 'blur(1px)' }
+                : { opacity: 1, scale: 1, filter: 'none' }}
+              transition={{ duration: reduceMotion ? 0.01 : 0.48, ease: [0.22, 1, 0.36, 1] }}
+              aria-hidden={sparkOpen || undefined}
+            >
+              {renderMapControls()}
+              {/* Collapsed to a lens; expands on hover/focus (incl. the "/" shortcut). */}
+              {search && <div className="kmap-search kmap-search--float">{search}</div>}
+              {renderDock()}
+            </motion.div>
+          </div>
           <AnimatePresence initial={false}>
             {sparkOpen && spark && (
               <motion.div
