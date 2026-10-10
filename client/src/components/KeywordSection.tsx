@@ -490,7 +490,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults })
           track('wayfinder_follow_route', { card: relic?.card });
           closeSpark();
         }}
-        onDrawAgain={() => bearings.find(bearing => bearing.id === relic?.card)?.onDraw()}
         onRestore={restoreRelic}
       />
     );

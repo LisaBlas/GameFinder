@@ -7,12 +7,8 @@
 
 import React from 'react';
 import {
-  Compass,
   Footprints,
-  MapPin,
   Navigation,
-  RefreshCw,
-  Route,
   Sparkles,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -41,7 +37,6 @@ interface Props {
   destination: WayfinderDraw | null;
   history: WayfinderDraw[];
   onExplore: () => void;
-  onDrawAgain: () => void;
   onRestore: (draw: WayfinderDraw) => void;
 }
 
@@ -55,7 +50,6 @@ export const Wayfinder: React.FC<Props> = ({
   destination,
   history,
   onExplore,
-  onDrawAgain,
   onRestore,
 }) => {
   const source = destination ? bearings.find(bearing => bearing.id === destination.card) : undefined;
@@ -134,12 +128,11 @@ export const Wayfinder: React.FC<Props> = ({
         <span className="wayfinder-crosshair" aria-hidden="true" />
 
         <section className="wayfinder-core" aria-live="polite" aria-label="Wayfinder destination">
-          <span className="wayfinder-needle" aria-hidden="true" />
+          <span className="wayfinder-rose" aria-hidden="true" />
           <span className="wayfinder-core-gem" aria-hidden="true"><span className="wayfinder-core-gem-stone" /></span>
           <div className="wayfinder-core-face" key={`${destination?.id ?? 'idle'}-${state}`}>
             {!destination ? (
               <>
-                <span className="wayfinder-core-icon"><Compass aria-hidden="true" /></span>
                 <span className="wayfinder-core-overline">Awaiting a bearing</span>
                 <h2>Trust the map</h2>
                 <p>Select one of the six runes to chart an unexpected route.</p>
@@ -158,22 +151,16 @@ export const Wayfinder: React.FC<Props> = ({
                       ? 'No games on this route'
                       : destination.count && formatCount(destination.count.count, destination.count.capped)}
                 </span>
-                <div className="wayfinder-actions">
-                  {state !== 'uncharted' && (
+                {state !== 'uncharted' && (
+                  <div className="wayfinder-actions">
                     <button type="button" className="wayfinder-action wayfinder-action--primary" onClick={onExplore}>
-                      <MapPin aria-hidden="true" /> Follow route
+                      Open map
                     </button>
-                  )}
-                  {source && (
-                    <button type="button" className="wayfinder-action" onClick={onDrawAgain} title={source.verb}>
-                      <RefreshCw aria-hidden="true" /> Again
-                    </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </>
             )}
           </div>
-          {state === 'found' && <span className="wayfinder-route-flare" aria-hidden="true"><Route /></span>}
         </section>
       </div>
 

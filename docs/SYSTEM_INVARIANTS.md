@@ -115,19 +115,19 @@ tween.
 `kmap-map-layer` itself is a plain, unanimated container. Two children inside
 it carry the "receded" scale/blur/opacity + `inert` treatment while the
 Wayfinder is open: `.kmap-viewport-content` (the map scene/empty-states,
-inside `.kmap-viewport`) and `.kmap-map-chrome` (toolbar, search lens, dock).
-The floating selection pills and Search (`renderSelectionOverlays()`) are
-deliberately left out of both — a Wayfinder draw applies its filters
+inside `.kmap-viewport`) and `.kmap-map-chrome` (toolbar — including the
+selection pills — search lens, dock). The bottom-right Refresh/Search cluster
+(`renderSelectionOverlays()`) is deliberately left out of both — a Wayfinder draw applies its filters
 immediately (`clearAllFilters()` + `addFilter()`), so Search must stay
-reachable without closing the panel first. Their z-index (13) is set above
-`.kmap-spark-stage` (12) so they render on top of the Wayfinder too; this only
+reachable without closing the panel first. Its z-index (13) is set above
+`.kmap-spark-stage` (12) so it renders on top of the Wayfinder too; this only
 works because none of `.kmap-window`/`.kmap-map-layer`/`.kmap-viewport` create
 their own stacking context — if one of them gains `opacity`/`transform`/
 `filter`/`isolation` later, re-check this ordering.
 Clearance for the toolbar is therefore a `margin-top` on `.kmap-viewport`
 (kmap-relic.css), not padding on `.kmap-window`; padding on the window sits
 above the toolbar and lets nodes slide under it.
-The two selection-overlay divs must stay direct children of the exact DOM
-node `viewportRef` points to (`.kmap-viewport`) — `measureOverlays()` in
-`KeywordMap.tsx` queries them with a `:scope >` selector to compute layout
-obstacles; moving them deeper breaks that silently.
+The selection-overlay div (`.kmap-user-selection-actions`) must stay a direct
+child of the exact DOM node `viewportRef` points to (`.kmap-viewport`) —
+`measureOverlays()` in `KeywordMap.tsx` queries it with a `:scope >` selector to compute layout
+obstacles; moving it deeper breaks that silently.

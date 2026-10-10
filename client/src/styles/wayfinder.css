@@ -159,6 +159,23 @@
   animation: wf-bearing-arrive 0.62s calc(0.2s + var(--bearing-index) * 0.055s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Once the destination is revealed, the clicked bearing's stone takes its rarity
+   colour (colour blend keeps the facets). The radial mask covers the stone only,
+   so the gold housing and prongs stay gold. */
+.wayfinder-gem::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: rgb(var(--wf-item-route, var(--wf-gold)));
+  mix-blend-mode: color;
+  transition: opacity 0.6s ease-out;
+  -webkit-mask: radial-gradient(circle at 51% 54%, #000 22%, transparent 27%);
+  mask: radial-gradient(circle at 51% 54%, #000 22%, transparent 27%);
+  pointer-events: none;
+}
+.wayfinder[data-gems-lit] .wayfinder-gem[data-lit][data-rarity]::before { opacity: 1; }
+
 /* The clicked bearing's gem catches the light once the keyword is set and the
    inner ring has settled: a sweep clipped to that gem's art. */
 .wayfinder-gem::after {
@@ -275,8 +292,10 @@
   width: 100%;
   height: 100%;
   place-items: center;
-  color: inherit;
-  filter: drop-shadow(0 1px 2px #000) drop-shadow(0 0 5px rgba(0, 0, 0, 0.9));
+  /* At rest the sigil reads as cut into the smoky stone: a darker grey with a
+     faint lit lower edge. Hover/active lift it to gold. */
+  color: #34352f;
+  filter: drop-shadow(0 1px 0 rgba(220, 216, 200, 0.22)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.6));
   transition: color 0.2s, filter 0.25s, transform 0.25s;
 }
 .wayfinder-bearing-sigil svg { width: 38%; height: 38%; stroke-width: 1.8; }
@@ -322,82 +341,79 @@
 .wayfinder-bearing[data-active] .wayfinder-bearing-copy strong { color: #ead09b; }
 .wayfinder-bearing:focus-visible { outline: 2px solid rgb(var(--wf-gold)); outline-offset: 2px; border-radius: 50%; }
 .wayfinder-bearing[data-pending] .wayfinder-bearing-sigil { animation: wf-bearing-pulse 0.9s ease-in-out infinite; }
-.wayfinder-bearing[data-rarity] .wayfinder-bearing-sigil {
-  color: rgb(var(--wf-item-route));
-}
 
+/* Centre lens, layered like the chassis (scripts/build-wayfinder-core.py):
+   smoked-glass face (background) < compass rose < glass sheen (::before)
+   < bronze bezel cut from the inner ring's lip (::after) < text < centre gem.
+   On desktop the core is 2 x the lip's outer radius (0.2334) of the chassis,
+   so its bezel lands exactly on the ring's own lip. */
 .wayfinder-core {
   position: absolute;
   z-index: 3;
   left: 50%;
   top: 50%;
   display: grid;
-  width: clamp(15rem, 31%, 17.5rem);
+  width: max(14rem, calc(min(66%, 37rem) * 0.4668));
   aspect-ratio: 1;
   place-items: center;
-  border: 1px solid rgba(var(--wf-gold), 0.55);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background:
-    radial-gradient(circle at 50% 42%, rgba(27, 39, 31, 0.98), rgba(6, 11, 8, 0.99) 66%),
-    var(--wf-ink);
-  box-shadow:
-    0 0 0 5px rgba(3, 8, 6, 0.9),
-    0 0 0 6px rgba(var(--wf-brass), 0.32),
-    0 18px 48px rgba(0, 0, 0, 0.66),
-    inset 0 0 30px rgba(0, 0, 0, 0.72);
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-face.webp") center / contain no-repeat;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.55);
+  transition: box-shadow 0.6s ease-out;
   animation: wf-core-open 0.72s 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.wayfinder-core::before {
-  content: "";
-  position: absolute;
-  inset: 0.75rem;
-  border: 1px dashed rgba(var(--wf-brass), 0.31);
-  border-radius: 50%;
-}
-
+.wayfinder-core::before,
 .wayfinder-core::after {
   content: "";
   position: absolute;
-  z-index: -1;
-  left: calc(50% - 1px);
-  bottom: 50%;
-  width: 2px;
-  height: 145%;
-  background: linear-gradient(0deg, rgba(var(--wf-route, var(--wf-gold)), 0.8), rgba(var(--wf-route, var(--wf-gold)), 0.1) 72%, transparent);
-  box-shadow: 0 0 9px rgba(var(--wf-route, var(--wf-gold)), 0.55);
-  opacity: 0;
-  transform: rotate(var(--wf-lock-angle, 0deg));
-  transform-origin: 50% 100%;
+  z-index: 1;
+  border-radius: 50%;
   pointer-events: none;
 }
 
-.wayfinder[data-state="found"] .wayfinder-core::after {
-  animation: wf-path-lock 1.05s 0.12s ease-out both;
+/* Curved highlight across the upper glass, and a faint warm bounce below. */
+.wayfinder-core::before {
+  inset: 5.5%;
+  background:
+    radial-gradient(ellipse 72% 42% at 36% 16%, rgba(255, 246, 222, 0.11), transparent 70%),
+    radial-gradient(ellipse 58% 18% at 62% 93%, rgba(var(--wf-gold), 0.07), transparent 70%);
+  mix-blend-mode: screen;
 }
 
-.wayfinder-needle {
+.wayfinder-core::after {
+  inset: 0;
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-bezel.webp") center / contain no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
+}
+
+/* Rarity lives in the lens as light along the bezel's inner edge, lit with the gems. */
+.wayfinder[data-gems-lit] .wayfinder-core {
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.55),
+    inset 0 0 1.6rem 0.25rem rgba(var(--wf-route, var(--wf-gold)), 0.4);
+}
+
+/* Engraved rose under the glass: idles at north, spins while charting, then
+   locks its north point on the chosen bearing. */
+.wayfinder-rose {
   position: absolute;
   z-index: 0;
-  width: 42%;
-  height: 42%;
-  clip-path: polygon(48% 52%, 50% 0, 52% 52%, 100% 50%, 52% 55%, 50% 100%, 48% 55%, 0 50%);
-  background: linear-gradient(90deg, #76501f, #efd08c 50%, #6f4a1d);
-  opacity: 0.52;
-  transform: rotate(-28deg);
+  inset: 8%;
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-rose.webp") center / contain no-repeat;
+  opacity: 0.32;
+  transition: opacity 0.4s ease-out;
 }
 
-.wayfinder[data-state="charting"] .wayfinder-needle { animation: wf-seek 1.15s cubic-bezier(0.5, 0, 0.35, 1) infinite; }
-.wayfinder[data-state="found"] .wayfinder-needle { animation: wf-lock 0.75s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.wayfinder[data-state="found"] .wayfinder-core {
-  border-color: rgba(var(--wf-route, var(--wf-gold)), 0.78);
-  box-shadow:
-    0 0 0 5px rgba(3, 8, 6, 0.9),
-    0 0 0 6px rgba(var(--wf-route, var(--wf-brass)), 0.42),
-    0 0 42px rgba(var(--wf-route, var(--wf-gold)), 0.16),
-    0 18px 48px rgba(0, 0, 0, 0.66),
-    inset 0 0 30px rgba(0, 0, 0, 0.72);
+.wayfinder[data-state="charting"] .wayfinder-rose {
+  opacity: 0.45;
+  animation: wf-seek 1.15s cubic-bezier(0.5, 0, 0.35, 1) infinite;
+}
+.wayfinder[data-state="found"] .wayfinder-rose {
+  opacity: 0.26;
+  transform: rotate(var(--wf-lock-angle, 0deg));
+  animation: wf-lock 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .wayfinder-core-face {
@@ -408,10 +424,9 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  text-shadow: 0 1px 2px #000, 0 0 10px rgba(0, 0, 0, 0.85);
   animation: wf-core-arrive 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.wayfinder-core-icon { color: #b88b48; }
-.wayfinder-core-icon svg { width: 2.2rem; height: 2.2rem; stroke-width: 1.15; }
 .wayfinder-core-overline {
   margin-top: 0.35rem;
   font: 700 0.59rem/1 'Cinzel', Georgia, serif;
@@ -429,39 +444,47 @@
 .wayfinder-core p { margin: 0.45rem 0 0; max-width: 12rem; color: #8e897a; font-size: 0.79rem; line-height: 1.25; }
 .wayfinder-result-count { margin-top: 0.45rem; color: #bdb29b; font-size: 0.83rem; }
 
-.wayfinder-actions { display: flex; gap: 0.4rem; margin-top: 0.7rem; }
+/* Actions are bronze hex plates, the same language as the results sort control:
+   the element is the rim, ::before the dark face. */
+.wayfinder-actions { display: flex; gap: 0.25rem; margin-top: 0.75rem; }
 .wayfinder-action {
+  --cut: 8px;
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
   height: 1.85rem;
-  padding: 0 0.65rem;
-  border: 1px solid rgba(var(--wf-brass), 0.36);
-  border-radius: 999px;
-  background: rgba(4, 9, 7, 0.8);
-  color: #a99d85;
-  font-size: 0.75rem;
+  padding: 0 0.85rem;
+  border: 0;
+  background: linear-gradient(160deg, #e2bd78 0%, #8c6a36 38%, #4a3418 62%, #a8803f 100%);
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%);
+  color: #b9a476;
+  font: 700 0.58rem/1 'Cinzel', Georgia, serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 #000;
+  white-space: nowrap;
+  opacity: 0.72;
   cursor: pointer;
+  transition: opacity 0.2s ease, color 0.2s ease;
 }
-.wayfinder-action svg { width: 0.78rem; height: 0.78rem; }
-.wayfinder-action:hover { border-color: rgb(var(--wf-gold)); color: #ffe1a1; }
-.wayfinder-action--primary { border-color: rgba(var(--wf-gold), 0.7); color: #f0ca81; }
-
-.wayfinder-route-flare {
+.wayfinder-action::before {
+  content: "";
   position: absolute;
-  right: -0.35rem;
-  top: 12%;
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  border: 1px solid rgba(var(--wf-gold), 0.62);
-  border-radius: 50%;
-  background: #09100c;
-  color: #f2cc80;
-  animation: wf-flare 0.8s ease-out both;
+  inset: 1.5px;
+  z-index: -1;
+  background: linear-gradient(180deg, #141a18, #0a0e0d);
+  clip-path: inherit;
+  box-shadow: inset 0 1px 0 rgba(226, 189, 120, 0.12);
 }
-.wayfinder-route-flare svg { width: 1rem; height: 1rem; }
+.wayfinder-action--primary { color: #f0ca81; opacity: 0.95; }
+.wayfinder-action--primary::before {
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(var(--wf-gold), 0.16), transparent 62%),
+    linear-gradient(180deg, #161c19, #0a0e0d);
+}
+.wayfinder-action:is(:hover, :focus-visible) { opacity: 1; color: #ffe1a1; }
+.wayfinder-action:focus-visible { outline: none; filter: drop-shadow(0 0 4px rgba(var(--wf-gold), 0.8)); }
 
 .wayfinder-trail {
   position: relative;
@@ -499,16 +522,14 @@
 @keyframes wf-heading-open { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes wf-trail-open { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes wf-bearing-pulse { 50% { filter: brightness(1.65); transform: scale(1.13); } }
-@keyframes wf-seek { from { transform: rotate(-28deg); } to { transform: rotate(692deg); } }
+@keyframes wf-seek { from { transform: rotate(0deg); } to { transform: rotate(720deg); } }
 @keyframes wf-lock {
   0% { transform: rotate(calc(var(--wf-lock-angle, 0deg) + 540deg)); }
   72% { transform: rotate(calc(var(--wf-lock-angle, 0deg) - 9deg)); }
   100% { transform: rotate(var(--wf-lock-angle, 0deg)); }
 }
 @keyframes wf-core-arrive { from { opacity: 0; transform: scale(0.9); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
-@keyframes wf-flare { from { opacity: 0; transform: scale(0.45); filter: brightness(2); } to { opacity: 1; transform: none; filter: none; } }
 @keyframes wf-route-trace { from { opacity: 0; filter: brightness(3); transform: scale(0.72); } to { opacity: 0.7; filter: none; transform: none; } }
-@keyframes wf-path-lock { 0% { opacity: 0; clip-path: inset(100% 0 0); } 35% { opacity: 1; } 100% { opacity: 0.42; clip-path: inset(0); } }
 
 /* GENERATED by scripts/wayfinder-ticks.py - edit the script, not these frames. */
 @keyframes wf-tick {
@@ -912,18 +933,15 @@
     min-width: 11rem;
   }
 
-  .wayfinder-core::before { inset: 0.45rem; }
   .wayfinder-core-face { width: 84%; }
-  .wayfinder-core-icon svg { width: 1.5rem; height: 1.5rem; }
   .wayfinder-core-overline { margin-top: 0.2rem; font-size: 0.52rem; letter-spacing: 0.14em; }
   .wayfinder-core h2 { margin-top: 0.3rem; font-size: 0.98rem; }
   .wayfinder-core p { display: none; }
   .wayfinder-core .wayfinder-parts { display: block; margin-top: 0.25rem; font-size: 0.68rem; }
   .wayfinder-result-count { margin-top: 0.25rem; font-size: 0.74rem; }
-  .wayfinder-actions { margin-top: 0.45rem; gap: 0.3rem; }
-  .wayfinder-action { height: 1.75rem; padding: 0 0.55rem; font-size: 0.7rem; white-space: nowrap; }
+  .wayfinder-actions { margin-top: 0.45rem; gap: 0.2rem; }
+  .wayfinder-action { --cut: 6px; height: 1.6rem; padding: 0 0.6rem; font-size: 0.5rem; letter-spacing: 0.07em; }
   .wayfinder-core-gem { width: 2.3rem; }
-  .wayfinder-route-flare { width: 1.6rem; height: 1.6rem; right: -0.2rem; }
 
   .wayfinder-bearing-sigil svg { width: 44%; height: 44%; }
   .wayfinder-bearing-copy { width: 5.2rem; }
@@ -961,6 +979,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .wayfinder *, .wayfinder *::before, .wayfinder *::after { animation: none !important; }
+  .wayfinder-gem::before { transition: none; }
   .wayfinder[data-gems-lit] .wayfinder-core-gem-stone {
     filter: brightness(1.12) drop-shadow(0 0 6px rgba(var(--wf-route, var(--wf-gold)), 0.75));
   }
