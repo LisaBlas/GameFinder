@@ -1,4 +1,4 @@
-/* ── Relic skin for the desktop keyword panel (KeywordMap, left pane) ──
+/* ── Relic skin for the keyword panel (KeywordMap: desktop left pane, mobile map view) ──
    Built in layers, outermost first:
      1. shell     — stone background, bronze 9-slice frame, medallion
      2. header    — bronze plates, serif crumbs, ornate spark button
@@ -10,9 +10,10 @@
      8. doors     — category step in the same language (not in the reference)
    Structural assets live in assets/ui/relic/*.svg; generated surface art lives
    in assets/ui/relic/raster/.
-   Scoped to the desktop panel; the mobile sheet keeps the base styles. */
+   One skin for both breakpoints; the mobile block at the end only rescales
+   the frame and controls for a phone. */
 
-.keyword-build-panel .kmap:not(.kmap--mobile) {
+.keyword-build-panel .kmap {
   --relic-bronze: #a8803f;
   --relic-bronze-hi: #e2bd78;
   --relic-bronze-lo: #3a2c18;
@@ -47,8 +48,8 @@
    The 9-slice corners hold the whole ornament and the edges are a uniform rail,
    so stretching to any panel height stays clean. Regenerate with
    scripts/build-relic-frames.py (slice/width values come from its output). */
-.keyword-build-panel .kmap:not(.kmap--mobile)::after,
-.keyword-build-panel .kmap:not(.kmap--mobile)::before {
+.keyword-build-panel .kmap::after,
+.keyword-build-panel .kmap::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -61,13 +62,13 @@
   pointer-events: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile)::after {
+.keyword-build-panel .kmap::after {
   border: 88px solid transparent;
   border-image: url("../assets/ui/relic/raster/panel-frame-9slice.webp") 176 / 88px / var(--frame-bleed) stretch;
 }
 
 /* Mid-side diamonds at natural size, above the rail (::after). */
-.keyword-build-panel .kmap:not(.kmap--mobile)::before {
+.keyword-build-panel .kmap::before {
   z-index: 31;
   background:
     url("../assets/ui/relic/raster/panel-frame-diamond-top.webp") 50% calc(-1 * var(--frame-bleed)) / 46px 88px no-repeat,
@@ -78,7 +79,7 @@
 
 /* Generated compass medallion straddling the top-left corner. Hosted on the
    header, which is unpositioned, so it still places against .kmap. */
-.keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header::before {
+.keyword-build-panel .kmap > .kmap-header::before {
   content: "";
   position: absolute;
   top: -13px;
@@ -93,11 +94,11 @@
 }
 
 /* Content clears the frame rail and corner ornaments (~27px in) and the medallion. */
-.keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header {
+.keyword-build-panel .kmap > .kmap-header {
   padding: 2rem 3rem 1.1rem 5.4rem;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-body {
+.keyword-build-panel .kmap > .kmap-body {
   /* Flush to the frame: the map edge tucks under the rail's inner gold line
      (~17.7px into the frame art, minus the bleed). The frame is drawn at 0.74
      opacity, so a map edge further out would show through the rail. */
@@ -108,12 +109,12 @@
    A chamfered metal plate: the element paints the bronze edge, ::before
    paints the dark face inset by --rim. Shape comes from --plate-shape (default: octagon).
    Elements using it must not rely on their own ::before. */
-.keyword-build-panel .kmap:not(.kmap--mobile) {
+.keyword-build-panel .kmap {
   --edge-bronze: linear-gradient(160deg, #e2bd78 0%, #8c6a36 38%, #4a3418 62%, #a8803f 100%);
   --face-dark: linear-gradient(180deg, #141a18, #0a0e0d);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode) {
+.keyword-build-panel .kmap :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode) {
   --cut: 9px;
   --rim: 1.5px;
   /* Shapes live on the plate itself so var(--cut) resolves per element. */
@@ -128,7 +129,7 @@
   /* Note: any filter here would be clipped too; shadows go on the parent. */
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::before {
+.keyword-build-panel .kmap :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::before {
   content: "";
   position: absolute;
   inset: var(--rim);
@@ -139,7 +140,7 @@
 }
 
 /* ── 2. Header ───────────────────────────────────────────────────── */
-.keyword-build-panel .kmap:not(.kmap--mobile) > .kmap-header {
+.keyword-build-panel .kmap > .kmap-header {
   gap: 0.6rem;
   min-height: 3.8rem;
   /* The map window's top rail is the header divider. */
@@ -150,7 +151,7 @@
    a fill that is shadowed at the top of the cut and lit at the bottom, a dark
    upper edge and a faint lit lower lip. drop-shadow, not text-shadow: with a
    background-clipped fill, text-shadow paints over the glyphs. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-brand-title {
+.keyword-build-panel .kmap .kmap-brand-title {
   font-family: 'Cinzel', Georgia, serif;
   font-size: 1.42rem;
   font-weight: 700;
@@ -165,85 +166,85 @@
     drop-shadow(0 1px 0 rgba(240, 200, 130, 0.2));
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-header-actions {
+.keyword-build-panel .kmap .kmap-header-actions {
   gap: 0.55rem;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-icon-btn {
+.keyword-build-panel .kmap .kmap-icon-btn {
   --cut: 8px;
   width: 2.6rem;
   height: 2.6rem;
   color: var(--relic-gold-text);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-root-btn {
+.keyword-build-panel .kmap .kmap-root-btn {
   width: auto;
   padding-inline: 0.85rem;
   font-family: 'Alegreya', Georgia, serif;
   font-size: 0.9rem;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-icon-btn svg {
+.keyword-build-panel .kmap .kmap-icon-btn svg {
   width: 1.15rem;
   height: 1.15rem;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-icon-btn:hover:not(:disabled) {
+.keyword-build-panel .kmap .kmap-icon-btn:hover:not(:disabled) {
   background: linear-gradient(160deg, #ffe0a0 0%, #b08848 40%, #5c4220 65%, #d0a458 100%);
   color: #ffe2a3;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-icon-btn:hover:not(:disabled)::before {
+.keyword-build-panel .kmap .kmap-icon-btn:hover:not(:disabled)::before {
   background: linear-gradient(180deg, #1c2421, #0d1211);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-crumb, .kmap-title) {
+.keyword-build-panel .kmap :is(.kmap-crumb, .kmap-title) {
   font-family: 'Alegreya', Georgia, serif;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-crumbs {
+.keyword-build-panel .kmap .kmap-crumbs {
   gap: 0.45rem;
   padding-left: 0.35rem;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-crumb {
+.keyword-build-panel .kmap .kmap-crumb {
   font-size: 0.98rem;
   font-weight: 500;
   color: #9d9a8e;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) button.kmap-crumb:hover {
+.keyword-build-panel .kmap button.kmap-crumb:hover {
   color: #d9d2bd;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-crumb--current {
+.keyword-build-panel .kmap .kmap-crumb--current {
   font-size: 1.08rem;
   font-weight: 700;
   color: var(--relic-gold-text);
   text-shadow: 0 0 14px rgba(240, 196, 110, 0.25), 0 1px 0 #000;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-crumb-sep {
+.keyword-build-panel .kmap .kmap-crumb-sep {
   width: 0.85rem;
   height: 0.85rem;
   color: #7a6440;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-title {
+.keyword-build-panel .kmap .kmap-title {
   font-size: 1.28rem;
   font-weight: 700;
   color: #d1b574;
   text-shadow: 0 1px 0 #000;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-subtitle {
+.keyword-build-panel .kmap .kmap-subtitle {
   font-family: 'Alegreya', Georgia, serif;
   font-size: 0.95rem;
   color: #9d9a8e;
 }
 
 /* "Need a spark?": pointed gold plate. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-spark-btn {
+.keyword-build-panel .kmap .kmap-spark-btn {
   --plate-shape: var(--plate-hex);
   --cut: 14px;
   --rim: 1.5px;
@@ -258,7 +259,7 @@
   text-shadow: 0 1px 0 #000;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-saved-btn {
+.keyword-build-panel .kmap .kmap-saved-btn {
   --plate-shape: var(--plate-hex);
   --cut: 12px;
   --rim: 1.5px;
@@ -272,28 +273,28 @@
   box-shadow: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-saved-btn::before {
+.keyword-build-panel .kmap .kmap-saved-btn::before {
   background: linear-gradient(180deg, #121411, #080a08);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-saved-btn:hover {
+.keyword-build-panel .kmap .kmap-saved-btn:hover {
   border: 0;
   background: linear-gradient(160deg, #ffe7b0 0%, #d9a24a 35%, #7a5620 65%, #f0bf62 100%);
   color: #ffe3a6;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-spark-btn::before {
+.keyword-build-panel .kmap .kmap-spark-btn::before {
   background:
     radial-gradient(80% 120% at 50% 0%, rgba(147, 119, 65, 0.08), transparent 70%),
     linear-gradient(180deg, #121411, #080a08);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-spark-btn svg {
+.keyword-build-panel .kmap .kmap-spark-btn svg {
   width: 1.05rem;
   height: 1.05rem;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-spark-btn:hover, .kmap-spark-btn.is-open) {
+.keyword-build-panel .kmap :is(.kmap-spark-btn:hover, .kmap-spark-btn.is-open) {
   background: linear-gradient(160deg, #ffe7b0 0%, #d9a24a 35%, #7a5620 65%, #f0bf62 100%);
   color: #ffe3a6;
 }
@@ -302,7 +303,7 @@
    Floats in the map window's top-right as a small lens; it only opens into a
    field on hover or focus (click, or the "/" shortcut). Focus keeps it open
    while typing and while the results dropdown is in use. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float {
+.keyword-build-panel .kmap .kmap-search--float {
   position: absolute;
   top: var(--kmap-inset);
   right: var(--kmap-inset);
@@ -314,12 +315,12 @@
   transition: width 0.22s ease, opacity 0.18s ease;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float:is(:hover, :focus-within) {
+.keyword-build-panel .kmap .kmap-search--float:is(:hover, :focus-within) {
   width: 17rem;
   opacity: 1;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float input {
+.keyword-build-panel .kmap .kmap-search--float input {
   height: 2.1rem;
   padding: 0 0.75rem 0 2.1rem;
   border: 1px solid rgba(112, 91, 53, 0.3);
@@ -333,16 +334,16 @@
   cursor: pointer;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float input::placeholder {
+.keyword-build-panel .kmap .kmap-search--float input::placeholder {
   color: transparent;
   transition: color 0.15s;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float:is(:hover, :focus-within) input::placeholder {
+.keyword-build-panel .kmap .kmap-search--float:is(:hover, :focus-within) input::placeholder {
   color: #8d8a7f;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float input:focus {
+.keyword-build-panel .kmap .kmap-search--float input:focus {
   border-color: rgba(79, 135, 113, 0.45);
   background-color: #070b0a;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.45), 0 0 6px rgba(96, 143, 124, 0.2);
@@ -350,7 +351,7 @@
 }
 
 /* Lens icon (the svg right after the input): clicks fall through to the input. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float input + svg {
+.keyword-build-panel .kmap .kmap-search--float input + svg {
   left: 0.55rem;
   width: 0.95rem;
   height: 0.95rem;
@@ -360,19 +361,19 @@
 }
 
 /* Results dropdown: the map window clips overflow, so keep it short. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-search--float > .relative > .absolute {
+.keyword-build-panel .kmap .kmap-search--float > .relative > .absolute {
   max-height: 16rem;
 }
 
 /* ── 4. Mode toggle ─────────────────────────────────────────────── */
 /* Top inset: the camera frames nodes below the overlay row (toggle + note,
    toolbar), so they never sit under it. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window {
+.keyword-build-panel .kmap .kmap-window {
   padding-top: calc(var(--kmap-inset) + 3.2rem);
 }
 
 /* Overlaid on the map window's top-left, clear of the inner frame. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window .kmap-modes-row {
+.keyword-build-panel .kmap .kmap-window .kmap-modes-row {
   position: absolute;
   top: var(--kmap-inset);
   left: var(--kmap-inset);
@@ -385,11 +386,11 @@
   pointer-events: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window .kmap-modes {
+.keyword-build-panel .kmap .kmap-window .kmap-modes {
   pointer-events: auto;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-modes {
+.keyword-build-panel .kmap .kmap-modes {
   gap: 0.35rem;
   padding: 0;
   border: 0;
@@ -398,7 +399,7 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.65));
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode {
+.keyword-build-panel .kmap .kmap-mode {
   --plate-shape: var(--plate-hex);
   --cut: 11px;
   gap: 0.4rem;
@@ -411,17 +412,17 @@
   color: #d9d2bd;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode svg {
+.keyword-build-panel .kmap .kmap-mode svg {
   width: 0.9rem;
   height: 0.9rem;
   color: #b8a988;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode:hover {
+.keyword-build-panel .kmap .kmap-mode:hover {
   color: #f3ecd8;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode[aria-checked="true"] {
+.keyword-build-panel .kmap .kmap-mode[aria-checked="true"] {
   --rim: 2px;
   background: linear-gradient(160deg, #e2bd78 0%, #4fe3cf 30%, #0f6d62 65%, #8c6a36 100%);
   font-weight: 700;
@@ -429,18 +430,18 @@
   text-shadow: 0 0 8px rgba(45, 212, 191, 0.6);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode[aria-checked="true"]::before {
+.keyword-build-panel .kmap .kmap-mode[aria-checked="true"]::before {
   background:
     radial-gradient(90% 140% at 50% 50%, rgba(45, 212, 191, 0.32), transparent 75%),
     linear-gradient(180deg, #0f3a35, #072320);
   box-shadow: inset 0 0 12px rgba(45, 212, 191, 0.45), inset 0 1px 0 rgba(180, 255, 240, 0.25);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode[aria-checked="true"] svg {
+.keyword-build-panel .kmap .kmap-mode[aria-checked="true"] svg {
   color: #5eead4;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-modes-note {
+.keyword-build-panel .kmap .kmap-modes-note {
   padding-left: 0.3rem;
   font-family: 'Alegreya', Georgia, serif;
   font-size: 0.82rem;
@@ -450,7 +451,7 @@
 }
 
 /* ── 5. Map window ──────────────────────────────────────────────── */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window {
+.keyword-build-panel .kmap .kmap-window {
   border: 0;
   border-radius: 0;
   background:
@@ -461,7 +462,7 @@
   box-shadow: inset 0 0 52px rgba(0, 0, 0, 0.82);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-window::after {
+.keyword-build-panel .kmap .kmap-window::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -482,8 +483,22 @@
   pointer-events: none;
 }
 
+/* "Related by category": top-right of the drawing area, clear of the floating
+   Search in the bottom-right corner. */
+.keyword-build-panel .kmap .kmap-relation-label {
+  top: 0.4rem;
+  right: var(--kmap-inset);
+  bottom: auto;
+  border-color: rgba(168, 128, 63, 0.35);
+  border-radius: 0;
+  font-family: 'Alegreya', Georgia, serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #a39f92;
+}
+
 /* Plain field: drop the per-category emerald textures. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-viewport::before {
+.keyword-build-panel .kmap .kmap-viewport::before {
   background-image: none;
 }
 
@@ -491,41 +506,41 @@
    Each state only sets --plate-rgb / --plate-text; the shape rules read
    them, so rarity, include, exclude and hover compose without overrides. */
 /* Common = grey stone: colour is earned by rarity (gold is reserved for uniques). */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node {
+.keyword-build-panel .kmap .kmap-node {
   --plate-rgb: 150, 152, 146;
   --plate-text: #d6d5cd;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node[class*="is-rarity-"] {
+.keyword-build-panel .kmap .kmap-node[class*="is-rarity-"] {
   --plate-rgb: var(--kmap-rarity-rgb);
   --plate-text: var(--kmap-rarity-text);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node--center {
+.keyword-build-panel .kmap .kmap-node--center {
   --plate-rgb: 200, 202, 194;
   --plate-text: #f4f3ec;
 }
 
 /* Categories/subcategories: gilt-framed tablets, so they never read as keyword stones. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.kmap-node--card {
+.keyword-build-panel .kmap .kmap-node.kmap-node--card {
   --plate-rgb: 201, 164, 92;
   --plate-text: #efe6cc;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.kmap-node--card .kmap-card-title {
+.keyword-build-panel .kmap .kmap-node.kmap-node--card .kmap-card-title {
   font-size: 14px;
   font-weight: 700;
   fill: var(--plate-text);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.kmap-node--card .kmap-card-desc {
+.keyword-build-panel .kmap .kmap-node.kmap-node--card .kmap-card-desc {
   font-size: 11.5px;
   font-style: italic;
   font-weight: 400;
   fill: #a39d8a;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.kmap-node--card .kmap-card-tag {
+.keyword-build-panel .kmap .kmap-node.kmap-node--card .kmap-card-tag {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -533,34 +548,34 @@
   fill: rgba(var(--plate-rgb), 0.9);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.kmap-node--card .kmap-card-icon {
+.keyword-build-panel .kmap .kmap-node.kmap-node--card .kmap-card-icon {
   color: rgb(var(--plate-rgb));
 }
 
 /* Selected: the same stone, polished — teal would read as "uncommon". */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-include {
+.keyword-build-panel .kmap .kmap-node.is-include {
   --plate-rgb: 226, 227, 220;
   --plate-text: #ffffff;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-exclude {
+.keyword-build-panel .kmap .kmap-node.is-exclude {
   --plate-rgb: var(--c-danger-rgb);
   --plate-text: var(--c-danger);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-cause {
+.keyword-build-panel .kmap .kmap-node.is-cause {
   --plate-rgb: var(--c-gold-rgb);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-dead {
+.keyword-build-panel .kmap .kmap-node.is-dead {
   --plate-text: var(--c-muted);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node-backdrop {
+.keyword-build-panel .kmap .kmap-node-backdrop {
   fill: #0b100f;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node .kmap-node-shape {
+.keyword-build-panel .kmap .kmap-node .kmap-node-shape {
   fill: color-mix(in srgb, rgb(var(--plate-rgb)) 9%, #0b100f);
   stroke: rgba(var(--plate-rgb), 0.85);
   stroke-width: 1.3;
@@ -568,152 +583,152 @@
   filter: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node .kmap-node-rail {
+.keyword-build-panel .kmap .kmap-node .kmap-node-rail {
   fill: none;
   stroke: rgba(var(--plate-rgb), 0.32);
   stroke-width: 0.8;
   pointer-events: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node .kmap-node-stud {
+.keyword-build-panel .kmap .kmap-node .kmap-node-stud {
   fill: rgb(var(--plate-rgb));
   stroke: #050807;
   stroke-width: 0.8;
   pointer-events: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node text {
+.keyword-build-panel .kmap .kmap-node text {
   fill: var(--plate-text);
   font-family: 'Alegreya', Georgia, serif;
   font-size: 13px;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node--center text {
+.keyword-build-panel .kmap .kmap-node--center text {
   font-size: 15px;
   font-weight: 700;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-node--explorable:hover, .kmap-node:focus-visible) .kmap-node-shape {
+.keyword-build-panel .kmap :is(.kmap-node--explorable:hover, .kmap-node:focus-visible) .kmap-node-shape {
   fill: color-mix(in srgb, rgb(var(--plate-rgb)) 18%, #0b100f);
   stroke: rgb(var(--plate-rgb));
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node--center .kmap-node-shape {
+.keyword-build-panel .kmap .kmap-node--center .kmap-node-shape {
   fill: color-mix(in srgb, rgb(var(--plate-rgb)) 10%, #090d0c);
   stroke-width: 2;
   filter: drop-shadow(0 0 8px rgba(45, 212, 191, 0.45));
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node--center .kmap-node-rail {
+.keyword-build-panel .kmap .kmap-node--center .kmap-node-rail {
   stroke: rgba(45, 212, 191, 0.55);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node--center .kmap-node-stud {
+.keyword-build-panel .kmap .kmap-node--center .kmap-node-stud {
   fill: #2dd4bf;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-include .kmap-node-shape {
+.keyword-build-panel .kmap .kmap-node.is-include .kmap-node-shape {
   fill: color-mix(in srgb, rgb(var(--plate-rgb)) 20%, #0b100f);
   stroke-width: 1.8;
   filter: drop-shadow(0 0 6px rgba(226, 227, 220, 0.45));
 }
 
 /* Also beats the centre's teal accents when the centre itself is selected. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-include .kmap-node-rail {
+.keyword-build-panel .kmap .kmap-node.is-include .kmap-node-rail {
   stroke: rgba(var(--plate-rgb), 0.45);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-include .kmap-node-stud {
+.keyword-build-panel .kmap .kmap-node.is-include .kmap-node-stud {
   fill: rgb(var(--plate-rgb));
 }
 
 /* Centre's include toggle: stone, not emerald — still the primary action at rest. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-center-action--include {
+.keyword-build-panel .kmap .kmap-center-action--include {
   color: #e2e3dc;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-center-action--include .kmap-center-action-bg {
+.keyword-build-panel .kmap .kmap-center-action--include .kmap-center-action-bg {
   stroke: rgba(226, 227, 220, 0.5);
   fill: rgba(226, 227, 220, 0.08);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-center-action--include:is(:hover, :focus-visible, .is-active) {
+.keyword-build-panel .kmap .kmap-center-action--include:is(:hover, :focus-visible, .is-active) {
   color: #e2e3dc;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-center-action--include.is-active .kmap-center-action-bg {
+.keyword-build-panel .kmap .kmap-center-action--include.is-active .kmap-center-action-bg {
   stroke: #e2e3dc;
   fill: rgba(226, 227, 220, 0.16);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-cause .kmap-node-shape {
+.keyword-build-panel .kmap .kmap-node.is-cause .kmap-node-shape {
   stroke-width: 2;
   filter: drop-shadow(0 0 6px rgba(var(--c-gold-rgb), 0.55));
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-dead .kmap-node-shape {
+.keyword-build-panel .kmap .kmap-node.is-dead .kmap-node-shape {
   stroke: rgba(var(--c-border-rgb), 0.3);
   stroke-dasharray: 3 3;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node.is-echo .kmap-node-shape {
+.keyword-build-panel .kmap .kmap-node.is-echo .kmap-node-shape {
   stroke-dasharray: 3 2;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-count-tag {
+.keyword-build-panel .kmap .kmap-count-tag {
   font-family: 'Alegreya', Georgia, serif;
   font-size: 12px;
   font-weight: 700;
 }
 
 /* "+" badge follows the plate colour (stone, or rarity once revealed). */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node:not(.is-include, .is-exclude) .kmap-badge circle:not(.kmap-badge-hit) {
+.keyword-build-panel .kmap .kmap-node:not(.is-include, .is-exclude) .kmap-badge circle:not(.kmap-badge-hit) {
   fill: rgba(var(--plate-rgb), 0.14);
   stroke: rgba(var(--plate-rgb), 0.7);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node:not(.is-include, .is-exclude) .kmap-badge :is(line, polyline) {
+.keyword-build-panel .kmap .kmap-node:not(.is-include, .is-exclude) .kmap-badge :is(line, polyline) {
   stroke: rgb(var(--plate-rgb));
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node:not(.is-include, .is-exclude) .kmap-badge:is(:hover, :focus-visible) circle:not(.kmap-badge-hit) {
+.keyword-build-panel .kmap .kmap-node:not(.is-include, .is-exclude) .kmap-badge:is(:hover, :focus-visible) circle:not(.kmap-badge-hit) {
   fill: rgb(var(--plate-rgb));
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-node:not(.is-include, .is-exclude) .kmap-badge:is(:hover, :focus-visible) :is(line, polyline) {
+.keyword-build-panel .kmap .kmap-node:not(.is-include, .is-exclude) .kmap-badge:is(:hover, :focus-visible) :is(line, polyline) {
   stroke: #0b100f;
 }
 
 /* Links between keywords: gold, not emerald. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-edge {
+.keyword-build-panel .kmap .kmap-edge {
   stroke: #d9ad62;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-edge.is-linked {
+.keyword-build-panel .kmap .kmap-edge.is-linked {
   stroke: #ffd27a;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-energy {
+.keyword-build-panel .kmap .kmap-energy {
   stroke: #ffd27a;
   filter: drop-shadow(0 0 3px rgba(240, 196, 110, 0.8));
 }
 
 /* ── 7. Selection + Search (floating on the map) ─────────────────── */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters,
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions {
+.keyword-build-panel .kmap .kmap-user-selection-filters,
+.keyword-build-panel .kmap .kmap-user-selection-actions {
   bottom: var(--kmap-inset);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters {
+.keyword-build-panel .kmap .kmap-user-selection-filters {
   left: var(--kmap-inset);
   max-width: calc(100% - 14.5rem);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions {
+.keyword-build-panel .kmap .kmap-user-selection-actions {
   right: var(--kmap-inset);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .selected-filter-clear {
+.keyword-build-panel .kmap .selected-filter-clear {
   width: 1.4rem;
   height: 1.4rem;
   background: #0d1211;
@@ -721,7 +736,7 @@
   color: #b9b29f;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .selected-filter-clear:is(:hover, :focus-visible) {
+.keyword-build-panel .kmap .selected-filter-clear:is(:hover, :focus-visible) {
   background: #1a0d0e;
   box-shadow: 0 0 0 1px rgba(var(--c-danger-rgb), 0.55);
   color: #f3c9c9;
@@ -729,7 +744,7 @@
 
 /* Selected pills mirror selected map keywords: a hex plate in polished stone
    (excluded: the same plate in red). Element = rim, ::before = face. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude) {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude) {
   --pill-rgb: 226, 227, 220;
   position: relative;
   isolation: isolate;
@@ -747,7 +762,7 @@
   color: #ffffff;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude)::before {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude)::before {
   content: "";
   position: absolute;
   inset: 1px;
@@ -758,29 +773,29 @@
   clip-path: inherit;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters .selected-filter-pill.keyword-exclude {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill.keyword-exclude {
   --pill-rgb: var(--c-danger-rgb);
   color: #f3c9c9;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude):hover::before {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude):hover::before {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 60%),
     color-mix(in srgb, rgb(var(--pill-rgb)) 30%, #0b100f);
 }
 
 /* Mode toggle inside the pill: scaled to the shorter pill, tinted to match. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters .selected-filter-pill .keyword-mode-chip-button {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill .keyword-mode-chip-button {
   width: 1rem;
   height: 1rem;
   background: rgba(var(--pill-rgb), 0.14);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters .selected-filter-pill .keyword-mode-chip-button:hover {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill .keyword-mode-chip-button:hover {
   background: rgba(var(--pill-rgb), 0.3);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-filters .selected-filter-pill svg {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill svg {
   width: 0.8rem;
   height: 0.8rem;
   color: rgb(var(--pill-rgb));
@@ -789,7 +804,7 @@
 /* Gold plate: border-image wider than the 1px border paints the whole plate
    (pointed ends included) without changing layout; ::before stays the shine. */
 /* Fixed width: Search / Searching... / Share / Copied! never resize the plate. */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search {
+.keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search {
   width: 10.5rem;
   height: 3rem;
   padding: 0 1.2rem;
@@ -808,25 +823,25 @@
   transition: filter 0.2s, transform 0.2s;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search svg {
+.keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search svg {
   width: 1.15rem;
   height: 1.15rem;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search-active:hover {
+.keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search-active:hover {
   background: none;
   box-shadow: none;
   color: #ffe3a6;
   filter: drop-shadow(0 0 16px rgba(255, 170, 60, 0.5)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.6));
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search-disabled {
+.keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search-disabled {
   color: rgba(255, 210, 122, 0.45);
   text-shadow: none;
   filter: grayscale(0.6) brightness(0.7);
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search-zero {
+.keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search-zero {
   filter: drop-shadow(0 0 8px rgba(var(--c-danger-rgb), 0.5));
 }
 
@@ -845,7 +860,7 @@
   to   { background-position: 0 0; opacity: 1; }
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::after {
+.keyword-build-panel .kmap :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -856,13 +871,13 @@
   pointer-events: none;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode):hover:not(:disabled)::after {
+.keyword-build-panel .kmap :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode):hover:not(:disabled)::after {
   animation: kmap-glint 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Only compatible: switching on sends a teal sweep through the plate
    (out-ranks the hover rule above, since the click happens mid-hover). */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-mode.kmap-fit-control[aria-checked="true"]:not(:disabled)::after {
+.keyword-build-panel .kmap .kmap-mode.kmap-fit-control[aria-checked="true"]:not(:disabled)::after {
   --glint: rgba(140, 255, 235, 0.45);
   animation: kmap-glint-b 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -870,7 +885,7 @@
 /* Search CTA: the shared .hero-button shine is a rotated square streak over
    the whole box. Here it's confined to frame-cta.svg's face instead: 4px/5px
    inside the rim, pointed ends 13.5px deep (the frame renders 1:1 at 3rem tall). */
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search::before {
+.keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search::before {
   top: 4px;
   right: 5px;
   bottom: 4px;
@@ -886,17 +901,177 @@
   background-position: 100% 0;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search:hover:not(:disabled)::before {
+.keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search:hover:not(:disabled)::before {
   animation: kmap-glint 0.55s ease-out forwards;
 }
 
-.keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search.hero-button-share-shine:not(:disabled)::before {
+.keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search.hero-button-share-shine:not(:disabled)::before {
   animation: kmap-glint-b 1.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+/* ── 9. Mobile ─────────────────────────────────────────────────────
+   The map is the whole screen. Same skin, rescaled: the frame at half size,
+   icon-only header plates, a tighter inset for the floating controls, and a
+   16px search field (smaller makes iOS zoom the page on focus). */
+@media (max-width: 1023px) {
+  .keyword-build-panel .kmap {
+    --kmap-inset: 0.9rem;
+    --frame-bleed: 4px;
+    box-shadow: none;
+  }
+
+  .keyword-build-panel .kmap::after {
+    border-width: 44px;
+    border-image: url("../assets/ui/relic/raster/panel-frame-9slice.webp") 176 / 44px / var(--frame-bleed) stretch;
+  }
+
+  .keyword-build-panel .kmap::before {
+    background:
+      url("../assets/ui/relic/raster/panel-frame-diamond-top.webp") 50% calc(-1 * var(--frame-bleed)) / 23px 44px no-repeat,
+      url("../assets/ui/relic/raster/panel-frame-diamond-right.webp") right calc(-1 * var(--frame-bleed)) center / 44px 23px no-repeat,
+      url("../assets/ui/relic/raster/panel-frame-diamond-bottom.webp") center bottom calc(-1 * var(--frame-bleed)) / 23px 44px no-repeat,
+      url("../assets/ui/relic/raster/panel-frame-diamond-left.webp") calc(-1 * var(--frame-bleed)) 50% / 44px 23px no-repeat;
+  }
+
+  .keyword-build-panel .kmap > .kmap-header::before {
+    top: -7px;
+    left: -7px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .keyword-build-panel .kmap > .kmap-header {
+    gap: 0.4rem;
+    min-height: 3.3rem;
+    padding: calc(0.95rem + env(safe-area-inset-top)) 1rem 0.65rem 2.9rem;
+  }
+
+  .keyword-build-panel .kmap > .kmap-body {
+    padding: 0 calc(9px - var(--frame-bleed)) calc(9px - var(--frame-bleed) + env(safe-area-inset-bottom));
+  }
+
+  .keyword-build-panel .kmap .kmap-brand-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.12em;
+  }
+
+  .keyword-build-panel .kmap .kmap-header-actions {
+    gap: 0.4rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-icon-btn {
+    --cut: 7px;
+    width: 2.3rem;
+    height: 2.3rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-icon-btn svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* "All categories": the house icon alone. */
+  .keyword-build-panel .kmap .kmap-root-btn {
+    width: 2.3rem;
+    padding-inline: 0;
+  }
+
+  .keyword-build-panel .kmap .kmap-root-btn span {
+    display: none;
+  }
+
+  .keyword-build-panel .kmap .kmap-crumbs {
+    gap: 0.3rem;
+    padding-left: 0.15rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-crumb {
+    font-size: 0.88rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-crumb--current {
+    font-size: 0.95rem;
+  }
+
+  /* Spark and Saved: icon plates (labels stay for assistive tech via font-size 0). */
+  .keyword-build-panel .kmap :is(.kmap-spark-btn, .kmap-saved-btn) {
+    --cut: 10px;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.3rem;
+    min-height: 2.3rem;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .keyword-build-panel .kmap .kmap-spark-face {
+    gap: 0;
+  }
+
+  .keyword-build-panel .kmap .kmap-saved-btn > span:not(.absolute) {
+    display: none;
+  }
+
+  .keyword-build-panel .kmap .kmap-saved-btn > .absolute {
+    top: 0.1rem;
+    right: 0.25rem;
+    font-size: 10px;
+  }
+
+  .keyword-build-panel .kmap .kmap-window {
+    padding-top: calc(var(--kmap-inset) + 2.5rem);
+  }
+
+  /* The lens sits beside the toggles, so they stop short of it. */
+  .keyword-build-panel .kmap .kmap-window .kmap-modes-row {
+    max-width: calc(100% - 2 * var(--kmap-inset) - 2.75rem);
+  }
+
+  .keyword-build-panel .kmap .kmap-mode {
+    --cut: 9px;
+    gap: 0.3rem;
+    height: 1.95rem;
+    padding: 0 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-modes-note {
+    font-size: 0.74rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-search--float {
+    width: 2.25rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-search--float:focus-within {
+    width: calc(100% - 2 * var(--kmap-inset));
+    max-width: none;
+  }
+
+  .keyword-build-panel .kmap .kmap-search--float input {
+    height: 2.25rem;
+    font-size: 1rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-filters {
+    max-width: calc(100% - 2 * var(--kmap-inset) - 9.1rem);
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search {
+    width: 8.6rem;
+    padding: 0 0.9rem;
+    font-size: 1rem;
+  }
+
+  .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .keyword-build-panel .kmap:not(.kmap--mobile) :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::after,
-  .keyword-build-panel .kmap:not(.kmap--mobile) .kmap-user-selection-actions .desktop-action-button-search::before {
+  .keyword-build-panel .kmap :is(.kmap-icon-btn, .kmap-spark-btn, .kmap-saved-btn, .kmap-mode)::after,
+  .keyword-build-panel .kmap .kmap-user-selection-actions .desktop-action-button-search::before {
     animation: none !important;
     opacity: 0;
   }

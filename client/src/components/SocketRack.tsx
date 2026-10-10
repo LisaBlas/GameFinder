@@ -25,11 +25,11 @@ export const socketFloorStyle = (index: number) => ({
 /** Empty card sockets carved into the table, shown before any results exist.
  *  Mirrors the results layout exactly (an empty summary row, then the grid),
  *  so when results arrive the cards land in these sockets instead of the
- *  sockets jumping down. Decorative; desktop only (see results-relic.css). */
+ *  sockets jumping down. Decorative. */
 const SocketRack: React.FC = () => (
   <div className="socket-rack" aria-hidden>
     <div className="results-summary results-summary--placeholder" />
-    <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-4 lg:gap-7">
+    <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-7">
       {Array.from({ length: RACK_SIZE }, (_, i) => (
         <div key={i} className="card-socket-empty" style={socketFloorStyle(i)} />
       ))}

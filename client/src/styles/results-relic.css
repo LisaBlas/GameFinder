@@ -8,7 +8,8 @@
      3. popover   — ink panel, bronze rim, hex filter chips
      4. summary   — count inscription, rarity mark, keyword chips, engraved rule
      5. seat      — carved socket under each card, empty sockets after
-   Mobile keeps the base styles except the summary, which is shared. */
+     6. mobile    — results-view header: back to the map, filters, sort, share
+   Mobile shares the summary and seats, and gets its own header (6). */
 
 :root {
   --rr-bronze-rgb: 168, 128, 63;
@@ -372,24 +373,23 @@
   color: var(--rr-gold-text);
 }
 
-/* Desktop: the summary is one fixed-height line, so the grid below it sits
+/* The summary is one fixed-height line, so the grid below it sits
    exactly where SocketRack's sockets were before results arrived (the rack
    reserves this row with an empty placeholder). Chips that don't fit fade out
    rather than wrap, since a second line would push every socket down. */
-@media (min-width: 1024px) {
-  .results-summary {
-    flex-wrap: nowrap;
-    flex-shrink: 0; /* overflow: hidden would let the pane's flex column squash it */
-    height: 2.5rem;
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
-    mask-image: linear-gradient(90deg, #000 88%, transparent);
-  }
-
-  .results-summary > :not(.results-summary-seed) {
-    flex-shrink: 0;
-  }
+.results-summary {
+  flex-wrap: nowrap;
+  flex-shrink: 0; /* overflow: hidden would let the pane's flex column squash it */
+  height: 2.5rem;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, #000 88%, transparent);
 }
+
+.results-summary > :not(.results-summary-seed) {
+  flex-shrink: 0;
+}
+
 
 .results-summary--placeholder::after {
   display: none;
@@ -404,36 +404,34 @@
    locked to the stone. Light comes from the forge below: the top inner wall
    catches it, the bottom rim shades the floor.
    Empty sockets complete the grid's last row (plus one more while more
-   results exist).
-   Desktop only: the mobile grid gap is too tight for the rim. */
-@media (min-width: 1024px) {
-  .game-card-slot::before,
-  .card-socket-empty::before {
-    content: "";
-    position: absolute;
-    /* The image overhangs the card by 14px (OVERHANG in the script). */
-    inset: -14px;
-    pointer-events: none;
-    border: 1px solid transparent;
-    /* 1px border + 11.5px padding puts the floor's edge on the cut's wall
-       (OVERHANG 14 - GAP 1.5 in the script); the corner pockets are wall. */
-    padding: 11.5px;
-    /* The floor sits above the table's fixed lighting (AnimatedBackground.css),
-       so it carries its own copy of the forge glow, pinned to the viewport,
-       or it would stay black while the table around it brightens. Centred on
-       the results pane (right 60vw). */
-    background:
-      radial-gradient(ellipse 34% 38% at 70% 106%, rgba(255, 150, 80, 0.075), rgba(160, 80, 40, 0.03) 50%, transparent 78%) fixed,
-      /* Per socket (socketFloorStyle): sheen, tone and patch of the stone,
-         so each floor reads as its own piece. */
-      linear-gradient(var(--floor-angle, 160deg), rgba(214, 222, 216, var(--floor-sheen, 0.012)), transparent 65%),
-      linear-gradient(rgba(0, 0, 0, var(--floor-shade, 0)), rgba(0, 0, 0, var(--floor-shade, 0))),
-      url("../assets/ui/stone-socket-floor.webp") var(--floor-x, 0px) var(--floor-y, 0px) / 1024px 1024px repeat,
-      #070807;
-    background-clip: content-box;
-    border-image: url("../assets/ui/card-socket-9slice.webp") 92 fill / 46px stretch;
-  }
+   results exist). The grid gap (gap-7) leaves room for the rims at every width. */
+.game-card-slot::before,
+.card-socket-empty::before {
+  content: "";
+  position: absolute;
+  /* The image overhangs the card by 14px (OVERHANG in the script). */
+  inset: -14px;
+  pointer-events: none;
+  border: 1px solid transparent;
+  /* 1px border + 11.5px padding puts the floor's edge on the cut's wall
+     (OVERHANG 14 - GAP 1.5 in the script); the corner pockets are wall. */
+  padding: 11.5px;
+  /* The floor sits above the table's fixed lighting (AnimatedBackground.css),
+     so it carries its own copy of the forge glow, pinned to the viewport,
+     or it would stay black while the table around it brightens. Centred on
+     the results pane (--forge-x: right 60vw on desktop, the screen on mobile). */
+  background:
+    radial-gradient(ellipse 34% 38% at var(--forge-x, 70%) 106%, rgba(255, 150, 80, 0.075), rgba(160, 80, 40, 0.03) 50%, transparent 78%) fixed,
+    /* Per socket (socketFloorStyle): sheen, tone and patch of the stone,
+       so each floor reads as its own piece. */
+    linear-gradient(var(--floor-angle, 160deg), rgba(214, 222, 216, var(--floor-sheen, 0.012)), transparent 65%),
+    linear-gradient(rgba(0, 0, 0, var(--floor-shade, 0)), rgba(0, 0, 0, var(--floor-shade, 0))),
+    url("../assets/ui/stone-socket-floor.webp") var(--floor-x, 0px) var(--floor-y, 0px) / 1024px 1024px repeat,
+    #070807;
+  background-clip: content-box;
+  border-image: url("../assets/ui/card-socket-9slice.webp") 92 fill / 46px stretch;
 }
+
 
 .card-socket-empty {
   position: relative;
@@ -455,35 +453,33 @@
 }
 
 /* Each rarity's frame art draws its rail 2-10px inside the card's edge, which
-   in a socket left a dark band between frame and wall. On desktop the frames
-   are pushed out until the rail is the card's edge (values measured from the
+   in a socket left a dark band between frame and wall. The frames are pushed
+   out until the rail is the card's edge (values measured from the
    frame PNGs: rail inset + the base outset), so the frame itself is what fits
    the socket, and each seal follows its bottom rail down. */
-@media (min-width: 1024px) {
-  .game-card-slot .game-card-shell-rarity-common .game-card-forge { border-image-outset: 5.05px 4.7px 5.05px 4.88px; }
-  .game-card-slot .game-card-shell-rarity-uncommon .game-card-forge { border-image-outset: 5.19px 4.83px 5.55px 5.01px; }
-  .game-card-slot .game-card-shell-rarity-rare .game-card-forge { border-image-outset: 4.75px 4.75px 5.12px 4.56px; }
-  .game-card-slot .game-card-shell-rarity-epic .game-card-forge { border-image-outset: 6.12px 5.52px 7.95px 5.72px; }
-  .game-card-slot .game-card-shell-rarity-unique .game-card-forge { border-image-outset: 10.91px 9.16px 13.97px 9.38px; }
+.game-card-slot .game-card-shell-rarity-common .game-card-forge { border-image-outset: 5.05px 4.7px 5.05px 4.88px; }
+.game-card-slot .game-card-shell-rarity-uncommon .game-card-forge { border-image-outset: 5.19px 4.83px 5.55px 5.01px; }
+.game-card-slot .game-card-shell-rarity-rare .game-card-forge { border-image-outset: 4.75px 4.75px 5.12px 4.56px; }
+.game-card-slot .game-card-shell-rarity-epic .game-card-forge { border-image-outset: 6.12px 5.52px 7.95px 5.72px; }
+.game-card-slot .game-card-shell-rarity-unique .game-card-forge { border-image-outset: 10.91px 9.16px 13.97px 9.38px; }
 
-  .game-card-slot .game-card-shell-rarity-uncommon .game-card-rarity-ornament { --ornament-rail-inset: 4.4px; }
-  .game-card-slot .game-card-shell-rarity-rare .game-card-rarity-ornament { --ornament-rail-inset: 5.9px; }
-  .game-card-slot .game-card-shell-rarity-epic .game-card-rarity-ornament { --ornament-rail-inset: 4px; }
-  .game-card-slot .game-card-shell-rarity-unique .game-card-rarity-ornament { --ornament-rail-inset: 4px; }
-}
+.game-card-slot .game-card-shell-rarity-uncommon .game-card-rarity-ornament { --ornament-rail-inset: 4.4px; }
+.game-card-slot .game-card-shell-rarity-rare .game-card-rarity-ornament { --ornament-rail-inset: 5.9px; }
+.game-card-slot .game-card-shell-rarity-epic .game-card-rarity-ornament { --ornament-rail-inset: 4px; }
+.game-card-slot .game-card-shell-rarity-unique .game-card-rarity-ornament { --ornament-rail-inset: 4px; }
+
 
 /* The slot draws the socket, so the slot itself must not fade in with its
    card (App.css .game-card-appear), or the sockets blink out when results
-   land. On desktop the fade moves to the card. */
-@media (min-width: 1024px) {
-  .game-card-slot.game-card-appear {
-    animation: none;
-  }
-
-  .game-card-slot.game-card-appear > .game-card-shell {
-    animation: card-appear 0.32s ease-out var(--forge-delay, 0ms) backwards;
-  }
+   land. The fade moves to the card. */
+.game-card-slot.game-card-appear {
+  animation: none;
 }
+
+.game-card-slot.game-card-appear > .game-card-shell {
+  animation: card-appear 0.32s ease-out var(--forge-delay, 0ms) backwards;
+}
+
 
 /* Seated: a tight contact shadow, since the card sits inside the socket walls. */
 .game-card {
@@ -497,12 +493,6 @@
   box-shadow:
     0 14px 24px -8px rgba(0, 0, 0, 0.85),
     0 30px 60px -16px rgba(0, 0, 0, 0.65);
-}
-
-@media (max-width: 1023px) {
-  .card-socket-empty {
-    display: none;
-  }
 }
 
 /* Empty rack before the first search and behind the loading state. Sockets
@@ -527,12 +517,6 @@
   pointer-events: none;
 }
 
-@media (max-width: 1023px) {
-  .socket-rack {
-    display: none;
-  }
-}
-
 /* A new search: the previous batch sinks out of its sockets (CARD_LEAVE_MS
    in SearchResults.tsx) while the sockets stay, then the rack takes over. */
 @keyframes card-leave {
@@ -544,4 +528,154 @@
 
 .results-grid--leaving .game-card-slot > .game-card-shell {
   animation: card-leave 0.28s ease-in forwards;
+}
+
+/* ── 6. Mobile header ──────────────────────────────────────────────
+   The results view replaces the map on phones, so its header carries the way
+   back plus the controls the desktop ledge has: filters, sort, share, saved.
+   Same language as the ledge: bronze hairline, hex plates, no panel. */
+.mobile-results-header {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --forge-x: 50%;
+  }
+
+  .mobile-results-header {
+    --cut: 9px;
+    --rr-hex: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 -1.5rem 1.1rem;
+    padding: calc(0.7rem + env(safe-area-inset-top)) 1.5rem 0.7rem;
+    background: linear-gradient(180deg, rgba(5, 7, 6, 0.94), rgba(5, 7, 6, 0.82));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.22s ease, opacity 0.16s ease;
+  }
+
+  .mobile-results-header::after {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--rr-bronze-rgb), 0.45) 18%, rgba(var(--rr-bronze-rgb), 0.45) 82%, transparent);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+  }
+
+  .mobile-results-header--hidden {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+  }
+
+  .mobile-results-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: auto;
+  }
+
+  /* Plates: the element paints the bronze rim, ::before the dark face. */
+  .mobile-results-header :is(.mobile-results-back, .mobile-results-icon, .mobile-filter-trigger, .results-sort-control) {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.3rem;
+    min-height: 2.3rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--rr-edge);
+    clip-path: var(--rr-hex);
+    box-shadow: none;
+    color: var(--rr-gold-text);
+  }
+
+  .mobile-results-header :is(.mobile-results-back, .mobile-results-icon, .mobile-filter-trigger, .results-sort-control)::before {
+    content: "";
+    position: absolute;
+    inset: 1.5px;
+    z-index: -1;
+    background: var(--rr-face);
+    clip-path: var(--rr-hex);
+  }
+
+  .mobile-results-back {
+    gap: 0.2rem;
+    padding: 0 0.95rem 0 0.7rem;
+    font-family: 'Alegreya', Georgia, serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-shadow: 0 1px 0 #000;
+  }
+
+  .mobile-results-back svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .mobile-results-header :is(.mobile-results-icon, .mobile-filter-trigger) {
+    width: 2.6rem;
+    padding: 0;
+  }
+
+  .mobile-results-header :is(.mobile-results-icon, .mobile-filter-trigger) svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  /* Saved: heart only (the label is hidden; the count badge stays). */
+  .mobile-results-saved > span:not(.absolute) {
+    display: none;
+  }
+
+  .mobile-results-saved > .absolute {
+    top: 0.1rem;
+    right: 0.3rem;
+  }
+
+  .mobile-results-header .mobile-filter-count {
+    top: 0.2rem;
+    right: 0.45rem;
+    background: var(--rr-gold-text);
+    color: #0a0e0d;
+  }
+
+  .mobile-results-header .results-sort-control {
+    padding: 0;
+  }
+
+  .mobile-results-header .results-sort-select,
+  .mobile-results-header .results-sort-select:is(:hover, :focus) {
+    height: 100%;
+    padding: 0 1.7rem 0 0.95rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-family: 'Alegreya', Georgia, serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--rr-gold-text);
+  }
+
+  .mobile-results-header .results-sort-select option {
+    background: #0a0e0d;
+    color: var(--rr-parchment);
+  }
+
+  .mobile-results-header .results-sort-control::after {
+    right: 0.85rem;
+    border-color: rgba(240, 196, 110, 0.7);
+  }
 }

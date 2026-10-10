@@ -18,10 +18,10 @@ export type ToggleMethod = 'badge' | 'double_click' | 'keyboard' | 'context_menu
 const POSITION_SPRING = { type: 'spring', stiffness: 260, damping: 28, mass: 0.8 } as const;
 const ARROWS: Record<string, Direction> = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
 
-/** Extra width the desktop plate's pointed ends need beyond the pill. */
+/** Extra width the plate's pointed ends need beyond the pill. */
 const PLATE_EXTRA = 12;
 
-/** Desktop node plate: hex-ended outline, `inset` px inside a w×h box centred on 0,0. */
+/** Node plate: hex-ended outline, `inset` px inside a w×h box centred on 0,0. */
 const platePath = (w: number, h: number, inset = 0) => {
   const x = w / 2 - inset;
   const y = h / 2 - inset;
@@ -189,12 +189,12 @@ export const KeywordMapScene: React.FC<Props> = ({
   };
 
   /**
-   * Avoid / Add as icon-only buttons centred on the shape's ends (the plate's points, or the
-   * pill's round caps). Always on the centre; on other keywords only while hovered.
+   * Avoid / Add as icon-only buttons centred on the plate's points. Always on the centre;
+   * on other keywords only while hovered (desktop).
    */
   const renderEndActions = (node: MapNode, w: number, mode: KeywordMode | null) => {
     const isCenter = node.level === 0;
-    const tip = variant === 'desktop' ? (w + PLATE_EXTRA) / 2 : w / 2;
+    const tip = (w + PLATE_EXTRA) / 2;
     const r = variant === 'mobile' ? 10 : 9;
     const action = (kind: KeywordMode, cx: number) => {
       const active = mode === kind;
@@ -279,7 +279,6 @@ export const KeywordMapScene: React.FC<Props> = ({
     const w = widthOf(n);
     const h = pillHeight(n);
     const isCenter = n.level === 0;
-    const plate = variant === 'desktop';
     const isVirtual = n.id < 0; // category/subcategory node, not a keyword
     const mode = isVirtual ? null : modeOf(n.id);
     const lit = isLit(n);
@@ -338,23 +337,13 @@ export const KeywordMapScene: React.FC<Props> = ({
         exit="exit"
       >
         {/* Opaque backing outside the dimmed group: lit-state opacity fades the pill, never reveals edges. */}
-        {plate ? (
-          <motion.path
-            className="kmap-node-backdrop"
-            initial={false}
-            animate={{ d: platePath(w + PLATE_EXTRA, h) }}
-            transition={move(delay)}
-            aria-hidden="true"
-          />
-        ) : (
-          <motion.rect
-            className="kmap-node-backdrop"
-            initial={false}
-            animate={{ attrX: -w / 2, attrY: -h / 2, width: w, height: h, rx: h / 2 }}
-            transition={move(delay)}
-            aria-hidden="true"
-          />
-        )}
+        <motion.path
+          className="kmap-node-backdrop"
+          initial={false}
+          animate={{ d: platePath(w + PLATE_EXTRA, h) }}
+          transition={move(delay)}
+          aria-hidden="true"
+        />
         <g
           ref={el => {
             if (el) nodeEls.current.set(n.id, el);
@@ -402,31 +391,20 @@ export const KeywordMapScene: React.FC<Props> = ({
           onBlur={() => hover(null)}
         >
           {!isCenter && <title>{`${isVirtual ? 'Open' : 'Explore'} ${name}${rareGames ? ` — rare pairing: ${rareGames} games share both` : ''}`}</title>}
-          {/* Shape morphs when a neighbour becomes the centre. Desktop: hex plate with inner rail and a bottom stud. */}
-          {plate ? (
-            <>
-              <motion.path
-                className="kmap-node-shape"
-                initial={false}
-                animate={{ d: platePath(w + PLATE_EXTRA, h) }}
-                transition={move(delay)}
-              />
-              <motion.path
-                className="kmap-node-rail"
-                initial={false}
-                animate={{ d: platePath(w + PLATE_EXTRA, h, 3) }}
-                transition={move(delay)}
-              />
-              <path className="kmap-node-stud" transform={`translate(0 ${h / 2})`} d="M0 -4 L3.2 0 L0 4 L-3.2 0 Z" />
-            </>
-          ) : (
-            <motion.rect
-              className="kmap-node-shape"
-              initial={false}
-              animate={{ attrX: -w / 2, attrY: -h / 2, width: w, height: h, rx: h / 2 }}
-              transition={move(delay)}
-            />
-          )}
+          {/* Shape morphs when a neighbour becomes the centre: hex plate with inner rail and a bottom stud. */}
+          <motion.path
+            className="kmap-node-shape"
+            initial={false}
+            animate={{ d: platePath(w + PLATE_EXTRA, h) }}
+            transition={move(delay)}
+          />
+          <motion.path
+            className="kmap-node-rail"
+            initial={false}
+            animate={{ d: platePath(w + PLATE_EXTRA, h, 3) }}
+            transition={move(delay)}
+          />
+          <path className="kmap-node-stud" transform={`translate(0 ${h / 2})`} d="M0 -4 L3.2 0 L0 4 L-3.2 0 Z" />
           <text
             x={badgeSlot ? -badgeRoom(n) / 2 : 0}
             textAnchor="middle"

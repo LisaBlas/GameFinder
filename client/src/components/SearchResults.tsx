@@ -10,6 +10,8 @@ import SocketRack, { RACK_SIZE, socketFloorStyle } from './SocketRack';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cardLinkFor, setHoveredCard, setSelectedCard, subscribeMapLink, getMapLink } from '../lib/mapLink';
 import { getRarity, type RarityTier } from '../lib/discoveryCards';
+import { ChevronLeft, Share2, Check } from 'lucide-react';
+import { SavedGamesControl } from './Navbar';
 
 const RARITY_RGB: Record<RarityTier, string> = {
   common:   '--c-border-rgb',
@@ -38,8 +40,14 @@ const CARD_LAYOUT_TRANSITION = {
   },
 };
 
-const SearchResults: React.FC = () => {
-  const { gameResults, isLoading, error, sortBy, setSortBy, seedGame, lastSearchedFilters, totalCount, countIsCapped, hasMore } = useFilters();
+interface SearchResultsProps {
+  /** Mobile: return to the keyword map (the results view replaces it). */
+  onBackToMap?: () => void;
+}
+
+const SearchResults: React.FC<SearchResultsProps> = ({ onBackToMap }) => {
+  const { gameResults, isLoading, error, sortBy, setSortBy, seedGame, lastSearchedFilters, totalCount, countIsCapped, hasMore, searchFresh } = useFilters();
+  const [shareCopied, setShareCopied] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState<number | null>(null);
   const [hideMobileControls, setHideMobileControls] = useState(false);
@@ -207,13 +215,24 @@ const SearchResults: React.FC = () => {
     setSortBy(e.target.value);
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      await navigator.share({ title: 'GameFinder', url }).catch(() => {});
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }
+  };
+
   // The results grid, also used for a batch fading out (leaving): same keys
   // and sockets, no entry animation. The table keeps at least RACK_SIZE
   // sockets, plus a row for more while more can load; unfilled ones stay empty.
   const renderGrid = (results: typeof gameResults, rarity: RarityTier | null, cycle: number, leaving: boolean) => {
     const socketCount = Math.max(RACK_SIZE, results.length + (results.length % 2) + (hasMore && !leaving ? 2 : 0));
     return (
-      <div ref={gridRef} className={`grid grid-cols-1 widescreen:grid-cols-2 gap-4 lg:gap-7 ${leaving ? 'results-grid--leaving' : ''}`}>
+      <div ref={gridRef} className={`grid grid-cols-1 widescreen:grid-cols-2 gap-7 ${leaving ? 'results-grid--leaving' : ''}`}>
         {results.map((game, index) => (
           <motion.div
             layout
@@ -250,13 +269,12 @@ const SearchResults: React.FC = () => {
   // Render different states based on loading and results
   const renderContent = () => {
     // The previous batch fades out of its sockets before the rack takes over.
-    // Same child positions as the results branch below (summary, mobile bar,
-    // grid, load more), so React keeps the cards instead of remounting them.
+    // Same child positions as the results branch below (summary, grid,
+    // load more), so React keeps the cards instead of remounting them.
     if (leavingBatch) {
       return (
         <>
           <div className="results-summary results-summary--placeholder" aria-hidden />
-          {null}
           {renderGrid(leavingBatch.results, leavingBatch.rarity, leavingBatch.cycle, true)}
           {null}
         </>
@@ -308,24 +326,6 @@ const SearchResults: React.FC = () => {
             ))}
           </div>
 
-          {/* Mobile floating controls bar — sticky, directly above cards */}
-          <div className={`mobile-controls-bar ${hideMobileControls ? 'mobile-controls-bar-hidden' : ''}`}>
-            <MobileFilterSheet />
-            <div className="results-sort-control">
-              <select
-                className="results-sort-select"
-                value={sortBy}
-                onChange={handleSortChange}
-                aria-label="Sort results"
-              >
-                <option value="relevance">Relevance</option>
-                <option value="rating">Rating</option>
-                <option value="release">Release Date</option>
-                <option value="name">Name</option>
-              </select>
-            </div>
-          </div>
-
           {renderGrid(gameResults, rarity, forgeCycle, false)}
 
           <LoadMoreButton />
@@ -362,6 +362,38 @@ const SearchResults: React.FC = () => {
       )}
     </AnimatePresence>
     <section ref={sectionRef} className="flex min-h-0 flex-1 flex-col w-full mx-auto">
+      {/* Mobile: the results view's header — back to the map, refine, sort, share. Hides on scroll down. */}
+      <div className={`mobile-results-header ${hideMobileControls ? 'mobile-results-header--hidden' : ''}`}>
+        {onBackToMap && (
+          <button type="button" className="mobile-results-back" onClick={onBackToMap} aria-label="Back to the keyword map">
+            <ChevronLeft aria-hidden="true" />
+            Map
+          </button>
+        )}
+        <div className="mobile-results-tools">
+          <MobileFilterSheet />
+          <div className="results-sort-control">
+            <select
+              className="results-sort-select"
+              value={sortBy}
+              onChange={handleSortChange}
+              aria-label="Sort results"
+            >
+              <option value="relevance">Relevance</option>
+              <option value="rating">Rating</option>
+              <option value="release">Release Date</option>
+              <option value="name">Name</option>
+            </select>
+          </div>
+          {searchFresh && gameResults.length > 0 && (
+            <button type="button" className="mobile-results-icon" onClick={handleShare} aria-label={shareCopied ? 'Link copied' : 'Share results'}>
+              {shareCopied ? <Check aria-hidden="true" /> : <Share2 aria-hidden="true" />}
+            </button>
+          )}
+          <SavedGamesControl className="mobile-results-icon mobile-results-saved" />
+        </div>
+      </div>
+
       {/* Desktop-only sticky header — hidden on mobile via CSS */}
       <div className={`results-sticky-header ${hasSearched ? '' : 'results-sticky-header-pristine'}`}>
         <div className="flex w-full items-center justify-end gap-3">

@@ -5,12 +5,15 @@
 Split workspace layout:
 
 ```text
-Mobile:
-  App header in home.tsx
-  Build | Results tab bar
-  Build tab: KeywordSection
-  Results tab: ResultsSection/SearchResults
-  BottomBar: fixed expandable action drawer with SelectedFilters, Clear, Search
+Mobile (< 1024px): the same KeywordSection/KeywordMap, full screen
+  Map view: KeywordMap variant="mobile" (relic skin rescaled in the mobile
+    block of kmap-relic.css; 4 diagonal neighbours, swipe = next set), with the
+    same floating selection chips, search lens, Search CTA and Wayfinder
+  Results view: ResultsSection/SearchResults with a sticky relic header
+    (.mobile-results-header: Map, filters, sort, share, saved)
+  The CTA searches and switches to Results ("View N games" once searched);
+  the Results view is a history entry ({gamefinder:'results-view'}), so
+  phone Back, the Map button or a right swipe return to the map.
 
 Desktop:
   Left panel (40%): KeywordSection
@@ -27,15 +30,16 @@ Desktop:
 ```
 
 - Desktop always shows build and results panels side by side.
-- Mobile switches between Build and Results tabs; Search auto-switches to
-  Results.
+- Mobile shows one view at a time (`mobileView` in home.tsx); Search
+  switches to Results. There is no mobile masthead, tab bar or bottom drawer.
 - `FilterSidebar` is no longer part of the active split layout.
 - `Hero` is not part of the active home layout, though the component still
   exists.
 - Desktop left panel is one `KeywordMap` section (`client/src/components/KeywordMap.tsx`)
   with the search built in (`search` prop; on desktop a collapsed lens in the map
-  window's top-right that expands on hover/focus) and the roll/discovery deck behind a
-  small "Need a spark?" header button (`spark` prop; swaps the body). Steps:
+  window's top-right that expands on hover/focus) and the desktop Wayfinder behind a
+  small "Need a spark?" header button (`spark` prop). The Wayfinder is an overlay:
+  the map remains mounted, recedes visually, and restores its exact state when closed. Steps:
   root map (the 3 categories as nodes) -> category map (its
   subcategories as nodes, 8 per page desktop / 4 mobile, refresh pages; each
   subcategory/category has a stable negative node id from `keywordTaxonomy`
@@ -82,10 +86,9 @@ Desktop:
   widths (`measureLabel.ts`). The scene component is `KeywordMapScene.tsx`;
   `useMapSwipe` handles the mobile swipe; `useMapHistory` makes every map step a history entry
   (`{gamefinder:'kmap', inst, depth}`) so browser Back retraces it.
-  Mobile: `KeywordMapSheet.tsx` is a full-screen "map mode" (portalled to
-  body), opened from the shelf's "Explore the keyword map" button or the
-  inline subcategory header's "Map" button; 4 diagonal neighbours, swipe =
-  next set, drag the handle down or Done to close (pops all its entries).
+  Mobile: the map is the Build view itself (one KeywordMap instance,
+  `key={variant}` so it remounts across the breakpoint); 4 diagonal
+  neighbours, swipe = next set, nodes keep a `+` badge (no hover).
   Graph data: the client never downloads `keyword_cooccurrence.json`. The
   server (`server/services/keywordGraph.ts`) loads it, ranks every list with
   `shared/keywordRelevance.ts` (Jaccard or NPMI association + curated-list
@@ -129,12 +132,12 @@ Desktop:
   shared by counts and facets; `igdbLimiter.ts` is the one IGDB concurrency
   budget (2) for counts, facets and probes. Client: `lib/keywordFit.ts`;
   `selectKeywordGraph(…, { allow })` applies the filter to both rings.
-- The discovery-card deck (`renderDiscoveryDeck()`) is mobile-only now.
-  Mobile: search, then a collapsible "Browse all keywords" shelf (collapsed
-  by default, category-grouped with subcategory drill-in), then the
-  discovery deck — all on one scrollable screen.
-- `SelectedFilters` appears in both desktop and mobile action areas.
-- `BottomBar` is mobile-only, fixed, and behaves as an expandable drawer.
+- The Wayfinder is the only "Need a spark?" view, on both breakpoints
+  (wayfinder.css has a portrait layout: bearings in a row above and below
+  the ring, sized with container-query units).
+- `SelectedFilters variant="chips"` floats on the map on both breakpoints.
+- Result sockets (SocketRack, slot rims, frame outsets) apply at every width;
+  the grid uses `gap-7` so rims never overlap.
 
 Primary state:
 - Filter/search/result state lives in `FilterContext`

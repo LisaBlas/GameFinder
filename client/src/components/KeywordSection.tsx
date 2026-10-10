@@ -1,39 +1,21 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Filter } from "./Filter";
+import React, { useEffect, useRef, useState } from "react";
 import topKeywordsByCategory from "../assets/top_keywords_by_category.json";
 import extendedKeywordsByCategory from "../assets/extended_keywords_by_category.json";
 import {
-  Sparkles, Wand2, LayoutGrid, Dices, BookOpen, Gem,
-  X, Search, Share2, Check, ChevronDown, ChevronLeft, ChevronRight,
-  Shuffle, Star, KeyRound, Hammer,
-  Infinity as InfinityIcon, Waypoints,
+  Sparkles, Wand2, Dices, Gem,
+  Search, Share2, Check, ScrollText,
+  Shuffle, Infinity as InfinityIcon,
 } from "lucide-react";
 import KeywordSearch from './KeywordSearch';
-import KeywordMap, { takeSharedJourney, type MapLocation } from './KeywordMap';
-import { KeywordMapSheet, openMapSheetEntry, useMapSheetPopClose } from './KeywordMapSheet';
+import KeywordMap from './KeywordMap';
 import { useSelectionCount } from '../hooks/useSelectionCount';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { formatCount, type CountResult } from '../lib/searchCount';
 import { SelectedFilters } from './SelectedFilters';
 import { useFilters, type Filter as FilterItem } from '../context/FilterContext';
-import { Reliquary, type RelicDraw, type Vessel } from './Reliquary';
+import { Wayfinder, type WayfinderBearing, type WayfinderDraw } from './Wayfinder';
 import { track } from '../lib/funnel';
-import { DiscoveryCard } from './DiscoveryCard';
-import { DISCOVERY_CARD_META, getRarity } from '../lib/discoveryCards';
-import type { RevealCard, RarityTier } from '../lib/discoveryCards';
-import {
-  MAIN_CATEGORIES,
-  MAIN_CATEGORY_META,
-  getAllKeywordsForSubcategory,
-  getAvailableSubcategories,
-  getCategoryDescription,
-  getKeywordCountForSubcategory,
-  getSubcategoryDescription,
-  getSubcategoryIconComponent,
-  getSubcategoryParent,
-  type KeywordItem,
-  type MainCategory,
-} from '../lib/keywordTaxonomy';
+import type { RevealCard } from '../lib/discoveryCards';
 
 type RawKw = { id: number; name: string };
 const _randomKeywordPool: RawKw[] = (() => {
@@ -47,8 +29,6 @@ const _randomKeywordPool: RawKw[] = (() => {
   }
   return out;
 })();
-
-// RevealCard, RarityTier, and getRarity are imported from ../lib/discoveryCards
 
 interface KeywordComboSuggestion {
   title: string;
@@ -69,43 +49,197 @@ interface UniqueLimitsStore {
   lastComboTitle?: string;
 }
 
-function loadUniqueLimits(): UniqueLimitsStore {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const raw = localStorage.getItem('gamefinder_unique_limits');
-    if (raw) {
-      const parsed: UniqueLimitsStore = JSON.parse(raw);
-      if (parsed.date === today) return parsed;
-    }
-    return { date: today, kwUsed: 0, comboUsed: 0 };
-  } catch {
-    return { date: new Date().toISOString().split('T')[0], kwUsed: 0, comboUsed: 0 };
-  }
-}
-
 function saveUniqueLimits(state: UniqueLimitsStore): void {
   try { localStorage.setItem('gamefinder_unique_limits', JSON.stringify(state)); } catch {}
 }
 
+const CATEGORY = 'Keywords';
+
+const popularSuggestions = [
+  { id: 41781, name: "Action Roguelike" },
+  { id: 17326, name: "Souls-like" },
+];
+
+const keywordComboSuggestions: KeywordComboSuggestion[] = [
+  {
+    title: "Memory Loss Horror",
+    filters: [
+      { id: 694, name: "Memory Loss", category: CATEGORY },
+      { id: 19, name: "Horror", category: "themes" },
+    ],
+  },
+  {
+    title: "Poker Roguelike",
+    filters: [
+      { id: 154, name: "Poker", category: CATEGORY },
+      { id: 27419, name: "Roguelike Deckbuilder", category: CATEGORY },
+      { id: 35, name: "Card & Board Game", category: "genres" },
+    ],
+  },
+  {
+    title: "Storm City Roguelite",
+    filters: [
+      { id: 3533, name: "City Builder", category: CATEGORY },
+      { id: 17292, name: "Roguelite", category: CATEGORY },
+      { id: 606, name: "Resource Management", category: CATEGORY },
+    ],
+  },
+  {
+    title: "Sushi Dive Management",
+    filters: [
+      { id: 509, name: "Fishing", category: CATEGORY },
+      { id: 38859, name: "Restaurant Management", category: CATEGORY },
+      { id: 138, name: "Underwater", category: CATEGORY },
+    ],
+  },
+  {
+    title: "Roadtrip Survival",
+    filters: [
+      { id: 778, name: "Driving", category: CATEGORY },
+      { id: 21, name: "Survival", category: "themes" },
+      { id: 1, name: "First person", category: "Perspective" },
+    ],
+  },
+  {
+    title: "Side-Scroll Souls",
+    filters: [
+      { id: 288, name: "2D", category: CATEGORY },
+      { id: 17326, name: "Souls-like", category: CATEGORY },
+      { id: 78, name: "Anime", category: CATEGORY, mode: "exclude" },
+    ],
+  },
+  {
+    title: "Cozy Indie Hangout",
+    filters: [
+      { id: 24685, name: "Cozy", category: CATEGORY },
+      { id: 2084, name: "Relaxing", category: CATEGORY },
+      { id: 2, name: "Multiplayer", category: "Game Mode" },
+      { id: 32, name: "Indie", category: "genres" },
+    ],
+  },
+];
+
+const uniqueKeywords = [
+  { id: 41980, name: "Hiking",                    emoji: "🥾" },
+  { id: 41907, name: "Bank Robbery",              emoji: "🏦" },
+  { id: 38428, name: "Solarpunk",                 emoji: "🌿" },
+  { id: 44092, name: "Astronomy",                 emoji: "🔭" },
+  { id: 38817, name: "Avant Garde",               emoji: "🎨" },
+  { id: 42679, name: "Food Truck",                emoji: "🚚" },
+  { id: 44749, name: "Canoeing",                  emoji: "🛶" },
+  { id: 38661, name: "K-Pop",                     emoji: "🎤" },
+  { id: 41829, name: "Air Traffic Control",       emoji: "✈️" },
+  { id: 38790, name: "Snowmobile",                emoji: "🏔️" },
+  { id: 44093, name: "Astrology",                 emoji: "🔮" },
+  { id: 41985, name: "Auction",                   emoji: "🔨" },
+  { id: 43130, name: "Aviation",                  emoji: "🛩️" },
+  { id: 38537, name: "Badminton",                 emoji: "🏸" },
+  { id: 41880, name: "Bakery",                    emoji: "🥐" },
+  { id: 5709,  name: "Cauldron",                  emoji: "🪄" },
+  { id: 43191, name: "Community Sim",             emoji: "🏘️" },
+  { id: 37918, name: "Deep Web",                  emoji: "🌐" },
+  { id: 39395, name: "Eldritch Romance",          emoji: "🖤" },
+  { id: 44171, name: "Hoverboard",                emoji: "🛹" },
+  { id: 44031, name: "Laser Tag",                 emoji: "🎯" },
+  { id: 39454, name: "Nasa Punk",                 emoji: "🚀" },
+  { id: 44022, name: "Occupational Simulation",   emoji: "👷" },
+  { id: 37981, name: "Petanque",                  emoji: "🪨" },
+  { id: 39523, name: "Ping Pong",                 emoji: "🏓" },
+  { id: 38215, name: "Rage Room",                 emoji: "💥" },
+  { id: 1030,  name: "Roller Coaster",            emoji: "🎢" },
+  { id: 38397, name: "Spectacle Platformer",      emoji: "🎭" },
+  { id: 37948, name: "Void",                      emoji: "🌑" },
+  { id: 4893,  name: "Wall Run",                  emoji: "🏃" },
+];
+
+const uniqueComboSuggestions: KeywordComboSuggestion[] = [
+  {
+    title: "Hiking Exploration",
+    filters: [
+      { id: 41980, name: "Hiking", category: CATEGORY },
+      { id: 72,    name: "Exploration", category: CATEGORY },
+    ],
+  },
+  {
+    title: "Bank Robbery Shooter",
+    filters: [
+      { id: 41907, name: "Bank Robbery", category: CATEGORY },
+      { id: 5,     name: "Shooter", category: "genres" },
+    ],
+  },
+  {
+    title: "Solarpunk Strategy",
+    filters: [
+      { id: 38428, name: "Solarpunk", category: CATEGORY },
+      { id: 15,    name: "Strategy", category: "genres" },
+    ],
+  },
+  {
+    title: "Astronomy Simulator",
+    filters: [
+      { id: 44092, name: "Astronomy", category: CATEGORY },
+      { id: 13,    name: "Simulator", category: "genres" },
+    ],
+  },
+  {
+    title: "Air Traffic Sim",
+    filters: [
+      { id: 41829, name: "Air Traffic Control", category: CATEGORY },
+      { id: 13,    name: "Simulator", category: "genres" },
+    ],
+  },
+];
+
+const titleCase = (name: string) => name.replace(/\b\w/g, c => c.toUpperCase());
+const getStepLabel = (index: number, total: number) => `${index + 1}/${total}`;
+const getPaddedStepLabel = (index: number, total: number) =>
+  `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+
+const renderSequencePips = (index: number, total: number) => {
+  const pipCount = Math.min(5, total);
+  const activePip = Math.min(pipCount - 1, Math.floor((index / Math.max(total - 1, 1)) * pipCount));
+  return (
+    <span className="qs-sequence-pips" aria-hidden="true">
+      {Array.from({ length: pipCount }, (_, pipIndex) => (
+        <span
+          key={pipIndex}
+          className={`qs-sequence-pip${pipIndex === activePip ? ' qs-sequence-pip-active' : ''}`}
+        />
+      ))}
+    </span>
+  );
+};
+
+const comboFilters = (suggestion: KeywordComboSuggestion): FilterItem[] =>
+  suggestion.filters.map(filter => ({
+    id: filter.id,
+    name: titleCase(filter.name),
+    category: filter.category,
+    mode: filter.category === CATEGORY ? filter.mode || "include" : undefined,
+  }));
+
 interface KeywordSectionProps {
-  expanded: boolean;
-  setActiveSection: (section: 'keywords' | 'results' | 'none') => void;
-  filterSectionRef: React.RefObject<HTMLDivElement>;
-  heroRef: React.RefObject<HTMLDivElement>;
+  /** Mobile: show the results view (results live behind the map, not beside it). */
+  onShowResults?: () => void;
 }
 
-export const KeywordSection: React.FC<KeywordSectionProps> = () => {
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const desktopSearchRef = useRef<HTMLInputElement>(null);
-  const sheetSearchRef = useRef<HTMLInputElement>(null);
+/**
+ * The keyword builder: one KeywordMap (desktop pane or full mobile screen) with
+ * the search built in, the selection and Search floating on it, and the
+ * Wayfinder behind "Need a spark?". Owns all Wayfinder draw state.
+ */
+export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults }) => {
+  const searchRef = useRef<HTMLInputElement>(null);
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const variant = isDesktop ? 'desktop' : 'mobile';
 
-  // "/" jumps to the keyword search (desktop), unless already typing somewhere.
+  // "/" jumps to the keyword search, unless already typing somewhere.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
       if (t?.closest('input, textarea, select, [contenteditable="true"]')) return;
-      const input = desktopSearchRef.current;
+      const input = searchRef.current;
       if (!input || input.offsetParent === null) return;
       e.preventDefault();
       input.focus();
@@ -114,267 +248,38 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // Mobile map mode: a full-screen sheet; `loc` is where it opens (root when undefined).
-  const [mapSheet, setMapSheet] = useState<{ loc?: MapLocation } | null>(null);
-  const closeMapSheetState = useCallback(() => setMapSheet(null), []);
-  useMapSheetPopClose(mapSheet !== null, closeMapSheetState);
-  const openMapSheet = (loc?: MapLocation) => {
-    openMapSheetEntry();
-    setMapSheet({ loc });
-  };
-  // A shared map journey link opens straight into map mode on phones (desktop's map takes it otherwise).
-  useEffect(() => {
-    const shared = takeSharedJourney('mobile');
-    if (shared) openMapSheet(shared);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const revealTimerRef = useRef<number | null>(null);
-  const category = 'Keywords';
-  const { addFilter, clearAllFilters, removeFilter, searchGames, selectedFilters, isLoading, searchFresh, gameResults, totalCount } = useFilters();
+  const { addFilter, clearAllFilters, searchGames, selectedFilters, isLoading, searchFresh, gameResults, totalCount, countIsCapped } = useFilters();
   const selectionCount = useSelectionCount();
   const zeroSelection = selectionCount.status === 'ready' && selectionCount.count === 0;
   const hasSearchableFilters = selectedFilters.some(filter => filter.mode !== "exclude");
-  const showTasteStory = selectedFilters.length === 0 && !searchFresh;
   const [shareCopied, setShareCopied] = useState(false);
   const [shareShineActive, setShareShineActive] = useState(false);
 
-  const [activeMainCategory, setActiveMainCategory] = useState<MainCategory | null>("Mechanics & Systems");
-  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
-  const [mobileCategoryView, setMobileCategoryView] = useState(false);
-  const [mobileSubcategoryView, setMobileSubcategoryView] = useState(false);
-  const [mobileQsView, setMobileQsView] = useState<"keyword" | "combo" | null>(null);
-  const [animBatchStart] = useState(0);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
-  const [activeQsKeywordIndex, setActiveQsKeywordIndex] = useState(0);
   const [activeUniqueKeywordIndex, setActiveUniqueKeywordIndex] = useState(0);
   const [activeUniqueComboIndex, setActiveUniqueComboIndex] = useState(0);
-  const [commonKeywordRevealed, setCommonKeywordRevealed] = useState<{ name: string } | null>(null);
-  const [rareComboRevealed, setRareComboRevealed] = useState<{ title: string } | null>(null);
-  const [popularRevealed, setPopularRevealed] = useState<{ name: string } | null>(null);
   const [activePopularIndex, setActivePopularIndex] = useState(0);
-  const [userCraftsRevealed, setUserCraftsRevealed] = useState(false);
-  const [activeRevealCard, setActiveRevealCard] = useState<RevealCard | null>(null);
-  // Rarity reveal — tracks per-card rarity so revealed labels persist when other cards are tapped
-  const [cardRarities, setCardRarities] = useState<Partial<Record<RevealCard, RarityTier | null>>>({});
-  const activeDiscoveryCardIdRef = useRef<RevealCard | null>(null);
-  const resultCapturedRef = useRef(false);
-  const [postClickCardId, setPostClickCardId] = useState<RevealCard | null>(null);
   const [uniqueLimits, setUniqueLimits] = useState<UniqueLimitsStore>(() => ({ date: new Date().toISOString().split('T')[0], kwUsed: 0, comboUsed: 0 }));
-  const [browseOpen, setBrowseOpen] = useState(false);
-  // Reliquary (desktop spark view): the relic on the altar and this session's draws.
-  const [relic, setRelic] = useState<RelicDraw | null>(null);
-  const [relicHistory, setRelicHistory] = useState<RelicDraw[]>([]);
+  // Wayfinder: the current destination and this session's routes.
+  const [relic, setRelic] = useState<WayfinderDraw | null>(null);
+  const [relicHistory, setRelicHistory] = useState<WayfinderDraw[]>([]);
   const relicSeqRef = useRef(0);
   const relicDrawnAtRef = useRef(0);
   const relicFiltersRef = useRef(new Map<number, FilterItem[]>());
-  const kwRevealed = uniqueLimits.kwUsed > 0 ? { name: uniqueLimits.lastKwName ?? '', emoji: uniqueLimits.lastKwEmoji ?? '' } : null;
-  const comboRevealed = uniqueLimits.comboUsed > 0 ? { title: uniqueLimits.lastComboTitle ?? '' } : null;
-  const isKwRevealedState = !!kwRevealed;
-  const isComboRevealedState = !!comboRevealed;
-  const popularSuggestions = [
-    { id: 41781, name: "Action Roguelike" },
-    { id: 17326, name: "Souls-like" },
-  ];
 
-  const keywordComboSuggestions: KeywordComboSuggestion[] = [
-    {
-      title: "Memory Loss Horror",
-      filters: [
-        { id: 694, name: "Memory Loss", category },
-        { id: 19, name: "Horror", category: "themes" },
-      ],
-    },
-    {
-      title: "Poker Roguelike",
-      filters: [
-        { id: 154, name: "Poker", category },
-        { id: 27419, name: "Roguelike Deckbuilder", category },
-        { id: 35, name: "Card & Board Game", category: "genres" },
-      ],
-    },
-    {
-      title: "Storm City Roguelite",
-      filters: [
-        { id: 3533, name: "City Builder", category },
-        { id: 17292, name: "Roguelite", category },
-        { id: 606, name: "Resource Management", category },
-      ],
-    },
-    {
-      title: "Sushi Dive Management",
-      filters: [
-        { id: 509, name: "Fishing", category },
-        { id: 38859, name: "Restaurant Management", category },
-        { id: 138, name: "Underwater", category },
-      ],
-    },
-    {
-      title: "Roadtrip Survival",
-      filters: [
-        { id: 778, name: "Driving", category },
-        { id: 21, name: "Survival", category: "themes" },
-        { id: 1, name: "First person", category: "Perspective" },
-      ],
-    },
-    {
-      title: "Side-Scroll Souls",
-      filters: [
-        { id: 288, name: "2D", category },
-        { id: 17326, name: "Souls-like", category },
-        { id: 78, name: "Anime", category, mode: "exclude" },
-      ],
-    },
-    {
-      title: "Cozy Indie Hangout",
-      filters: [
-        { id: 24685, name: "Cozy", category },
-        { id: 2084, name: "Relaxing", category },
-        { id: 2, name: "Multiplayer", category: "Game Mode" },
-        { id: 32, name: "Indie", category: "genres" },
-      ],
-    },
-  ];
-
-  const quickStartKeywords = [
-    { id: 2158,  name: "Time Loop",     emoji: "🔄", category },
-    { id: 243,   name: "Heist",         emoji: "🎭", category },
-    { id: 1136,  name: "Noir",          emoji: "🕵️", category },
-    { id: 2668,  name: "Alchemy",       emoji: "⚗️", category },
-    { id: 38865, name: "Deckbuilder",   emoji: "🃏", category },
-    { id: 43194, name: "Immersive Sim", emoji: "🧩", category },
-  ];
-
-  const uniqueKeywords = [
-    { id: 41980, name: "Hiking",                    emoji: "🥾", category },
-    { id: 41907, name: "Bank Robbery",              emoji: "🏦", category },
-    { id: 38428, name: "Solarpunk",                 emoji: "🌿", category },
-    { id: 44092, name: "Astronomy",                 emoji: "🔭", category },
-    { id: 38817, name: "Avant Garde",               emoji: "🎨", category },
-    { id: 42679, name: "Food Truck",                emoji: "🚚", category },
-    { id: 44749, name: "Canoeing",                  emoji: "🛶", category },
-    { id: 38661, name: "K-Pop",                     emoji: "🎤", category },
-    { id: 41829, name: "Air Traffic Control",       emoji: "✈️", category },
-    { id: 38790, name: "Snowmobile",                emoji: "🏔️", category },
-    { id: 44093, name: "Astrology",                 emoji: "🔮", category },
-    { id: 41985, name: "Auction",                   emoji: "🔨", category },
-    { id: 43130, name: "Aviation",                  emoji: "🛩️", category },
-    { id: 38537, name: "Badminton",                 emoji: "🏸", category },
-    { id: 41880, name: "Bakery",                    emoji: "🥐", category },
-    { id: 5709,  name: "Cauldron",                  emoji: "🪄", category },
-    { id: 43191, name: "Community Sim",             emoji: "🏘️", category },
-    { id: 37918, name: "Deep Web",                  emoji: "🌐", category },
-    { id: 39395, name: "Eldritch Romance",          emoji: "🖤", category },
-    { id: 44171, name: "Hoverboard",                emoji: "🛹", category },
-    { id: 44031, name: "Laser Tag",                 emoji: "🎯", category },
-    { id: 39454, name: "Nasa Punk",                 emoji: "🚀", category },
-    { id: 44022, name: "Occupational Simulation",   emoji: "👷", category },
-    { id: 37981, name: "Petanque",                  emoji: "🪨", category },
-    { id: 39523, name: "Ping Pong",                 emoji: "🏓", category },
-    { id: 38215, name: "Rage Room",                 emoji: "💥", category },
-    { id: 1030,  name: "Roller Coaster",            emoji: "🎢", category },
-    { id: 38397, name: "Spectacle Platformer",      emoji: "🎭", category },
-    { id: 37948, name: "Void",                      emoji: "🌑", category },
-    { id: 4893,  name: "Wall Run",                  emoji: "🏃", category },
-  ];
-
-  const uniqueComboSuggestions: KeywordComboSuggestion[] = [
-    {
-      title: "Hiking Exploration",
-      filters: [
-        { id: 41980, name: "Hiking", category },
-        { id: 72,    name: "Exploration", category },
-      ],
-    },
-    {
-      title: "Bank Robbery Shooter",
-      filters: [
-        { id: 41907, name: "Bank Robbery", category },
-        { id: 5,     name: "Shooter", category: "genres" },
-      ],
-    },
-    {
-      title: "Solarpunk Strategy",
-      filters: [
-        { id: 38428, name: "Solarpunk", category },
-        { id: 15,    name: "Strategy", category: "genres" },
-      ],
-    },
-    {
-      title: "Astronomy Simulator",
-      filters: [
-        { id: 44092, name: "Astronomy", category },
-        { id: 13,    name: "Simulator", category: "genres" },
-      ],
-    },
-    {
-      title: "Air Traffic Sim",
-      filters: [
-        { id: 41829, name: "Air Traffic Control", category },
-        { id: 13,    name: "Simulator", category: "genres" },
-      ],
-    },
-  ];
-
-  const commonKeywordState = "Random keyword";
-  const rareComboState = "GameFinder combo";
-  const isCommonKeywordRevealed = !!commonKeywordRevealed;
-  const isRareComboRevealed = !!rareComboRevealed;
-  const getStepLabel = (index: number, total: number) => `${index + 1}/${total}`;
-  const getPaddedStepLabel = (index: number, total: number) =>
-    `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
-  const renderSequencePips = (index: number, total: number) => {
-    const pipCount = Math.min(5, total);
-    const activePip = Math.min(pipCount - 1, Math.floor((index / Math.max(total - 1, 1)) * pipCount));
-
-    return (
-      <span className="qs-sequence-pips" aria-hidden="true">
-        {Array.from({ length: pipCount }, (_, pipIndex) => (
-          <span
-            key={pipIndex}
-            className={`qs-sequence-pip${pipIndex === activePip ? ' qs-sequence-pip-active' : ''}`}
-          />
-        ))}
-      </span>
-    );
-  };
   const popularStep = getStepLabel(activePopularIndex, popularSuggestions.length);
   const craftedStep = getStepLabel(activeSuggestionIndex, keywordComboSuggestions.length);
-  const uniqueKeywordDisplayIndex = isKwRevealedState
+  const uniqueKeywordDisplayIndex = uniqueLimits.kwUsed > 0
     ? Math.max(0, Math.min(uniqueLimits.kwUsed - 1, uniqueKeywords.length - 1))
     : activeUniqueKeywordIndex;
-  const uniqueComboDisplayIndex = isComboRevealedState
+  const uniqueComboDisplayIndex = uniqueLimits.comboUsed > 0
     ? Math.max(0, Math.min(uniqueLimits.comboUsed - 1, uniqueComboSuggestions.length - 1))
     : activeUniqueComboIndex;
   const uniqueKeywordDisplayStep = getPaddedStepLabel(uniqueKeywordDisplayIndex, uniqueKeywords.length);
   const uniqueComboDisplayStep = getPaddedStepLabel(uniqueComboDisplayIndex, uniqueComboSuggestions.length);
 
-  const triggerCardReveal = (card: RevealCard) => {
-    if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
-    setActiveRevealCard(null);
-    window.setTimeout(() => setActiveRevealCard(card), 0);
-    revealTimerRef.current = window.setTimeout(() => {
-      setActiveRevealCard(null);
-      revealTimerRef.current = null;
-    }, 850);
-  };
-
-  /** Call instead of triggerCardReveal for all 6 discovery cards. Marks the card
-   *  as active so the rarity class can be applied once results arrive, and makes
-   *  this the only revealed discovery card. */
-  const activateDiscoveryCard = (card: RevealCard) => {
-    triggerCardReveal(card);
-    activeDiscoveryCardIdRef.current = card;
-    resultCapturedRef.current = false;
-    setPostClickCardId(card);
-
-    // Clear all rarity badges so the clicked card shows "Unidentified" until new results arrive.
-    setCardRarities({});
-
-    // Reset revealed labels on every non-clicked card, including prior rarity reveals.
-    if (card !== 'popular') setPopularRevealed(null);
-    if (card !== 'rare-combo') setRareComboRevealed(null);
-    if (card !== 'common-keyword') setCommonKeywordRevealed(null);
-    if (card !== 'user-crafts') setUserCraftsRevealed(false);
-    // Handle the two unique-card fields in a single setState to avoid stomping.
+  /** A draw from one bearing resets the other unique sequence's "last drawn" marker. */
+  const resetOtherUniques = (card: RevealCard) => {
     setUniqueLimits(prev => {
       const next: UniqueLimitsStore = {
         ...prev,
@@ -386,66 +291,50 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     });
   };
 
-  /** Rarity for the given card — non-null only after its search has returned results. */
-  const getActiveRarity = (card: RevealCard): RarityTier | null =>
-    cardRarities[card] ?? null;
-
-  /** Puts a fresh draw on the altar; its count is locked once known (see the identify effect). */
+  /** Sets a fresh destination; its count is locked once known (see the identify effect). */
   const recordDraw = (card: RevealCard, filters: FilterItem[], title?: string) => {
-    const draw: RelicDraw = { id: ++relicSeqRef.current, card, title, parts: filters.map(f => f.name) };
+    const draw: WayfinderDraw = { id: ++relicSeqRef.current, card, title, parts: filters.map(f => f.name) };
     relicFiltersRef.current.set(draw.id, filters);
     relicDrawnAtRef.current = Date.now();
     setRelic(draw);
     setRelicHistory(prev => [draw, ...prev].slice(0, 8));
-    track('reliquary_draw', { card });
+    track('wayfinder_draw', { card });
   };
 
-  /** Shelf: put an earlier draw back on the altar, with its filters. */
-  const restoreRelic = (draw: RelicDraw) => {
+  /** Trail: restore an earlier destination with its filters. */
+  const restoreRelic = (draw: WayfinderDraw) => {
     const filters = relicFiltersRef.current.get(draw.id);
     if (!filters) return;
     clearAllFilters();
     filters.forEach(f => addFilter(f));
     setRelic(draw);
     setRelicHistory(prev => [draw, ...prev.filter(d => d.id !== draw.id)]);
-    track('reliquary_restore', { card: draw.card });
+    track('wayfinder_restore', { card: draw.card });
   };
 
-  const comboFilters = (suggestion: KeywordComboSuggestion): FilterItem[] =>
-    suggestion.filters.map(filter => ({
-      id: filter.id,
-      name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
-      category: filter.category,
-      mode: filter.category === category ? filter.mode || "include" : undefined,
-    }));
-
   const applyCommonKeyword = () => {
-    activateDiscoveryCard("common-keyword");
+    resetOtherUniques("common-keyword");
     clearAllFilters();
     const kw = _randomKeywordPool[Math.floor(Math.random() * _randomKeywordPool.length)];
-    const name = kw.name.replace(/\b\w/g, c => c.toUpperCase());
-    const filter: FilterItem = { id: kw.id, name, category, mode: "include" };
+    const filter: FilterItem = { id: kw.id, name: titleCase(kw.name), category: CATEGORY, mode: "include" };
     addFilter(filter);
-    setCommonKeywordRevealed({ name });
     recordDraw("common-keyword", [filter]);
   };
 
   const applyRareCombo = () => {
-    activateDiscoveryCard("rare-combo");
+    resetOtherUniques("rare-combo");
     clearAllFilters();
     const suggestion = keywordComboSuggestions[activeSuggestionIndex];
     const filters = comboFilters(suggestion);
     filters.forEach(f => addFilter(f));
-    setRareComboRevealed({ title: suggestion.title });
     recordDraw("rare-combo", filters, suggestion.title);
     setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length);
   };
 
   const applyUniqueKeyword = () => {
-    activateDiscoveryCard("unique-keyword");
     clearAllFilters();
     const kw = uniqueKeywords[activeUniqueKeywordIndex];
-    const filter: FilterItem = { id: kw.id, name: kw.name.replace(/\b\w/g, c => c.toUpperCase()), category, mode: "include" };
+    const filter: FilterItem = { id: kw.id, name: titleCase(kw.name), category: CATEGORY, mode: "include" };
     addFilter(filter);
     recordDraw("unique-keyword", [filter]);
     const newLimits: UniqueLimitsStore = {
@@ -462,7 +351,6 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const applyUniqueCombo = () => {
-    activateDiscoveryCard("unique-combo");
     clearAllFilters();
     const suggestion = uniqueComboSuggestions[activeUniqueComboIndex];
     const filters = comboFilters(suggestion);
@@ -482,41 +370,25 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
   };
 
   const applyPopular = () => {
-    activateDiscoveryCard("popular");
+    resetOtherUniques("popular");
     clearAllFilters();
     const kw = popularSuggestions[activePopularIndex];
-    const filter: FilterItem = { id: kw.id, name: kw.name, category, mode: "include" };
+    const filter: FilterItem = { id: kw.id, name: kw.name, category: CATEGORY, mode: "include" };
     addFilter(filter);
-    setPopularRevealed({ name: kw.name });
     recordDraw("popular", [filter]);
     setActivePopularIndex(i => (i + 1) % popularSuggestions.length);
   };
 
   const applyUserCrafts = () => {
-    activateDiscoveryCard("user-crafts");
+    resetOtherUniques("user-crafts");
     clearAllFilters();
     const filters: FilterItem[] = [
-      { id: 2379, name: "Cosmic Horror", category, mode: "include" },
+      { id: 2379, name: "Cosmic Horror", category: CATEGORY, mode: "include" },
       { id: 32, name: "Indie", category: "genres" },
     ];
     filters.forEach(f => addFilter(f));
-    setUserCraftsRevealed(true);
     recordDraw("user-crafts", filters);
   };
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (mobileSubcategoryView) {
-        setMobileSubcategoryView(false);
-      } else if (mobileQsView !== null) {
-        setMobileQsView(null);
-      } else if (mobileCategoryView) {
-        setMobileCategoryView(false);
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [mobileSubcategoryView, mobileQsView, mobileCategoryView]);
 
   useEffect(() => {
     let shineStart: ReturnType<typeof setTimeout> | undefined;
@@ -535,21 +407,9 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     };
   }, [searchFresh, isLoading]);
 
-  // Capture result count once per fresh search completion for rarity reveal.
-  // Intentionally excludes gameResults from deps: we want exactly one capture per
-  // fresh search, not a re-fire on every loadMore batch.
-  useEffect(() => {
-    if (searchFresh && !isLoading && activeDiscoveryCardIdRef.current !== null && !resultCapturedRef.current) {
-      const cardId = activeDiscoveryCardIdRef.current;
-      const rarity = gameResults.length > 0 ? getRarity(totalCount ?? gameResults.length) : null;
-      setCardRarities(prev => ({ ...prev, [cardId]: rarity }));
-      resultCapturedRef.current = true;
-    }
-  }, [searchFresh, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Identify the relic on the altar: lock its game count once the preview for
-  // the drawn selection is ready (or the search total, if the user searched
-  // first). A short beat keeps "Unidentified" readable when the count is cached.
+  // Identify the destination: lock its game count once the preview for the
+  // drawn selection is ready (or the search total, if the user searched
+  // first). A short beat keeps "Charting" readable when the count is cached.
   const previewCount = selectionCount.status === 'ready' ? selectionCount.count : null;
   const previewCapped = selectionCount.status === 'ready' && selectionCount.capped;
   useEffect(() => {
@@ -561,462 +421,86 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
     const locked = count;
     const id = relic.id;
     const timer = window.setTimeout(() => {
-      const identify = (d: RelicDraw) => (d.id === id ? { ...d, count: locked } : d);
+      const identify = (d: WayfinderDraw) => (d.id === id ? { ...d, count: locked } : d);
       setRelic(d => d && identify(d));
       setRelicHistory(h => h.map(identify));
     }, Math.max(0, relicDrawnAtRef.current + 750 - Date.now()));
     return () => clearTimeout(timer);
   }, [relic, previewCount, previewCapped, searchFresh, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Clearing the selection empties the altar (the draw stays on the shelf).
+  // Clearing the selection resets the destination (the draw stays in the trail).
   useEffect(() => {
     if (selectedFilters.length === 0) setRelic(null);
   }, [selectedFilters.length]);
 
-  useEffect(() => {
-    return () => {
-      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
-    };
-  }, []);
-
-  const selectMainCategory = (cat: MainCategory) => {
-    setActiveMainCategory(current => current === cat ? null : cat);
-    setActiveSubcategory(null);
-    setMobileCategoryView(false);
-    setMobileSubcategoryView(false);
+  const handleSearch = async () => {
+    // Mobile: results replace the map, so go there first and watch them land.
+    onShowResults?.();
+    await searchGames();
   };
 
-  const drillIntoCategory = (cat: MainCategory) => {
-    setActiveMainCategory(cat);
-    setActiveSubcategory(null);
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      await navigator.share({ title: 'GameFinder', url });
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }
   };
 
-  const drillIntoSubcategory = (mainCat: MainCategory, subCategoryName: string) => {
-    window.history.pushState({ gamefinder: 'subcategory' }, '');
-    setActiveMainCategory(mainCat);
-    setActiveSubcategory(subCategoryName);
-    setMobileCategoryView(true);
-    setMobileSubcategoryView(true);
-  };
-
-  const getCategoryIcon = (mainCat: MainCategory, size = "w-5 h-5") => {
-    const Icon = MAIN_CATEGORY_META[mainCat].icon;
-    return <Icon className={size} />;
-  };
-
-  const getCategoryAccentVars = (_mainCat: MainCategory): React.CSSProperties => {
-    return {
-      '--cat-accent-rgb': 'var(--c-emerald-rgb)',
-      '--cat-accent-soft': 'var(--c-emerald-soft)',
-    } as React.CSSProperties;
-  };
-
-  const getSubcategoryIcon = (subCategory: string, className = "w-3.5 h-3.5 shrink-0") => {
-    const Icon = getSubcategoryIconComponent(subCategory);
-    return <Icon className={className} />;
-  };
-
-  const getKeywordPanelData = (subCategoryName: string) => {
-    const displayedKeywords = getAllKeywordsForSubcategory(subCategoryName);
-    const mainCat = getSubcategoryParent(subCategoryName);
-
-    return {
-      displayedKeywords,
-      totalKeywords: displayedKeywords.length,
-      description: mainCat ? getSubcategoryDescription(mainCat, subCategoryName) : "",
-    };
-  };
-
-  const renderKeywordPill = (keyword: KeywordItem, index: number, batchStart = 0) => (
-    <div
-      key={keyword.id}
-      className="keyword-inline-item"
-      style={{ animationDelay: `${Math.min(Math.max(index - batchStart, 0) * 25, 400)}ms` }}
-    >
-      <Filter
-        label={keyword.name.replace(/\b\w/g, c => c.toUpperCase())}
-        id={keyword.id}
-        category={category}
-        onClick={() => {}}
-      />
-    </div>
-  );
-
-  const applySuggestion = (suggestion: KeywordComboSuggestion) => {
-    selectedFilters
-      .filter(filter => filter.category === category)
-      .forEach(filter => removeFilter(filter.id, filter.category, filter.endpoint));
-
-    suggestion.filters.forEach(filter => {
-      addFilter({
-        id: filter.id,
-        name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
-        category: filter.category,
-        mode: filter.category === category ? filter.mode || "include" : undefined,
-      });
-    });
-  };
-
-  const renderComboFilter = (filter: KeywordComboSuggestion["filters"][number]) => {
-    const selectedFilter = selectedFilters.find(
-      selected => selected.id === filter.id && selected.category === filter.category
-    );
-    const isExclude = filter.category === category && filter.mode === "exclude";
-    const isSelected = selectedFilter && (
-      isExclude ? selectedFilter.mode === "exclude" : selectedFilter.mode !== "exclude"
-    );
-    const label = filter.name.replace(/\b\w/g, c => c.toUpperCase());
-
+  /** Search CTA on the map's bottom-right. Fixed width across states (see kmap-relic.css).
+   *  Once searched, desktop offers Share (results are beside the map); mobile offers the
+   *  results view instead (Share lives in its header). */
+  const renderSearchActions = () => {
+    const showResults = !isDesktop && searchFresh && !isLoading;
     return (
       <button
-        key={`${filter.category}-${filter.id}-${filter.mode || "include"}`}
-        type="button"
-        className={`filter-pill${isSelected ? " selected" : ""}${filter.category === category && isSelected ? ` keyword-${filter.mode || "include"}` : ""}`}
-        onClick={() => {
-          if (isSelected) {
-            removeFilter(filter.id, filter.category);
-            return;
-          }
-
-          addFilter({
-            id: filter.id,
-            name: filter.name.replace(/\b\w/g, c => c.toUpperCase()),
-            category: filter.category,
-            mode: filter.category === category ? filter.mode || "include" : undefined,
-          });
-        }}
+        onClick={showResults ? onShowResults : searchFresh ? handleShare : handleSearch}
+        disabled={!showResults && ((!hasSearchableFilters && !searchFresh) || zeroSelection || isLoading)}
+        className={`hero-button desktop-action-button desktop-action-button-search ${
+          hasSearchableFilters || searchFresh
+            ? 'desktop-action-button-search-active'
+            : 'desktop-action-button-search-disabled'
+        } ${shareShineActive && !showResults ? 'hero-button-share-shine' : ''}${zeroSelection && !searchFresh ? ' desktop-action-button-search-zero' : ''}`}
+        title={zeroSelection && !searchFresh ? 'No games match this search yet' : undefined}
       >
-        <span>{label}</span>
+        {isLoading ? (
+          <>
+            <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            Searching...
+          </>
+        ) : showResults ? (
+          <>
+            <ScrollText className="w-4 h-4" />
+            {gameResults.length > 0 ? `View ${formatCount(totalCount ?? gameResults.length, countIsCapped)}` : 'Results'}
+          </>
+        ) : searchFresh ? (
+          <>
+            {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+            {shareCopied ? 'Copied!' : 'Share'}
+          </>
+        ) : (
+          <>
+            <Search className="w-4 h-4" />
+            {selectionCount.status === 'ready'
+              ? selectionCount.count === 0
+                ? 'No matching games'
+                : `Show ${formatCount(selectionCount.count, selectionCount.capped)}`
+              : 'Search'}
+          </>
+        )}
       </button>
     );
   };
 
-  const renderTasteStory = () => (
-    <section className="taste-story-card" aria-label="GameFinder taste curation">
-      <span className="taste-story-icon">
-        <BookOpen className="w-4 h-4" />
-      </span>
-      <span className="taste-story-copy">
-        <span className="taste-story-title">
-          Curated by what actually matters - not a database dump.
-        </span>
-        <span className="taste-story-body">
-          Keywords are chosen for playable taste: mechanics, mood, setting, style, and combinations that reveal games generic genre lists miss.
-        </span>
-      </span>
-    </section>
-  );
-
-  const renderQsKeywordPanel = () => {
-    const kw = quickStartKeywords[activeQsKeywordIndex];
-    return (
-      <div className="qs-keyword-panel">
-        <div className="qs-keyword-card">
-          <p className="qs-keyword-sublabel">Featured keyword</p>
-          <div className="qs-keyword-pill">
-            <span className="qs-keyword-pill-emoji">{kw.emoji}</span>
-            <span>{kw.name}</span>
-          </div>
-          <div className="qs-keyword-actions">
-            <button
-              type="button"
-              className="qs-keyword-explore-btn"
-              onClick={() => {
-                addFilter({
-                  id: kw.id,
-                  name: kw.name.replace(/\b\w/g, c => c.toUpperCase()),
-                  category: kw.category,
-                  mode: "include",
-                });
-              }}
-            >
-              Explore
-            </button>
-            <button
-              type="button"
-              className="qs-keyword-shuffle-btn"
-              onClick={() => setActiveQsKeywordIndex(i => (i + 1) % quickStartKeywords.length)}
-            >
-              <Shuffle className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderQsComboPanel = () => {
-    const suggestion = keywordComboSuggestions[activeSuggestionIndex];
-    return (
-      <div className="qs-combo-panel">
-        <div className="qs-combo-card">
-          <div className="qs-combo-header">
-            <h3 className="qs-combo-title">{suggestion.title}</h3>
-            <span className="qs-combo-kicker">
-              <Sparkles className="h-3 w-3" />
-              Hand-picked
-            </span>
-          </div>
-          <div className="qs-combo-recipe">
-            {suggestion.filters.map((filter) => (
-              <React.Fragment key={`${filter.category}-${filter.id}-${filter.mode || "include"}`}>
-                <span className={`qs-combo-operator${filter.mode === "exclude" ? " exclude" : ""}`}>
-                  {filter.mode === "exclude" ? "−" : "+"}
-                </span>
-                {renderComboFilter(filter)}
-              </React.Fragment>
-            ))}
-          </div>
-          <div className="qs-combo-actions">
-            <button
-              type="button"
-              className="qs-combo-btn-primary"
-              onClick={() => applySuggestion(suggestion)}
-            >
-              <Check className="h-4 w-4" />
-              Try combo
-            </button>
-            <button
-              type="button"
-              className="qs-combo-btn-secondary"
-              onClick={() => setActiveSuggestionIndex(i => (i + 1) % keywordComboSuggestions.length)}
-            >
-              <Shuffle className="h-4 w-4" />
-              Next
-              <span className="qs-combo-count">
-                {activeSuggestionIndex + 1}/{keywordComboSuggestions.length}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  /** Search/Share, shown in the keyword map's bottom bar. Fixed width across states (see kmap-relic.css). */
-  const renderSearchActions = () => (
-    <button
-      onClick={searchFresh ? handleDesktopShare : handleDesktopSearch}
-      disabled={(!hasSearchableFilters && !searchFresh) || zeroSelection || isLoading}
-      className={`hero-button desktop-action-button desktop-action-button-search ${
-        hasSearchableFilters || searchFresh
-          ? 'desktop-action-button-search-active'
-          : 'desktop-action-button-search-disabled'
-      } ${shareShineActive ? 'hero-button-share-shine' : ''}${zeroSelection && !searchFresh ? ' desktop-action-button-search-zero' : ''}`}
-      title={zeroSelection && !searchFresh ? 'No games match this search yet' : undefined}
-    >
-      {isLoading ? (
-        <>
-          <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          Searching...
-        </>
-      ) : searchFresh ? (
-        <>
-          {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-          {shareCopied ? 'Copied!' : 'Share'}
-        </>
-      ) : (
-        <>
-          <Search className="w-4 h-4" />
-          {selectionCount.status === 'ready'
-            ? selectionCount.count === 0
-              ? 'No matching games'
-              : `Show ${formatCount(selectionCount.count, selectionCount.capped)}`
-            : 'Search'}
-        </>
-      )}
-    </button>
-  );
-
-  /** The selection as bare pills on the map; clear-all appears once there are two. */
-  const renderSelection = () => <SelectedFilters variant="chips" onClear={handleDesktopClear} />;
-
-  /** Desktop left panel: one keyword-map section with the search built in and the roll deck on demand. */
-  const renderDesktopExplorer = () => (
-    <section className="hidden lg:flex lg:flex-1 lg:min-h-0 lg:flex-col">
-      <KeywordMap
-        search={<KeywordSearch inputRef={desktopSearchRef} onKeywordSelect={() => {}} />}
-        spark={renderReliquary}
-        actions={renderSearchActions()}
-        selection={renderSelection()}
-      />
-    </section>
-  );
-
-  const renderMobileSubcategoryDetail = () => {
-    if (!mobileSubcategoryView || !activeSubcategory) return null;
-    const { displayedKeywords, description, totalKeywords } = getKeywordPanelData(activeSubcategory);
-
-    return (
-      <motion.div
-        key={activeSubcategory}
-        className="fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
-        style={activeMainCategory ? getCategoryAccentVars(activeMainCategory) : {}}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
-      >
-        <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
-            aria-label="Back to categories"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <span
-            className="shrink-0 rounded-md p-1.5"
-            style={{ background: 'rgba(var(--cat-accent-rgb), 0.1)', color: 'var(--cat-accent-soft)' }}
-          >
-            {getSubcategoryIcon(activeSubcategory, "w-4 h-4")}
-          </span>
-          <span className="font-bold text-foreground truncate flex-1">{activeSubcategory}</span>
-
-          <span
-            className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full"
-            style={{ background: 'rgba(var(--cat-accent-rgb), 0.12)', color: 'var(--cat-accent-soft)' }}
-          >
-            {totalKeywords}
-          </span>
-        </div>
-
-        {description && (
-          <div className="shrink-0 px-4 py-2.5 bg-background/40 border-b border-border/50">
-            <p className="text-xs text-muted-foreground leading-snug">{description}</p>
-          </div>
-        )}
-
-        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
-          <div className="keyword-inline-list">
-            {displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
-          </div>
-        </div>
-      </motion.div>
-    );
-  };
-
-  const renderMobileCategoryDetail = () => {
-    if (!mobileCategoryView || !activeMainCategory) return null;
-    const subcategories = getAvailableSubcategories(activeMainCategory);
-    const descriptor = getCategoryDescription(activeMainCategory);
-
-    return (
-      <motion.div
-        key={activeMainCategory + '-category-detail'}
-        className="fixed inset-0 z-50 flex flex-col bg-background overflow-hidden"
-        style={getCategoryAccentVars(activeMainCategory)}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
-      >
-        <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
-            aria-label="Back to categories"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <span
-            className="shrink-0 rounded-md p-1.5"
-            style={{ background: 'rgba(var(--cat-accent-rgb), 0.1)', color: 'var(--cat-accent-soft)' }}
-          >
-            {getCategoryIcon(activeMainCategory)}
-          </span>
-          <span className="font-bold text-foreground truncate flex-1">{activeMainCategory}</span>
-          <span
-            className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full"
-            style={{ background: 'rgba(var(--cat-accent-rgb), 0.12)', color: 'var(--cat-accent-soft)' }}
-          >
-            {subcategories.length} groups
-          </span>
-        </div>
-
-        {descriptor && (
-          <div className="shrink-0 px-4 py-2.5 bg-background/40 border-b border-border/50">
-            <p className="text-xs text-muted-foreground leading-snug">{descriptor}</p>
-          </div>
-        )}
-
-        <div className="flex-1 overflow-y-auto overscroll-contain">
-          <div className="mobile-subcategory-list">
-            {subcategories.map((subCategoryName) => {
-              const keywordCount = getKeywordCountForSubcategory(subCategoryName);
-              const description = getSubcategoryDescription(activeMainCategory, subCategoryName);
-
-              return (
-                <section key={subCategoryName} className="mobile-subcategory-row">
-                  <button
-                    type="button"
-                    onClick={() => drillIntoSubcategory(activeMainCategory, subCategoryName)}
-                    className="mobile-subcategory-button"
-                  >
-                    <span className="mobile-subcategory-icon">
-                      {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
-                    </span>
-                    <span className="mobile-subcategory-copy">
-                      <span className="mobile-subcategory-heading">
-                        <span>{subCategoryName}</span>
-                        <span>{keywordCount}</span>
-                      </span>
-                      <span className="mobile-subcategory-description">{description}</span>
-                    </span>
-                    <ChevronRight className="mobile-subcategory-caret" />
-                  </button>
-                </section>
-              );
-            })}
-          </div>
-        </div>
-      </motion.div>
-    );
-  };
-
-  const renderMobileQsDetail = () => {
-    if (!mobileQsView) return null;
-    const isKeyword = mobileQsView === "keyword";
-    return (
-      <motion.div
-        key={`mobile-qs-${mobileQsView}`}
-        className="fixed inset-0 z-[60] flex flex-col bg-background overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
-      >
-        <div className="shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="shrink-0 flex items-center justify-center rounded-lg h-8 w-8 border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-colors"
-            aria-label="Back"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          {isKeyword
-            ? <KeyRound className="h-4 w-4 text-primary" />
-            : <Hammer className="h-4 w-4 text-primary" />}
-          <span className="font-bold text-foreground">
-            {isKeyword ? commonKeywordState : rareComboState}
-          </span>
-        </div>
-        <div className="flex-1 min-h-0">
-          {isKeyword ? renderQsKeywordPanel() : renderQsComboPanel()}
-        </div>
-      </motion.div>
-    );
-  };
-
-  /** Desktop spark view: the six draw sources as Reliquary vessels (same handlers as the deck). */
-  const renderReliquary = (closeSpark: () => void) => {
-    const vessels: Vessel[] = [
+  /** "Need a spark?": six bearings on the Wayfinder. */
+  const renderWayfinder = (closeSpark: () => void) => {
+    const bearings: WayfinderBearing[] = [
       { id: 'popular', name: 'Popular', verb: 'Roll popular', icon: Dices, group: 'keys', meta: popularStep, onDraw: applyPopular },
       {
         id: 'common-keyword', name: 'Any key', verb: 'Roll any key', icon: Shuffle, group: 'keys',
@@ -1046,337 +530,31 @@ export const KeywordSection: React.FC<KeywordSectionProps> = () => {
       { id: 'user-crafts', name: 'Gem', verb: 'Reveal gem', icon: Gem, group: 'crafts', meta: '1/1', onDraw: applyUserCrafts },
     ];
     return (
-      <Reliquary
-        vessels={vessels}
-        relic={relic}
+      <Wayfinder
+        bearings={bearings}
+        destination={relic}
         history={relicHistory}
         onExplore={() => {
-          track('reliquary_explore', { card: relic?.card });
+          track('wayfinder_follow_route', { card: relic?.card });
           closeSpark();
         }}
-        onDrawAgain={() => vessels.find(v => v.id === relic?.card)?.onDraw()}
+        onDrawAgain={() => bearings.find(bearing => bearing.id === relic?.card)?.onDraw()}
         onRestore={restoreRelic}
       />
     );
   };
 
-  /** Shared roll/curated discovery-card deck — same markup and order on mobile and desktop,
-   *  so both breakpoints present keyword selection first, then this deck second. */
-  const renderDiscoveryDeck = () => (
-    <div className="qs-discovery-matrix">
-      <div className="qs-discovery-columns" aria-hidden="true">
-        <span>
-          <KeyRound className="w-3 h-3" />
-          Keys
-        </span>
-        <span>
-          <Hammer className="w-3 h-3" />
-          Crafts
-        </span>
-      </div>
-      <div className="qs-cards-grid qs-cards-grid--matrix">
-        {/* Popular — cycles curated high-use keywords */}
-        <DiscoveryCard
-          name={DISCOVERY_CARD_META['popular'].name}
-          id="popular"
-          variantClass="qs-card-rnd-kw"
-          isPulsing={activeRevealCard === 'popular'}
-          isPostClick={postClickCardId === 'popular'}
-          activeRarity={cardRarities['popular']}
-          hasResult={!!popularRevealed}
-          typeIcon={KeyRound}
-          actionIcon={Dices}
-          actionLabel="Roll popular"
-          revealedContent={popularRevealed?.name ?? ''}
-          idleFooterCopy="Top key this week"
-          footerMeta={popularStep}
-          onClick={applyPopular}
-        />
-        {/* Crafted — hand-picked keyword+filter combos */}
-        <DiscoveryCard
-          name={DISCOVERY_CARD_META['rare-combo'].name}
-          id="rare-combo"
-          variantClass="qs-card-rnd-combo"
-          isPulsing={activeRevealCard === 'rare-combo'}
-          isPostClick={postClickCardId === 'rare-combo'}
-          activeRarity={cardRarities['rare-combo']}
-          hasResult={isRareComboRevealed}
-          typeIcon={Hammer}
-          actionIcon={Wand2}
-          actionLabel="Craft curated"
-          revealedContent={rareComboRevealed?.title ?? ''}
-          idleFooterCopy={rareComboState}
-          footerMeta={craftedStep}
-          onClick={applyRareCombo}
-        />
-        {/* Random — draws a random keyword from the full pool, infinite */}
-        <DiscoveryCard
-          name={DISCOVERY_CARD_META['common-keyword'].name}
-          id="common-keyword"
-          variantClass="qs-card-popular"
-          isPulsing={activeRevealCard === 'common-keyword'}
-          isPostClick={postClickCardId === 'common-keyword'}
-          activeRarity={cardRarities['common-keyword']}
-          hasResult={isCommonKeywordRevealed}
-          typeIcon={KeyRound}
-          actionIcon={Shuffle}
-          actionLabel="Roll any key"
-          revealedContent={commonKeywordRevealed?.name ?? ''}
-          idleFooterCopy={commonKeywordState}
-          footerMeta={<InfinityIcon className="qs-step-icon" aria-label="infinite" />}
-          onClick={applyCommonKeyword}
-        />
-        {/* Hidden Gem — fixed editorial pick, not live community data */}
-        <DiscoveryCard
-          name={DISCOVERY_CARD_META['user-crafts'].name}
-          id="user-crafts"
-          variantClass="qs-card-user-crafts"
-          isPulsing={activeRevealCard === 'user-crafts'}
-          isPostClick={postClickCardId === 'user-crafts'}
-          activeRarity={cardRarities['user-crafts']}
-          hasResult={userCraftsRevealed}
-          typeIcon={Hammer}
-          actionIcon={Gem}
-          actionLabel="Reveal gem"
-          revealedContent="Cosmic Horror + Indie"
-          idleFooterCopy="Niche pick"
-          footerMeta="1/1"
-          onClick={applyUserCrafts}
-        />
-      </div>
-
-      <div className="qs-uniques-divider">
-        <Star className="w-3 h-3" />
-        Uniques
-      </div>
-      <div className="qs-cards-grid qs-cards-grid--matrix">
-        {/* Unique Key — rare single keywords, tends to surface <5 results */}
-        <DiscoveryCard
-          name={DISCOVERY_CARD_META['unique-keyword'].name}
-          id="unique-keyword"
-          variantClass="qs-card-unique-kw"
-          extraWrapClass="qs-unique-wrap"
-          isPulsing={activeRevealCard === 'unique-keyword'}
-          isPostClick={postClickCardId === 'unique-keyword'}
-          activeRarity={cardRarities['unique-keyword']}
-          hasResult={isKwRevealedState}
-          typeIcon={KeyRound}
-          actionIcon={Sparkles}
-          actionLabel="Discover unique"
-          revealedContent={kwRevealed?.name ?? ''}
-          idleFooterCopy="<5 results"
-          footerMeta={
-            <span className="qs-sequence-track">
-              {renderSequencePips(uniqueKeywordDisplayIndex, uniqueKeywords.length)}
-              <span className="qs-sequence-count">{uniqueKeywordDisplayStep}</span>
-            </span>
-          }
-          isSequence
-          onClick={applyUniqueKeyword}
-        />
-        {/* Unique Combo — rare keyword+filter combos, tends to surface <5 results */}
-        <DiscoveryCard
-          name={DISCOVERY_CARD_META['unique-combo'].name}
-          id="unique-combo"
-          variantClass="qs-card-unique-combo"
-          extraWrapClass="qs-unique-wrap"
-          isPulsing={activeRevealCard === 'unique-combo'}
-          isPostClick={postClickCardId === 'unique-combo'}
-          activeRarity={cardRarities['unique-combo']}
-          hasResult={isComboRevealedState}
-          typeIcon={Hammer}
-          actionIcon={Wand2}
-          actionLabel="Craft unique"
-          revealedContent={comboRevealed?.title ?? ''}
-          idleFooterCopy="<5 results"
-          footerMeta={
-            <span className="qs-sequence-track">
-              {renderSequencePips(uniqueComboDisplayIndex, uniqueComboSuggestions.length)}
-              <span className="qs-sequence-count">{uniqueComboDisplayStep}</span>
-            </span>
-          }
-          isSequence
-          onClick={applyUniqueCombo}
-        />
-      </div>
-
-      {showTasteStory && renderTasteStory()}
-    </div>
-  );
-
-  const renderMobileShelves = () => {
-    const inlineKwData = activeSubcategory ? getKeywordPanelData(activeSubcategory) : null;
-    return (
-      <div className="flex flex-1 min-h-0 flex-col overflow-hidden lg:hidden">
-        <div className="flex-1 overflow-y-auto">
-          <div className="grid gap-4">
-            <div className="mobile-keyword-search-wrap">
-              <KeywordSearch inputRef={searchInputRef} onKeywordSelect={() => {}} />
-            </div>
-            <section className="grid gap-3 mx-1">
-              {/* Browse all keywords toggle — collapsed by default (progressive disclosure);
-                  the roll/curated deck below always renders regardless, so keyword selection
-                  and roll cards stay on one scrollable screen in a fixed order. */}
-              <button
-                type="button"
-                onClick={() => {
-                  const next = !browseOpen;
-                  setBrowseOpen(next);
-                  if (next && !activeMainCategory) {
-                    setActiveMainCategory("Mechanics & Systems");
-                  }
-                }}
-                className={`keyword-browse-card${browseOpen ? ' keyword-browse-card-open' : ''}`}
-              >
-                <span className="keyword-browse-icon">
-                  <LayoutGrid className="w-4 h-4" />
-                </span>
-                <span className="keyword-browse-copy">
-                  <span className="keyword-browse-title">Browse all keywords</span>
-                  <span className="keyword-browse-subtitle">Explore categories, vibes, mechanics, and worlds</span>
-                </span>
-                <ChevronDown className={`keyword-browse-chevron ${browseOpen ? 'rotate-180' : ''}`} />
-              </button>
-              <button type="button" className="kmap-open-btn" onClick={() => openMapSheet()}>
-                <Waypoints className="h-4 w-4" />
-                Explore the keyword map
-              </button>
-
-              {browseOpen && (
-                <>
-                  <div className="mobile-cat-segmented">
-                    {MAIN_CATEGORIES
-                      .filter(mainCat => getAvailableSubcategories(mainCat).length > 0)
-                      .map(mainCat => {
-                        const shortLabel = MAIN_CATEGORY_META[mainCat].short;
-                        return (
-                          <button
-                            key={mainCat}
-                            type="button"
-                            onClick={() => drillIntoCategory(mainCat)}
-                            className={`mobile-cat-segment${activeMainCategory === mainCat ? ' mobile-cat-segment-active' : ''}`}
-                            style={getCategoryAccentVars(mainCat)}
-                          >
-                            {getCategoryIcon(mainCat, "w-3.5 h-3.5")}
-                            <span>{shortLabel}</span>
-                          </button>
-                        );
-                      })}
-                  </div>
-
-                  {activeMainCategory && (
-                    <div className="mobile-inline-cat-content" style={getCategoryAccentVars(activeMainCategory)}>
-                      {activeSubcategory && inlineKwData ? (
-                        <>
-                          <div className="mobile-inline-kw-header">
-                            <button
-                              type="button"
-                              onClick={() => setActiveSubcategory(null)}
-                              className="mobile-inline-back-btn"
-                              aria-label="Back"
-                            >
-                              <ChevronLeft className="h-4 w-4" />
-                            </button>
-                            <span className="mobile-inline-kw-icon">
-                              {getSubcategoryIcon(activeSubcategory, "w-3.5 h-3.5")}
-                            </span>
-                            <span className="mobile-inline-kw-name">{activeSubcategory}</span>
-                            <button
-                              type="button"
-                              onClick={() => openMapSheet({ category: activeMainCategory, subcategory: activeSubcategory, trail: [] })}
-                              className="mobile-inline-map-btn"
-                              aria-label={`Open ${activeSubcategory} as a keyword map`}
-                            >
-                              <Waypoints className="h-3.5 w-3.5" />
-                              Map
-                            </button>
-                          </div>
-                          <div className="keyword-inline-list mobile-inline-kw-list">
-                            {inlineKwData.displayedKeywords.map((keyword, index) => renderKeywordPill(keyword, index, animBatchStart))}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="mobile-subcategory-list">
-                          {getAvailableSubcategories(activeMainCategory).map((subCategoryName) => {
-                            const keywordCount = getKeywordCountForSubcategory(subCategoryName);
-                            const description = getSubcategoryDescription(activeMainCategory, subCategoryName);
-                            return (
-                              <section key={subCategoryName} className="mobile-subcategory-row">
-                                <button
-                                  type="button"
-                                  onClick={() => setActiveSubcategory(subCategoryName)}
-                                  className="mobile-subcategory-button"
-                                >
-                                  <span className="mobile-subcategory-icon">
-                                    {getSubcategoryIcon(subCategoryName, "w-4 h-4")}
-                                  </span>
-                                  <span className="mobile-subcategory-copy">
-                                    <span className="mobile-subcategory-heading">
-                                      <span>{subCategoryName}</span>
-                                      <span>{keywordCount}</span>
-                                    </span>
-                                    <span className="mobile-subcategory-description">{description}</span>
-                                  </span>
-                                  <ChevronRight className="mobile-subcategory-caret" />
-                                </button>
-                              </section>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Roll/curated cards — keyword selection above, this deck second, same screen. */}
-              {renderDiscoveryDeck()}
-            </section>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const handleDesktopSearch = async () => {
-    await searchGames();
-  };
-
-  const handleDesktopShare = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      await navigator.share({ title: 'GameFinder', url });
-    } else {
-      await navigator.clipboard.writeText(url);
-      setShareCopied(true);
-      setTimeout(() => setShareCopied(false), 2000);
-    }
-  };
-
-  const handleDesktopClear = () => {
-    clearAllFilters();
-  };
-
   return (
-    <div className="keyword-section relative w-full h-full lg:h-auto flex flex-col transition-all duration-500">
-      <AnimatePresence>{renderMobileCategoryDetail()}</AnimatePresence>
-      <AnimatePresence>{renderMobileSubcategoryDetail()}</AnimatePresence>
-      <AnimatePresence>{renderMobileQsDetail()}</AnimatePresence>
-      <AnimatePresence>
-        {mapSheet && (
-          <KeywordMapSheet
-            initialLocation={mapSheet.loc}
-            search={<KeywordSearch inputRef={sheetSearchRef} onKeywordSelect={() => {}} />}
-            spark={renderDiscoveryDeck()}
-          />
-        )}
-      </AnimatePresence>
-      <div className="flex-1 min-h-0 p-3 lg:flex lg:flex-col lg:p-0">
-        <div className="flex h-full min-h-0 flex-col gap-5 lg:h-auto lg:flex-1">
-          {renderDesktopExplorer()}
-          {renderMobileShelves()}
-        </div>
-      </div>
+    <div className="keyword-section relative flex w-full flex-1 flex-col">
+      {/* Remounts across the breakpoint: the variant fixes the layout shape and history instance. */}
+      <KeywordMap
+        key={variant}
+        variant={variant}
+        search={<KeywordSearch inputRef={searchRef} onKeywordSelect={() => {}} />}
+        spark={renderWayfinder}
+        actions={renderSearchActions()}
+        selection={<SelectedFilters variant="chips" onClear={clearAllFilters} />}
+      />
     </div>
   );
 };

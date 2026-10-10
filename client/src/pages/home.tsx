@@ -1,43 +1,51 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ResultsSection from '../components/ResultsSection';
 import { KeywordSection } from '../components/KeywordSection';
-import { FilterProvider, useFilters } from '../context/FilterContext';
-import BottomBar from '../components/BottomBar';
+import { FilterProvider } from '../context/FilterContext';
 import AnimatedBackground from '../components/AnimatedBackground';
-import SavedGamesPanel from '../components/SavedGamesPanel';
 import GameCardModal from '../components/GameCardModal';
-import { FaHeart } from 'react-icons/fa';
-import { useSavedGames } from '../context/SavedGamesContext';
 import { motion } from 'framer-motion';
 import FantasyScrollArea from '../components/FantasyScrollArea';
 
+const RESULTS_ENTRY = 'results-view';
+const isResultsEntry = (s: unknown) =>
+  typeof s === 'object' && s !== null && (s as { gamefinder?: string }).gamefinder === RESULTS_ENTRY;
+const isMobile = () => window.matchMedia('(max-width: 1023px)').matches;
+
 const HomeContent: React.FC = () => {
-  const { gameResults, totalCount, countIsCapped } = useFilters();
-  const { savedGames } = useSavedGames();
-  const [activeTab, setActiveTab] = useState<'build' | 'results'>('build');
-  const [panelOpen, setPanelOpen] = useState(false);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (panelOpen) setPanelOpen(false);
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [panelOpen]);
-
-  const handlePanelOpenChange = (open: boolean) => {
-    if (open) {
-      window.history.pushState({ gamefinder: 'saved-panel' }, '');
-    } else if (panelOpen) {
-      window.history.back();
-    }
-    setPanelOpen(open);
-  };
+  // Mobile shows one view at a time: the keyword map, or the results behind it.
+  // Desktop always shows both side by side and ignores this.
+  const [mobileView, setMobileView] = useState<'map' | 'results'>('map');
   const [deepLinkGameId, setDeepLinkGameId] = useState<number | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
+  // The results view is a history entry, so the phone's Back returns to the map.
+  const showResults = useCallback(() => {
+    if (!isMobile()) return;
+    if (!isResultsEntry(window.history.state)) window.history.pushState({ gamefinder: RESULTS_ENTRY }, '');
+    setMobileView('results');
+  }, []);
+
+  const showMap = useCallback(() => {
+    if (isResultsEntry(window.history.state)) window.history.back();
+    else setMobileView('map');
+  }, []);
+
+  useEffect(() => {
+    // A game card opened over the results pushes above the results entry; only
+    // leaving the results entry itself returns to the map.
+    const onPop = (e: PopStateEvent) => {
+      if (!isResultsEntry(e.state) && (e.state as { gamefinder?: string } | null)?.gamefinder !== 'game-card') {
+        setMobileView('map');
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  // Results: swipe right to return to the map (the map's own swipes belong to the map).
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
@@ -49,8 +57,8 @@ const HomeContent: React.FC = () => {
     const deltaY = e.changedTouches[0].clientY - touchStartY.current;
     touchStartX.current = null;
     touchStartY.current = null;
-    if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return;
-    setActiveTab(deltaX < 0 ? 'results' : 'build');
+    if (deltaX < 70 || Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return;
+    showMap();
   };
 
   useEffect(() => {
@@ -67,77 +75,10 @@ const HomeContent: React.FC = () => {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-screen h-[100dvh] flex flex-col overflow-hidden">
       <AnimatedBackground />
 
-      {/* App header - mobile only; desktop header lives inside the keyword section panel */}
-      <div className="mobile-relic-masthead lg:hidden shrink-0 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="relic-brand-plaque">
-            <h1 className="relic-brand-wordmark font-brand text-[1.08rem] font-normal tracking-[0.075em]">
-              GameFinder
-            </h1>
-          </div>
-          <button
-            type="button"
-            onClick={() => handlePanelOpenChange(true)}
-            className="relic-saved-button relative"
-            aria-label="Saved games"
-          >
-            <FaHeart size={14} />
-            <span>Saved</span>
-            {savedGames.length > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white leading-none">
-                {savedGames.length > 9 ? '9+' : savedGames.length}
-              </span>
-            )}
-          </button>
-        </div>
-      </div>
-
-      <SavedGamesPanel open={panelOpen} onOpenChange={handlePanelOpenChange} />
       <GameCardModal gameId={deepLinkGameId} onClose={() => setDeepLinkGameId(null)} />
-
-      {/* Mobile Tab Bar */}
-      <div className="lg:hidden flex shrink-0 border-b border-border bg-background/80 backdrop-blur-sm">
-        <button
-          onClick={() => setActiveTab('build')}
-          className={`relative flex-1 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'build'
-              ? 'text-primary'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Keywords
-          {activeTab === 'build' && (
-            <motion.div
-              layoutId="tab-indicator"
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-            />
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab('results')}
-          className={`relative flex-1 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'results'
-              ? 'text-primary'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Results
-          {gameResults.length > 0 && (
-            <span className="ml-1.5 text-xs bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">
-              {countIsCapped ? `${totalCount}+` : (totalCount ?? gameResults.length)}
-            </span>
-          )}
-          {activeTab === 'results' && (
-            <motion.div
-              layoutId="tab-indicator"
-              className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-            />
-          )}
-        </button>
-      </div>
 
       {/* Workspace panels */}
       <motion.div
@@ -145,49 +86,34 @@ const HomeContent: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
       >
-        {/* Build panel - mobile: cross-fade, desktop: left half */}
+        {/* Build panel - mobile: full screen map view, desktop: left pane */}
         <div
           className={`keyword-build-panel absolute inset-0 lg:relative bg-card flex flex-col overflow-hidden lg:overflow-visible lg:w-1/2 lg:h-full lg:max-h-full transition-opacity duration-200 ${
-            activeTab === 'build'
+            mobileView === 'map'
               ? 'opacity-100 pointer-events-auto z-10'
               : 'opacity-0 pointer-events-none z-0 lg:opacity-100 lg:pointer-events-auto'
           }`}
+          aria-hidden={mobileView !== 'map' ? true : undefined}
         >
-          {/* Keyword builder */}
           <FantasyScrollArea className="keyword-build-panel-scroll">
-            <KeywordSection
-              expanded={true}
-              setActiveSection={() => {}}
-              filterSectionRef={resultsSectionRef}
-              heroRef={resultsSectionRef}
-            />
+            <KeywordSection onShowResults={showResults} />
           </FantasyScrollArea>
         </div>
 
-        {/* Results panel - mobile: cross-fade, desktop: right half */}
+        {/* Results panel - mobile: the view behind the map, desktop: right pane */}
         <div
           className={`results-panel-scroll absolute inset-0 lg:static flex flex-col overflow-y-auto lg:flex-1 transition-opacity duration-200 ${
-            activeTab === 'results'
+            mobileView === 'results'
               ? 'opacity-100 pointer-events-auto z-10'
               : 'opacity-0 pointer-events-none z-0 lg:opacity-100 lg:pointer-events-auto'
           }`}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
-          <ResultsSection
-            setActiveSection={() => {}}
-            resultsSectionRef={resultsSectionRef}
-          />
+          <ResultsSection resultsSectionRef={resultsSectionRef} onBackToMap={showMap} />
         </div>
       </motion.div>
-
-      {/* Action bar - fixed bottom drawer on mobile; desktop version lives inside the left panel */}
-      <BottomBar
-        resetSections={() => {}}
-        resultsSectionRef={resultsSectionRef}
-        onSearchSuccess={() => setActiveTab('results')}
-      />
     </div>
   );
 };

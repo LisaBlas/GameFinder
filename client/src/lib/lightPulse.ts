@@ -4,7 +4,7 @@
  * user sees where their pick went. DOM-only, one element, removed when done.
  */
 
-const TRAY_SELECTORS = ['.kmap-sheet-tray', '.kmap-user-selection-filters'];
+const TRAY_SELECTORS = ['.kmap-user-selection-filters'];
 
 const visibleRect = (el: Element | null) => {
   const r = el?.getBoundingClientRect();

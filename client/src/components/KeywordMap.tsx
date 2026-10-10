@@ -144,16 +144,16 @@ const CATEGORY_SCENE: Record<'desktop' | 'mobile', { shape: GraphShape; layout: 
 interface Props {
   variant?: 'desktop' | 'mobile';
   initialLocation?: MapLocation;
-  /** Mobile only: leave map mode. */
+  /** Leave the map (shows a close button; Back/Escape at the root call it too). */
   onClose?: () => void;
-  /** Keyword/game search: below the header on mobile; a collapsed lens in the map window's top-right on desktop. */
+  /** Keyword/game search: a collapsed lens in the map window's top-right. */
   search?: React.ReactNode;
   /** "Need a spark?" content, swapped in for the map on demand. A function
    *  receives `close` so the content can hand the user back to the map. */
   spark?: React.ReactNode | ((close: () => void) => React.ReactNode);
   /** Search actions (Clear, Search) for the map's bottom bar. */
   actions?: React.ReactNode;
-  /** Current user selection, floated on the map's bottom-left (desktop). */
+  /** Current user selection, floated on the map's bottom-left. */
   selection?: React.ReactNode;
 }
 
@@ -173,17 +173,24 @@ interface Props {
 export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocation, onClose, search, spark, actions, selection }) => {
   const { selectedFilters, addFilter, removeFilter, requireDeveloper, requireRating } = useFilters();
   const [sparkOpen, setSparkOpen] = useState(false);
-  // Start: an explicit location (mobile sheet), else a shared journey link, else the doors.
+  // Start: an explicit location, else a shared journey link, else the doors.
   const [start] = useState(() => {
-    const shared = initialLocation ? null : variant === 'desktop' ? takeSharedJourney('desktop') : null;
+    const shared = initialLocation ? null : takeSharedJourney(variant);
     // A shared link's own keywords hydrate around mount; don't let them re-centre the journey.
     const linkHasKeywords = new URLSearchParams(window.location.search).has('kw');
     return { location: initialLocation ?? shared ?? ROOT, skipFirstFollow: Boolean(shared && linkHasKeywords) };
   });
   const { location, navigate, depthRef } = useMapHistory<MapLocation>(variant, start.location);
   const sectionRef = useRef<HTMLElement>(null);
+  const mapLayerRef = useRef<HTMLDivElement>(null);
   const ambientPaused = useAmbientPause(sectionRef);
   const { category, subcategory, trail } = location;
+
+  // The receded map is visual context only while the Wayfinder is open. Keep
+  // its controls out of keyboard and assistive-tech navigation until it closes.
+  useEffect(() => {
+    if (mapLayerRef.current) mapLayerRef.current.inert = sparkOpen;
+  }, [sparkOpen]);
   /** Keyword names already shown for the current centre, so refresh only brings new ones. */
   const [shown, setShown] = useState<{
     key: string;
@@ -771,17 +778,17 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         {holding && <span className="kmap-loading">Mapping {titleCase(center?.name ?? '')}…</span>}
         {content}
         {isCategoryFallback && graph.length > 1 && <span className="kmap-relation-label">Related by category</span>}
-        {renderSelectionOverlays(true)}
+        {renderSelectionOverlays()}
       </div>
     );
   };
 
-  /** Floating selection pills bottom-left (empty until a first pick) and Search bottom-right.
-   *  On the map they're also measured as layout obstacles; over the spark deck they just float. */
-  const renderSelectionOverlays = (onMap: boolean) => (
+  /** Floating selection pills bottom-left (empty until a first pick) and Search bottom-right,
+   *  measured as layout obstacles so keywords are pushed out from under them. */
+  const renderSelectionOverlays = () => (
     <>
-      {selection && <div ref={onMap ? overlayRef : undefined} className="kmap-user-selection-filters">{selection}</div>}
-      {actions && <div ref={onMap ? overlayRef : undefined} className="kmap-user-selection-actions">{actions}</div>}
+      {selection && <div ref={overlayRef} className="kmap-user-selection-filters">{selection}</div>}
+      {actions && <div ref={overlayRef} className="kmap-user-selection-actions">{actions}</div>}
     </>
   );
 
@@ -871,7 +878,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     const headerActions = (
       <div className="kmap-header-actions">
         {sparkButton}
-        {variant === 'desktop' && <SavedGamesControl className="kmap-saved-btn" />}
+        <SavedGamesControl className="kmap-saved-btn" />
         {close}
       </div>
     );
@@ -942,33 +949,44 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   return (
     <section
       ref={sectionRef}
-      className={variant === 'mobile' ? 'kmap kmap--mobile' : 'kmap hidden lg:flex'}
+      className={`kmap kmap--${variant}`}
       data-ambient={ambientPaused ? 'paused' : undefined}
       onKeyDown={onKeyDown}
     >
       {renderHeader()}
-      {search && variant === 'mobile' && <div className="kmap-search">{search}</div>}
       <div className="kmap-body">
-        {sparkOpen && spark ? (
-          // The roll/discovery deck in place of the map; rolls add keywords, which the map follows.
-          // The selection and Search stay put, floating where they sit on the map.
-          <div className={`kmap-spark-stage kmap-spark-stage--${variant}`}>
-            <div className="kmap-spark-panel">{typeof spark === 'function' ? spark(() => setSparkOpen(false)) : spark}</div>
-            {renderSelectionOverlays(false)}
-          </div>
-        ) : (
-          <>
-            {/* Desktop: the mode toggle sits inside the map window (top-left). */}
-            {variant === 'mobile' && renderMapControls()}
-            <div className={`kmap-window kmap-window--${variant}`}>
-              {renderMap()}
-              {variant === 'desktop' && renderMapControls()}
-              {/* Collapsed to a lens; expands on hover/focus (incl. the "/" shortcut). */}
-              {search && variant === 'desktop' && <div className="kmap-search kmap-search--float">{search}</div>}
-              {renderDock()}
-            </div>
-          </>
-        )}
+        {/* The map stays mounted under the Wayfinder, so closing it restores the exact location. */}
+        <div className={`kmap-window kmap-window--${variant}${sparkOpen ? ' is-spark-open' : ''}`}>
+          <motion.div
+            ref={mapLayerRef}
+            className="kmap-map-layer"
+            animate={sparkOpen
+              ? { opacity: 0.42, scale: reduceMotion ? 1 : 1.045, filter: reduceMotion ? 'none' : 'blur(1px)' }
+              : { opacity: 1, scale: 1, filter: 'none' }}
+            transition={{ duration: reduceMotion ? 0.01 : 0.48, ease: [0.22, 1, 0.36, 1] }}
+            aria-hidden={sparkOpen || undefined}
+          >
+            {renderMap()}
+            {renderMapControls()}
+            {/* Collapsed to a lens; expands on hover/focus (incl. the "/" shortcut). */}
+            {search && <div className="kmap-search kmap-search--float">{search}</div>}
+            {renderDock()}
+          </motion.div>
+          <AnimatePresence initial={false}>
+            {sparkOpen && spark && (
+              <motion.div
+                key="wayfinder"
+                className="kmap-spark-stage"
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, clipPath: 'circle(7% at 50% 50%)' }}
+                animate={{ opacity: 1, clipPath: 'circle(110% at 50% 50%)' }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, clipPath: 'circle(7% at 50% 50%)' }}
+                transition={{ duration: reduceMotion ? 0.01 : 0.58, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="kmap-spark-panel">{typeof spark === 'function' ? spark(() => setSparkOpen(false)) : spark}</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );
