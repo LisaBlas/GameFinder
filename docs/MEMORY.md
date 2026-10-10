@@ -17,29 +17,24 @@ Durable decisions and context not derivable from source alone.
    media; the desktop inline-expand card (`fullscreen=false`) keeps
    video/stores first, tags panel after. `GameCard.tsx` builds both blocks
    as JSX variables (`tagsPanel`) and reorders by the `fullscreen` prop.
-2. **Homepage discovery cards** — `KeywordSection` has Roll and Uniques
-   sections above manual browsing. All 6 cards render via the reusable
-   `DiscoveryCard` component (`client/src/components/DiscoveryCard.tsx`); card
-   metadata lives in `DISCOVERY_CARD_META`
-   (`client/src/lib/discoveryCards.ts`). Roll has four cards: **Popular**
-   (curated static sequence of popular keys, e.g. Action Roguelike → Souls-like;
-   its "Top key this week" label is not backed by live ranking data), **Crafted** (hand-picked combos, first entry is
-   Memory Loss + Horror theme), **Random** (random single keyword from the
-   full pool, infinite), and **Hidden Gem** (id `user-crafts`; fixed
-   editorial reveal — Cosmic Horror + Indie — labeled/iconed as a curated
-   niche pick, not real community-fed data; renamed from "User Crafted"
-   2026-07-23 — the old name plus a `Users` icon and "community" copy implied
-   live community data that doesn't exist, see item 4 below).
-   Uniques has two cards: **Unique Key** and **Unique Combo** — rare discovery
-   sequences that tend to surface very few results.
-3. **Discovery card steps** — Roll and Uniques cards show sequence progress
-   like `1/5` instead of remaining-count copy. Finite sequences wrap back to
-   the first item instead of locking; Random uses the infinity icon.
-   `gamefinder_unique_limits` persists the last Unique Key / Unique Combo
-   reveal label — not a hard daily limit. Card states: **idle** (never
-   pressed) → **unidentified** (pressed, search running) → **revealed**
-   (rarity badge + content shown). `RevealCard`, `RarityTier`, and
-   `getRarity()` all live in `client/src/lib/discoveryCards.ts`.
+2. **Discovery draws (Wayfinder)** — "Need a spark?" opens the Wayfinder on
+   both breakpoints; its six bearings are the draw sources, all owned by
+   `KeywordSection`: **Popular** (curated static sequence of popular keys,
+   e.g. Action Roguelike → Souls-like; not backed by live ranking data),
+   **Curated** (`rare-combo`, hand-picked combos, first entry is Memory Loss +
+   Horror theme), **Any key** (`common-keyword`, random single keyword from
+   the full pool, infinite), **Gem** (`user-crafts`; fixed editorial pick —
+   Cosmic Horror + Indie — not real community-fed data, see item 4 below),
+   and the uniques **Unique key** / **Unique craft** — rare sequences that
+   tend to surface very few results. (The old `DiscoveryCard` deck was
+   removed 2026-10-10.)
+3. **Draw steps** — bearings show sequence progress like `1/7` instead of
+   remaining-count copy. Finite sequences wrap back to the first item instead
+   of locking; Any key uses the infinity icon. `gamefinder_unique_limits`
+   records the last Unique key / Unique craft draw — not a hard daily limit.
+   A destination is charted (count pending) then found (rarity by count).
+   `RevealCard`, `RarityTier`, and `getRarity()` live in
+   `client/src/lib/discoveryCards.ts`.
 4. **Future community search memory (planned)** — save user searches/keyword
    combinations and their result counts so the app can surface strong
    discoveries to other users. Most Popular should come from high-use/

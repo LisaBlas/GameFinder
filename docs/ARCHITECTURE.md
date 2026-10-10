@@ -32,9 +32,6 @@ Desktop:
 - Desktop always shows build and results panels side by side.
 - Mobile shows one view at a time (`mobileView` in home.tsx); Search
   switches to Results. There is no mobile masthead, tab bar or bottom drawer.
-- `FilterSidebar` is no longer part of the active split layout.
-- `Hero` is not part of the active home layout, though the component still
-  exists.
 - Desktop left panel is one `KeywordMap` section (`client/src/components/KeywordMap.tsx`)
   with the search built in (`search` prop; on desktop a collapsed lens in the map
   window's top-right that expands on hover/focus) and the desktop Wayfinder behind a
@@ -269,21 +266,16 @@ components and should not be repurposed.
 Reusable UI pieces are styled with plain CSS classes in `App.css` rather than
 Tailwind component layers because they need multi-state cascade that inline
 classes make unwieldy:
-- `.qs-card`, `.qs-card-wrap` — discovery card shell. State modifiers:
-  `.qs-card-has-result` (revealed), `.qs-card-reveal-pulse` (pulse animation),
-  `.qs-card-post-click` (searching / unidentified),
-  `.qs-card-rarity-{common|uncommon|rare|epic|unique}`. Unique-tier wrap:
-  `.qs-card-wrap--unique`. Visibility toggle classes: `.qs-state-initial`
-  (shown idle), `.qs-state-revealed` (shown revealed).
+- `.qs-sequence-*`, `.qs-step-icon` - sequence pips/counts on Wayfinder
+  bearings.
 - `.filter-pill` - base keyword/filter pill. Modifiers: `.selected`,
   `.keyword-include`, `.keyword-exclude`, `.parent`, `.kid`,
   `.include-hover-mode`, `.exclude-hover-mode`
 - `.selected-filter-pill` - pills in action bars. Modifiers: `.keyword`,
   `.keyword-exclude`
-- `.desktop-action-button-*` / `.mobile-action-button-*` - Clear and Search
-  button states
+- `.desktop-action-button-*` - Search CTA states (both breakpoints)
 - `.results-filter-trigger`, `.results-sticky-header`,
-  `.workspace-sticky-header` - results panel chrome
+  `.mobile-results-header` - results panel chrome
 - `.game-card-forge`, `.game-card-shell-rarity-*` - result-card material and
   rarity frames. Fresh searches advance a forge cycle in `SearchResults` so
   cards materialize once; rare/epic/unique tiers briefly cool from white-hot

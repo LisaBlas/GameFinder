@@ -356,7 +356,8 @@ This produces the biggest perceived improvement with no new dependency.
 ### Phase 2 — Camera and robust layout
 
 Status: done (2026-10-07) — `keywordMapLayout.ts`, `useMapCamera`,
-`useMapHistory`, `KeywordMapScene.tsx`, `KeywordMapSheet.tsx`. Not done:
+`useMapHistory`, `KeywordMapScene.tsx`, `KeywordMapSheet.tsx` (the sheet was
+removed 2026-10-10: the mobile map is now the Build view itself). Not done:
 pinch-zoom on mobile (doc marks it optional), press-and-hold radial menu.
 
 - Add responsive viewport coordinates.

@@ -72,11 +72,6 @@ content invisible. This is exactly how the
 `.keyword-section`'s `scrollWidth - clientWidth` at 1024/1440/1920, not by
 eyeballing one wide screenshot.
 
-## Discovery card CSS class logic lives in one place
-`DiscoveryCard.tsx` owns the construction of `.qs-card-*` state classes
-(`qs-card-has-result`, `qs-card-rarity-*`, etc.). Do not duplicate that string
--building in `KeywordSection` or elsewhere.
-
 ## `history.replaceState` must preserve `history.state`
 Overlays (game card, saved panel) and the keyword map tag their history
 entries; the map's Back/Forward retracing reads those tags on `popstate`.

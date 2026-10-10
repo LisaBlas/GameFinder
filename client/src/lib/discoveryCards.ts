@@ -1,17 +1,13 @@
 /**
- * Discovery card types, rarity helpers, and card metadata.
- * Single source of truth for the 6 homepage discovery cards.
- *
- * Card names (per CLAUDE.md):
- *   Roll section   → Popular | Crafted | Random | Hidden Gem
- *   Uniques section → Unique Key | Unique Combo
+ * Discovery draw ids (the Wayfinder's six bearings) and the rarity tiers that
+ * colour results, map keywords and Wayfinder destinations by game count.
  */
 
 // ---------------------------------------------------------------------------
 // Core types
 // ---------------------------------------------------------------------------
 
-/** Identifier for each of the 6 discovery cards. */
+/** Identifier for each of the 6 Wayfinder bearings (draw sources). */
 export type RevealCard =
   | "popular"
   | "rare-combo"
@@ -47,26 +43,3 @@ export function getRarity(count: number): RarityTier | null {
   if (count <= 150) return "uncommon";
   return "common";
 }
-
-// ---------------------------------------------------------------------------
-// Card metadata
-// ---------------------------------------------------------------------------
-
-/**
- * Human-readable metadata for each discovery card.
- * Use `DISCOVERY_CARD_META[id].name` anywhere a display name is needed.
- */
-export const DISCOVERY_CARD_META = {
-  /** Cycles a curated sequence of high-use keywords ("Top key this week"). */
-  popular:           { name: "Popular",      section: "roll"    },
-  /** Curated keyword+filter combos hand-picked by the team. */
-  "rare-combo":      { name: "Crafted",      section: "roll"    },
-  /** Draws a random single keyword from the full pool. Infinite. */
-  "common-keyword":  { name: "Random",       section: "roll"    },
-  /** Fixed editorial pick (single combo, not live user/community data). Low result count = niche find. */
-  "user-crafts":     { name: "Hidden Gem",   section: "roll"    },
-  /** Rare single keywords that tend to surface very few games. */
-  "unique-keyword":  { name: "Unique Key",   section: "uniques" },
-  /** Rare keyword+filter combos that surface very few games. */
-  "unique-combo":    { name: "Unique Combo", section: "uniques" },
-} as const satisfies Record<RevealCard, { name: string; section: "roll" | "uniques" }>;
