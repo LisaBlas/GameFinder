@@ -25,13 +25,16 @@ export const socketFloorStyle = (index: number) => ({
 /** Empty card sockets carved into the table, shown before any results exist.
  *  Mirrors the results layout exactly (an empty summary row, then the grid),
  *  so when results arrive the cards land in these sockets instead of the
- *  sockets jumping down. Decorative. */
-const SocketRack: React.FC = () => (
-  <div className="socket-rack" aria-hidden>
+ *  sockets jumping down. Decorative. While a search runs (`loading`), the
+ *  sockets glow in a rolling pulse; that glow is the whole loading state. */
+const SocketRack: React.FC<{ loading?: boolean }> = ({ loading = false }) => (
+  <div className={`socket-rack${loading ? ' socket-rack--loading' : ''}`} aria-hidden>
     <div className="results-summary results-summary--placeholder" />
     <div className="grid grid-cols-1 widescreen:grid-cols-2 gap-7">
       {Array.from({ length: RACK_SIZE }, (_, i) => (
-        <div key={i} className="card-socket-empty" style={socketFloorStyle(i)} />
+        <div key={i} className="card-socket-empty" style={socketFloorStyle(i)}>
+          {loading && <i className="card-socket-glow" style={{ '--glow-i': i } as React.CSSProperties} />}
+        </div>
       ))}
     </div>
   </div>

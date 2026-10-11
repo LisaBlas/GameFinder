@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useFilters, Filter } from '../context/FilterContext';
 import GameCard from './GameCard';
 import EmptyState from './EmptyState';
-import LoadingState from './LoadingState';
 import LoadMoreButton from './LoadMoreButton';
 import FilterBar from './FilterBar';
 import MobileFilterSheet from './MobileFilterSheet';
@@ -281,9 +280,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ onBackToMap }) => {
       );
     }
 
-    // Before any results exist, the table already shows its empty sockets.
+    // While searching, the empty sockets glow; that is the whole loading state.
     if (isLoading && gameResults.length === 0) {
-      return <div className="socket-rack-stage"><SocketRack /><LoadingState /></div>;
+      return (
+        <div className="socket-rack-stage">
+          <SocketRack loading />
+          <span className="sr-only" role="status">Searching games…</span>
+        </div>
+      );
     }
     
     if (!hasSearched) {

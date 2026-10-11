@@ -526,6 +526,36 @@
   pointer-events: none;
 }
 
+/* Searching: the empty sockets glow from the floor up in a rolling pulse
+   (staggered by grid position), replacing any spinner or text. A previous
+   batch fades out first (below), since the rack only shows once it's gone.
+   Warm, like the forge light the floors already carry. Sits between the
+   socket (::before) and its seal (::after), clipped to the floor's cut. */
+.card-socket-glow {
+  position: absolute;
+  inset: -1.5px;
+  pointer-events: none;
+  background: radial-gradient(ellipse 70% 75% at 50% 55%, rgba(255, 170, 90, 0.2), rgba(220, 110, 50, 0.08) 55%, transparent 85%);
+  box-shadow:
+    inset 0 0 18px rgba(255, 160, 80, 0.4),
+    inset 0 0 3px rgba(255, 210, 150, 0.45);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: socket-glow 0.9s ease-in-out calc(var(--glow-i, 0) * 110ms) infinite alternate;
+}
+
+@keyframes socket-glow {
+  from { opacity: 0.08; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-socket-glow {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
 /* A new search: the previous batch sinks out of its sockets (CARD_LEAVE_MS
    in SearchResults.tsx) while the sockets stay, then the rack takes over. */
 @keyframes card-leave {
