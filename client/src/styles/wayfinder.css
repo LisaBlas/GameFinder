@@ -50,7 +50,9 @@
   top: 50%;
   width: min(66%, 37rem);
   aspect-ratio: 1;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.88)) drop-shadow(0 0 16px rgba(var(--wf-gold), 0.08));
+  filter:
+    drop-shadow(6px 10px 8px rgba(0, 0, 0, 0.78))
+    drop-shadow(0 0 18px rgba(0, 0, 0, 0.38));
   transform: translate(-50%, -50%);
   pointer-events: none;
   animation: wf-seat-shadow 2.05s linear both;
@@ -67,22 +69,22 @@
 }
 
 .wayfinder-chassis[data-style="arcane"] .wayfinder-chassis-layer--outer {
-  background-image: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-outer.webp");
+  background-image: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-outer.webp");
 }
 .wayfinder-chassis[data-style="arcane"] .wayfinder-chassis-layer--mechanism {
-  background-image: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-mechanism.webp");
+  background-image: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-mechanism.webp");
 }
 .wayfinder-chassis[data-style="arcane"] .wayfinder-chassis-layer--inner {
-  background-image: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-inner.webp");
+  background-image: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-inner.webp");
 }
 /* The spokes cross the inner ring but line up with the sockets, so they stay still. */
 .wayfinder-chassis[data-style="arcane"] .wayfinder-chassis-layer--spokes {
-  background-image: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-spokes.webp");
+  background-image: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-spokes.webp");
 }
 /* Socket centres as fractions of the art, from split-wayfinder.py --detect-sockets.
    data-gem follows the bearing buttons' order, so each button lights its nearest gem. */
 .wayfinder-chassis[data-style="arcane"] {
-  --wf-socket-art: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-sockets.webp");
+  --wf-socket-art: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-sockets.webp");
   --wf-gem-r: 0.052;
 }
 .wayfinder-chassis[data-style="arcane"] .wayfinder-gem[data-gem="0"] { --gx: 0.5013; --gy: 0.1048; }
@@ -137,7 +139,7 @@
   position: absolute;
   z-index: 1;
   inset: 0;
-  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-stone.webp") center / contain no-repeat;
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-stone.webp") center / contain no-repeat;
   filter: brightness(0.5) contrast(1.15);
   pointer-events: none;
 }
@@ -149,8 +151,8 @@
   mix-blend-mode: color;
   opacity: 0;
   transition: opacity 0.3s ease-out;
-  -webkit-mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-stone.webp") center / contain no-repeat;
-  mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-stone.webp") center / contain no-repeat;
+  -webkit-mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-stone.webp") center / contain no-repeat;
+  mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-stone.webp") center / contain no-repeat;
 }
 .wayfinder[data-gems-lit] .wayfinder-gem[data-lit][data-rarity] .wayfinder-bearing-stone {
   animation: wf-core-gem-lit 0.7s ease-out both;
@@ -167,8 +169,8 @@
   opacity: 0;
   background: linear-gradient(115deg, transparent 38%, rgba(255, 248, 222, 0.95) 50%, transparent 62%) 120% 0 / 300% 100% no-repeat;
   mix-blend-mode: screen;
-  -webkit-mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-stone.webp") center / contain no-repeat;
-  mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-stone.webp") center / contain no-repeat;
+  -webkit-mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-stone.webp") center / contain no-repeat;
+  mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-stone.webp") center / contain no-repeat;
   pointer-events: none;
 }
 .wayfinder[data-gems-lit] .wayfinder-gem[data-lit]::after {
@@ -185,7 +187,7 @@
   width: 3.4rem;
   aspect-ratio: 1;
   transform: translate(-50%, -54%);
-  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-socket.webp") center / contain no-repeat;
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-socket.webp") center / contain no-repeat;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7));
   pointer-events: none;
 }
@@ -193,7 +195,7 @@
   position: absolute;
   inset: 0;
   isolation: isolate;
-  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-stone.webp") center / contain no-repeat;
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-stone.webp") center / contain no-repeat;
   filter: brightness(0.5) contrast(1.15);
 }
 .wayfinder-core-gem-stone::after {
@@ -204,8 +206,8 @@
   mix-blend-mode: color;
   opacity: 0;
   transition: opacity 0.3s ease-out;
-  -webkit-mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-stone.webp") center / contain no-repeat;
-  mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-stone.webp") center / contain no-repeat;
+  -webkit-mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-stone.webp") center / contain no-repeat;
+  mask: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-stone.webp") center / contain no-repeat;
 }
 .wayfinder[data-gems-lit] .wayfinder-core-gem-stone {
   animation: wf-core-gem-lit 0.7s ease-out both;
@@ -352,7 +354,7 @@
   place-items: center;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-face.webp") center / contain no-repeat;
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-face.webp") center / contain no-repeat;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.55);
   transition: box-shadow 0.3s ease-out;
 }
@@ -377,8 +379,9 @@
 
 .wayfinder-core::after {
   inset: 0;
-  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-bezel.webp") center / contain no-repeat;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-bezel.webp") center / contain no-repeat;
+  filter:
+    drop-shadow(3px 5px 5px rgba(0, 0, 0, 0.76));
 }
 
 /* Rarity lives in the lens as light along the bezel's inner edge, lit with the gems. */
@@ -394,7 +397,7 @@
   position: absolute;
   z-index: 0;
   inset: 8%;
-  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-core-rose.webp") center / contain no-repeat;
+  background: url("../assets/ui/wayfinder/arcane/wayfinder-arcane-relit-core-rose.webp") center / contain no-repeat;
   opacity: 0.32;
   transform: rotate(var(--wf-rose-angle, 0deg));
   transition: transform 0.36s cubic-bezier(0.22, 0.78, 0.24, 1), opacity 0.2s ease-out;
@@ -573,7 +576,9 @@
     filter: drop-shadow(0 0.75rem 0.8rem rgba(0, 0, 0, 0.62)) drop-shadow(0 0 18px rgba(var(--wf-gold), 0.08));
   }
   86%, 100% {
-    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.88)) drop-shadow(0 0 16px rgba(var(--wf-gold), 0.08));
+    filter:
+      drop-shadow(6px 10px 8px rgba(0, 0, 0, 0.78))
+      drop-shadow(0 0 18px rgba(0, 0, 0, 0.38));
   }
 }
 @keyframes wf-trail-open { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
