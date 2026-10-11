@@ -309,11 +309,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       if (window.innerWidth < 768) {
         tagsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      tagsRef.current.classList.add('tags-gold-glow');
       const matchedTagEls = tagsRef.current.querySelectorAll('[data-matched="true"]');
       matchedTagEls.forEach(el => el.classList.add('tag-gold-glow'));
       glowTimer = setTimeout(() => {
-        tagsRef.current?.classList.remove('tags-gold-glow');
         matchedTagEls.forEach(el => el.classList.remove('tag-gold-glow'));
       }, 3000);
     }, 350);
@@ -699,7 +697,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   };
 
   const tagsPanel = (
-    <div ref={tagsRef} className="game-card-carved-section pt-4">
+    <div ref={tagsRef} className="game-card-carved-section pt-4 md:px-4 md:pb-2">
       <div>
         {tagGroups.length > 0 ? (
           <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
@@ -947,7 +945,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
               </div>
 
               {isSelected && (
-                <div className="grid gap-4 pt-1">
+                <div className="grid grid-cols-[minmax(0,1fr)] gap-4 pt-1">
                   {fullscreen && tagsPanel}
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)]">
                     <div ref={mediaRef} className="game-card-screen aspect-video overflow-hidden rounded-lg bg-black">

@@ -931,6 +931,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
       );
     }
 
+    // Header nav always lands on the map: it closes the Wayfinder first. Back
+    // only closes it (the map is still where the user left it).
+    const navigateToMap = (to: MapLocation) => {
+      setSparkOpen(false);
+      navigate(to);
+    };
+    const onBack = () => (sparkOpen ? setSparkOpen(false) : goBack());
+
     const crumbs: Array<{ label: string; to: MapLocation }> = [];
     if (category) crumbs.push({ label: MAIN_CATEGORY_META[category].short, to: { category, subcategory: null, trail: [] } });
     if (subcategory) crumbs.push({ label: subcategory, to: { category, subcategory, trail: [] } });
@@ -938,11 +946,11 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
 
     return (
       <div className="kmap-header">
-        <button type="button" className="kmap-icon-btn kmap-root-btn" onClick={() => navigate(ROOT)} aria-label="All categories" title="Pick a different category">
+        <button type="button" className="kmap-icon-btn kmap-root-btn" onClick={() => navigateToMap(ROOT)} aria-label="All categories" title="Pick a different category">
           <Home className="h-4 w-4" />
           <span>All categories</span>
         </button>
-        <button type="button" className="kmap-icon-btn kmap-back-btn" onClick={goBack} aria-label="Back">
+        <button type="button" className="kmap-icon-btn kmap-back-btn" onClick={onBack} aria-label="Back">
           <ChevronLeft className="h-4 w-4" />
         </button>
         <nav ref={crumbsRef} className="kmap-crumbs" aria-label="Keyword map path">
@@ -961,9 +969,25 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
                 >
                   {i > 0 && <ChevronRight className="kmap-crumb-sep" aria-hidden="true" />}
                   {isLast ? (
-                    <span className="kmap-crumb kmap-crumb--current" aria-current="page">{c.label}</span>
+                    // Same element either way, so the settle animation doesn't replay; it
+                    // only acts as a "back to map" control while the Wayfinder is open.
+                    <span
+                      className="kmap-crumb kmap-crumb--current"
+                      aria-current="page"
+                      {...(sparkOpen && {
+                        role: 'button',
+                        tabIndex: 0,
+                        style: { cursor: 'pointer' },
+                        onClick: () => setSparkOpen(false),
+                        onKeyDown: (e: React.KeyboardEvent) => {
+                          if (e.key !== 'Enter' && e.key !== ' ') return;
+                          e.preventDefault();
+                          setSparkOpen(false);
+                        },
+                      })}
+                    >{c.label}</span>
                   ) : (
-                    <button type="button" className="kmap-crumb" onClick={() => navigate(c.to)}>{c.label}</button>
+                    <button type="button" className="kmap-crumb" onClick={() => navigateToMap(c.to)}>{c.label}</button>
                   )}
                 </motion.span>
               );
@@ -979,6 +1003,11 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     if (e.key !== 'Escape' || e.defaultPrevented) return;
     const t = e.target as HTMLElement;
     if (t.closest('input, textarea, [contenteditable="true"]')) return;
+    if (sparkOpen) {
+      e.preventDefault();
+      setSparkOpen(false);
+      return;
+    }
     if (step === 'categories' && !onClose) return;
     e.preventDefault();
     goBack();
