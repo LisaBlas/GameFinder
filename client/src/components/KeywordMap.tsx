@@ -805,9 +805,9 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
           ref={mapContentRef}
           className="kmap-viewport-content"
           animate={sparkOpen
-            ? { opacity: 0.24, scale: reduceMotion ? 1 : 0.88, filter: reduceMotion ? 'none' : 'blur(3px)' }
-            : { opacity: 1, scale: 1, filter: 'none' }}
-          transition={{ duration: reduceMotion ? 0.01 : 0.52, ease: [0.22, 1, 0.36, 1] }}
+            ? { opacity: 0.32 }
+            : { opacity: 1 }}
+          transition={{ duration: reduceMotion ? 0.01 : 0.3, ease: 'easeOut' }}
           aria-hidden={sparkOpen || undefined}
         >
           {holding && <span className="kmap-loading">Mapping {titleCase(center?.name ?? '')}…</span>}
@@ -1020,10 +1020,10 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
               <motion.div
                 key="wayfinder"
                 className="kmap-spark-stage"
-                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.2, clipPath: 'circle(3% at 50% 50%)' }}
-                animate={{ opacity: 1, scale: 1, clipPath: 'circle(110% at 50% 50%)' }}
-                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.2, clipPath: 'circle(3% at 50% 50%)' }}
-                transition={{ duration: reduceMotion ? 0.01 : 0.68, ease: [0.16, 1, 0.3, 1] }}
+                initial={reduceMotion ? { opacity: 0 } : { x: '100%' }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={reduceMotion ? { opacity: 0 } : { x: '100%' }}
+                transition={{ duration: reduceMotion ? 0.01 : 0.46, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="kmap-spark-panel">{typeof spark === 'function' ? spark(() => setSparkOpen(false)) : spark}</div>
               </motion.div>

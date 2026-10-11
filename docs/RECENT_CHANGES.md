@@ -4,9 +4,9 @@ Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
 ## 2026-10-11
-- Wayfinder opening now behaves as a cartographic aperture: the map contracts
-  into the background while a calibration ring and seal expand into a darker,
-  living compass field. Reduced-motion users retain the direct fade. `KeywordMap.tsx`,
+- Wayfinder opening now uses a transform-only stone slab that slides from the
+  right over the map. This replaces the stuttering aperture, clip, blur, and
+  scale effects; reduced-motion users retain the direct fade. `KeywordMap.tsx`,
   `App.css`, `wayfinder.css`.
 - Documentation maintenance: pruned two expired entries (2026-09-24,
   2026-09-25 — their lessons already live in `SYSTEM_INVARIANTS.md`);
