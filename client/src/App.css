@@ -133,6 +133,152 @@
   filter: drop-shadow(0 0 6px rgba(185, 120, 120, 0.18));
 }
 
+/* Content-sized saved-games drawer. The single relic edge keeps it in the
+   fantasy system without turning a utility panel into another hero frame. */
+.saved-games-panel {
+  top: 4.5rem !important;
+  bottom: auto !important;
+  display: flex;
+  height: auto !important;
+  max-height: calc(100dvh - 5.5rem);
+  flex-direction: column;
+  gap: 0;
+  overflow: visible;
+  border: 1px solid rgba(168, 128, 63, 0.34);
+  border-right: 0;
+  border-radius: 3px 0 0 3px;
+  background:
+    radial-gradient(100% 65% at 20% 0%, rgba(var(--c-emerald-rgb), 0.075), transparent 68%),
+    linear-gradient(180deg, rgba(12, 21, 18, 0.985), rgba(5, 11, 9, 0.99));
+  box-shadow:
+    -14px 18px 42px rgba(0, 0, 0, 0.56),
+    inset 0 1px 0 rgba(226, 189, 120, 0.055);
+}
+
+.saved-games-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -8px;
+  z-index: 2;
+  width: 44px;
+  background:
+    url("./assets/ui/relic/raster/panel-frame-diamond-left.webp") left center / 88px 23px no-repeat,
+    linear-gradient(180deg, transparent 2%, rgba(226, 189, 120, 0.52) 12%, rgba(168, 128, 63, 0.46) 88%, transparent 98%) 8px 0 / 1px 100% no-repeat;
+  filter: brightness(0.74) saturate(0.65) drop-shadow(-2px 0 3px rgba(0, 0, 0, 0.72));
+  pointer-events: none;
+}
+
+.saved-games-panel > button:last-child {
+  top: 1rem;
+  right: 1rem;
+  color: rgba(203, 180, 126, 0.62);
+  transition: color 0.16s ease, background 0.16s ease, opacity 0.16s ease;
+}
+
+.saved-games-panel > button:last-child:hover {
+  background: rgba(168, 128, 63, 0.1);
+  color: #f0c46e;
+}
+
+.saved-games-panel__header {
+  flex: none;
+  border-bottom: 1px solid rgba(168, 128, 63, 0.24);
+  background: linear-gradient(90deg, rgba(168, 128, 63, 0.075), transparent 72%);
+}
+
+.saved-games-panel__title {
+  color: #e8e2d5;
+  font-family: 'Alegreya', Georgia, serif;
+  font-size: 1.08rem;
+  letter-spacing: 0.035em;
+}
+
+.saved-games-panel__title > svg {
+  color: #b97878;
+  filter: drop-shadow(0 0 6px rgba(185, 120, 120, 0.16));
+}
+
+.saved-games-panel__count {
+  border: 1px solid rgba(185, 120, 120, 0.24);
+  border-radius: 999px;
+  background: rgba(185, 120, 120, 0.09);
+  color: #d7a4a4;
+  font-family: Inter, sans-serif;
+  letter-spacing: 0;
+}
+
+.saved-games-panel__body {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.saved-games-panel__empty {
+  color: rgba(203, 180, 126, 0.68);
+}
+
+.saved-games-panel__empty > svg {
+  color: rgba(168, 128, 63, 0.28);
+}
+
+.saved-games-panel__empty p:last-child {
+  color: rgba(151, 166, 161, 0.56);
+}
+
+.saved-games-panel__item {
+  border-bottom: 1px solid rgba(168, 128, 63, 0.12);
+  transition: background 0.16s ease;
+}
+
+.saved-games-panel__item:last-child {
+  border-bottom: 0;
+}
+
+.saved-games-panel__item:hover {
+  background: rgba(var(--c-emerald-rgb), 0.055);
+}
+
+.saved-games-panel__cover {
+  border: 1px solid rgba(168, 128, 63, 0.28);
+  border-radius: 2px;
+  background: rgba(3, 8, 7, 0.76);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.36);
+}
+
+.saved-games-panel__game-title {
+  color: #e8e2d5;
+}
+
+.saved-games-panel__meta {
+  color: rgba(151, 166, 161, 0.62);
+}
+
+.saved-games-panel__rating {
+  border: 1px solid rgba(168, 128, 63, 0.16);
+  border-radius: 2px;
+  background: rgba(168, 128, 63, 0.075);
+  color: #cbb47e;
+}
+
+.saved-games-panel__remove {
+  border-radius: 2px;
+  color: rgba(151, 166, 161, 0.42);
+  transition: color 0.16s ease, background 0.16s ease;
+}
+
+.saved-games-panel__remove:hover {
+  background: rgba(185, 120, 120, 0.1);
+  color: #d7a4a4;
+}
+
+@media (max-width: 640px) {
+  .saved-games-panel {
+    top: 4rem !important;
+    max-height: calc(100dvh - 4.5rem);
+  }
+}
+
 .etched-placeholder-title,
 .etched-placeholder-subtitle {
   color: rgba(70, 116, 99, 0.46);
