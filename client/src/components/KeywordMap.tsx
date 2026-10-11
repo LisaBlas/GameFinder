@@ -999,12 +999,13 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
             {/* renderMap() keeps the selection pills + Search as direct, always-live
                 children of .kmap-viewport (its own content recedes separately). */}
             {renderMap()}
+            {/* Opacity only: a transform or filter here (even Framer's leftover
+                `blur(0px)`) makes this zero-height wrapper the containing block of
+                its absolutely positioned toolbar, which then jumps off the window. */}
             <motion.div
               ref={mapChromeRef}
               className="kmap-map-chrome"
-              animate={sparkOpen
-                ? { opacity: 0.42, scale: reduceMotion ? 1 : 1.045, filter: reduceMotion ? 'none' : 'blur(1px)' }
-                : { opacity: 1, scale: 1, filter: 'none' }}
+              animate={{ opacity: sparkOpen ? 0.42 : 1 }}
               transition={{ duration: reduceMotion ? 0.01 : 0.48, ease: [0.22, 1, 0.36, 1] }}
               aria-hidden={sparkOpen || undefined}
             >

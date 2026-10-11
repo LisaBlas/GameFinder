@@ -3677,10 +3677,9 @@ button.kmap-crumb:hover,
 }
 
 /* Wraps the toolbar, search lens and dock (dimmed/inert while the Wayfinder
-   is open), sitting beside .kmap-viewport inside .kmap-map-layer. */
-.kmap-map-chrome {
-  transform-origin: 50% 50%;
-}
+   is open), sitting beside .kmap-viewport inside .kmap-map-layer. It must never
+   get a transform/filter: it would become the containing block of the
+   absolutely positioned toolbar and throw it off the window. */
 
 .kmap-window.is-spark-open .kmap-viewport-content,
 .kmap-window.is-spark-open .kmap-map-chrome {
