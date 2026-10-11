@@ -21,8 +21,8 @@ TICK_EASE = "cubic-bezier(0.3, 1.45, 0.55, 1)"
 IDLE_SECONDS = 60  # one tick per second; keep in sync with wf-tick in wayfinder.css
 IDLE_MOVE = 0.13  # seconds each idle tick takes to travel
 
-SPIN_SECONDS = 2.2  # keep in sync with .wayfinder-chassis-spin in wayfinder.css
-SPIN_TICKS = 120  # two full turns, so a remount lands on the same face
+SPIN_SECONDS = 1.6  # keep in sync with .wayfinder-chassis-spin in wayfinder.css
+SPIN_TICKS = 60  # one full turn: readable gear teeth, same face when remounted
 SPIN_MOVE_MAX = 0.11  # seconds; shortened when ticks come faster than this
 SPIN_CURVE = (0.8, 1.8)  # speed v(u) = u^a (1-u)^b: hard spin-up, long settle
 

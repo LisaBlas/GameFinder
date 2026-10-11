@@ -65,7 +65,9 @@ export const Wayfinder: React.FC<Props> = ({
   React.useEffect(() => setSettledDrawId(null), [destination?.id]);
   // With reduced motion there is no spin (and no animationend), so light at once.
   const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  const gemsLit = state === 'found' && destination !== null && (reduceMotion || settledDrawId === destination.id);
+  const ringSettled = destination !== null && (reduceMotion || settledDrawId === destination.id);
+  const revealReady = ringSettled && (state === 'found' || state === 'uncharted');
+  const gemsLit = state === 'found' && revealReady;
   const trail = history.filter(draw => draw.id !== destination?.id).slice(0, 4);
   const activeBearingIndex = destination ? bearings.findIndex(bearing => bearing.id === destination.card) : 0;
   const bearingAngles = [0, -60, -120, 180, 120, 60];
@@ -148,23 +150,28 @@ export const Wayfinder: React.FC<Props> = ({
               </>
             ) : (
               <>
-                <span className="wayfinder-core-overline">
-                  {state === 'charting' ? 'Charting route' : source?.name ?? 'Destination'}
-                </span>
-                <h2>{destinationLabel(destination)}</h2>
-                {destination.title && <p className="wayfinder-parts">{destination.parts.join(' + ')}</p>}
-                <span className="wayfinder-result-count">
-                  {state === 'charting'
-                    ? 'Reading the map…'
-                    : state === 'uncharted'
-                      ? 'No games on this route'
-                      : destination.count && formatCount(destination.count.count, destination.count.capped)}
-                </span>
-                {state !== 'uncharted' && (
-                  <div className="wayfinder-actions">
-                    <button type="button" className="wayfinder-action wayfinder-action--primary" onClick={onExplore}>
-                      Open map
-                    </button>
+                <span className="wayfinder-core-overline">{source?.name ?? 'Destination'}</span>
+                {!revealReady ? (
+                  <div className="wayfinder-core-loading" role="status" aria-label="Finding a destination">
+                    <span className="wayfinder-core-loading-ring" aria-hidden="true" />
+                    <span>Reading the map…</span>
+                  </div>
+                ) : (
+                  <div className="wayfinder-core-result">
+                    <h2>{destinationLabel(destination)}</h2>
+                    {destination.title && <p className="wayfinder-parts">{destination.parts.join(' + ')}</p>}
+                    <span className="wayfinder-result-count">
+                      {state === 'uncharted'
+                        ? 'No games on this route'
+                        : destination.count && formatCount(destination.count.count, destination.count.capped)}
+                    </span>
+                    {state !== 'uncharted' && (
+                      <div className="wayfinder-actions">
+                        <button type="button" className="wayfinder-action wayfinder-action--primary" onClick={onExplore}>
+                          Open map
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </>
