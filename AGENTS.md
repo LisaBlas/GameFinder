@@ -35,9 +35,19 @@ for full detail.
 - Prefer revenue-relevant improvements: affiliate flows, conversion clarity, SEO, and recommendation quality.
 
 ## Homepage Discovery Features
-- The homepage `KeywordSection` has "Roll" and "Uniques" discovery sections above manual keyword browsing.
-- Roll has four cards: **Popular** (curated popular keys, e.g. Action Roguelike → Souls-like), **Crafted** (hand-picked combos), **Random** (single random keyword, infinite), **Hidden Gem** (id `user-crafts`; fixed editorial combo — Cosmic Horror + Indie — labeled and iconed to read as a curated pick, not community data; renamed from "User Crafted" 2026-07-23 to close a trust gap where the old name/icon/copy implied live community-sourced data that doesn't exist).
-- Uniques has two modes: **Unique Key** and **Unique Combo** — rare/low-result discovery sequences. They wrap back to the first item instead of locking; sequence progress is intentionally hidden in the Wayfinder.
+- There is no separate "Roll"/"Uniques" card deck above manual keyword
+  browsing (that `DiscoveryCard` deck was removed 2026-10-10). All six draw
+  modes now live only in the Wayfinder (see below): **Popular** (curated
+  popular keys, e.g. Action Roguelike → Souls-like), **Curated** (hand-picked
+  combos, id `rare-combo`), **Any key** (single random keyword, infinite, id
+  `common-keyword`), **Hidden gem** (id `user-crafts`; fixed editorial combo
+  — Cosmic Horror + Indie — labeled and iconed to read as a curated pick, not
+  community data; renamed from "User Crafted" 2026-07-23 to close a trust gap
+  where the old name/icon/copy implied live community-sourced data that
+  doesn't exist), and the uniques **Unique key** / **Unique craft** —
+  rare/low-result discovery sequences. They wrap back to the first item
+  instead of locking; sequence progress is intentionally hidden in the
+  Wayfinder.
 - **Discovery architecture:** both breakpoints render the 6 modes as six clickable gem bearings in `Wayfinder` (`client/src/components/Wayfinder.tsx`), layered over a dimmed-but-mounted keyword map. The map's graph and chrome (including the selection pills, which live in the top map controls) recede/go inert, but the Search button floats above the Wayfinder itself (not dimmed, not inert) — see `docs/SYSTEM_INVARIANTS.md`. The top three gems are single-keyword rolls (Any Key, Popular, Unique Key); the bottom three are combination rolls (Unique Craft, Curated, Hidden Gem). Icons sit inside the gems, with the mode name beside them. Display names and clockwise socket order live in `renderWayfinder` (`KeywordSection`). Types `RevealCard`, `RarityTier`, and `getRarity()` are exported from that lib — do not redefine them inline in `KeywordSection`.
 - **Adding a 7th mode:** add its ID to `RevealCard` (`client/src/lib/discoveryCards.ts`), write `applyXxx()` in `KeywordSection`, then add it to the Wayfinder bearings in `renderWayfinder` (six bearings are laid out on six sockets; a 7th needs chassis art and layout work).
 - **Card states:** `idle` (never pressed) → `unidentified` (pressed, search running, "Unidentified" overlay shows) → `revealed` (search done, rarity badge + content shown).
