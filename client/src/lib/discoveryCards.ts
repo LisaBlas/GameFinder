@@ -35,11 +35,18 @@ export type RarityTier = "common" | "uncommon" | "rare" | "epic" | "unique";
  * Returns null when there are no results (0-result reveal).
  * Thresholds are intentional — adjust here, nowhere else.
  */
+export const RARITY_CEILING: Record<Exclude<RarityTier, "common">, number> = {
+  unique: 5,
+  epic: 20,
+  rare: 50,
+  uncommon: 150,
+};
+
 export function getRarity(count: number): RarityTier | null {
-  if (count <= 0)   return null;
-  if (count <= 5)   return "unique";
-  if (count <= 20)  return "epic";
-  if (count <= 50)  return "rare";
-  if (count <= 150) return "uncommon";
+  if (count <= 0) return null;
+  if (count <= RARITY_CEILING.unique)   return "unique";
+  if (count <= RARITY_CEILING.epic)     return "epic";
+  if (count <= RARITY_CEILING.rare)     return "rare";
+  if (count <= RARITY_CEILING.uncommon) return "uncommon";
   return "common";
 }

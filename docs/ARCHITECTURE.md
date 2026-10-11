@@ -109,7 +109,7 @@ Desktop:
   a light dot to the search tray (`lib/lightPulse.ts`). The viewport carries a
   per-category texture + grain (`data-texture`, static CSS). Decorative motion
   pauses via `data-ambient="paused"` (`useAmbientPause`: tab hidden, offscreen,
-  45 s idle). Discoveries (`lib/keywordDiscoveries.ts`): strong pairings few
+  45 s idle). Discoveries (`shared/keywordDiscoveries.ts`): strong pairings few
   games share, curated keywords only, NPMI-preferred. Journeys
   (`lib/mapJourney.ts`): the map's own copy-link button was removed
   2026-10-09 (the search Share covers it); incoming `?map=` links are still taken

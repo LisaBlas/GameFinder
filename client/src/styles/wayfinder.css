@@ -292,12 +292,22 @@
   display: flex;
   width: max-content;
   max-width: 8rem;
+  box-sizing: border-box;
   flex-direction: column;
   align-items: center;
-  color: #b9af99;
+  padding: 0.25rem 0.48rem 0.22rem;
+  border: 1px solid rgba(var(--wf-brass), 0.4);
+  border-radius: 2px;
+  background:
+    linear-gradient(180deg, rgba(22, 25, 19, 0.94), rgba(3, 8, 6, 0.9));
+  box-shadow:
+    inset 0 1px 0 rgba(241, 211, 151, 0.08),
+    0 2px 7px rgba(0, 0, 0, 0.72);
+  color: #ddd0b4;
   pointer-events: none;
   text-align: center;
-  text-shadow: 0 2px 5px #000, 0 0 9px #000;
+  text-shadow: 0 1px 2px #000;
+  transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
 }
 .wayfinder-gem[data-gem="0"] .wayfinder-bearing-copy { left: 50%; bottom: calc(100% + 0.28rem); transform: translateX(-50%); }
 .wayfinder-gem[data-gem="1"] .wayfinder-bearing-copy,
@@ -306,8 +316,8 @@
 .wayfinder-gem[data-gem="4"] .wayfinder-bearing-copy,
 .wayfinder-gem[data-gem="5"] .wayfinder-bearing-copy { left: calc(100% + 0.45rem); top: 50%; align-items: flex-start; transform: translateY(-50%); text-align: left; }
 .wayfinder-bearing-copy strong {
-  font: 700 0.68rem/1.15 'Cinzel', Georgia, serif;
-  letter-spacing: 0.11em;
+  font: 700 0.7rem/1.15 'Cinzel', Georgia, serif;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -333,9 +343,16 @@
     drop-shadow(0 -1px 1px rgba(0, 0, 0, 0.92))
     drop-shadow(0 0 3px rgba(var(--wf-item-route), 0.3));
 }
-.wayfinder-bearing:hover .wayfinder-bearing-copy strong,
-.wayfinder-bearing:focus-visible .wayfinder-bearing-copy strong,
-.wayfinder-bearing[data-active] .wayfinder-bearing-copy strong { color: #ead09b; }
+.wayfinder-bearing:hover .wayfinder-bearing-copy,
+.wayfinder-bearing:focus-visible .wayfinder-bearing-copy,
+.wayfinder-bearing[data-active] .wayfinder-bearing-copy {
+  border-color: rgba(var(--wf-gold), 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 225, 164, 0.12),
+    0 2px 7px rgba(0, 0, 0, 0.78),
+    0 0 8px rgba(var(--wf-gold), 0.13);
+  color: #ead09b;
+}
 .wayfinder-bearing:focus-visible { outline: 2px solid rgb(var(--wf-gold)); outline-offset: 2px; border-radius: 50%; }
 
 /* Centre lens, layered like the chassis (scripts/build-wayfinder-core.py):
@@ -875,8 +892,8 @@
   .wayfinder-core-gem { width: 2.3rem; }
 
   .wayfinder-bearing-sigil svg { width: 44%; height: 44%; }
-  .wayfinder-bearing-copy { width: 5.2rem; }
-  .wayfinder-bearing-copy strong { font-size: 0.54rem; letter-spacing: 0.07em; white-space: nowrap; }
+  .wayfinder-bearing-copy { width: auto; min-width: 5.2rem; padding: 0.2rem 0.34rem 0.18rem; }
+  .wayfinder-bearing-copy strong { font-size: 0.62rem; letter-spacing: 0.065em; white-space: nowrap; }
 
   .wayfinder-gem[data-gem="0"] .wayfinder-bearing-copy {
     left: 50%; bottom: calc(100% + 0.12rem); top: auto; transform: translateX(-50%);

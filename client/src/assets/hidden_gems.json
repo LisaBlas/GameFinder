@@ -1,0 +1,1106 @@
+[
+ {
+  "a": {
+   "id": 8,
+   "name": "Cold War"
+  },
+  "b": {
+   "id": 7113,
+   "name": "Fascism"
+  },
+  "games": 6,
+  "families": 4,
+  "payoff": {
+   "name": "Metal Gear Solid V: The Phantom Pain",
+   "rating": 90
+  }
+ },
+ {
+  "a": {
+   "id": 8,
+   "name": "Cold War"
+  },
+  "b": {
+   "id": 9353,
+   "name": "World War III"
+  },
+  "games": 4,
+  "families": 3,
+  "payoff": {
+   "name": "Fallout 3",
+   "rating": 86
+  }
+ },
+ {
+  "a": {
+   "id": 20,
+   "name": "Baseball"
+  },
+  "b": {
+   "id": 2452,
+   "name": "Day/Night Cycle"
+  },
+  "games": 11,
+  "families": 8,
+  "payoff": {
+   "name": "Fallout 3",
+   "rating": 86
+  }
+ },
+ {
+  "a": {
+   "id": 106,
+   "name": "Cybernetics"
+  },
+  "b": {
+   "id": 4976,
+   "name": "Retro Future"
+  },
+  "games": 4,
+  "families": 4,
+  "payoff": {
+   "name": "Fallout 3",
+   "rating": 86
+  }
+ },
+ {
+  "a": {
+   "id": 122,
+   "name": "Hell"
+  },
+  "b": {
+   "id": 2712,
+   "name": "Manic"
+  },
+  "games": 11,
+  "families": 6,
+  "payoff": {
+   "name": "Touhou Kanjuden: Legacy of Lunatic Kingdom",
+   "rating": 74
+  }
+ },
+ {
+  "a": {
+   "id": 128,
+   "name": "1980s"
+  },
+  "b": {
+   "id": 3784,
+   "name": "Synthwave"
+  },
+  "games": 5,
+  "families": 5,
+  "payoff": {
+   "name": "Neon Drive",
+   "rating": 79
+  }
+ },
+ {
+  "a": {
+   "id": 138,
+   "name": "Underwater"
+  },
+  "b": {
+   "id": 1283,
+   "name": "Flying"
+  },
+  "games": 7,
+  "families": 7,
+  "payoff": {
+   "name": "Trackmania",
+   "rating": 79
+  }
+ },
+ {
+  "a": {
+   "id": 138,
+   "name": "Underwater"
+  },
+  "b": {
+   "id": 2225,
+   "name": "Low-Poly"
+  },
+  "games": 15,
+  "families": 14,
+  "payoff": {
+   "name": "Once Upon a Katamari",
+   "rating": 79
+  }
+ },
+ {
+  "a": {
+   "id": 138,
+   "name": "Underwater"
+  },
+  "b": {
+   "id": 2231,
+   "name": "3D Platformer"
+  },
+  "games": 12,
+  "families": 10,
+  "payoff": {
+   "name": "Super Mario Odyssey",
+   "rating": 93
+  }
+ },
+ {
+  "a": {
+   "id": 220,
+   "name": "Weird"
+  },
+  "b": {
+   "id": 2225,
+   "name": "Low-Poly"
+  },
+  "games": 12,
+  "families": 11,
+  "payoff": {
+   "name": "Once Upon a Katamari",
+   "rating": 79
+  }
+ },
+ {
+  "a": {
+   "id": 220,
+   "name": "Weird"
+  },
+  "b": {
+   "id": 2884,
+   "name": "Dream World"
+  },
+  "games": 9,
+  "families": 7,
+  "payoff": {
+   "name": "Hypnagogia",
+   "rating": 71
+  }
+ },
+ {
+  "a": {
+   "id": 220,
+   "name": "Weird"
+  },
+  "b": {
+   "id": 38292,
+   "name": "Surreal comedy"
+  },
+  "games": 7,
+  "families": 7,
+  "payoff": {
+   "name": "Subverse",
+   "rating": 80
+  }
+ },
+ {
+  "a": {
+   "id": 423,
+   "name": "Gothic"
+  },
+  "b": {
+   "id": 1066,
+   "name": "Occult"
+  },
+  "games": 4,
+  "families": 4,
+  "payoff": {
+   "name": "Resident Evil Village",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 423,
+   "name": "Gothic"
+  },
+  "b": {
+   "id": 2113,
+   "name": "Castle"
+  },
+  "games": 8,
+  "families": 7,
+  "payoff": {
+   "name": "Resident Evil Village",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 423,
+   "name": "Gothic"
+  },
+  "b": {
+   "id": 3257,
+   "name": "Violent"
+  },
+  "games": 7,
+  "families": 7,
+  "payoff": {
+   "name": "Resident Evil Village",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 465,
+   "name": "Future"
+  },
+  "b": {
+   "id": 106,
+   "name": "Cybernetics"
+  },
+  "games": 3,
+  "families": 3,
+  "payoff": {
+   "name": "Frozen Synapse",
+   "rating": 81
+  }
+ },
+ {
+  "a": {
+   "id": 535,
+   "name": "1990s"
+  },
+  "b": {
+   "id": 1467,
+   "name": "Psychedelic"
+  },
+  "games": 9,
+  "families": 9,
+  "payoff": {
+   "name": "Hypnospace Outlaw",
+   "rating": 86
+  }
+ },
+ {
+  "a": {
+   "id": 535,
+   "name": "1990s"
+  },
+  "b": {
+   "id": 2489,
+   "name": "Inventory Management"
+  },
+  "games": 7,
+  "families": 7,
+  "payoff": {
+   "name": "Keep Driving",
+   "rating": 81
+  }
+ },
+ {
+  "a": {
+   "id": 906,
+   "name": "Steampunk"
+  },
+  "b": {
+   "id": 497,
+   "name": "Summons"
+  },
+  "games": 14,
+  "families": 9,
+  "payoff": {
+   "name": "Final Fantasy III",
+   "rating": 95
+  }
+ },
+ {
+  "a": {
+   "id": 915,
+   "name": "Trains"
+  },
+  "b": {
+   "id": 985,
+   "name": "Wild West"
+  },
+  "games": 3,
+  "families": 3,
+  "payoff": {
+   "name": "Bounty Train",
+   "rating": 70
+  }
+ },
+ {
+  "a": {
+   "id": 915,
+   "name": "Trains"
+  },
+  "b": {
+   "id": 1566,
+   "name": "Upgrades"
+  },
+  "games": 6,
+  "families": 6,
+  "payoff": {
+   "name": "Forza Horizon 4",
+   "rating": 86
+  }
+ },
+ {
+  "a": {
+   "id": 915,
+   "name": "Trains"
+  },
+  "b": {
+   "id": 12950,
+   "name": "Automation"
+  },
+  "games": 5,
+  "families": 5,
+  "payoff": {
+   "name": "Station to Station",
+   "rating": 76
+  }
+ },
+ {
+  "a": {
+   "id": 964,
+   "name": "Claymation"
+  },
+  "b": {
+   "id": 4850,
+   "name": "Moral Decisions"
+  },
+  "games": 3,
+  "families": 3,
+  "payoff": {
+   "name": "The Neverhood",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 993,
+   "name": "Real Time"
+  },
+  "b": {
+   "id": 1821,
+   "name": "Tank"
+  },
+  "games": 14,
+  "families": 13,
+  "payoff": {
+   "name": "Company of Heroes",
+   "rating": 90
+  }
+ },
+ {
+  "a": {
+   "id": 1105,
+   "name": "Supernatural"
+  },
+  "b": {
+   "id": 1066,
+   "name": "Occult"
+  },
+  "games": 9,
+  "families": 9,
+  "payoff": {
+   "name": "Resident Evil Village",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 1105,
+   "name": "Supernatural"
+  },
+  "b": {
+   "id": 2489,
+   "name": "Inventory Management"
+  },
+  "games": 13,
+  "families": 13,
+  "payoff": {
+   "name": "Diablo II",
+   "rating": 89
+  }
+ },
+ {
+  "a": {
+   "id": 1151,
+   "name": "Village"
+  },
+  "b": {
+   "id": 2712,
+   "name": "Manic"
+  },
+  "games": 11,
+  "families": 5,
+  "payoff": {
+   "name": "Undertale",
+   "rating": 91
+  }
+ },
+ {
+  "a": {
+   "id": 1151,
+   "name": "Village"
+  },
+  "b": {
+   "id": 3403,
+   "name": "Great Soundtrack"
+  },
+  "games": 13,
+  "families": 8,
+  "payoff": {
+   "name": "Undertale",
+   "rating": 91
+  }
+ },
+ {
+  "a": {
+   "id": 1207,
+   "name": "Halloween"
+  },
+  "b": {
+   "id": 4984,
+   "name": "Stat Tracking"
+  },
+  "games": 6,
+  "families": 6,
+  "payoff": {
+   "name": "Bully",
+   "rating": 87
+  }
+ },
+ {
+  "a": {
+   "id": 1467,
+   "name": "Psychedelic"
+  },
+  "b": {
+   "id": 1754,
+   "name": "Dark humor"
+  },
+  "games": 11,
+  "families": 11,
+  "payoff": {
+   "name": "Ena: Dream BBQ",
+   "rating": 97
+  }
+ },
+ {
+  "a": {
+   "id": 1467,
+   "name": "Psychedelic"
+  },
+  "b": {
+   "id": 3257,
+   "name": "Violent"
+  },
+  "games": 9,
+  "families": 9,
+  "payoff": {
+   "name": "Post Void",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 1504,
+   "name": "High school"
+  },
+  "b": {
+   "id": 24392,
+   "name": "Bad endings"
+  },
+  "games": 6,
+  "families": 6,
+  "payoff": {
+   "name": "The Fruit of Grisaia",
+   "rating": 79
+  }
+ },
+ {
+  "a": {
+   "id": 1566,
+   "name": "Upgrades"
+  },
+  "b": {
+   "id": 38085,
+   "name": "Underground"
+  },
+  "games": 13,
+  "families": 12,
+  "payoff": {
+   "name": "Stardew Valley",
+   "rating": 88
+  }
+ },
+ {
+  "a": {
+   "id": 1754,
+   "name": "Dark humor"
+  },
+  "b": {
+   "id": 6621,
+   "name": "Vents"
+  },
+  "games": 8,
+  "families": 8,
+  "payoff": {
+   "name": "Dishonored",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 1886,
+   "name": "Slavery"
+  },
+  "b": {
+   "id": 7473,
+   "name": "Invented Language"
+  },
+  "games": 9,
+  "families": 6,
+  "payoff": {
+   "name": "Mass Effect 2",
+   "rating": 93
+  }
+ },
+ {
+  "a": {
+   "id": 2113,
+   "name": "Castle"
+  },
+  "b": {
+   "id": 3403,
+   "name": "Great Soundtrack"
+  },
+  "games": 11,
+  "families": 9,
+  "payoff": {
+   "name": "Secret of Mana",
+   "rating": 83
+  }
+ },
+ {
+  "a": {
+   "id": 2458,
+   "name": "Feudal Japan"
+  },
+  "b": {
+   "id": 4851,
+   "name": "Morale"
+  },
+  "games": 3,
+  "families": 3,
+  "payoff": {
+   "name": "Shogun: Total War",
+   "rating": 87
+  }
+ },
+ {
+  "a": {
+   "id": 2489,
+   "name": "Inventory Management"
+  },
+  "b": {
+   "id": 38085,
+   "name": "Underground"
+  },
+  "games": 7,
+  "families": 7,
+  "payoff": {
+   "name": "Diablo II",
+   "rating": 89
+  }
+ },
+ {
+  "a": {
+   "id": 2653,
+   "name": "Creepy"
+  },
+  "b": {
+   "id": 1105,
+   "name": "Supernatural"
+  },
+  "games": 13,
+  "families": 13,
+  "payoff": {
+   "name": "Resident Evil Village",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 2653,
+   "name": "Creepy"
+  },
+  "b": {
+   "id": 5176,
+   "name": "Jump Scares"
+  },
+  "games": 12,
+  "families": 8,
+  "payoff": {
+   "name": "Resident Evil Village",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 2712,
+   "name": "Manic"
+  },
+  "b": {
+   "id": 6463,
+   "name": "Heterochromia"
+  },
+  "games": 14,
+  "families": 8,
+  "payoff": {
+   "name": "Touhou Seirensen: Undefined Fantastic Object",
+   "rating": 80
+  }
+ },
+ {
+  "a": {
+   "id": 3079,
+   "name": "8 Bit"
+  },
+  "b": {
+   "id": 137,
+   "name": "Gravity-Focus"
+  },
+  "games": 15,
+  "families": 10,
+  "payoff": {
+   "name": "Mega Man 9",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 3784,
+   "name": "Synthwave"
+  },
+  "b": {
+   "id": 37923,
+   "name": "Retro Arcade"
+  },
+  "games": 3,
+  "families": 3,
+  "payoff": {
+   "name": "Subverse",
+   "rating": 80
+  }
+ },
+ {
+  "a": {
+   "id": 4260,
+   "name": "Text Adventure"
+  },
+  "b": {
+   "id": 103,
+   "name": "Cyberpunk"
+  },
+  "games": 10,
+  "families": 10,
+  "payoff": {
+   "name": "A Mind Forever Voyaging",
+   "rating": 78
+  }
+ },
+ {
+  "a": {
+   "id": 4260,
+   "name": "Text Adventure"
+  },
+  "b": {
+   "id": 1495,
+   "name": "Abstract"
+  },
+  "games": 10,
+  "families": 10,
+  "payoff": {
+   "name": "Device 6",
+   "rating": 89
+  }
+ },
+ {
+  "a": {
+   "id": 4260,
+   "name": "Text Adventure"
+  },
+  "b": {
+   "id": 3203,
+   "name": "Darkness"
+  },
+  "games": 5,
+  "families": 4,
+  "payoff": {
+   "name": "Nocturne",
+   "rating": 82
+  }
+ },
+ {
+  "a": {
+   "id": 4784,
+   "name": "Minimalist"
+  },
+  "b": {
+   "id": 1566,
+   "name": "Upgrades"
+  },
+  "games": 6,
+  "families": 5,
+  "payoff": {
+   "name": "Nodebuster",
+   "rating": 75
+  }
+ },
+ {
+  "a": {
+   "id": 4884,
+   "name": "Black Market"
+  },
+  "b": {
+   "id": 5474,
+   "name": "In-game Radio"
+  },
+  "games": 10,
+  "families": 6,
+  "payoff": {
+   "name": "Grand Theft Auto: Vice City",
+   "rating": 91
+  }
+ },
+ {
+  "a": {
+   "id": 4928,
+   "name": "Environmental Puzzles"
+  },
+  "b": {
+   "id": 4031,
+   "name": "Block Puzzle"
+  },
+  "games": 13,
+  "families": 11,
+  "payoff": {
+   "name": "The Legend of Zelda: Twilight Princess",
+   "rating": 91
+  }
+ },
+ {
+  "a": {
+   "id": 4928,
+   "name": "Environmental Puzzles"
+  },
+  "b": {
+   "id": 6457,
+   "name": "Environmental Kills"
+  },
+  "games": 13,
+  "families": 12,
+  "payoff": {
+   "name": "BioShock",
+   "rating": 90
+  }
+ },
+ {
+  "a": {
+   "id": 4928,
+   "name": "Environmental Puzzles"
+  },
+  "b": {
+   "id": 6714,
+   "name": "With Story"
+  },
+  "games": 15,
+  "families": 14,
+  "payoff": {
+   "name": "Pushmo",
+   "rating": 86
+  }
+ },
+ {
+  "a": {
+   "id": 4939,
+   "name": "Gravity Control"
+  },
+  "b": {
+   "id": 5896,
+   "name": "Dynamic Soundtrack"
+  },
+  "games": 4,
+  "families": 4,
+  "payoff": {
+   "name": "Puzzle Dimension",
+   "rating": 79
+  }
+ },
+ {
+  "a": {
+   "id": 4940,
+   "name": "Underwater Gameplay"
+  },
+  "b": {
+   "id": 7568,
+   "name": "Swarming Enemies"
+  },
+  "games": 12,
+  "families": 10,
+  "payoff": {
+   "name": "Metroid Prime",
+   "rating": 93
+  }
+ },
+ {
+  "a": {
+   "id": 5124,
+   "name": "Spell Casting"
+  },
+  "b": {
+   "id": 8242,
+   "name": "Shaman"
+  },
+  "games": 7,
+  "families": 5,
+  "payoff": {
+   "name": "Shadowrun: Hong Kong",
+   "rating": 80
+  }
+ },
+ {
+  "a": {
+   "id": 5825,
+   "name": "Submarine"
+  },
+  "b": {
+   "id": 2324,
+   "name": "Swimming"
+  },
+  "games": 15,
+  "families": 15,
+  "payoff": {
+   "name": "Grand Theft Auto V",
+   "rating": 89
+  }
+ },
+ {
+  "a": {
+   "id": 5825,
+   "name": "Submarine"
+  },
+  "b": {
+   "id": 6019,
+   "name": "Tech Trees"
+  },
+  "games": 7,
+  "families": 6,
+  "payoff": {
+   "name": "Command & Conquer: Red Alert 2",
+   "rating": 88
+  }
+ },
+ {
+  "a": {
+   "id": 5825,
+   "name": "Submarine"
+  },
+  "b": {
+   "id": 7572,
+   "name": "Camel"
+  },
+  "games": 7,
+  "families": 6,
+  "payoff": {
+   "name": "Indiana Jones and the Fate of Atlantis",
+   "rating": 89
+  }
+ },
+ {
+  "a": {
+   "id": 5896,
+   "name": "Dynamic Soundtrack"
+  },
+  "b": {
+   "id": 4384,
+   "name": "Mission-Based"
+  },
+  "games": 13,
+  "families": 6,
+  "payoff": {
+   "name": "Metal Gear Solid 3: Snake Eater",
+   "rating": 89
+  }
+ },
+ {
+  "a": {
+   "id": 5962,
+   "name": "Speedrun"
+  },
+  "b": {
+   "id": 4991,
+   "name": "Secret Area"
+  },
+  "games": 13,
+  "families": 12,
+  "payoff": {
+   "name": "Castlevania: Symphony of the Night",
+   "rating": 92
+  }
+ },
+ {
+  "a": {
+   "id": 6019,
+   "name": "Tech Trees"
+  },
+  "b": {
+   "id": 9321,
+   "name": "Nuclear War"
+  },
+  "games": 6,
+  "families": 5,
+  "payoff": {
+   "name": "Sid Meier's Civilization IV",
+   "rating": 90
+  }
+ },
+ {
+  "a": {
+   "id": 6457,
+   "name": "Environmental Kills"
+  },
+  "b": {
+   "id": 11853,
+   "name": "Adapted to Movie"
+  },
+  "games": 7,
+  "families": 5,
+  "payoff": {
+   "name": "Dead Space",
+   "rating": 87
+  }
+ },
+ {
+  "a": {
+   "id": 6655,
+   "name": "Jumping Puzzle"
+  },
+  "b": {
+   "id": 6621,
+   "name": "Vents"
+  },
+  "games": 10,
+  "families": 9,
+  "payoff": {
+   "name": "System Shock 2",
+   "rating": 89
+  }
+ },
+ {
+  "a": {
+   "id": 7016,
+   "name": "Nazis"
+  },
+  "b": {
+   "id": 5999,
+   "name": "Stealth Takedown"
+  },
+  "games": 15,
+  "families": 10,
+  "payoff": {
+   "name": "Metro 2033",
+   "rating": 85
+  }
+ },
+ {
+  "a": {
+   "id": 7113,
+   "name": "Fascism"
+  },
+  "b": {
+   "id": 5451,
+   "name": "Cover System"
+  },
+  "games": 14,
+  "families": 8,
+  "payoff": {
+   "name": "Metal Gear Solid V: The Phantom Pain",
+   "rating": 90
+  }
+ },
+ {
+  "a": {
+   "id": 7558,
+   "name": "Character Swap"
+  },
+  "b": {
+   "id": 9349,
+   "name": "Evil Empire"
+  },
+  "games": 6,
+  "families": 3,
+  "payoff": {
+   "name": "Star Wars: Knights of the Old Republic",
+   "rating": 92
+  }
+ },
+ {
+  "a": {
+   "id": 12950,
+   "name": "Automation"
+  },
+  "b": {
+   "id": 1111,
+   "name": "Nature"
+  },
+  "games": 14,
+  "families": 14,
+  "payoff": {
+   "name": "RoadCraft",
+   "rating": 91
+  }
+ },
+ {
+  "a": {
+   "id": 18055,
+   "name": "Alien World"
+  },
+  "b": {
+   "id": 4976,
+   "name": "Retro Future"
+  },
+  "games": 3,
+  "families": 3,
+  "payoff": {
+   "name": "Lethal Company",
+   "rating": 76
+  }
+ },
+ {
+  "a": {
+   "id": 38085,
+   "name": "Underground"
+  },
+  "b": {
+   "id": 42207,
+   "name": "Lava"
+  },
+  "games": 7,
+  "families": 7,
+  "payoff": {
+   "name": "Diablo II",
+   "rating": 89
+  }
+ },
+ {
+  "a": {
+   "id": 42207,
+   "name": "Lava"
+  },
+  "b": {
+   "id": 43761,
+   "name": "Graveyard"
+  },
+  "games": 3,
+  "families": 3,
+  "payoff": {
+   "name": "Diablo II",
+   "rating": 89
+  }
+ }
+]

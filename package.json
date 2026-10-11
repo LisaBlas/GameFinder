@@ -15,7 +15,8 @@
     "db:push": "drizzle-kit push --force --config=./drizzle.config.ts",
     "db:seed": "tsx db/seed.ts",
     "seo:refresh-cache": "tsx server/scripts/refreshSeoCache.ts",
-    "seo:generate-pages": "tsx server/scripts/generateSeoPages.ts"
+    "seo:generate-pages": "tsx server/scripts/generateSeoPages.ts",
+    "gems:build": "tsx scripts/build-hidden-gems.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

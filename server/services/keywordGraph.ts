@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { rankGraph, type GraphNeighbor, type KeywordGraphData } from '../../shared/keywordRelevance';
 import { KEYWORD_EDITORIAL } from '../../shared/keywordEditorial';
+import type { HiddenGem } from '../../shared/hiddenGems';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Bundled into dist/index.js in production, where `build:server` copies the assets next to it.
@@ -52,6 +53,14 @@ function load(): Loaded {
   console.log(`[keywordGraph] ranked ${Object.keys(ranked).length} keywords in ${Date.now() - started}ms (v${version})`);
   loaded = { graph: ranked, version };
   return loaded;
+}
+
+let hiddenGems: HiddenGem[] | null = null;
+
+/** The Wayfinder's "Hidden gem" pool, prebuilt by `npm run gems:build`. */
+export function getHiddenGems(): HiddenGem[] {
+  if (!hiddenGems) hiddenGems = readJson('hidden_gems.json') as HiddenGem[];
+  return hiddenGems;
 }
 
 export const MAX_SLICE_IDS = 100;

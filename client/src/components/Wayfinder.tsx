@@ -142,13 +142,7 @@ export const Wayfinder: React.FC<Props> = ({
           />
           <span className="wayfinder-core-gem" aria-hidden="true"><span className="wayfinder-core-gem-stone" /></span>
           <div className="wayfinder-core-face" key={destination?.id ?? 'idle'}>
-            {!destination ? (
-              <>
-                <span className="wayfinder-core-overline">Awaiting a bearing</span>
-                <h2>Trust the map</h2>
-                <p>Select one of the six runes to chart an unexpected route.</p>
-              </>
-            ) : (
+            {!destination ? null : (
               <>
                 <span className="wayfinder-core-overline">{source?.name ?? 'Destination'}</span>
                 {!revealReady ? (

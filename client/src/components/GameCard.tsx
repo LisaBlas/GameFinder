@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 // Global analytics variable (if present)
 declare const gtag: any;
 import { SiAppstore, SiEpicgames, SiGogdotcom, SiGoogleplay, SiItchdotio, SiPlaystation, SiSteam } from 'react-icons/si';
-import { FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGlobe, FaHeart, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
+import { FaArrowRight, FaChevronDown, FaChevronRight, FaExternalLinkAlt, FaGlobe, FaHeart, FaPlay, FaTimes, FaXbox } from 'react-icons/fa';
 import { Share2, Check, Gamepad2, KeyRound } from 'lucide-react';
 import { useFilterSelection } from '../context/FilterContext';
 import { useSavedGames } from '../context/SavedGamesContext';
@@ -13,7 +13,7 @@ import InstantGamingIconImg from '../assets/icons/instantGaming.png';
 import KinguinIconImg from '../assets/icons/kinguin.png';
 import GamersGateIconImg from '../assets/icons/gamersGate.png';
 import type { RarityTier } from '../lib/discoveryCards';
-import FantasyScrollArea from './FantasyScrollArea';
+import { isObsoletePlatform, platformLabel, sortPlatforms } from '../lib/platforms';
 
 const trackExternalClick = (storeName: string, storeType: 'official' | 'affiliate', gameTitle: string) => {
   if (typeof gtag !== 'undefined') {
@@ -80,7 +80,18 @@ interface Game {
     publisher: boolean;
   }>;
   _matchedFilters?: number[];
+  // Set by FilterContext per result: the searched filters this game satisfied.
+  _filterMatches?: { matched: Array<{ id: number | string; name: string; category: string; mode?: string }> };
 }
+
+type TaxonomyTag = { id: number; name: string; type: string; category: string };
+
+// "Why it matches" order: the map's keywords first (they are what makes the
+// search ours), then the generic filters.
+const MATCH_CATEGORY_ORDER = ['Keywords', 'genres', 'themes', 'Game Mode', 'Perspective', 'platforms'];
+const DETAIL_PREVIEW = 4;
+
+const capitalize = (name: string) => name.charAt(0).toUpperCase() + name.slice(1);
 
 interface SimilarGame {
   id: number;
@@ -188,16 +199,17 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
   const [steamPrice, setSteamPrice] = useState<{ price: string | null; originalPrice: string | null; discount: number | null; isFree: boolean } | null>(null);
   const [hasLoadedSteamPrice, setHasLoadedSteamPrice] = useState(false);
-  const [mediaHeight, setMediaHeight] = useState<number | null>(null);
-  const [isMediaSyncedLayout, setIsMediaSyncedLayout] = useState(false);
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
-  const [partnerStoresExpanded, setPartnerStoresExpanded] = useState(false);
+  const [synopsisClamped, setSynopsisClamped] = useState(false);
+  const [otherStoresExpanded, setOtherStoresExpanded] = useState(false);
+  const [expandedDetails, setExpandedDetails] = useState<ReadonlySet<string>>(() => new Set());
   const [gameCopied, setGameCopied] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [seedData, setSeedData] = useState<SeedData | null>(null);
   const [isFindingSimilar, setIsFindingSimilar] = useState(false);
-  const mediaRef = useRef<HTMLDivElement | null>(null);
-  const tagsRef = useRef<HTMLDivElement | null>(null);
+  const whyRef = useRef<HTMLDivElement | null>(null);
+  const detailsRef = useRef<HTMLDivElement | null>(null);
+  const synopsisRef = useRef<HTMLParagraphElement | null>(null);
   const { addFilter, removeFilter, isFilterSelected, selectedFilters, seedAndSearch } = useFilterSelection();
   const { isSaved, toggleSaved } = useSavedGames();
 
@@ -305,15 +317,16 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     if (!highlightFilters || !isSelected) return;
     let glowTimer: ReturnType<typeof setTimeout>;
     const initTimer = setTimeout(() => {
-      if (!tagsRef.current) return;
+      const target = whyRef.current ?? detailsRef.current;
+      if (!target) return;
       if (window.innerWidth < 768) {
-        tagsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      const matchedTagEls = tagsRef.current.querySelectorAll('[data-matched="true"]');
-      matchedTagEls.forEach(el => el.classList.add('tag-gold-glow'));
+      const matchEls = whyRef.current?.querySelectorAll('.game-card-why-item') ?? [];
+      matchEls.forEach(el => el.classList.add('game-card-why-glow'));
       glowTimer = setTimeout(() => {
-        matchedTagEls.forEach(el => el.classList.remove('tag-gold-glow'));
-      }, 3000);
+        matchEls.forEach(el => el.classList.remove('game-card-why-glow'));
+      }, 2600);
     }, 350);
     return () => {
       clearTimeout(initTimer);
@@ -321,43 +334,18 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     };
   }, [highlightFilters, isSelected]);
 
+  // "Read more" only when the clamp actually cuts the synopsis off.
   useEffect(() => {
-    const updateMediaSyncedLayout = () => {
-      setIsMediaSyncedLayout(window.matchMedia('(min-width: 1280px)').matches);
+    const el = synopsisRef.current;
+    if (!isSelected || !el) return;
+    const measure = () => {
+      if (!synopsisExpanded) setSynopsisClamped(el.scrollHeight > el.clientHeight + 1);
     };
-
-    updateMediaSyncedLayout();
-    window.addEventListener('resize', updateMediaSyncedLayout);
-
-    return () => {
-      window.removeEventListener('resize', updateMediaSyncedLayout);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isSelected || !mediaRef.current) {
-      setMediaHeight(null);
-      return;
-    }
-
-    const mediaEl = mediaRef.current;
-    const updateMediaHeight = () => {
-      // offsetHeight ignores transforms; getBoundingClientRect would read the
-      // scaled size mid Framer `layout` animation and never be corrected.
-      setMediaHeight(mediaEl.offsetHeight);
-    };
-
-    updateMediaHeight();
-
-    const resizeObserver = new ResizeObserver(updateMediaHeight);
-    resizeObserver.observe(mediaEl);
-    window.addEventListener('resize', updateMediaHeight);
-
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', updateMediaHeight);
-    };
-  }, [isSelected]);
+    measure();
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(el);
+    return () => resizeObserver.disconnect();
+  }, [isSelected, synopsisExpanded, game.summary]);
 
   const handleTagClick = (tag: { id: number; name: string }, category: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -417,54 +405,69 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     window.open(url, '_blank');
   };
 
-  const selectedTagKeys = React.useMemo(
-    () => new Set(selectedFilters.map(f => `${f.category}-${f.id}`)),
-    [selectedFilters],
-  );
-
   const keywordCount = game.keywords?.length ?? 0;
   const platformCount = game.platforms?.length ?? 0;
 
-  const matchedKeywordCount = React.useMemo(
-    () => (game.keywords || []).filter(k => selectedTagKeys.has(`Keywords-${k.id}`)).length,
-    [game.keywords, selectedTagKeys],
-  );
+  const taxonomy = React.useMemo<Record<string, TaxonomyTag[]>>(() => ({
+    platforms: sortPlatforms((game.platforms || []).filter(p => !isObsoletePlatform(p.name)))
+      .map(t => ({ ...t, type: 'platform', category: 'platforms' })),
+    genres: (game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' })),
+    themes: (game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' })),
+    'Game Mode': (game.game_modes || []).map(t => ({ ...t, type: 'game_mode', category: 'Game Mode' })),
+    Keywords: (game.keywords || []).map(t => ({ ...t, type: 'keyword', category: 'Keywords' })),
+  }), [game.platforms, game.genres, game.themes, game.game_modes, game.keywords]);
 
-  const tagGroups = React.useMemo(() => [
+  // The filters this result satisfied, named explicitly. Search results carry
+  // the filters as searched; cards opened elsewhere (modal, keyword search)
+  // fall back to the live selection the game actually has.
+  const matchReasons = React.useMemo(() => {
+    if (!highlightFilters) return [];
+    const source = game._filterMatches?.matched ?? selectedFilters.filter(f => {
+      const own = taxonomy[f.category];
+      return own ? own.some(t => t.id === Number(f.id)) : game._matchedFilters?.includes(Number(f.id));
+    });
+    const seen = new Set<string>();
+    return source
+      .filter(f => f.mode !== 'exclude')
+      .map(f => {
+        // Name from the game's own data when it has it: URL-hydrated filters are
+        // named by bare id, which collides across categories.
+        const name = taxonomy[f.category]?.find(t => t.id === Number(f.id))?.name ?? f.name;
+        return {
+          key: `${f.category}-${f.id}`,
+          category: f.category,
+          name: f.category === 'Keywords' ? capitalize(name) : f.category === 'platforms' ? platformLabel(name) : name,
+        };
+      })
+      .filter(m => !seen.has(m.key) && seen.add(m.key))
+      .sort((a, b) => {
+        const rank = (c: string) => { const i = MATCH_CATEGORY_ORDER.indexOf(c); return i === -1 ? MATCH_CATEGORY_ORDER.length : i; };
+        return rank(a.category) - rank(b.category);
+      });
+  }, [highlightFilters, game._filterMatches, game._matchedFilters, selectedFilters, taxonomy]);
+
+  const matchedKeys = React.useMemo(() => new Set(matchReasons.map(m => m.key)), [matchReasons]);
+
+  // Reference metadata. Features lead with what the search did not already ask for.
+  const detailGroups = React.useMemo(() => [
+    { key: 'platforms', label: 'Platforms', tags: taxonomy.platforms },
+    { key: 'genres', label: 'Genres', tags: taxonomy.genres },
+    { key: 'themes', label: 'Themes', tags: taxonomy.themes },
+    { key: 'modes', label: 'Modes', tags: taxonomy['Game Mode'] },
     {
-      key: 'platforms',
-      label: 'Platforms',
-      tags: (game.platforms || []).map(t => ({ ...t, type: 'platform', category: 'platforms' })),
+      key: 'features',
+      label: 'Features',
+      tags: [...taxonomy.Keywords].sort((a, b) =>
+        Number(matchedKeys.has(`Keywords-${a.id}`)) - Number(matchedKeys.has(`Keywords-${b.id}`))),
     },
-    {
-      key: 'genres',
-      label: 'Genres',
-      tags: (game.genres || []).map(t => ({ ...t, type: 'genre', category: 'genres' })),
-    },
-    {
-      key: 'themes',
-      label: 'Themes',
-      tags: (game.themes || []).map(t => ({ ...t, type: 'theme', category: 'themes' })),
-    },
-    {
-      key: 'modes',
-      label: 'Modes',
-      tags: (game.game_modes || []).map(t => ({ ...t, type: 'game_mode', category: 'Game Mode' })),
-    },
-    {
-      key: 'keywords',
-      label: matchedKeywordCount > 0 ? 'Why this matched' : 'Keywords',
-      tags: (game.keywords || [])
-        .map(t => ({ ...t, type: 'keyword', category: 'Keywords' }))
-        .sort((a, b) => {
-          const aSelected = selectedTagKeys.has(`Keywords-${a.id}`) ? 1 : 0;
-          const bSelected = selectedTagKeys.has(`Keywords-${b.id}`) ? 1 : 0;
-          return bSelected - aSelected;
-        }),
-      emptyText: 'This game might be too recent, too obscure, or missing detailed keyword data.'
-    },
-  ].filter(group => group.tags.length > 0 || group.key === 'keywords'),
-  [game.platforms, game.genres, game.themes, game.game_modes, game.keywords, selectedTagKeys, matchedKeywordCount]);
+  ].filter(group => group.tags.length > 0),
+  [taxonomy, matchedKeys]);
+
+  const toggleDetail = (key: string) => setExpandedDetails(prev => {
+    const next = new Set(prev);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    return next;
+  });
 
   const filteredStores = React.useMemo(() =>
     (game.external_games || []).filter((store, index, self) => {
@@ -497,73 +500,52 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       .sort((a, b) => Number(b.external_game_source === 1) - Number(a.external_game_source === 1)),
   [filteredStores]);
   const synopsis = game.summary || 'No synopsis available yet.';
-  const hasOfficialLinks = renderableOfficialStores.length + officialWebsites.length > 0;
-  const storeButtonClass = "game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 px-1 py-2 text-left text-sm font-semibold transition-colors";
-  const storeIconClass = "game-card-store-icon flex h-5 w-5 flex-shrink-0 items-center justify-center";
-  const officialStoreLinks = (
-    <>
-      {renderableOfficialStores.map((store) => {
-        const isSteam = store.external_game_source === 1;
-        const priceLabel = isSteam && steamPrice
-          ? steamPrice.isFree
-            ? 'Free to Play'
-            : steamPrice.price
-          : null;
-        const originalLabel = isSteam && steamPrice?.originalPrice ? steamPrice.originalPrice : null;
-        const discountPct = isSteam && steamPrice?.discount ? steamPrice.discount : null;
-        const fallbackLabel = priceLabel ? null : 'Check retail price';
 
-        return (
-          <a
-            key={store.id}
-            href={store.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => { e.stopPropagation(); trackExternalClick(store.storeName, 'official', game.name); }}
-            className={storeButtonClass}
-            title={store.storeName}
-          >
-            <span className={storeIconClass}>
-              {React.cloneElement(store.icon, { className: 'w-5 h-5' })}
-            </span>
-            <span className="flex flex-1 min-w-0 flex-col gap-0">
-              <span className="truncate leading-tight">{store.storeName}</span>
-              {priceLabel && (
-                <span className="flex items-center gap-1.5">
-                  {originalLabel && <span className="text-[10px] font-normal text-slate-500 line-through">{originalLabel}</span>}
-                  {discountPct && <span className="text-[10px] font-bold text-[var(--c-emerald)] bg-[rgba(var(--c-emerald-rgb),0.12)] px-1 rounded">-{discountPct}%</span>}
-                  <span className={`text-[10px] font-semibold ${discountPct ? 'text-[var(--c-emerald)]' : 'text-slate-400'}`}>{priceLabel}</span>
-                </span>
-              )}
-              {fallbackLabel && (
-                <span className="truncate text-[10px] font-medium leading-tight text-slate-500">{fallbackLabel}</span>
-              )}
-            </span>
-            <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
-          </a>
-        );
-      })}
-      {officialWebsites.map((website) => (
-        <a
-          key={website.id}
-          href={website.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => { e.stopPropagation(); trackExternalClick('Official Website', 'official', game.name); }}
-          className={storeButtonClass}
-          title="Official Website"
-        >
-          <span className={storeIconClass}>
-            <FaGlobe className="w-4 h-4" />
+  const steamPriceLabel = steamPrice
+    ? steamPrice.isFree ? 'Free to Play' : steamPrice.price
+    : null;
+
+  // One destination per row: official stores (Steam first), then the official
+  // site, then the key marketplaces (affiliate, rotated per game).
+  type Destination = {
+    key: string;
+    label: string;
+    sub?: string;
+    icon: React.ReactNode;
+    price?: React.ReactNode;
+    href?: string;
+    onClick: (e: React.MouseEvent) => void;
+  };
+
+  const officialDestinations: Destination[] = [
+    ...renderableOfficialStores.map((store): Destination => {
+      const isSteam = store.external_game_source === 1;
+      const discountPct = isSteam && steamPrice?.discount ? steamPrice.discount : null;
+      const originalLabel = isSteam && steamPrice?.originalPrice ? steamPrice.originalPrice : null;
+      return {
+        key: `store-${store.id}`,
+        label: `View on ${store.storeName}`,
+        icon: React.cloneElement(store.icon, { className: 'w-5 h-5' }),
+        href: store.url,
+        onClick: (e) => { e.stopPropagation(); trackExternalClick(store.storeName, 'official', game.name); },
+        sub: isSteam && steamPriceLabel ? undefined : 'Check price',
+        price: isSteam && steamPriceLabel ? (
+          <span className="flex items-center gap-1.5">
+            {originalLabel && <span className="text-[10px] font-normal text-slate-500 line-through">{originalLabel}</span>}
+            {discountPct && <span className="text-[10px] font-bold text-[var(--c-emerald)] bg-[rgba(var(--c-emerald-rgb),0.12)] px-1 rounded">{discountPct}% off</span>}
+            <span className={`game-card-store-price text-[10px] font-semibold ${discountPct ? 'text-[var(--c-emerald)]' : ''}`}>{steamPriceLabel}</span>
           </span>
-          <span className="flex flex-1 min-w-0 flex-col gap-0">
-            <span className="truncate leading-tight">Official site</span>
-          </span>
-          <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
-        </a>
-      ))}
-    </>
-  );
+        ) : undefined,
+      };
+    }),
+    ...officialWebsites.map((website): Destination => ({
+      key: `site-${website.id}`,
+      label: 'Visit official site',
+      icon: <FaGlobe className="w-4 h-4" />,
+      href: website.url,
+      onClick: (e) => { e.stopPropagation(); trackExternalClick('Official Website', 'official', game.name); },
+    })),
+  ];
 
   const partnerStores = [
     {
@@ -603,120 +585,129 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     }
   ];
   const partnerStoreOffset = getStablePartnerOffset(game.id, game.name, partnerStores.length);
-  const rotatedPartnerStores = [
+  const partnerDestinations = [
     ...partnerStores.slice(partnerStoreOffset),
     ...partnerStores.slice(0, partnerStoreOffset)
-  ];
-  const primaryPartnerStore = rotatedPartnerStores[0];
-  const alternatePartnerStores = rotatedPartnerStores.slice(1);
+  ].map((store, index): Destination => ({
+    key: `partner-${store.key}`,
+    label: `Search ${store.name}`,
+    sub: store.descriptor,
+    icon: store.icon,
+    onClick: (e) => store.onClick(e, index === 0 ? 'primary' : 'alternate'),
+  }));
 
-  const partnerStoreLinks = (
-    <div className="flex flex-col gap-1.5">
-      <button
-        type="button"
-        onClick={(e) => primaryPartnerStore.onClick(e, 'primary')}
-        className={storeButtonClass}
-        title={primaryPartnerStore.name}
-      >
-        <span className={storeIconClass}>{primaryPartnerStore.icon}</span>
+  // One strong path, one alternative (the game's key marketplace), the rest
+  // behind a disclosure. With no official store, the marketplace leads.
+  const [primaryDestination, ...restOfficial] = officialDestinations.length > 0 ? officialDestinations : partnerDestinations;
+  const secondaryDestination = officialDestinations.length > 0 ? partnerDestinations[0] : undefined;
+  const otherDestinations = officialDestinations.length > 0
+    ? [...restOfficial, ...partnerDestinations.slice(1)]
+    : restOfficial;
+
+  const renderDestination = (dest: Destination, primary = false) => {
+    const className = primary
+      ? 'game-card-primary-store flex w-full min-h-12 min-w-0 items-center gap-3 px-4 py-2.5 text-left text-sm font-semibold transition-colors'
+      : 'game-card-store-button flex w-full min-h-11 min-w-0 items-center gap-2 px-1 py-2 text-left text-sm font-semibold transition-colors';
+    const body = (
+      <>
+        <span className="game-card-store-icon flex h-5 w-5 flex-shrink-0 items-center justify-center">{dest.icon}</span>
         <span className="flex flex-1 min-w-0 flex-col gap-0">
-          <span className="truncate leading-tight">{primaryPartnerStore.name}</span>
-          <span className="truncate text-[10px] font-medium leading-tight text-slate-500">{primaryPartnerStore.descriptor}</span>
+          <span className="truncate leading-tight">{dest.label}</span>
+          {dest.price}
+          {dest.sub && <span className="game-card-store-sub truncate text-[10px] font-medium leading-tight">{dest.sub}</span>}
         </span>
-        <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
-      </button>
-      {partnerStoresExpanded && alternatePartnerStores.map((store) => (
+        <FaArrowRight className="game-card-store-arrow h-3 w-3 flex-shrink-0" aria-hidden="true" />
+      </>
+    );
+    return dest.href ? (
+      <a key={dest.key} href={dest.href} target="_blank" rel="noopener noreferrer" onClick={dest.onClick} className={className}>{body}</a>
+    ) : (
+      <button key={dest.key} type="button" onClick={dest.onClick} className={className}>{body}</button>
+    );
+  };
+
+  const acquirePanel = primaryDestination && (
+    <div className="game-card-acquire flex flex-col gap-1">
+      {renderDestination(primaryDestination, true)}
+      {secondaryDestination && renderDestination(secondaryDestination)}
+      {otherStoresExpanded && otherDestinations.map(dest => renderDestination(dest))}
+      {otherDestinations.length > 0 && (
         <button
-          key={store.key}
           type="button"
-          onClick={(e) => store.onClick(e, 'alternate')}
-          className={storeButtonClass}
-          title={store.name}
+          onClick={(e) => { e.stopPropagation(); setOtherStoresExpanded(v => !v); }}
+          className="game-card-disclosure flex w-fit items-center gap-1.5 px-1 pt-1 text-xs transition-colors"
+          aria-expanded={otherStoresExpanded}
         >
-          <span className={storeIconClass}>{store.icon}</span>
-          <span className="flex flex-1 min-w-0 flex-col gap-0">
-            <span className="truncate leading-tight">{store.name}</span>
-            <span className="truncate text-[10px] font-medium leading-tight text-slate-500">{store.descriptor}</span>
-          </span>
-          <FaChevronRight className="h-3 w-3 flex-shrink-0 text-slate-600" />
+          {otherStoresExpanded ? 'Fewer stores' : `Other stores (${otherDestinations.length})`}
+          <FaChevronDown className={`h-2.5 w-2.5 flex-shrink-0 transition-transform ${otherStoresExpanded ? 'rotate-180' : ''}`} />
         </button>
-      ))}
-      <button
-        type="button"
-        onClick={(e) => { e.stopPropagation(); setPartnerStoresExpanded((v) => !v); }}
-        className="flex w-full items-center gap-1.5 pt-0.5 pb-1 text-xs text-slate-600 hover:text-slate-400 transition-colors"
-        aria-expanded={partnerStoresExpanded}
-      >
-        <FaChevronDown className={`h-2.5 w-2.5 flex-shrink-0 transition-transform ${partnerStoresExpanded ? 'rotate-180' : ''}`} />
-        <span>{partnerStoresExpanded ? 'Hide other stores' : `${alternatePartnerStores.length} more stores`}</span>
-      </button>
+      )}
     </div>
   );
 
-  const renderTagButton = (tag: { id: number; name: string; type: string; category: string }) => {
-    const isKeyword = tag.type === 'keyword';
-    const isPlatform = tag.type === 'platform';
-    const isEmerald = tag.type === 'genre' || tag.type === 'theme';
-    const displayName = isKeyword
-      ? tag.name.charAt(0).toUpperCase() + tag.name.slice(1)
-      : tag.name;
-    const isSelectedTag = isFilterSelected(tag.id, tag.category);
+  // Metadata values read as text; the "add to search" affordance shows on
+  // hover/focus only. A check marks values that are part of the search.
+  const renderDetailValue = (tag: TaxonomyTag) => {
+    const displayName = tag.type === 'keyword' ? capitalize(tag.name) : tag.type === 'platform' ? platformLabel(tag.name) : tag.name;
     const existingFilter = selectedFilters.find(f => f.id === tag.id && f.category === tag.category);
     const isExcluded = existingFilter?.mode === 'exclude';
-    const isMatchedFilter = highlightFilters && (game._matchedFilters?.includes(tag.id) ?? false);
-
-    let tagClass: string;
-    if (isExcluded) {
-      tagClass = 'game-card-tag-excluded';
-    } else if (isSelectedTag && isKeyword) {
-      tagClass = 'game-card-tag-keyword-selected';
-    } else if (isSelectedTag) {
-      tagClass = 'game-card-tag-selected';
-    } else if (isPlatform) {
-      tagClass = 'game-card-tag-platform';
-    } else if (isEmerald) {
-      tagClass = 'game-card-tag-emerald';
-    } else {
-      tagClass = 'game-card-tag-muted';
-    }
-    if (isMatchedFilter) {
-      tagClass += ' game-card-tag-matched';
-    }
+    const isPicked = !!existingFilter && !isExcluded;
+    const isMatched = matchedKeys.has(`${tag.category}-${tag.id}`);
+    const tip = isExcluded ? 'Remove exclusion' : isPicked ? 'Remove from search' : 'Add to search';
+    const stateClass = isExcluded ? 'is-excluded' : isMatched ? 'is-matched' : isPicked ? 'is-picked' : '';
 
     return (
       <button
-        key={`${tag.type}-${tag.id}-${tag.name}`}
-        data-matched={isMatchedFilter ? 'true' : undefined}
+        key={`${tag.type}-${tag.id}`}
+        type="button"
         onClick={(e) => handleTagClick(tag, tag.category, e)}
-        className={`game-card-tag inline-flex px-2 py-1 text-xs rounded transition-all cursor-pointer ${tagClass}`}
-        title={isExcluded ? `Click to remove "${displayName}" exclusion` : isSelectedTag ? `Click to remove "${displayName}" filter` : `Click to add "${displayName}" to filters`}
+        className={`game-card-detail-value ${stateClass}`}
+        data-tip={tip}
+        aria-label={`${displayName}: ${tip.toLowerCase()}`}
       >
+        {(isMatched || isPicked) && <Check className="h-3 w-3 flex-shrink-0" aria-hidden="true" />}
         {displayName}
       </button>
     );
   };
 
-  const tagsPanel = (
-    <div ref={tagsRef} className="game-card-carved-section pt-4 md:px-4 md:pb-2">
-      <div>
-        {tagGroups.length > 0 ? (
-          <div className="flex flex-wrap items-start gap-x-8 gap-y-3">
-            {tagGroups.map(group => (
-              <div key={group.key} className="min-w-0">
-                <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">{group.label}</span>
-                <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {group.tags.length > 0
-                    ? group.tags.map(renderTagButton)
-                    : <span className="game-card-keyword-empty">{group.emptyText}</span>}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <span className="text-xs text-slate-500">No tags found</span>
-        )}
-      </div>
+  const makerMark = (
+    <div className="game-card-maker-mark text-xs text-slate-400">
+      {developerName && <span className="text-slate-300">{developerName}</span>}
+      {developerName && releaseYear && <span className="px-1.5 text-slate-600">·</span>}
+      <span>{releaseYear}</span>
     </div>
+  );
+
+  const detailsPanel = detailGroups.length > 0 && (
+    <section ref={detailsRef} className="game-card-details" aria-label="Details">
+      <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">Details</span>
+      <dl className="game-card-details-grid">
+        {detailGroups.map(group => {
+          const open = expandedDetails.has(group.key);
+          const overflow = group.tags.length - DETAIL_PREVIEW;
+          return (
+            <div key={group.key} className={`game-card-detail-row game-card-detail-row-${group.key}`}>
+              <dt className="game-card-detail-label">{group.label}</dt>
+              <dd className="game-card-detail-values">
+                {(open ? group.tags : group.tags.slice(0, DETAIL_PREVIEW)).map(renderDetailValue)}
+                {overflow > 0 && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); toggleDetail(group.key); }}
+                    className="game-card-detail-more"
+                    aria-expanded={open}
+                    aria-label={open ? `Show fewer ${group.label.toLowerCase()}` : `Show ${overflow} more ${group.label.toLowerCase()}`}
+                  >
+                    {open ? 'Less' : `+${overflow}`}
+                  </button>
+                )}
+              </dd>
+            </div>
+          );
+        })}
+      </dl>
+    </section>
   );
 
   return (
@@ -780,23 +771,28 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       )}
 
       <article
-        className={`game-card ${!fullscreen && !isSelected ? 'h-full' : ''} ${isSelected ? 'game-card-selected' : 'game-card-compact'} ${fullscreen ? 'game-card-fullscreen bg-[#111312]' : 'bg-slate-900/95'} transition-[background-color,box-shadow] duration-300 cursor-pointer ${
+        className={`game-card ${!fullscreen && !isSelected ? 'h-full' : ''} ${isSelected ? 'game-card-selected' : 'game-card-compact'} ${fullscreen ? 'game-card-fullscreen bg-[#111312]' : 'bg-slate-900/95'} transition-[background-color,box-shadow] duration-300 ${isSelected ? '' : 'cursor-pointer'} ${
           fullscreen && isSelected
             ? 'rounded-none shadow-none md:rounded-lg md:shadow-[0_0_0_1px_rgba(112,124,116,0.18),0_22px_70px_rgba(0,0,0,0.36)]'
             : isSelected
               ? 'shadow-[0_0_0_1px_rgba(112,124,116,0.18),0_22px_70px_rgba(0,0,0,0.36)]'
               : 'shadow-[0_1px_0_rgba(255,255,255,0.035),0_14px_42px_rgba(0,0,0,0.18)] hover:bg-slate-900 hover:shadow-[0_0_0_1px_rgba(112,124,116,0.14),0_18px_55px_rgba(0,0,0,0.32)]'
         }`}
-        onClick={onSelect}
-        role="button"
-        tabIndex={0}
-        aria-expanded={isSelected}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onSelect();
-          }
-        }}
+        // Only the compact card is one big "open" target. Expanded, it is a
+        // document with its own controls and closes via the Collapse button.
+        {...(!isSelected && {
+          onClick: onSelect,
+          role: 'button',
+          tabIndex: 0,
+          'aria-expanded': false,
+          onKeyDown: (e: React.KeyboardEvent) => {
+            if (e.target !== e.currentTarget) return;
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelect();
+            }
+          },
+        })}
       >
         <div className={`game-card-content flex flex-col md:flex-row ${!fullscreen && !isSelected ? 'h-full' : ''}`}>
           <div className={`game-card-cover relative w-full h-56 md:w-40 lg:w-44 md:h-auto md:min-h-[230px] self-stretch flex-shrink-0 overflow-hidden bg-slate-950 ${isSelected ? 'hidden' : ''}`}>
@@ -839,11 +835,34 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
             )}
           </div>
 
-          <div className={`flex-1 min-w-0 ${fullscreen && isSelected ? 'px-4 pt-3 pb-4 md:p-5' : 'p-4 md:p-5'}`}>
+          <div className={`game-card-tablet-face flex-1 min-w-0 ${fullscreen && isSelected ? 'px-4 pt-3 pb-4 md:p-5' : 'p-4 md:p-5'}`}>
             <div className="flex flex-col gap-4">
-              <div className="flex items-start justify-between gap-3">
+              {/* Inline and expanded, the whole header collapses the card; the
+                  share/save actions inside stop propagation. */}
+              <div
+                className={`game-card-inscription flex items-start justify-between gap-3 ${isSelected && !fullscreen ? 'game-card-inscription-collapsible' : ''}`}
+                {...(isSelected && !fullscreen && {
+                  onClick: onSelect,
+                  role: 'button',
+                  tabIndex: 0,
+                  'aria-expanded': true,
+                  'aria-label': `Collapse ${game.name} details`,
+                  onKeyDown: (e: React.KeyboardEvent) => {
+                    if (e.target !== e.currentTarget) return;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSelect();
+                    }
+                  },
+                })}
+              >
                 <div className="min-w-0 flex-1">
                   <div className={`flex gap-2 ${isSelected ? 'items-center flex-wrap' : 'items-start flex-nowrap'} ${fullscreen && isSelected ? 'hidden md:flex' : ''}`}>
+                    {isSelected && !fullscreen && (
+                      <span className="game-card-collapse flex h-5 w-5 flex-shrink-0 items-center justify-center" aria-hidden="true">
+                        <FaChevronDown className="h-4 w-4 rotate-180" />
+                      </span>
+                    )}
                     <h3 className={`game-card-title min-w-0 flex-1 text-xl font-bold leading-tight ${!isSelected ? 'line-clamp-2' : ''}`}>{game.name}</h3>
                     {rating && (
                       <span className="game-card-rating flex-shrink-0 text-xs font-semibold px-2 py-0.5 rounded-md">
@@ -851,6 +870,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                       </span>
                     )}
                   </div>
+                  {isSelected && <div className={fullscreen ? '' : 'pl-7'}>{makerMark}</div>}
                 </div>
 
                 <div className={`flex items-center gap-1 flex-shrink-0 ${fullscreen ? 'hidden md:flex' : ''}`}>
@@ -901,54 +921,40 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                 </div>
               )}
 
-              <div className={isSelected ? 'game-card-carved-summary' : ''}>
-                <div className="text-xs text-slate-400">
-                  {developerName && <span className="text-slate-300">{developerName}</span>}
-                  {developerName && releaseYear && <span className="px-1.5 text-slate-600">/</span>}
-                  <span>{releaseYear}</span>
+              {!isSelected && (
+                <div className="game-card-record">
+                  {makerMark}
+                  <div className="mt-1">
+                    <p className="game-card-synopsis line-clamp-2 text-sm leading-relaxed">
+                      {synopsis}
+                    </p>
+                    {(steamPrice?.isFree || (steamPrice?.discount ?? 0) > 0 || isNewRelease) && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {steamPrice?.isFree && (
+                          <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
+                            Free
+                          </span>
+                        )}
+                        {!steamPrice?.isFree && (steamPrice?.discount ?? 0) > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
+                            -{steamPrice!.discount}% on Steam
+                          </span>
+                        )}
+                        {isNewRelease && (
+                          <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
+                            New
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-
-                <div className={isSelected ? 'mt-2' : 'mt-1'}>
-                  <p className={`game-card-synopsis text-sm leading-relaxed ${isSelected && !synopsisExpanded ? 'line-clamp-3' : !isSelected ? 'line-clamp-2' : ''}`}>
-                    {synopsis}
-                  </p>
-                  {!isSelected && (steamPrice?.isFree || (steamPrice?.discount ?? 0) > 0 || isNewRelease) && (
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {steamPrice?.isFree && (
-                        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
-                          Free
-                        </span>
-                      )}
-                      {!steamPrice?.isFree && (steamPrice?.discount ?? 0) > 0 && (
-                        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
-                          -{steamPrice!.discount}% on Steam
-                        </span>
-                      )}
-                      {isNewRelease && (
-                        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/40 bg-amber-400/10">
-                          New
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  {isSelected && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(v => !v); }}
-                      className="game-card-read-more mt-2 flex w-full items-center gap-2 text-xs transition-colors"
-                    >
-                      <span className="game-card-groove flex-1" aria-hidden="true" />
-                      {synopsisExpanded ? 'Read less' : 'Read more'}
-                      <FaChevronDown className={`h-2.5 w-2.5 transition-transform ${synopsisExpanded ? 'rotate-180' : ''}`} />
-                    </button>
-                  )}
-                </div>
-              </div>
+              )}
 
               {isSelected && (
-                <div className="grid grid-cols-[minmax(0,1fr)] gap-4 pt-1">
-                  {fullscreen && tagsPanel}
-                  <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(260px,0.85fr)]">
-                    <div ref={mediaRef} className="game-card-screen aspect-video overflow-hidden rounded-lg bg-black">
+                <div className="game-card-instrument-deck">
+                  <div className="game-card-decision">
+                    <div className="game-card-screen aspect-video overflow-hidden rounded-lg bg-black">
                       {isVideoLoading && (
                         <div className="w-full h-full bg-slate-800 animate-pulse" />
                       )}
@@ -1008,41 +1014,50 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
                       )}
                     </div>
 
-                    <div
-                      className="game-card-carved-column flex min-h-0 flex-col"
-                      style={mediaHeight && isMediaSyncedLayout ? { height: `${mediaHeight}px` } : undefined}
-                    >
-                      <FantasyScrollArea>
-                        <div className="grid gap-4">
-                          <div className="min-w-0">
-                            <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">Stores</span>
-                            <div className="mt-2">
-                              {hasOfficialLinks ? (
-                                <div className="flex flex-col gap-1.5">
-                                  {officialStoreLinks}
-                                </div>
-                              ) : (
-                                <span className="game-card-empty-state px-1 text-xs leading-relaxed">
-                                  No official links found. This game may be too old, delisted, or missing current store links.
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="min-w-0">
-                            <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">Marketplaces</span>
-                            <div className="mt-2">
-                              {partnerStoreLinks}
-                            </div>
-                          </div>
+                    <div className="game-card-decision-column">
+                      {matchReasons.length > 0 && (
+                        <div ref={whyRef} className="game-card-why">
+                          <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">Why it matches</span>
+                          <ul className="game-card-why-list">
+                            {matchReasons.map(reason => (
+                              <li key={reason.key} className="game-card-why-item">
+                                <Check className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                                {reason.name}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      </FantasyScrollArea>
+                      )}
+
+                      <div className="game-card-about">
+                        <span className="game-card-section-label text-[10px] font-semibold uppercase tracking-widest">Synopsis</span>
+                        <p
+                          ref={synopsisRef}
+                          className={`game-card-synopsis mt-1.5 text-sm leading-relaxed ${synopsisExpanded ? '' : 'line-clamp-4'}`}
+                        >
+                          {synopsis}
+                        </p>
+                        {(synopsisClamped || synopsisExpanded) && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setSynopsisExpanded(v => !v); }}
+                            className="game-card-read-more mt-1 flex items-center gap-1.5 text-xs transition-colors"
+                            aria-expanded={synopsisExpanded}
+                          >
+                            {synopsisExpanded ? 'Read less' : 'Read more'}
+                            <FaChevronDown className={`h-2.5 w-2.5 transition-transform ${synopsisExpanded ? 'rotate-180' : ''}`} />
+                          </button>
+                        )}
+                      </div>
+
+                      {acquirePanel}
                     </div>
                   </div>
 
-                  {!fullscreen && tagsPanel}
+                  {detailsPanel}
 
                   {/* ── Similar games panel — modal only ── */}
-                  {fullscreen && <div className="game-card-carved-section pt-4">
+                  {fullscreen && <div className="game-card-similar pt-4">
                     {/* "Find games like this" CTA */}
                     <button
                       type="button"

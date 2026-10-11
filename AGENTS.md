@@ -40,11 +40,16 @@ for full detail.
   modes now live only in the Wayfinder (see below): **Popular** (curated
   popular keys, e.g. Action Roguelike → Souls-like), **Curated** (hand-picked
   combos, id `rare-combo`), **Any key** (single random keyword, infinite, id
-  `common-keyword`), **Hidden gem** (id `user-crafts`; fixed editorial combo
-  — Cosmic Horror + Indie — labeled and iconed to read as a curated pick, not
-  community data; renamed from "User Crafted" 2026-07-23 to close a trust gap
-  where the old name/icon/copy implied live community-sourced data that
-  doesn't exist), and the uniques **Unique key** / **Unique craft** —
+  `common-keyword`), **Hidden gem** (id `user-crafts`; a random pairing from
+  `client/src/assets/hidden_gems.json`, served by `GET /api/hidden-gems` and
+  prebuilt by `npm run gems:build`. A pairing qualifies when its games — fetched
+  from IGDB — are few (≤15), come from ≥3 independent families (franchise,
+  collection, developer or title word) with none dominating, include a
+  well-rated payoff game, and at least one keyword is about setting/aesthetic/
+  culture. Rules in `shared/hiddenGems.ts`; candidates from `findRarePairings`
+  in `shared/keywordDiscoveries.ts`. Re-run after a co-occurrence crawl or an
+  editorial change; `KEYWORD_EDITORIAL.block` prunes a pair (and cleans the
+  map). Falls back to Cosmic Horror + Indie if the pool is unavailable), and the uniques **Unique key** / **Unique craft** —
   rare/low-result discovery sequences. They wrap back to the first item
   instead of locking; sequence progress is intentionally hidden in the
   Wayfinder.

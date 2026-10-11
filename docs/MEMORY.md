@@ -45,6 +45,12 @@ Durable decisions and context not derivable from source alone.
    (capped at 100 entries, wiped on every restart/deploy) — not enough to
    back a "live community data" claim, which is why the card was relabeled
    from "User Crafted" to "Hidden Gem" (2026-07-23) rather than wired to it.
+   Since 2026-10-12 Hidden Gem draws from a prebuilt pool of validated
+   pairings (`npm run gems:build`, rules in `shared/hiddenGems.ts`). Lesson:
+   rarity alone admits coincidences (one studio's tagging habit); judging a
+   pairing by its actual games (independent families + a rated payoff +
+   an evocative keyword) cut the noise from ~1/3 to bland-at-worst.
+   Community crafts could still feed it later.
 5. **Game/keyword search** — `KeywordSearch` queries `/api/games/suggest`
    and `/api/keywords/search` as two independently debounced fetches, not a
    joined request: keywords (local in-memory lookup) debounce at 120ms and
@@ -81,16 +87,14 @@ Durable decisions and context not derivable from source alone.
     `capped: true` when exceeded. The results header shows "N Results" or
     "N+ Results". Page size is 50 (changed from 30).
 13. **Query-context highlight (`highlightFilters`)** — when a `GameCard`
-    opens with `highlightFilters` true, the tags panel flashes gold
-    (`tags-gold-glow`) and any tag whose id appears in `game._matchedFilters`
-    (set server-side per result in `igdbService.searchGames`, from the
-    filters actually used in that search) also flashes (`tag-gold-glow`) and
-    then settles into a persistent gold-tinted `game-card-tag-matched` state
-    — showing which keywords/tags drove that result. As of 2026-07-24 this is
-    wired from `SearchResults` (primary search path), `GameCardModal`, and
+    opens with `highlightFilters` true, it shows a "Why it matches" block
+    listing the searched filters the game satisfied (`game._filterMatches`,
+    built in `FilterContext` from the server's per-result `_matchedFilters`;
+    falls back to the live selection intersected with the game's taxonomy),
+    briefly glows it (`game-card-why-glow`), and checks those values in the
+    Details rows. Wired from `SearchResults`, `GameCardModal`, and
     `KeywordSearch`; any new place that opens a `GameCard` for a search
-    result should pass `highlightFilters` too or matched tags won't be
-    marked.
+    result should pass `highlightFilters` too or the block won't render.
 
 ## Competitive Context
 - Main competitors: WhatOPlay, Boredgame.lol, GamesFinder.gg

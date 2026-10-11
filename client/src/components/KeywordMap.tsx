@@ -43,7 +43,7 @@ import { buildSearchPayload, withKeyword } from '../lib/searchPayload';
 import { formatCount, peekCount } from '../lib/searchCount';
 import { setMapKeyword } from '../lib/mapLink';
 import { markMapSourced, track } from '../lib/funnel';
-import { findDiscoveries } from '../lib/keywordDiscoveries';
+import { findDiscoveries } from '../../../shared/keywordDiscoveries';
 import { sendLightPulse } from '../lib/lightPulse';
 import { storyFor } from '../lib/keywordStories';
 import { JOURNEY_PARAM, decodeJourney } from '../lib/mapJourney';

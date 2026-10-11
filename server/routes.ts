@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { storage } from "./storage";
 import { IGDBService } from "./services/igdbService";
 import { createCountCache } from "./services/countCache";
-import { getGraphSlice, knownKeywordIds } from "./services/keywordGraph";
+import { getGraphSlice, getHiddenGems, knownKeywordIds } from "./services/keywordGraph";
 import { createFacetService } from "./services/facetCache";
 import keywordsRouter from "./routes/keywords";
 import { SEO_PAGE_MAP } from "./seoPages";
@@ -194,6 +194,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('[routes] Error reading keyword graph:', error.message);
       res.status(500).json({ message: 'Keyword graph unavailable' });
+    }
+  });
+
+  // Wayfinder "Hidden gem" pool: rare-but-strong keyword pairings.
+  app.get('/api/hidden-gems', (_req, res) => {
+    try {
+      res.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+      res.json({ pairs: getHiddenGems() });
+    } catch (error: any) {
+      console.error('[routes] Error building hidden gems:', error.message);
+      res.status(500).json({ message: 'Hidden gems unavailable' });
     }
   });
 

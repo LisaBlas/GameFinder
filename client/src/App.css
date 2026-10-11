@@ -2098,7 +2098,7 @@ h3{
   background:
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.82), rgba(var(--c-card-rgb), 0.78) 55%, rgba(var(--c-bg-rgb), 0.9)),
-    url("./assets/ui/game-card-forge-slate.png") center / cover;
+    url("./assets/ui/archive-tablet-slate.webp") center / cover;
   border-radius: 12px;
   overflow: hidden;
   border: none;
@@ -2177,7 +2177,7 @@ h3{
   background:
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.78), rgba(var(--c-card-rgb), 0.74) 55%, rgba(var(--c-bg-rgb), 0.88)),
-    url("./assets/ui/game-card-forge-slate.png") center / cover;
+    url("./assets/ui/archive-tablet-slate.webp") center / cover;
 }
 
 .game-card-compact:hover::after {
@@ -2199,7 +2199,7 @@ h3{
   background:
     radial-gradient(ellipse at 50% 50%, transparent 32%, rgba(0, 0, 0, 0.54) 100%),
     linear-gradient(160deg, rgba(var(--c-card-2-rgb), 0.8), rgba(var(--c-card-rgb), 0.76) 55%, rgba(var(--c-bg-rgb), 0.9)),
-    url("./assets/ui/game-card-forge-slate.png") center / cover;
+    url("./assets/ui/archive-tablet-slate.webp") center / cover;
   box-shadow:
     0 22px 70px rgba(0, 0, 0, 0.40),
     0 0 0 1px rgba(0, 0, 0, 0.58);
@@ -2266,55 +2266,11 @@ h3{
   }
 }
 
-/* Carved layout: one slab, regions separated by engraved grooves, no inner boxes.
-   The trailer (.game-card-screen) is the only solid internal block. */
-.game-card-groove {
-  display: block;
-  height: 2px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.065) 1px 2px);
-}
-
-.game-card-carved-summary {
-  position: relative;
-}
-
 .game-card-rating {
   border: 1px solid rgba(var(--c-emerald-rgb), 0.22);
   background: rgba(var(--c-emerald-rgb), 0.12);
   color: var(--c-emerald-soft);
   box-shadow: 0 0 16px rgba(var(--c-emerald-rgb), 0.1);
-}
-
-.game-card-carved-section,
-.game-card-carved-column {
-  position: relative;
-}
-
-/* Full-width channel across the top with short corner cuts dropping from each end. */
-.game-card-carved-section::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 8px;
-  pointer-events: none;
-  background:
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.065) 1px 2px) top / 100% 2px no-repeat,
-    linear-gradient(to right, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.055) 1px 2px) left top / 2px 8px no-repeat,
-    linear-gradient(to left, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.055) 1px 2px) right top / 2px 8px no-repeat;
-}
-
-/* Stores sit in the stone itself: a groove on the top (stacked) or left (beside the screen). */
-.game-card-carved-column {
-  padding-top: 0.875rem;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.065) 1px 2px) top / 100% 2px no-repeat;
-}
-
-@media (min-width: 1280px) {
-  .game-card-carved-column {
-    padding-top: 0.125rem;
-    padding-left: 1rem;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.62) 0 1px, rgba(255, 248, 214, 0.065) 1px 2px) left top / 2px 100% no-repeat;
-  }
 }
 
 .game-card-screen {
@@ -2443,10 +2399,6 @@ h3{
   color: currentColor;
 }
 
-.game-card-empty-state {
-  color: rgba(180, 193, 186, 0.76);
-}
-
 .game-card-compact-stat {
   display: inline-flex;
   width: fit-content;
@@ -2466,51 +2418,472 @@ h3{
   color: rgba(var(--c-emerald-soft-rgb), 0.66);
 }
 
-.game-card-keyword-empty {
-  max-width: 24rem;
-  color: var(--c-dim);
-  font-size: 0.76rem;
-  line-height: 1.45;
+/* Archive tablet ---------------------------------------------------------
+   The card is one physical object: forged chassis, continuous slate record,
+   then a small set of installed parts. Keep new regions on these three
+   depth levels rather than introducing independent web-style panels. */
+.game-card {
+  --tablet-iron: url("./assets/ui/archive-tablet-iron.webp");
+  --tablet-cut: 7px;
 }
 
-.game-card-tag {
-  border: 1px solid rgba(0, 0, 0, 0.28);
-  background: rgba(0, 0, 0, 0.12);
-  color: rgba(176, 186, 179, 0.72);
+.game-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 48% 34%, transparent 22%, rgba(0, 0, 0, 0.18) 76%, rgba(0, 0, 0, 0.42)),
+    linear-gradient(160deg, rgba(226, 235, 221, 0.035), transparent 24% 72%, rgba(0, 0, 0, 0.2)),
+    rgba(2, 8, 6, 0.36);
+  mix-blend-mode: multiply;
+}
+
+.game-card-tablet-face {
+  position: relative;
+}
+
+/* A smoothed inscription band cut into the same slab, terminated by one
+   forged rule. It carries identity and controls, so it is never another box. */
+.game-card-inscription {
+  position: relative;
+  min-height: 2.25rem;
+  padding: 0.05rem 0.1rem 0.8rem;
+}
+
+.game-card-title {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 1.06rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+.game-card-selected .game-card-title,
+.game-card-fullscreen .game-card-title {
+  font-size: clamp(1.12rem, 1.65vw, 1.38rem);
+}
+
+.game-card-maker-mark {
+  margin-top: 0.15rem;
+  color: rgba(188, 196, 187, 0.68);
+  font-family: 'Alegreya', Georgia, serif;
+  letter-spacing: 0.035em;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.92);
+}
+
+/* Enamelled cabochon seated in a tiny iron setting. */
+.game-card-rating {
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%);
+  background: linear-gradient(180deg, rgba(var(--c-emerald-rgb), 0.55), rgba(var(--c-emerald-rgb), 0.24));
+  color: #baf7dc;
+  font-family: 'Cinzel', Georgia, serif;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 1px #000;
+  box-shadow: none;
+}
+
+.game-card-rating::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  clip-path: inherit;
+  background:
+    linear-gradient(180deg, rgba(42, 92, 72, 0.8), rgba(5, 27, 20, 0.94)),
+    var(--tablet-iron) center / 180px auto;
+  box-shadow: inset 0 1px 0 rgba(218, 255, 239, 0.16), inset 0 -2px 5px rgba(0, 0, 0, 0.55);
+}
+
+.game-card-record {
+  position: relative;
+  padding-inline: 0.1rem;
+}
+
+.game-card-synopsis {
+  font-family: 'Alegreya', Georgia, serif;
+  font-size: 0.96rem;
+  letter-spacing: 0.006em;
+}
+
+/* The only dark-glass module on the tablet. Its cut corners and forged bezel
+   deliberately contrast with the continuous slate around it. */
+.game-card-screen {
+  position: relative;
+  border: 4px solid rgba(8, 10, 9, 0.96);
+  border-radius: 2px !important;
+  clip-path: polygon(var(--tablet-cut) 0, calc(100% - var(--tablet-cut)) 0, 100% var(--tablet-cut), 100% calc(100% - var(--tablet-cut)), calc(100% - var(--tablet-cut)) 100%, var(--tablet-cut) 100%, 0 calc(100% - var(--tablet-cut)), 0 var(--tablet-cut));
+  background:
+    linear-gradient(rgba(1, 3, 3, 0.82), rgba(0, 0, 0, 0.94)),
+    var(--tablet-iron) center / 480px auto;
+  box-shadow:
+    0 0 0 1px rgba(222, 205, 158, 0.13),
+    0 0 0 3px rgba(0, 0, 0, 0.56),
+    0 9px 22px rgba(0, 0, 0, 0.46);
+}
+
+.game-card-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  box-shadow:
+    inset 1px 1px 0 rgba(240, 230, 196, 0.13),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.72),
+    inset 0 0 15px rgba(0, 0, 0, 0.24);
+}
+
+.game-card-section-label {
+  font-family: 'Cinzel', Georgia, serif;
+  letter-spacing: 0.13em;
+}
+
+/* Expanded inline, the whole header is the collapse target. Hover lifts the
+   band with a faint gold wash that bleeds past its padding (no box edges), and
+   the chevron brightens and nudges up to say what a click does. */
+.game-card-inscription-collapsible {
+  isolation: isolate;
+  cursor: pointer;
+  outline: none;
+}
+
+.game-card-inscription-collapsible::before {
+  content: "";
+  position: absolute;
+  inset: -0.6rem -0.75rem 0.15rem;
+  z-index: -1;
+  border-radius: 4px;
+  background: radial-gradient(ellipse 85% 120% at 50% 40%, rgba(var(--c-gold-rgb), 0.075), transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.game-card-inscription-collapsible:hover::before,
+.game-card-inscription-collapsible:focus-visible::before {
+  opacity: 1;
+}
+
+.game-card-inscription-collapsible:focus-visible::before {
+  box-shadow: inset 0 0 0 1px rgba(var(--c-gold-rgb), 0.35);
+}
+
+.game-card-inscription-collapsible:hover .game-card-title,
+.game-card-inscription-collapsible:focus-visible .game-card-title {
+  color: rgba(240, 236, 222, 0.98);
+}
+
+.game-card-collapse {
+  color: rgba(var(--c-gold-rgb), 0.66);
+  filter: drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.9));
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.game-card-inscription-collapsible:hover .game-card-collapse,
+.game-card-inscription-collapsible:focus-visible .game-card-collapse {
+  color: rgba(var(--c-gold-rgb), 0.98);
+  transform: translateY(-2px);
+}
+
+.game-card-store-arrow {
+  color: rgba(150, 160, 152, 0.45);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.game-card-store-button:hover .game-card-store-arrow,
+.game-card-store-button:focus-visible .game-card-store-arrow {
+  color: rgba(var(--c-gold-rgb), 0.9);
+  transform: translateX(2px);
+}
+
+.game-card-store-sub {
+  color: rgba(150, 160, 152, 0.7);
+}
+
+.game-card-store-price {
+  color: rgba(176, 186, 179, 0.82);
+}
+
+/* Expanded body: grouped by decision, not by data type.
+   Left inspects the game (trailer); right decides and acts (why it matches,
+   synopsis, where to get it); Details below is reference metadata. One column
+   until the card itself is wide enough, whatever the viewport. */
+.game-card-instrument-deck {
+  container: card-deck / inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  padding-top: 0.25rem;
+}
+
+.game-card-decision {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.1rem;
+}
+
+.game-card-decision-column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1.05rem;
+  padding-inline: 0.1rem;
+}
+
+@container card-deck (min-width: 680px) {
+  .game-card-decision {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    align-items: start;
+    gap: 1.4rem;
+  }
+
+  .game-card-decision-column {
+    gap: 1.15rem;
+    padding-top: 0.1rem;
+  }
+}
+
+/* Why it matches: the searched filters this game satisfied, named outright.
+   Gold is inscription/meaning, so it carries the rationale. */
+.game-card-why-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  margin-top: 0.45rem;
+}
+
+.game-card-why-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #dcbd72;
+  font-family: 'Alegreya', Georgia, serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.92), 0 0 14px rgba(var(--c-gold-rgb), 0.12);
+}
+
+.game-card-why-item svg {
+  color: rgba(var(--c-gold-rgb), 0.78);
+}
+
+@keyframes game-card-why-glow {
+  0%, 30% { text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.92), 0 0 16px rgba(var(--c-gold-rgb), 0.7); }
+  100% { text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.92), 0 0 14px rgba(var(--c-gold-rgb), 0.12); }
+}
+
+.game-card-why-glow {
+  animation: game-card-why-glow 2.4s ease-out;
+}
+
+.game-card-about .game-card-synopsis {
+  max-width: 62ch;
+}
+
+/* The one strong path to the game. Emerald = interaction; an iron plate with
+   the tablet's cut corners, so it reads as an installed part, not a web pill. */
+.game-card-primary-store {
+  position: relative;
+  clip-path: polygon(var(--tablet-cut) 0, calc(100% - var(--tablet-cut)) 0, 100% 50%, calc(100% - var(--tablet-cut)) 100%, var(--tablet-cut) 100%, 0 50%);
+  background:
+    linear-gradient(180deg, rgba(var(--c-emerald-rgb), 0.34), rgba(var(--c-emerald-rgb), 0.14)),
+    linear-gradient(rgba(2, 10, 7, 0.62), rgba(2, 10, 7, 0.62)),
+    var(--tablet-iron) center / 320px auto;
+  color: #d4f6e6;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(218, 255, 239, 0.18),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.game-card-primary-store:hover,
+.game-card-primary-store:focus-visible {
+  background:
+    linear-gradient(180deg, rgba(var(--c-emerald-rgb), 0.46), rgba(var(--c-emerald-rgb), 0.22)),
+    linear-gradient(rgba(2, 10, 7, 0.55), rgba(2, 10, 7, 0.55)),
+    var(--tablet-iron) center / 320px auto;
+  color: #f0fff8;
+}
+
+.game-card-primary-store .game-card-store-arrow,
+.game-card-primary-store .game-card-store-sub,
+.game-card-primary-store .game-card-store-price {
+  color: rgba(186, 247, 220, 0.78);
+}
+
+.game-card-primary-store:hover .game-card-store-arrow,
+.game-card-primary-store:focus-visible .game-card-store-arrow {
+  color: #f0fff8;
+  transform: translateX(2px);
+}
+
+.game-card-disclosure {
+  color: rgba(150, 160, 152, 0.72);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9);
+}
+
+.game-card-disclosure:hover,
+.game-card-disclosure:focus-visible {
+  color: rgba(var(--c-gold-rgb), 0.9);
+}
+
+/* Details: compact label/value rows of reference metadata. Values read as
+   text and only reveal "add to search" on hover/focus. */
+.game-card-details-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.4rem 2.25rem;
+  margin-top: 0.55rem;
+}
+
+@container card-deck (min-width: 680px) {
+  .game-card-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.game-card-detail-row {
+  display: grid;
+  grid-template-columns: 5.25rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.game-card-detail-label {
+  color: rgba(var(--c-gold-rgb), 0.5);
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+.game-card-detail-values {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.95rem;
+  /* Clips only the left edge: hides the separator a wrapped line would
+     start with, while tooltips can still rise above the row. */
+  clip-path: inset(-3rem -40rem -3rem 0);
+}
+
+.game-card-detail-value {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: rgba(190, 199, 192, 0.8);
+  font-size: 0.8rem;
+  line-height: 1.5;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.85);
-  box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.62),
-    0 1px 0 rgba(255, 248, 214, 0.045);
+  text-decoration: underline transparent;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
-.game-card-tag:hover {
-  background: rgba(0, 0, 0, 0.2);
-  color: rgba(226, 231, 226, 0.88);
+/* Middle-dot separator sits outside the button so it is never a target. */
+.game-card-detail-value + .game-card-detail-value::before {
+  content: "·";
+  position: absolute;
+  left: -0.62rem;
+  color: rgba(150, 160, 152, 0.4);
+  pointer-events: none;
 }
 
-.game-card-tag-selected {
-  color: rgba(var(--c-emerald-soft-rgb), 0.82);
+.game-card-detail-value:hover,
+.game-card-detail-value:focus-visible {
+  color: var(--c-emerald-soft);
+  text-decoration-color: rgba(var(--c-emerald-rgb), 0.55);
 }
 
-.game-card-tag-keyword-selected {
-  border-color: rgba(var(--c-gold-rgb), 0.24);
-  background: rgba(var(--c-gold-rgb), 0.06);
+.game-card-detail-value.is-matched {
   color: #d9b86d;
 }
 
-.game-card-tag-excluded {
-  border-color: rgba(var(--c-danger-rgb), 0.3);
+.game-card-detail-value.is-matched svg {
+  color: rgba(var(--c-gold-rgb), 0.75);
+}
+
+.game-card-detail-value.is-picked {
+  color: rgba(var(--c-emerald-soft-rgb), 0.88);
+}
+
+.game-card-detail-value.is-excluded {
   color: #e8a3a7;
-  text-decoration: line-through;
-  text-decoration-color: rgba(var(--c-danger-rgb), 0.5);
+  text-decoration: line-through rgba(var(--c-danger-rgb), 0.55);
 }
 
-.game-card-tag-matched {
-  border-color: rgba(var(--c-gold-rgb), 0.42);
-  color: #d9b86d;
-  box-shadow:
-    inset 0 1px 2px rgba(0, 0, 0, 0.62),
-    inset 0 0 0 1px rgba(var(--c-gold-rgb), 0.12);
+/* Hover tooltip: says what a click does (add / remove from search). */
+@media (hover: hover) {
+  .game-card-detail-value::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 5px);
+    left: 0;
+    z-index: 5;
+    padding: 0.2rem 0.45rem;
+    border: 1px solid rgba(var(--c-emerald-rgb), 0.3);
+    border-radius: 3px;
+    background: rgba(6, 12, 10, 0.96);
+    color: var(--c-emerald-soft);
+    font-size: 0.66rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(2px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+  }
+
+  .game-card-detail-value:hover::after,
+  .game-card-detail-value:focus-visible::after {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.25s;
+  }
+}
+
+.game-card-detail-more {
+  color: rgba(var(--c-gold-rgb), 0.62);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9);
+}
+
+.game-card-detail-more:hover,
+.game-card-detail-more:focus-visible {
+  color: rgba(var(--c-gold-rgb), 0.92);
+}
+
+/* Expanded, the card is read rather than scanned: the forged frame steps
+   back (~35%) so it stops competing with the content at its edges. */
+.game-card-frame-assembly {
+  transition: filter 0.3s ease;
+}
+
+.game-card-shell-selected .game-card-frame-assembly {
+  filter: brightness(0.65) saturate(0.7);
+}
+
+@media (max-width: 767px) {
+  .game-card-inscription {
+    padding-bottom: 0.65rem;
+  }
+
+  .game-card-title {
+    font-size: 1rem;
+  }
 }
 
 .game-image {
@@ -4414,18 +4787,6 @@ button.kmap-crumb:hover,
     animation: none;
     opacity: 0;
   }
-}
-
-@keyframes tag-gold-glow {
-  0%   { border-color: rgba(244,176,27,0.95); box-shadow: 0 0 0 1px rgba(244,176,27,0.5), 0 0 12px rgba(244,176,27,0.35); }
-  12%  { border-color: rgba(244,176,27,0.3);  box-shadow: none; }
-  24%  { border-color: rgba(244,176,27,0.95); box-shadow: 0 0 0 1px rgba(244,176,27,0.5), 0 0 12px rgba(244,176,27,0.35); }
-  36%  { border-color: rgba(244,176,27,0.3);  box-shadow: none; }
-  50%  { border-color: rgba(244,176,27,0.8);  box-shadow: 0 0 0 1px rgba(244,176,27,0.4), 0 0 8px rgba(244,176,27,0.25); }
-  100% { border-color: rgba(var(--c-gold-rgb), 0.55); box-shadow: inset 0 0 0 1px rgba(var(--c-gold-rgb), 0.2); }
-}
-.tag-gold-glow {
-  animation: tag-gold-glow 3s ease-out forwards;
 }
 
 /* ── Keyword map micro-interactions ─────────────────────────────────

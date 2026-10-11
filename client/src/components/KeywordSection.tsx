@@ -15,6 +15,7 @@ import { SelectedFilters } from './SelectedFilters';
 import { useFilters, type Filter as FilterItem } from '../context/FilterContext';
 import { Wayfinder, type WayfinderBearing, type WayfinderDraw } from './Wayfinder';
 import { track } from '../lib/funnel';
+import { loadHiddenGems, pairingKey, pickHiddenGem } from '../lib/hiddenGems';
 import type { RevealCard } from '../lib/discoveryCards';
 
 type RawKw = { id: number; name: string };
@@ -350,13 +351,30 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults })
     setActivePopularIndex(i => (i + 1) % popularSuggestions.length);
   };
 
-  const applyUserCrafts = () => {
+  // Hidden gem: a random rare-but-strong keyword pairing from the crawl
+  // (lib/hiddenGems.ts). The pool is small and fetched ahead of the first draw.
+  const recentGemsRef = useRef<string[]>([]);
+  useEffect(() => { loadHiddenGems().catch(() => {}); }, []);
+
+  const applyUserCrafts = async () => {
+    const drawSeq = relicSeqRef.current;
+    let filters: FilterItem[];
+    try {
+      const gem = pickHiddenGem(await loadHiddenGems(), new Set(recentGemsRef.current));
+      if (!gem) throw new Error('empty hidden gem pool');
+      recentGemsRef.current = [pairingKey(gem), ...recentGemsRef.current].slice(0, 12);
+      filters = [gem.a, gem.b].map(k => ({ id: k.id, name: k.name, category: CATEGORY, mode: "include" as const }));
+    } catch {
+      // Pool unavailable: fall back to the editorial pick it replaced.
+      filters = [
+        { id: 2379, name: "Cosmic Horror", category: CATEGORY, mode: "include" },
+        { id: 32, name: "Indie", category: "genres" },
+      ];
+    }
+    // Another bearing was drawn while the pool loaded: that draw wins.
+    if (relicSeqRef.current !== drawSeq) return;
     resetOtherUniques("user-crafts");
     clearAllFilters();
-    const filters: FilterItem[] = [
-      { id: 2379, name: "Cosmic Horror", category: CATEGORY, mode: "include" },
-      { id: 32, name: "Indie", category: "genres" },
-    ];
     filters.forEach(f => addFilter(f));
     recordDraw("user-crafts", filters);
   };
@@ -478,7 +496,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults })
       { id: 'common-keyword', name: 'Any key', verb: 'Roll any key', icon: Shuffle, group: 'keys', onDraw: applyCommonKeyword },
       { id: 'unique-combo', name: 'Unique craft', verb: 'Roll unique craft', icon: WandSparkles, group: 'uniques', onDraw: applyUniqueCombo },
       { id: 'rare-combo', name: 'Curated', verb: 'Roll curated', icon: ScrollText, group: 'crafts', onDraw: applyRareCombo },
-      { id: 'user-crafts', name: 'Hidden gem', verb: 'Roll hidden gem', icon: Gem, group: 'crafts', onDraw: applyUserCrafts },
+      { id: 'user-crafts', name: 'Hidden gem', verb: 'Roll hidden gem', icon: Gem, group: 'crafts', onDraw: () => void applyUserCrafts() },
       { id: 'unique-keyword', name: 'Unique key', verb: 'Roll unique key', icon: Sparkles, group: 'uniques', onDraw: applyUniqueKeyword },
     ];
     return (
