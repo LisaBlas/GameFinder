@@ -3573,6 +3573,54 @@ button.kmap-crumb:hover,
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  transform-origin: 50% 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(123, 178, 124, 0.12), transparent 18rem),
+    radial-gradient(ellipse at 50% 120%, rgba(7, 36, 22, 0.9), transparent 65%),
+    rgba(2, 10, 7, 0.92);
+}
+
+/* The opening behaves like a cartographer's aperture, not a generic modal.
+   The actual Wayfinder stays above these calibration marks. */
+.kmap-spark-stage::before,
+.kmap-spark-stage::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(76vw, 54rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.kmap-spark-stage::before {
+  border: 1px solid rgba(206, 164, 84, 0.25);
+  background:
+    repeating-conic-gradient(from -1deg, rgba(234, 193, 110, 0.3) 0 1deg, transparent 1deg 15deg),
+    repeating-radial-gradient(circle, transparent 0 4.6rem, rgba(151, 117, 58, 0.16) 4.7rem 4.76rem);
+  mask: radial-gradient(circle, transparent 0 35%, #000 35.5% 76%, transparent 76.5%);
+  opacity: 0.72;
+  animation: kmap-wayfinder-calibrate 1.6s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.kmap-spark-stage::after {
+  width: min(33vw, 17rem);
+  box-shadow: 0 0 0 1px rgba(235, 194, 109, 0.26), 0 0 2.75rem rgba(41, 150, 99, 0.24), inset 0 0 2.75rem rgba(235, 194, 109, 0.14);
+  animation: kmap-wayfinder-seal 1.15s 0.06s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes kmap-wayfinder-calibrate {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-32deg) scale(0.24); }
+  55% { opacity: 0.72; }
+  100% { opacity: 0.38; transform: translate(-50%, -50%) rotate(0) scale(1); }
+}
+
+@keyframes kmap-wayfinder-seal {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.08); }
+  52% { opacity: 1; transform: translate(-50%, -50%) scale(1.32); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.85); }
 }
 
 .kmap-spark-stage > .kmap-spark-panel {
