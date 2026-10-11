@@ -3576,10 +3576,13 @@ button.kmap-crumb:hover,
   will-change: transform;
   contain: paint;
   background:
-    linear-gradient(105deg, rgba(255, 226, 166, 0.14), transparent 0.45rem),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.56), transparent 1.6rem),
-    repeating-linear-gradient(174deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 7px),
-    radial-gradient(ellipse at 50% 115%, rgba(11, 51, 31, 0.84), transparent 66%),
+    linear-gradient(105deg, rgba(255, 226, 166, 0.1), transparent 0.45rem),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.5), transparent 1.6rem),
+    radial-gradient(ellipse 78% 72% at 50% 50%, transparent 42%, rgba(1, 4, 3, 0.58) 100%),
+    linear-gradient(rgba(1, 5, 4, 0.06), rgba(1, 5, 4, 0.18)),
+    /* The socket is high in the asset; compensate for that while accounting
+       for the title-free instrument area, whose centre sits slightly high. */
+    url("./assets/ui/wayfinder/wayfinder-divination-table-v2.webp") center calc(50% + min(2.5vh, 1.9rem)) / cover no-repeat,
     #07110c;
 }
 

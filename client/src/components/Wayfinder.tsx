@@ -8,7 +8,6 @@
 import React from 'react';
 import {
   Footprints,
-  Navigation,
   Sparkles,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -70,17 +69,23 @@ export const Wayfinder: React.FC<Props> = ({
   const trail = history.filter(draw => draw.id !== destination?.id).slice(0, 4);
   const activeBearingIndex = destination ? bearings.findIndex(bearing => bearing.id === destination.card) : 0;
   const bearingAngles = [0, -60, -120, 180, 120, 60];
+  const [roseAngle, setRoseAngle] = React.useState(0);
+  const roseTargetRef = React.useRef(0);
+  React.useEffect(() => {
+    if (!destination) return;
+    const nextTarget = bearingAngles[Math.max(0, activeBearingIndex)];
+    let shortestDelta = ((nextTarget - roseTargetRef.current + 540) % 360) - 180;
+    // The opposite bearing has two equally short routes; consistently go clockwise.
+    if (shortestDelta === -180) shortestDelta = 180;
+    roseTargetRef.current = nextTarget;
+    setRoseAngle(current => current + shortestDelta);
+  }, [destination?.id]);
   const instrumentStyle = {
-    '--wf-lock-angle': `${bearingAngles[Math.max(0, activeBearingIndex)]}deg`,
+    '--wf-rose-angle': `${roseAngle}deg`,
   } as React.CSSProperties;
 
   return (
     <div className="wayfinder" style={instrumentStyle} data-state={state} data-rarity={rarity ?? undefined} data-gems-lit={gemsLit || undefined}>
-      <div className="wayfinder-heading">
-        <span className="wayfinder-kicker"><Navigation aria-hidden="true" /> The Wayfinder</span>
-        <p>Choose a bearing. Let the map reveal the route.</p>
-      </div>
-
       <div className="wayfinder-instrument" aria-label="Random discovery wayfinder">
         <div className="wayfinder-chassis" data-style="arcane" role="group" aria-label="Choose a bearing">
           <span className="wayfinder-chassis-layer wayfinder-chassis-layer--outer" />
@@ -109,12 +114,12 @@ export const Wayfinder: React.FC<Props> = ({
                 data-gem={index}
                 data-lit={active || undefined}
                 data-active={active || undefined}
-                data-pending={active && state === 'charting' ? true : undefined}
                 data-rarity={active ? rarity ?? undefined : undefined}
                 onClick={bearing.onDraw}
                 aria-label={bearing.verb}
                 title={bearing.verb}
               >
+                <span className="wayfinder-bearing-stone" aria-hidden="true" />
                 <span className="wayfinder-bearing-sigil"><Icon aria-hidden="true" /></span>
                 <span className="wayfinder-bearing-copy">
                   <strong>{bearing.name}</strong>
@@ -128,9 +133,13 @@ export const Wayfinder: React.FC<Props> = ({
         <span className="wayfinder-crosshair" aria-hidden="true" />
 
         <section className="wayfinder-core" aria-live="polite" aria-label="Wayfinder destination">
-          <span className="wayfinder-rose" aria-hidden="true" />
+          <span
+            className="wayfinder-rose"
+            data-active={destination ? true : undefined}
+            aria-hidden="true"
+          />
           <span className="wayfinder-core-gem" aria-hidden="true"><span className="wayfinder-core-gem-stone" /></span>
-          <div className="wayfinder-core-face" key={`${destination?.id ?? 'idle'}-${state}`}>
+          <div className="wayfinder-core-face" key={destination?.id ?? 'idle'}>
             {!destination ? (
               <>
                 <span className="wayfinder-core-overline">Awaiting a bearing</span>

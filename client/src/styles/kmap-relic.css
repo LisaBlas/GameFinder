@@ -762,8 +762,10 @@
 }
 
 /* Selected pills mirror selected map keywords: a hex plate in polished stone
-   (excluded: the same plate in red). Element = rim, ::before = face. */
-.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude) {
+   (excluded: the same plate in red). Generic filters (genre, platform...) take
+   the same plate in emerald, the colour of the results-side filters.
+   Element = rim, ::before = face. */
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill {
   --pill-rgb: 226, 227, 220;
   position: relative;
   isolation: isolate;
@@ -781,7 +783,7 @@
   color: #ffffff;
 }
 
-.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude)::before {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill::before {
   content: "";
   position: absolute;
   inset: 1px;
@@ -792,12 +794,17 @@
   clip-path: inherit;
 }
 
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill:not(.keyword, .keyword-exclude) {
+  --pill-rgb: var(--c-emerald-rgb);
+  color: var(--c-emerald-soft);
+}
+
 .keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill.keyword-exclude {
   --pill-rgb: var(--c-danger-rgb);
   color: #f3c9c9;
 }
 
-.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill:is(.keyword, .keyword-exclude):hover::before {
+.keyword-build-panel .kmap .kmap-user-selection-filters .selected-filter-pill:hover::before {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 60%),
     color-mix(in srgb, rgb(var(--pill-rgb)) 30%, #0b100f);
@@ -1266,7 +1273,7 @@
     gap: 0.25rem;
   }
 
-  /* Mobile chips echo the pointed keyword plates, scaled down into one swipeable lane. */
+  /* Mobile chips echo the pointed desktop plates, scaled down into one swipeable lane. */
   .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-pill {
     --pill-rgb: var(--c-emerald-rgb);
     position: relative;
@@ -1291,6 +1298,12 @@
       linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 60%),
       color-mix(in srgb, rgb(var(--pill-rgb)) 24%, #07120f);
     clip-path: inherit;
+  }
+
+  /* Keywords in stone, as on desktop; generic filters keep the emerald above. */
+  .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-pill.keyword {
+    --pill-rgb: 226, 227, 220;
+    color: #ffffff;
   }
 
   .keyword-build-panel .kmap .kmap-user-selection-filters.kmap-user-selection-filters--controls .selected-filter-pill.keyword-exclude {
