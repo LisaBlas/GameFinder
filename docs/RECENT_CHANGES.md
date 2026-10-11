@@ -6,7 +6,8 @@ than 7 days.
 ## 2026-10-11
 - Wayfinder opening now uses a transform-only stone slab that slides from the
   right over the map. This replaces the stuttering aperture, clip, blur, and
-  scale effects; reduced-motion users retain the direct fade. `KeywordMap.tsx`,
+  scale effects; its moving panel now reuses the relic UI's bronze nine-slice
+  frame. Reduced-motion users retain the direct fade. `KeywordMap.tsx`,
   `App.css`, `wayfinder.css`.
 - Documentation maintenance: pruned two expired entries (2026-09-24,
   2026-09-25 — their lessons already live in `SYSTEM_INVARIANTS.md`);
