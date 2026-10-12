@@ -1,6 +1,6 @@
 /* ── Relic skin for the results pane (right side, desktop) ──
    The quiet counterpart to kmap-relic.css: the cards are the relics, this is
-   the table they lie on. No frames, no raster art, only Alegreya/Cinzel type,
+   the table they lie on. No frames, no raster art, only --font-ui/--font-display type,
    bronze hairlines and a few hex plates. Rarity colour stays on the count only;
    the filter bar's controls (chevrons, counts, quality toggles, sort plate)
    and picked popover chips are emerald, matching the generic filter pills on
@@ -50,7 +50,7 @@
   .results-sticky-header .results-filter-trigger {
     border: 0;
     background: none;
-    font-family: 'Alegreya', Georgia, serif;
+    font-family: var(--font-ui);
     font-size: 0.95rem;
     font-weight: 500;
     color: var(--rr-parchment);
@@ -80,7 +80,7 @@
     background: rgba(var(--rr-filter-rgb), 0.22);
     clip-path: var(--rr-hex);
     padding: 0 0.4rem;
-    font-family: 'Cinzel', Georgia, serif;
+    font-family: var(--font-display);
     font-size: 0.68rem;
     font-weight: 700;
     color: var(--rr-filter-text);
@@ -92,7 +92,7 @@
   }
 
   .results-sticky-header .results-quality-group span {
-    font-family: 'Alegreya', Georgia, serif;
+    font-family: var(--font-ui);
     font-size: 0.85rem;
     color: var(--rr-dim);
   }
@@ -162,7 +162,7 @@
     border-radius: 0;
     background: none;
     padding: 0 2.4rem 0 1.15rem;
-    font-family: 'Alegreya', Georgia, serif;
+    font-family: var(--font-ui);
     font-size: 0.92rem;
     font-weight: 700;
     color: var(--rr-filter-text);
@@ -189,7 +189,7 @@
 }
 
 .results-filter-popover-title {
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -199,7 +199,7 @@
 }
 
 .results-filter-popover-count {
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 0.8rem;
   font-style: italic;
   color: var(--rr-dim);
@@ -217,7 +217,7 @@
   background: rgba(var(--chip-rgb), 0.38);
   clip-path: var(--rr-hex);
   box-shadow: none;
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 0.88rem;
   font-weight: 500;
   color: var(--rr-parchment);
@@ -287,17 +287,18 @@
 
 .results-summary-count {
   flex-shrink: 0;
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--rarity-text);
   text-shadow: 0 1px 0 #000, 0 0 12px rgba(var(--rarity-rgb), 0.22);
 }
 
 .results-summary-rarity {
   flex-shrink: 0;
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.22em;
@@ -332,7 +333,7 @@
   padding: 0 0.7rem;
   background: rgba(var(--rr-bronze-rgb), 0.34);
   clip-path: var(--rr-hex);
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1;
@@ -360,7 +361,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 0.88rem;
   font-style: italic;
   color: var(--rr-dim);
@@ -642,7 +643,7 @@
   .mobile-results-back {
     gap: 0.2rem;
     padding: 0 0.95rem 0 0.7rem;
-    font-family: 'Alegreya', Georgia, serif;
+    font-family: var(--font-ui);
     font-size: 0.95rem;
     font-weight: 700;
     text-shadow: 0 1px 0 #000;
@@ -692,7 +693,7 @@
     border-radius: 0;
     background: transparent;
     box-shadow: none;
-    font-family: 'Alegreya', Georgia, serif;
+    font-family: var(--font-ui);
     font-size: 0.88rem;
     font-weight: 700;
     color: var(--rr-gold-text);

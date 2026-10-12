@@ -255,12 +255,21 @@ etc. Used as `hsl(var(--primary))` in Tailwind utilities. These drive shadcn
 components and should not be repurposed.
 
 ### Fonts
-- **Inter** (400-700) - body and all UI text. Loaded via Google Fonts.
-- **Metamorphous** (400) - brand h1 only. Loaded via Google Fonts. Use
-  `font-brand` Tailwind utility.
-- **Cinzel** (400-900) - display font for the tagline only. Loaded via Google
-  Fonts. Use `font-cinzel` Tailwind utility. Do not use Cinzel for body copy
-  or UI controls.
+Four families, defined once as tokens in `client/src/styles/tokens.css` and
+loaded via Google Fonts in `client/index.html`. Reference the tokens
+(`var(--font-*)` in CSS, `font-brand` / `font-display` / `font-ui` / `font-body` in Tailwind),
+never a literal family name. Exceptions: canvas text (`CARD_DESC_FONT` in
+`lib/keywordMap.ts`) and the SEO pages (`server/seoRenderer.ts`) name the
+family directly, so update them when a token changes.
+- **Castoro Titling** (400), `--font-brand`: engraved capitals for the
+  GameFinder wordmark only, with a bright gilt fill (`.kmap-brand-title`).
+  Caps-only face: fine to track, never use it for running text.
+- **Grenze** (500-700), `--font-display`: roman capitals with a blackletter
+  edge. Inscriptions, titles, tracked uppercase labels. Not for
+  body copy.
+- **Brygada 1918** (400-700, italic 400), `--font-ui`: labels, pills,
+  controls, and keyword-map card text.
+- **Familjen Grotesk** (400-700), `--font-body`: page default, prose, counts.
 
 ### Component Class Conventions
 Reusable UI pieces are styled with plain CSS classes in `App.css` rather than

@@ -6,6 +6,13 @@
    ========================================================== */
 
 :root {
+  /* type — loaded in client/index.html (and server/seoRenderer.ts for SEO pages).
+     brand: wordmark · display: inscriptions, titles, wordmark · ui: labels, pills, controls · body: prose, counts */
+  --font-brand:   'Castoro Titling', 'Georgia', serif; /* the GameFinder wordmark only */
+  --font-display: 'Grenze', 'Georgia', serif;
+  --font-ui:      'Brygada 1918', 'Georgia', serif;
+  --font-body:    'Familjen Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
   /* surfaces */
   --c-bg:          #030807;
   --c-bg-rgb:      3, 8, 7;

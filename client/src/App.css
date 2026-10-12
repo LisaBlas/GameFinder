@@ -110,7 +110,7 @@
   background: linear-gradient(180deg, rgba(20, 28, 25, 0.96), rgba(7, 12, 10, 0.98));
   padding: 0.25rem 0.8rem;
   color: #cbb47e;
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -190,7 +190,7 @@
 
 .saved-games-panel__title {
   color: #e8e2d5;
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 1.08rem;
   letter-spacing: 0.035em;
 }
@@ -205,7 +205,7 @@
   border-radius: 999px;
   background: rgba(185, 120, 120, 0.09);
   color: #d7a4a4;
-  font-family: Inter, sans-serif;
+  font-family: var(--font-body);
   letter-spacing: 0;
 }
 
@@ -1243,7 +1243,7 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-body);
 }
 
 .filter-category {
@@ -2453,8 +2453,8 @@ h3{
 }
 
 .game-card-title {
-  font-family: 'Cinzel', Georgia, serif;
-  font-size: 1.06rem;
+  font-family: var(--font-display);
+  font-size: 1.46rem;
   font-weight: 700;
   letter-spacing: 0.015em;
 }
@@ -2467,7 +2467,7 @@ h3{
 .game-card-maker-mark {
   margin-top: 0.15rem;
   color: rgba(188, 196, 187, 0.68);
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   letter-spacing: 0.035em;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.92);
 }
@@ -2481,7 +2481,7 @@ h3{
   clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%);
   background: linear-gradient(180deg, rgba(var(--c-emerald-rgb), 0.55), rgba(var(--c-emerald-rgb), 0.24));
   color: #baf7dc;
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: var(--font-display);
   letter-spacing: 0.04em;
   text-shadow: 0 1px 1px #000;
   box-shadow: none;
@@ -2505,7 +2505,7 @@ h3{
 }
 
 .game-card-synopsis {
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 0.96rem;
   letter-spacing: 0.006em;
 }
@@ -2539,7 +2539,7 @@ h3{
 }
 
 .game-card-section-label {
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: var(--font-display);
   letter-spacing: 0.13em;
 }
 
@@ -2662,7 +2662,7 @@ h3{
   align-items: center;
   gap: 0.35rem;
   color: #dcbd72;
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -2758,7 +2758,7 @@ h3{
 
 .game-card-detail-label {
   color: rgba(var(--c-gold-rgb), 0.5);
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.12em;

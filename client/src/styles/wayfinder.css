@@ -13,7 +13,7 @@
   overflow: hidden;
   padding: clamp(0.8rem, 1.7vh, 1.25rem) 1.25rem clamp(0.8rem, 1.8vh, 1.2rem);
   color: #d9d0bc;
-  font-family: 'Alegreya', Georgia, serif;
+  font-family: var(--font-ui);
   background:
     linear-gradient(180deg, rgba(1, 5, 4, 0.2), transparent 16%, transparent 80%, rgba(1, 4, 3, 0.3)),
     radial-gradient(ellipse 88% 78% at 50% 50%, transparent 42%, rgba(1, 4, 3, 0.36) 100%);
@@ -316,7 +316,7 @@
 .wayfinder-gem[data-gem="4"] .wayfinder-bearing-copy,
 .wayfinder-gem[data-gem="5"] .wayfinder-bearing-copy { left: calc(100% + 0.45rem); top: 50%; align-items: flex-start; transform: translateY(-50%); text-align: left; }
 .wayfinder-bearing-copy strong {
-  font: 700 0.7rem/1.15 'Cinzel', Georgia, serif;
+  font: 700 0.7rem/1.15 var(--font-display);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -442,7 +442,7 @@
   top: 8%;
   left: 0;
   width: 100%;
-  font: 700 0.59rem/1 'Cinzel', Georgia, serif;
+  font: 700 0.59rem/1 var(--font-display);
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: #a98249;
@@ -474,7 +474,7 @@
 }
 .wayfinder-core h2 {
   margin: 0.5rem 0 0;
-  font: 700 clamp(1.05rem, 2.6vh, 1.55rem)/1.08 'Cinzel', Georgia, serif;
+  font: 700 clamp(1.05rem, 2.6vh, 1.55rem)/1.08 var(--font-display);
   letter-spacing: 0.035em;
   text-wrap: balance;
   color: #e7ddc8;
@@ -497,7 +497,7 @@
   background: linear-gradient(160deg, #e2bd78 0%, #8c6a36 38%, #4a3418 62%, #a8803f 100%);
   clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%);
   color: #b9a476;
-  font: 700 0.58rem/1 'Cinzel', Georgia, serif;
+  font: 700 0.58rem/1 var(--font-display);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-shadow: 0 1px 0 #000;
@@ -547,7 +547,7 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(var(--wf-brass), 0.24) 22%, rgba(var(--wf-brass), 0.13) 78%, transparent);
 }
-.wayfinder-trail-label { display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 0.2rem; font: 700 0.58rem/1 'Cinzel', Georgia, serif; letter-spacing: 0.15em; text-transform: uppercase; color: #81745d; }
+.wayfinder-trail-label { display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 0.2rem; font: 700 0.58rem/1 var(--font-display); letter-spacing: 0.15em; text-transform: uppercase; color: #81745d; }
 .wayfinder-trail-label svg { width: 0.75rem; height: 0.75rem; }
 .wayfinder-trail-empty { color: #716d60; font-size: 0.78rem; font-style: italic; letter-spacing: 0.015em; }
 .wayfinder-trail-stop { display: inline-flex; align-items: center; gap: 0.3rem; max-width: 10rem; padding: 0.27rem 0.55rem; overflow: hidden; border: 1px solid rgba(var(--wf-brass), 0.25); border-radius: 999px; background: rgba(3, 9, 6, 0.78); color: #aaa08b; font-size: 0.72rem; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }

@@ -85,8 +85,10 @@ export const nodeWidth = (node: LabelNode) =>
  * description and a size caption. Metrics in px; see KeywordMapScene's card renderer.
  */
 export const CARD = { minWidth: 196, padX: 12, padY: 9, icon: 14, iconGap: 6, title: 17, line: 13, gap: 3, tag: 13, descPx: 11.5, maxLines: 3 } as const;
+/** Matches the desktop (relic) card title style, so cards are sized to the real title width. */
+export const CARD_TITLE_FONT = `700 14px 'Brygada 1918', Georgia, serif`;
 /** Matches the desktop (relic) card description style, so wrapping uses the real glyph widths. */
-export const CARD_DESC_FONT = `italic 400 ${CARD.descPx}px Alegreya, Georgia, serif`;
+export const CARD_DESC_FONT = `italic 400 ${CARD.descPx}px 'Brygada 1918', Georgia, serif`;
 
 export const cardHeight = (lines: number, hasTag: boolean) =>
   CARD.padY * 2 + CARD.title + (lines > 0 ? CARD.gap + lines * CARD.line : 0) + (hasTag ? CARD.gap + CARD.tag : 0);

@@ -17,7 +17,7 @@ function filterChipHtml(filter: SeoFilter): string {
   const bg = isKeyword ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.07)";
   const border = isKeyword ? "#10b981" : "rgba(255,255,255,0.15)";
   const color = isKeyword ? "#34d399" : "#9caeaa";
-  return `<span style="display:inline-block;padding:4px 12px;border-radius:999px;border:1px solid ${border};background:${bg};color:${color};font-size:13px;font-family:Inter,sans-serif;margin:4px;">${escapeHtml(filter.name)}</span>`;
+  return `<span style="display:inline-block;padding:4px 12px;border-radius:999px;border:1px solid ${border};background:${bg};color:${color};font-size:13px;font-family:'Familjen Grotesk',sans-serif;margin:4px;">${escapeHtml(filter.name)}</span>`;
 }
 
 function relatedLinkHtml(slug: string): string {
@@ -137,7 +137,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
   <link rel="icon" href="/favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Metamorphous&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Grenze:wght@600&display=swap" rel="stylesheet" />
 
   ${jsonLd}
 
@@ -146,7 +146,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
     body {
       background: #030807;
       color: #f4f7f5;
-      font-family: Inter, sans-serif;
+      font-family: 'Familjen Grotesk', sans-serif;
       min-height: 100vh;
       padding: 0 16px;
     }
@@ -167,9 +167,9 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
     .breadcrumb a:hover { color: #10b981; }
     .breadcrumb span { margin: 0 6px; }
     h1 {
-      font-family: Metamorphous, serif;
+      font-family: Grenze, Georgia, serif;
       font-size: clamp(22px, 5vw, 32px);
-      font-weight: 400;
+      font-weight: 600;
       color: #f4f7f5;
       line-height: 1.25;
       margin-bottom: 20px;
@@ -201,7 +201,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
       padding: 14px 28px;
       background: #10b981;
       color: #030807;
-      font-family: Inter, sans-serif;
+      font-family: 'Familjen Grotesk', sans-serif;
       font-size: 15px;
       font-weight: 600;
       text-decoration: none;
@@ -352,7 +352,7 @@ export function renderNotFoundPage(): string {
   <meta name="robots" content="noindex" />
   <link rel="icon" href="/favicon.png" type="image/png" />
   <style>
-    body { background:#030807; color:#f4f7f5; font-family:Inter,sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; text-align:center; padding:24px; }
+    body { background:#030807; color:#f4f7f5; font-family:'Familjen Grotesk',sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; text-align:center; padding:24px; }
     h1 { font-size:24px; margin-bottom:12px; }
     p { color:#9caeaa; margin-bottom:24px; }
     a { color:#10b981; text-decoration:none; }

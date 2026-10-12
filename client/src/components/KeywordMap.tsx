@@ -5,8 +5,8 @@ import { useFilters, type Filter } from '../context/FilterContext';
 import {
   CARD,
   CARD_DESC_FONT,
+  CARD_TITLE_FONT,
   DESKTOP_SHAPE,
-  PILL_PAD,
   buildCategoryFallbackData,
   cardHeight,
   titleCase,
@@ -18,7 +18,7 @@ import {
   type MapSeed,
 } from '../lib/keywordMap';
 import { layoutKeywordMap, pillHeight, type LayoutOptions, type Rect, type Size } from '../lib/keywordMapLayout';
-import { measuredNodeWidth, wrapText } from '../lib/measureLabel';
+import { measureTextWidth, measuredNodeWidth, wrapText } from '../lib/measureLabel';
 import {
   MAIN_CATEGORIES,
   MAIN_CATEGORY_META,
@@ -526,7 +526,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   // read as places to go, not keywords to add. Sized once per node; text never changes.
   // Keyed by id and level: the subcategory you open glides into the centre as the same id,
   // and the centre card has no size caption.
-  const cards = useMemo(() => new Map<string, TaxonCard | null>(), [variant]);
+  // Card sizes are canvas-measured: re-measure once the web fonts replace the fallback.
+  const [fontsLoaded, setFontsLoaded] = useState(0);
+  useEffect(() => {
+    let live = true;
+    document.fonts?.ready.then(() => live && setFontsLoaded((n) => n + 1)).catch(() => {});
+    return () => { live = false; };
+  }, []);
+  const cards = useMemo(() => new Map<string, TaxonCard | null>(), [variant, fontsLoaded]);
   const cardOf = useCallback(
     (n: LabelNode): TaxonCard | undefined => {
       if (variant !== 'desktop' || n.id === undefined || n.id >= 0) return undefined;
@@ -539,8 +546,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         ? getCategoryDescription(mainCategory)
         : sub ? getSubcategoryDescription(sub.category, sub.subcategory) : '';
       const icon = mainCategory ? MAIN_CATEGORY_META[mainCategory].icon : sub ? getSubcategoryIconComponent(sub.subcategory) : null;
-      // The pill measure is a lighter, smaller font than the card title: pad it.
-      const labelW = (measuredNodeWidth(n) - (n.level === 0 ? PILL_PAD.center : PILL_PAD.other)) * 1.12;
+      const labelW = measureTextWidth(n.name, CARD_TITLE_FONT, 14);
       const width = Math.max(CARD.minWidth, Math.ceil(labelW + CARD.padX * 2 + (icon ? CARD.icon + CARD.iconGap : 0)));
       const lines = description ? wrapText(description, width - CARD.padX * 2, CARD.descPx, CARD.maxLines, CARD_DESC_FONT) : [];
       const card = { width, height: cardHeight(lines.length, Boolean(mainCategory || sub) && n.level !== 0), lines, icon };
@@ -642,12 +648,13 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     );
   };
 
-  // Long journeys overflow the breadcrumb: keep the current keyword in view.
+  // Long journeys overflow the breadcrumb: keep the current keyword in view (again once
+  // the web fonts widen it).
   const crumbsRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const el = crumbsRef.current;
     if (el) el.scrollLeft = el.scrollWidth;
-  }, [location]);
+  }, [location, fontsLoaded]);
 
   // ── renderers ─────────────────────────────────────────────────────
   /**

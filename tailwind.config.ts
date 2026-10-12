@@ -6,8 +6,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        brand: ["Metamorphous", "Cinzel", "Georgia", "serif"],
-        cinzel: ["Cinzel", "Georgia", "serif"],
+        brand: ["var(--font-brand)"],
+        display: ["var(--font-display)"],
+        ui: ["var(--font-ui)"],
+        body: ["var(--font-body)"],
       },
       screens: {
         widescreen: "1400px",

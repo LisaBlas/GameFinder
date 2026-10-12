@@ -5,7 +5,7 @@ let family = '';
 const cache = new Map<string, number>();
 
 /**
- * Real pill width for a map node, measured with the page font on a canvas.
+ * Real pill width for a map node, measured in the UI font (--font-ui) on a canvas.
  * Falls back to the character-count estimate where canvas is unavailable.
  */
 export function measuredNodeWidth(node: LabelNode): number {
@@ -17,21 +17,32 @@ export function measuredNodeWidth(node: LabelNode): number {
 
   if (ctx === undefined) {
     ctx = typeof document !== 'undefined' ? document.createElement('canvas').getContext('2d') : null;
-    family = typeof document !== 'undefined' ? getComputedStyle(document.body).fontFamily : '';
+    // Pills render in the UI face (kmap-relic.css), not the body font.
+    family = typeof document !== 'undefined'
+      ? getComputedStyle(document.documentElement).getPropertyValue('--font-ui').trim() || getComputedStyle(document.body).fontFamily
+      : '';
     // Widths measured with a fallback font are wrong once the web font arrives.
     document.fonts?.ready.then(() => cache.clear()).catch(() => {});
   }
   if (!ctx) return nodeWidth(node);
-  ctx.font = `${isCenter ? 600 : 400} ${isCenter ? 13 : 12}px ${family || 'sans-serif'}`;
+  ctx.font = `${isCenter ? 700 : 400} ${isCenter ? 15 : 13}px ${family || 'serif'}`;
   const text = Math.ceil(ctx.measureText(label).width);
   const width = text + (isCenter ? PILL_PAD.center : PILL_PAD.other) + badgeRoom(node);
   cache.set(key, width);
   return width;
 }
 
+/** Canvas-measured width of `text` in a CSS `font` shorthand; character estimate as fallback. */
+export function measureTextWidth(text: string, font: string, fontPx: number): number {
+  if (ctx === undefined) measuredNodeWidth({ name: '', level: 1 }); // initialises the canvas
+  if (!ctx) return text.length * fontPx * 0.6;
+  ctx.font = font;
+  return Math.ceil(ctx.measureText(text).width);
+}
+
 /**
  * Word-wraps `text` into at most `maxLines` lines no wider than `maxWidth` px
- * (canvas-measured in `font`, default the page font; character estimate as
+ * (canvas-measured in `font`, default the UI font; character estimate as
  * fallback); overflow ends in "…".
  */
 export function wrapText(text: string, maxWidth: number, fontPx: number, maxLines: number, font?: string): string[] {
