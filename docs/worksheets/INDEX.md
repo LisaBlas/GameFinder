@@ -16,3 +16,4 @@
 - 2026-07-31-work-on-trello-card-gamefinder-cap.md
 - 2026-09-25-work-on-trello-card-gamefinder-ship.md
 - 2026-10-11-currently-switching-from-the-map-to.md
+- 2026-10-12-i-d-like-to-explain-to-users.md

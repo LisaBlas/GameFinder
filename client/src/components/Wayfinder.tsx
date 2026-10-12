@@ -8,7 +8,9 @@
 import React from 'react';
 import {
   Footprints,
+  Info,
   Sparkles,
+  X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { getRarity, type RarityTier, type RevealCard } from '../lib/discoveryCards';
@@ -26,6 +28,7 @@ export interface WayfinderBearing {
   id: RevealCard;
   name: string;
   verb: string;
+  description: string;
   icon: LucideIcon;
   group: 'keys' | 'uniques' | 'crafts';
   onDraw: () => void;
@@ -51,6 +54,8 @@ export const Wayfinder: React.FC<Props> = ({
   onExplore,
   onRestore,
 }) => {
+  const [isGuideOpen, setIsGuideOpen] = React.useState(false);
+  const closeGuideRef = React.useRef<HTMLButtonElement>(null);
   const source = destination ? bearings.find(bearing => bearing.id === destination.card) : undefined;
   const rarity = destination ? rarityOf(destination) : undefined;
   const state = !destination
@@ -86,8 +91,63 @@ export const Wayfinder: React.FC<Props> = ({
     '--wf-rose-angle': `${roseAngle}deg`,
   } as React.CSSProperties;
 
+  React.useEffect(() => {
+    if (!isGuideOpen) return;
+    closeGuideRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsGuideOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isGuideOpen]);
+
   return (
     <div className="wayfinder" style={instrumentStyle} data-state={state} data-rarity={rarity ?? undefined} data-gems-lit={gemsLit || undefined}>
+      <button
+        type="button"
+        className="wayfinder-guide-trigger"
+        aria-label="Learn what each Wayfinder roll does"
+        aria-expanded={isGuideOpen}
+        aria-controls="wayfinder-roll-guide"
+        onClick={() => setIsGuideOpen(true)}
+      >
+        <Info aria-hidden="true" />
+      </button>
+
+      {isGuideOpen && (
+        <div className="wayfinder-guide-backdrop" onMouseDown={() => setIsGuideOpen(false)}>
+          <section
+            id="wayfinder-roll-guide"
+            className="wayfinder-guide"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="wayfinder-guide-title"
+            onMouseDown={event => event.stopPropagation()}
+          >
+            <div className="wayfinder-guide-heading">
+              <div>
+                <span>Wayfinder rolls</span>
+                <h2 id="wayfinder-guide-title">Choose your kind of discovery</h2>
+              </div>
+              <button ref={closeGuideRef} type="button" className="wayfinder-guide-close" onClick={() => setIsGuideOpen(false)} aria-label="Close Wayfinder roll guide">
+                <X aria-hidden="true" />
+              </button>
+            </div>
+            <ul className="wayfinder-guide-list">
+              {bearings.map(bearing => {
+                const Icon = bearing.icon;
+                return (
+                  <li key={bearing.id} className={`wayfinder-guide-item wayfinder-guide-item--${bearing.group}`}>
+                    <span className="wayfinder-guide-icon"><Icon aria-hidden="true" /></span>
+                    <span><strong>{bearing.name}</strong><small>{bearing.description}</small></span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        </div>
+      )}
+
       <div className="wayfinder-instrument" aria-label="Random discovery wayfinder">
         <div className="wayfinder-chassis" data-style="arcane" role="group" aria-label="Choose a bearing">
           <span className="wayfinder-chassis-layer wayfinder-chassis-layer--outer" />

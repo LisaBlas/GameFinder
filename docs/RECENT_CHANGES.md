@@ -4,6 +4,10 @@ Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
 ## 2026-10-12
+- Added a compact Wayfinder information button. It opens a guide with all six
+  roll icons, names, and descriptions; the guide uses the same bearing data as
+  the playable rolls, so the explanation stays aligned with their behavior.
+  `Wayfinder.tsx`, `KeywordSection.tsx`, `wayfinder.css`.
 - Documentation maintenance: corrected `CLAUDE.md`'s Wayfinder-opening
   description (it said "circular reveal"; the code in `KeywordMap.tsx` /
   `App.css` is a bronze-framed stone slab that slides in from the right,

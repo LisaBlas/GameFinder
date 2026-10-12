@@ -492,12 +492,12 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults })
     // Clockwise from the top: the top three sockets are single-keyword rolls,
     // while the bottom three sockets are combination rolls.
     const bearings: WayfinderBearing[] = [
-      { id: 'popular', name: 'Popular', verb: 'Roll popular', icon: Flame, group: 'keys', onDraw: applyPopular },
-      { id: 'common-keyword', name: 'Any key', verb: 'Roll any key', icon: Shuffle, group: 'keys', onDraw: applyCommonKeyword },
-      { id: 'unique-combo', name: 'Unique craft', verb: 'Roll unique craft', icon: WandSparkles, group: 'uniques', onDraw: applyUniqueCombo },
-      { id: 'rare-combo', name: 'Curated', verb: 'Roll curated', icon: ScrollText, group: 'crafts', onDraw: applyRareCombo },
-      { id: 'user-crafts', name: 'Hidden gem', verb: 'Roll hidden gem', icon: Gem, group: 'crafts', onDraw: () => void applyUserCrafts() },
-      { id: 'unique-keyword', name: 'Unique key', verb: 'Roll unique key', icon: Sparkles, group: 'uniques', onDraw: applyUniqueKeyword },
+      { id: 'popular', name: 'Popular', verb: 'Roll popular', description: 'Draws a popular curated keyword, one at a time.', icon: Flame, group: 'keys', onDraw: applyPopular },
+      { id: 'common-keyword', name: 'Any key', verb: 'Roll any key', description: 'Draws one random keyword from the full map.', icon: Shuffle, group: 'keys', onDraw: applyCommonKeyword },
+      { id: 'unique-combo', name: 'Unique craft', verb: 'Roll unique craft', description: 'Draws a rare, low-result keyword combination.', icon: WandSparkles, group: 'uniques', onDraw: applyUniqueCombo },
+      { id: 'rare-combo', name: 'Curated', verb: 'Roll curated', description: 'Draws a hand-picked keyword combination.', icon: ScrollText, group: 'crafts', onDraw: applyRareCombo },
+      { id: 'user-crafts', name: 'Hidden gem', verb: 'Roll hidden gem', description: 'Reveals an editorial hidden-gem combination.', icon: Gem, group: 'crafts', onDraw: () => void applyUserCrafts() },
+      { id: 'unique-keyword', name: 'Unique key', verb: 'Roll unique key', description: 'Draws a rare, low-result keyword.', icon: Sparkles, group: 'uniques', onDraw: applyUniqueKeyword },
     ];
     return (
       <Wayfinder
