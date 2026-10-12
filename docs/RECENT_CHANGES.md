@@ -3,6 +3,15 @@
 Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
+## 2026-10-12
+- Documentation maintenance: corrected `CLAUDE.md`'s Wayfinder-opening
+  description (it said "circular reveal"; the code in `KeywordMap.tsx` /
+  `App.css` is a bronze-framed stone slab that slides in from the right,
+  matching the already-accurate 2026-10-11 entry below) and updated
+  `PRODUCT_VISION.md`'s "discovery-card flow" reference to "Wayfinder
+  discovery flow" (the `DiscoveryCard` deck was removed 2026-10-10 per
+  `MEMORY.md`).
+
 ## 2026-10-11
 - Wayfinder opening now uses a transform-only stone slab that slides from the
   right over the map. This replaces the stuttering aperture, clip, blur, and

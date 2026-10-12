@@ -17,8 +17,8 @@ keywords). This is common, but it isn't what makes GameFinder unique — any
 recommendation engine can do "more like this."
 
 ## What This Means for UX and Product Decisions
-- The keyword-selection and discovery-card flow is the primary value prop —
-  protect it, don't bury it under other features.
+- The keyword-selection and Wayfinder discovery flow is the primary value
+  prop — protect it, don't bury it under other features.
 - Judge UX friction against the core use case first: can a user with a
   specific idea get from that idea to a fitting keyword combination quickly
   and confidently?
