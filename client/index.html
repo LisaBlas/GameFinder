@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>GameFinder - Find Games by Mood, Mechanics &amp; Keywords</title>
+    <title>Game Finder - Find Games by Mood, Mechanics &amp; Keywords | GameFinder</title>
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="canonical" href="https://gamefinder-app.com/" />
-    <meta name="description" content="GameFinder is taste-first game discovery: curated by what actually matters, not a database dump. Find games by mood, mechanics, setting, style, and smart keyword combinations." />
+    <meta name="description" content="Game finder for people who know the feeling, not the title. GameFinder is taste-first game discovery: find games by mood, mechanics, setting, style, and smart keyword combinations." />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="author" content="Bleep Bloop" />
     <meta name="theme-color" content="#030807" />
@@ -61,7 +61,7 @@
 
     <!-- Open Graph Meta Tags for social sharing -->
     <meta property="og:site_name" content="GameFinder" />
-    <meta property="og:title" content="GameFinder - Find Games by Mood, Mechanics &amp; Keywords" />
+    <meta property="og:title" content="Game Finder - Find Games by Mood, Mechanics &amp; Keywords | GameFinder" />
     <meta property="og:description" content="Taste-first game discovery, curated by what actually matters - not a database dump. Find games by mood, mechanics, setting, style, and smart keyword combinations." />
     <meta property="og:url" content="https://gamefinder-app.com/" />
     <meta property="og:type" content="website" />
@@ -75,7 +75,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@BerliozGordon" />
     <meta name="twitter:creator" content="@BerliozGordon" />
-    <meta name="twitter:title" content="GameFinder - Find Games by Mood, Mechanics &amp; Keywords" />
+    <meta name="twitter:title" content="Game Finder - Find Games by Mood, Mechanics &amp; Keywords | GameFinder" />
     <meta name="twitter:description" content="Taste-first game discovery, curated by what actually matters - not a database dump. Find games by mood, mechanics, setting, style, and smart keyword combinations." />
     <meta name="twitter:image" content="https://gamefinder-app.com/og-image.jpg" />
     <meta name="twitter:image:alt" content="GameFinder - Game discovery by mood, keywords, and mechanics" />
@@ -140,9 +140,29 @@
   
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Crawlable fallback: replaced by React on mount (createRoot). -->
+      <main style="background:#030807;color:#d1e0d9;min-height:100vh;padding:2rem;font-family:system-ui,sans-serif;max-width:48rem;margin:0 auto">
+        <h1>Game Finder: find your next game by mood, mechanics and keywords</h1>
+        <p>GameFinder is a free game finder that works from the feeling you want, not the title you remember. Pick curated keywords such as cozy, roguelike, dark fantasy or city builder, combine them with genre, platform and game mode, and explore a keyword map to discover games you would not find in a normal store search.</p>
+        <p>Every result links to official stores, with gameplay previews and a short reason why the game matches your search.</p>
+        <h2>Popular game searches</h2>
+        <ul>
+          <li><a href="/best/cozy-games" style="color:#10b981">Cozy games</a></li>
+          <li><a href="/best/roguelike-games" style="color:#10b981">Roguelike games</a></li>
+          <li><a href="/best/souls-like-games" style="color:#10b981">Souls-like games</a></li>
+          <li><a href="/best/metroidvania-games" style="color:#10b981">Metroidvania games</a></li>
+          <li><a href="/best/horror-games" style="color:#10b981">Horror games</a></li>
+          <li><a href="/best/city-builder-games" style="color:#10b981">City builder games</a></li>
+          <li><a href="/best/dark-fantasy-rpg-games" style="color:#10b981">Dark fantasy RPGs</a></li>
+          <li><a href="/best/story-rich-narrative-games" style="color:#10b981">Story-rich games</a></li>
+          <li><a href="/best/open-world-exploration-games" style="color:#10b981">Open-world exploration games</a></li>
+          <li><a href="/best/survival-crafting-games" style="color:#10b981">Survival crafting games</a></li>
+          <li><a href="/best/pixel-art-games" style="color:#10b981">Pixel art games</a></li>
+          <li><a href="/best/cyberpunk-games" style="color:#10b981">Cyberpunk games</a></li>
+        </ul>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script defer type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
   </body>
 </html>
