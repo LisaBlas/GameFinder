@@ -10,6 +10,11 @@ currently, switching from the map to the wayfinder just fades. I'd like a more f
 
 ## Log
 - 2026-10-11 12:33 UTC — created
+- 2026-10-11 12:34 UTC — codex session started — no tools used
+- 2026-10-11 12:35 UTC — codex turn — no tools used
+- 2026-10-11 12:40 UTC — codex turn — no tools used
+- 2026-10-11 12:40 UTC — codex turn — no tools used
+- 2026-10-11 12:46 UTC — codex turn — no tools used
 
 ## Handoff
 (none — still in progress)
