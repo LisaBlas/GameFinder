@@ -19,6 +19,8 @@ const COVERED_SLUGS = new Set([
   'parkour-games', 'wall-jump-games', 'grapple-games', 'music-rhythm-games', 'permadeath-games',
   'gore-games', 'physics-games', 'physics-puzzle-games', 'destructible-environment-games',
   'time-travel-games', 'melee-games', 'martial-arts-games', 'duels-games',
+  'gardening-games', // hand-tuned titles/descriptions live in seoPages.ts
+  'alchemy-games', 'soviet-union-games', 'melancholic-games',
 ]);
 
 function toSlug(name: string): string {

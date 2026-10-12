@@ -420,9 +420,9 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
   },
   {
     slug: "atmospheric-horror-games",
-    title: "Best Atmospheric Horror Games - Dread Without Jump Scares",
+    title: "Best Atmospheric Horror Games (2026): Dread, Not Jump Scares",
     description:
-      "Find the best atmospheric horror games that build tension through environment, sound, and psychological unease rather than cheap scares. Filtered by mood and mechanic.",
+      "The best atmospheric horror games: slow-building dread, sound design and psychological unease instead of cheap jump scares. Filter by mood and mechanic.",
     intro:
       "The scariest games never show you the monster. Atmospheric horror works through creeping dread - the sound design that makes you afraid to open a door, the level geometry that implies something wrong, the silence before.",
     filters: [
@@ -804,9 +804,9 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
   },
   {
     slug: "gardening-games",
-    title: "Best Gardening Games - Grow, Tend, and Watch Things Bloom",
+    title: "Best Gardening Games (2026): Cozy Plant & Grow Sims",
     description:
-      "Find the best gardening games: cozy sims where planting, nurturing, and watching things grow is the core loop. From zen garden builders to farming hybrids with a green thumb.",
+      "The best gardening games: cozy sims where you plant, tend and watch things grow. Filter by mood and mechanics to find your ideal relaxing garden game.",
     intro:
       "Gardening games understand a particular kind of satisfaction - the one that comes from patience rewarded. You plant something, tend it over time, and eventually something beautiful exists that wasn't there before. These games are built for players who want to feel productive without pressure, and creative without stakes.",
     filters: [
@@ -958,6 +958,45 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
     ],
     relatedSlugs: ["dark-fantasy-rpg-games", "medieval-rpg-games", "survival-crafting-games", "open-world-exploration-games"],
     searchLabel: "Find viking games",
+  },
+  {
+    slug: "alchemy-games",
+    title: "Best Alchemy Games (2026): Potion Crafting & Brewing RPGs",
+    description:
+      "Find the best alchemy games: potion crafting, brewing and experimentation systems that drive the whole game. Filter by genre and setting to match your playstyle.",
+    intro:
+      "Alchemy is one of those RPG systems that separates good games from great ones. Done well, it becomes the loop you're always optimizing — the part of the session you're already planning for before you've finished the current one.",
+    filters: [
+      { category: "Keywords", id: 2668, name: "Alchemy" },
+    ],
+    relatedSlugs: ["souls-like-games", "fantasy-rpg-games", "dark-fantasy-rpg-games"],
+    searchLabel: "Find alchemy games",
+  },
+  {
+    slug: "soviet-union-games",
+    title: "Best Soviet Union Games (2026): USSR & Cold War Settings",
+    description:
+      "Find the best games set in the Soviet Union: USSR-era strategy, shooters, survival and story games. Filter by genre, tone and mechanics.",
+    intro:
+      "The best Soviet Union games earn their setting. The historical or speculative context isn't just window dressing — it shapes the mechanics, the stakes, and what the game is actually about.",
+    filters: [
+      { category: "Keywords", id: 2442, name: "Soviet Union" },
+    ],
+    relatedSlugs: ["medieval-rpg-games", "open-world-exploration-games", "dark-fantasy-rpg-games"],
+    searchLabel: "Find soviet union games",
+  },
+  {
+    slug: "melancholic-games",
+    title: "Best Melancholic Games (2026): Sad, Moody & Emotional",
+    description:
+      "Find the best melancholic games: sad, moody, emotionally heavy games with a tone that lasts. Filter by genre, mechanics and setting.",
+    intro:
+      "Melancholic games are unified less by what you do than by how they make you feel. The design choices — aesthetic, pacing, narrative — are all pointing toward the same tonal goal. That coherence is what makes them worth finding.",
+    filters: [
+      { category: "Keywords", id: 42165, name: "Melancholic" },
+    ],
+    relatedSlugs: ["story-rich-narrative-games", "atmospheric-horror-games", "horror-games"],
+    searchLabel: "Find melancholic games",
   },
 ];
 

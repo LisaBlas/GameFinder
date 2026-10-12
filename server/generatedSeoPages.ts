@@ -512,19 +512,6 @@ export const GENERATED_SEO_PAGES: SeoPage[] = [
     searchLabel: "Find party system games",
   },
   {
-    slug: "alchemy-games",
-    title: "Best Alchemy Games - Where the System Actually Matters",
-    description:
-      "Find the best alchemy games. Use GameFinder to filter by genre and setting alongside Alchemy mechanics to find your next RPG.",
-    intro:
-      "Alchemy is one of those RPG systems that separates good games from great ones. Done well, it becomes the loop you're always optimizing — the part of the session you're already planning for before you've finished the current one.",
-    filters: [
-      { category: "Keywords", id: 2668, name: "Alchemy" },
-    ],
-    relatedSlugs: ["souls-like-games", "fantasy-rpg-games", "dark-fantasy-rpg-games"],
-    searchLabel: "Find alchemy games",
-  },
-  {
     slug: "choices-matter-games",
     title: "Best Choices Matter Games - Where the System Actually Matters",
     description:
@@ -1225,19 +1212,6 @@ export const GENERATED_SEO_PAGES: SeoPage[] = [
     ],
     relatedSlugs: ["story-rich-narrative-games", "medieval-rpg-games", "open-world-exploration-games"],
     searchLabel: "Find feudal japan games",
-  },
-  {
-    slug: "soviet-union-games",
-    title: "Best Soviet Union Games - A Setting That Earns Its Place",
-    description:
-      "Find the best soviet union games. Use GameFinder to filter by genre, tone, and mechanics to find Soviet Union games that use the era well.",
-    intro:
-      "The best Soviet Union games earn their setting. The historical or speculative context isn't just window dressing — it shapes the mechanics, the stakes, and what the game is actually about.",
-    filters: [
-      { category: "Keywords", id: 2442, name: "Soviet Union" },
-    ],
-    relatedSlugs: ["medieval-rpg-games", "open-world-exploration-games", "dark-fantasy-rpg-games"],
-    searchLabel: "Find soviet union games",
   },
   {
     slug: "ww1-games",
@@ -1966,19 +1940,6 @@ export const GENERATED_SEO_PAGES: SeoPage[] = [
     ],
     relatedSlugs: ["cozy-games", "story-rich-narrative-games", "atmospheric-horror-games"],
     searchLabel: "Find weird games",
-  },
-  {
-    slug: "melancholic-games",
-    title: "Best Melancholic Games - Tone Sustained Start to Finish",
-    description:
-      "Find the best melancholic games. Filter by genre, mechanics, and setting to find Melancholic games that sustain the tone from start to finish.",
-    intro:
-      "Melancholic games are unified less by what you do than by how they make you feel. The design choices — aesthetic, pacing, narrative — are all pointing toward the same tonal goal. That coherence is what makes them worth finding.",
-    filters: [
-      { category: "Keywords", id: 42165, name: "Melancholic" },
-    ],
-    relatedSlugs: ["story-rich-narrative-games", "atmospheric-horror-games", "horror-games"],
-    searchLabel: "Find melancholic games",
   },
   {
     slug: "meditative-games",
