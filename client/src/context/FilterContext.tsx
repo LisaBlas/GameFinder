@@ -352,12 +352,26 @@ export const FilterProvider = ({ children }: { children: ReactNode }) => {
     try {
       // Same body as count previews (lib/searchPayload), so their caches line up.
       const payload = buildSearchPayload(selectedFilters, { requireDeveloper, requireRating }) ?? { filters: {} };
-      const response = await axios.post('/api/games/search', {
+      const body = {
         ...payload,
         sort: sortBy,
         page: 1,
         excludeIds: seedGame ? [seedGame.id] : [],
-      });
+      };
+      // Render cold starts and deploys answer 502/503/504 (or drop the connection)
+      // for a few seconds; retry those instead of showing an error.
+      let response;
+      for (let attempt = 0; ; attempt++) {
+        try {
+          response = await axios.post('/api/games/search', body);
+          break;
+        } catch (e: any) {
+          const status = e.response?.status;
+          const transient = !e.response || status === 502 || status === 503 || status === 504;
+          if (!transient || attempt >= 2) throw e;
+          await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+        }
+      }
 
       const { games: rawGames, totalCount: tc, countIsCapped: cap, hasMore: serverHasMore } = response.data;
 
