@@ -11,6 +11,18 @@
     <meta name="author" content="Bleep Bloop" />
     <meta name="theme-color" content="#030807" />
 
+    <!-- Crawlable fallback in #root stays in the HTML source but is visually hidden
+         when JS runs, so users see the dark backdrop (not a text page) until React mounts.
+         No-JS visitors still get the readable fallback. -->
+    <script>document.documentElement.classList.add('js');</script>
+    <style>
+      html { background: #030807; }
+      .js .seo-fallback {
+        position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+      }
+    </style>
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -191,7 +203,7 @@
   <body>
     <div id="root">
       <!-- Crawlable fallback: replaced by React on mount (createRoot). -->
-      <main style="background:#030807;color:#d1e0d9;min-height:100vh;padding:2rem;font-family:system-ui,sans-serif;max-width:48rem;margin:0 auto">
+      <main class="seo-fallback" style="background:#030807;color:#d1e0d9;min-height:100vh;padding:2rem;font-family:system-ui,sans-serif;max-width:48rem;margin:0 auto">
         <h1>Game Finder: find your next video game by what you actually enjoy</h1>
         <p>GameFinder is a free game finder website and video game recommendation tool. Discover games to play using thousands of specific keywords: combine gameplay mechanics, settings, aesthetics and moods (cozy, roguelike, dark fantasy, city builder) to find games by mood and playstyle. Add genre, platform and game mode, start from a game you already love, or explore the keyword map to reach games a normal store search would not show.</p>
         <p>Every result links to official stores, with gameplay previews and a short reason why the game matches your search.</p>
