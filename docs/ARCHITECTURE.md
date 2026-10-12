@@ -156,9 +156,15 @@ Key files:
 - `server/generatedSeoPages.ts` — generated SEO page configs. Regenerate with
   `npm run seo:generate-pages`; do not hand-edit the generated file.
 - `server/seoRenderer.ts` — renders full HTML for `/best/:slug` pages.
-  `renderSeoPage(page, games?)` accepts an optional `CachedGame[]` and injects
-  a "Top games" section (cover, rating, summary) above the filter chips. Also
-  renders the 404 page and `/sitemap.xml`.
+  `renderSeoPage(page, games?)` accepts an optional `CachedGame[]` and renders
+  a fantasy-styled field guide with the exact filter recipe, ranked game cards
+  (cover, rating, summary), related searches, ranking-method disclosure, and
+  repeated preconfigured-search CTAs. If the cache is unavailable, the page
+  route fetches the same ranked games from IGDB and holds them in a deduplicated
+  six-hour memory cache; the renderer only shows the actionable live-search
+  fallback if both sources fail. The pages reuse the app's physical relic art
+  through the cacheable `/seo-assets/*` static route. The renderer also owns
+  the matching fantasy 404 page and `/sitemap.xml`.
 - `server/db.ts` — Neon/Drizzle connection. Returns `null` if `DATABASE_URL`
   is unset; SEO pages degrade gracefully (render without game listings).
 - `server/scripts/refreshSeoCache.ts` — iterates all SEO pages, calls IGDB
@@ -171,8 +177,9 @@ CTA URLs use the existing app param format: `/?kw=cozy,farming&genre=13`.
 Keywords use slugs (`toSlug(name)`); other filters use integer IDs.
 `buildAppUrl()` in `seoPages.ts` builds these from a page's filter config.
 
-Analytics: CTA clicks fire a `seo_open_app` GA event with `page_slug` via
-inline `gtag()` call in the rendered HTML. Affiliate marketplace buttons in
+Analytics: CTA clicks fire a `seo_open_app` GA event with `page_slug` and
+`cta_placement` (`header`, `hero`, or `refine`) via an inline `gtag()` call in
+the rendered HTML. Affiliate marketplace buttons in
 `GameCard.tsx` fire `affiliate_outbound_click` with partner, game, and
 primary/alternate-placement dimensions; this is the GA4 event to mark as a
 key event for affiliate-click conversion reporting.

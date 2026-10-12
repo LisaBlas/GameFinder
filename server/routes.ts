@@ -1,5 +1,6 @@
-import type { Express } from "express";
+import express, { type Express } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { eq } from "drizzle-orm";
 import { storage } from "./storage";
 import { IGDBService } from "./services/igdbService";
@@ -7,11 +8,12 @@ import { createCountCache } from "./services/countCache";
 import { getGraphSlice, getHiddenGems, knownKeywordIds } from "./services/keywordGraph";
 import { createFacetService } from "./services/facetCache";
 import keywordsRouter from "./routes/keywords";
-import { SEO_PAGE_MAP } from "./seoPages";
+import { SEO_PAGE_MAP, type SeoPage } from "./seoPages";
 import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
 import { db } from "./db";
 import { seoPageCache } from "../shared/schema";
 import axios from "axios";
+import type { CachedGame } from "../shared/schema";
 
 interface SteamPriceResult {
   price: string | null;
@@ -31,6 +33,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const cachedCount = createCountCache(igdbService);
   const keywordFit = createFacetService(igdbService, knownKeywordIds);
 
+  // SEO pages are rendered outside Vite, so expose the same physical UI
+  // materials they share with the keyword map and results rack.
+  const seoAssetOptions = { immutable: true, maxAge: '30d' } as const;
+  // Bundled production assets live beside dist/index.js; the source-tree path
+  // is the development fallback. express.static falls through when missing.
+  app.use('/seo-assets', express.static(path.resolve(import.meta.dirname, 'assets/ui'), seoAssetOptions));
+  app.use('/seo-assets', express.static(path.resolve(import.meta.dirname, '../client/src/assets/ui'), seoAssetOptions));
+
+  const seoFallbackCache = new Map<string, { games: CachedGame[]; expiresAt: number }>();
+  const seoFallbackPending = new Map<string, Promise<CachedGame[]>>();
+  const getLiveSeoGames = (page: SeoPage): Promise<CachedGame[]> => {
+    const cached = seoFallbackCache.get(page.slug);
+    if (cached && cached.expiresAt > Date.now()) return Promise.resolve(cached.games);
+
+    const pending = seoFallbackPending.get(page.slug);
+    if (pending) return pending;
+
+    const request = (async () => {
+      const filters: Record<string, Array<{ id: number; name: string }>> = {};
+      const excludeKeywords: number[] = [];
+      const excludeFilters: Record<string, number[]> = {};
+      const categoryKeys: Record<string, string> = {
+        genres: 'genres',
+        platforms: 'platforms',
+        themes: 'themes',
+        'Game Mode': 'game_mode',
+        Perspective: 'perspective',
+      };
+
+      for (const filter of page.filters) {
+        if (filter.mode === 'exclude') {
+          if (filter.category === 'Keywords') excludeKeywords.push(filter.id);
+          else {
+            const key = categoryKeys[filter.category];
+            if (key) (excludeFilters[key] ??= []).push(filter.id);
+          }
+          continue;
+        }
+        (filters[filter.category] ??= []).push({ id: filter.id, name: filter.name });
+      }
+
+      const results = await igdbService.searchGames(filters, 'rating', 1, [], excludeKeywords, false, false, excludeFilters);
+      const games: CachedGame[] = results.slice(0, 10).map((game: any) => {
+        const rawCover = typeof game.cover === 'string' ? game.cover : game.cover?.url;
+        const cover = rawCover
+          ? (rawCover.startsWith('//') ? `https:${rawCover}` : rawCover).replace('/t_thumb/', '/t_cover_big/')
+          : undefined;
+        return {
+          id: game.id,
+          name: game.name,
+          cover,
+          rating: game.rating != null ? Math.round(game.rating) : undefined,
+          summary: game.summary,
+        };
+      });
+      seoFallbackCache.set(page.slug, { games, expiresAt: Date.now() + 6 * 60 * 60 * 1000 });
+      return games;
+    })().finally(() => seoFallbackPending.delete(page.slug));
+
+    seoFallbackPending.set(page.slug, request);
+    return request;
+  };
+
   // Mount the keywords router
   app.use('/api/keywords', keywordsRouter);
 
@@ -48,13 +113,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(404).set('Content-Type', 'text/html').send(renderNotFoundPage());
     }
 
-    let cachedGames;
+    let cachedGames: CachedGame[] | undefined;
     if (db) {
       try {
         const rows = await db.select().from(seoPageCache).where(eq(seoPageCache.slug, req.params.slug)).limit(1);
         cachedGames = rows[0]?.games ?? undefined;
       } catch {
         // DB unavailable — render without games
+      }
+    }
+
+    // Local environments and a newly deployed SEO page may not have a Neon
+    // cache row yet. Keep the page complete with a bounded, in-memory IGDB
+    // fallback instead of rendering an empty recommendation list.
+    if (!cachedGames?.length) {
+      try {
+        cachedGames = await getLiveSeoGames(page);
+      } catch (error: any) {
+        console.error(`[seo] Live fallback failed for ${page.slug}:`, error?.message);
       }
     }
 
