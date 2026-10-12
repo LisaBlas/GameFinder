@@ -157,8 +157,8 @@ Key files:
   `npm run seo:generate-pages`; do not hand-edit the generated file.
 - `server/seoRenderer.ts` — renders full HTML for `/best/:slug` pages.
   `renderSeoPage(page, games?)` accepts an optional `CachedGame[]` and renders
-  a fantasy-styled field guide with the exact filter recipe, ranked game cards
-  (cover, rating, summary), related searches, ranking-method disclosure, and
+  a fantasy-styled field guide with compact filter plates in the ranked-results
+  heading, game cards (cover, rating, summary), related searches, ranking-method disclosure, and
   repeated preconfigured-search CTAs. If the cache is unavailable, the page
   route fetches the same ranked games from IGDB and holds them in a deduplicated
   six-hour memory cache; the renderer only shows the actionable live-search

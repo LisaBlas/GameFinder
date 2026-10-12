@@ -31,7 +31,8 @@ test("SEO field guide renders useful sections and safe game content", () => {
   assert.match(html, /id="top-picks"/);
   assert.match(html, /Top 1 matches/);
   assert.match(html, /Swords &amp; &lt;Sorcery&gt;/);
-  assert.match(html, /Why these games fit/);
+  assert.match(html, /Filters used for these matches/);
+  assert.doesNotMatch(html, /Why these games fit/);
   assert.match(html, /How this list works/);
   assert.match(html, /href="\/\?kw=crafting&amp;genre=12"/);
   assert.match(html, /data-seo-cta="hero"/);

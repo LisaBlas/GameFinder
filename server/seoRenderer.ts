@@ -127,11 +127,14 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
   const gameListHtml = hasGames
     ? `<section class="games-section" id="top-picks" aria-labelledby="games-heading">
         <div class="section-heading">
-          <div>
+          <div class="section-heading__title">
             <p class="eyebrow">The scrying pool reveals</p>
             <h2 id="games-heading">Top ${games!.length} matches</h2>
+            <ul class="filter-list filter-list--results" aria-label="Filters used for these matches">
+              ${filterChips}
+            </ul>
           </div>
-          <p class="section-note">Matched to every filter below, then ordered by player rating.</p>
+          <p class="section-note">Matched to every filter shown here, then ordered by player rating.</p>
         </div>
         <div class="games-grid">
           ${games!.map((game, index) => gameCardHtml(game, index + 1)).join("\n")}
@@ -143,6 +146,9 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
           <p class="eyebrow">Fresh results await</p>
           <h2 id="live-results-heading">Open this search in GameFinder</h2>
           <p>The full finder applies this exact recipe and lets you add, remove, or avoid keywords.</p>
+          <ul class="filter-list filter-list--results" aria-label="Filters used for this search">
+            ${filterChips}
+          </ul>
         </div>
       </section>`;
   const titleEsc = escapeHtml(page.title);
@@ -345,23 +351,6 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
     .cta-button__arrow { font-family: var(--body); font-size: 19px; }
     .jump-link { color: #cbb47e; font-family: var(--ui); font-size: 14px; font-weight: 600; text-underline-offset: 4px; }
     .jump-link:hover { color: var(--gold); }
-    .recipe {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr);
-      gap: 24px;
-      margin: 18px 34px 64px;
-      border: 24px solid transparent;
-      border-image: url('/seo-assets/relic/raster/panel-frame-9slice.webp') 176 / 30px / 2px stretch;
-      background:
-        linear-gradient(rgba(5,11,9,.93), rgba(5,11,9,.96)),
-        url('/seo-assets/relic/raster/relic-chassis.webp') center / cover;
-      padding: 12px 18px;
-      box-shadow: 0 16px 40px rgba(0,0,0,.42);
-    }
-    .recipe h2 { margin-bottom: 6px; font-family: var(--display); font-size: 23px; font-weight: 600; }
-    .recipe__copy { margin: 0; color: var(--dim); font-size: 13px; line-height: 1.55; }
     .filter-list { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; margin: 0; padding: 0; list-style: none; }
     .filter-chip { --chip-rgb: 48,112,83; --cut: 9px; position: relative; isolation: isolate; display: inline-flex; min-height: 36px; align-items: center; gap: 8px; border: 0; border-radius: 0; background: rgba(var(--chip-rgb),.7); clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%); color: #7fb39a; padding: 6px 15px; font-family: var(--ui); font-size: 14px; font-weight: 600; }
     .filter-chip::before { position: absolute; inset: 1.5px; z-index: -1; background: linear-gradient(180deg,#121816,#080d0b); clip-path: inherit; content: ''; }
@@ -369,8 +358,12 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
     .filter-chip--exclude { --chip-rgb: 150,65,70; color: #d8a4a4; }
     .filter-chip__mark { width: 6px; height: 6px; flex: 0 0 auto; border: 1px solid currentColor; transform: rotate(45deg); }
     .filter-chip__kind { display: block; margin-bottom: 1px; color: var(--dim); font-family: var(--body); font-size: 9px; font-weight: 700; letter-spacing: .1em; line-height: 1; text-transform: uppercase; }
-    .games-section { margin-bottom: 64px; scroll-margin-top: 24px; }
-    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 30px; padding: 0 18px 15px; border-bottom: 1px solid rgba(168,128,63,.32); box-shadow: 0 1px 0 rgba(0,0,0,.7); }
+    .filter-list--results { margin-top: 14px; }
+    .filter-list--results .filter-chip { min-height: 30px; padding: 4px 13px; font-size: 13px; }
+    .filter-list--results .filter-chip__kind { display: none; }
+    .games-section { margin: 34px 0 64px; scroll-margin-top: 24px; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 30px; padding: 0 18px 18px; border-bottom: 1px solid rgba(168,128,63,.32); box-shadow: 0 1px 0 rgba(0,0,0,.7); }
+    .section-heading__title { min-width: 0; }
     .section-heading h2, .empty-state h2, .cta-panel h2 { margin-bottom: 0; font-family: var(--display); font-size: clamp(28px, 4vw, 38px); font-weight: 600; }
     .section-note { max-width: 390px; margin-bottom: 2px; color: var(--dim); font-size: 13px; line-height: 1.5; text-align: right; }
     .games-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 28px; padding: 0 10px; }
@@ -425,7 +418,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
     .site-footer { margin-top: 48px; color: var(--dim); font-size: 12px; line-height: 1.6; text-align: center; }
     .site-footer a { color: #cbb47e; text-underline-offset: 3px; }
     @media (max-width: 820px) {
-      .recipe, .lower-grid { grid-template-columns: 1fr; }
+      .lower-grid { grid-template-columns: 1fr; }
       .games-grid { grid-template-columns: 1fr; }
       .section-heading { align-items: start; flex-direction: column; gap: 4px; }
       .section-note { text-align: left; }
@@ -444,7 +437,6 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
       .hero-actions { align-items: stretch; flex-direction: column; }
       .cta-button { justify-content: center; }
       .jump-link { text-align: center; }
-      .recipe { margin: 14px 8px 48px; padding: 12px; }
       .game-card { grid-template-columns: 78px minmax(0, 1fr); gap: 14px; min-height: 136px; padding: 12px; }
       .game-cover { width: 78px; height: 108px; }
       .game-heading { flex-direction: column; gap: 7px; }
@@ -509,17 +501,6 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
         </a>
         ${hasGames ? `<a class="jump-link" href="#top-picks">See the ranked matches ↓</a>` : ""}
       </div>
-    </section>
-
-    <section class="recipe" aria-labelledby="recipe-heading">
-      <div>
-        <p class="eyebrow">Search recipe</p>
-        <h2 id="recipe-heading">Why these games fit</h2>
-        <p class="recipe__copy">Every result must match this combination. Open it in the finder to tune the recipe further.</p>
-      </div>
-      <ul class="filter-list" aria-label="Active search filters">
-        ${filterChips}
-      </ul>
     </section>
 
     ${gameListHtml}
