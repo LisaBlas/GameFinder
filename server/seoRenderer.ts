@@ -308,7 +308,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
 <body>
   <div class="page-wrap">
     <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="${BASE_URL}/">GameFinder</a>
+      <a href="${BASE_URL}/">Game Finder</a>
       <span aria-hidden="true">></span>
       <span>${escapeHtml(page.title.split("-")[0].trim())}</span>
     </nav>
@@ -335,7 +335,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
     </div>
 
     <p class="footer-note">
-      Results are curated by <a href="${BASE_URL}/">GameFinder</a> - taste-first game discovery, not a database dump.
+      Results are curated by <a href="${BASE_URL}/">GameFinder, the game finder that searches by mood and mechanics</a> - taste-first game discovery, not a database dump.
     </p>
   </div>
 </body>
