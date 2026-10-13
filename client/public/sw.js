@@ -1,7 +1,7 @@
 // Service Worker for GameFinder
 // Provides offline caching and faster repeat visits
 
-const CACHE_NAME = 'gamefinder-v3';
+const CACHE_NAME = 'gamefinder-v4';
 const RUNTIME_CACHE = 'gamefinder-runtime-v1';
 
 // Assets to cache on install
