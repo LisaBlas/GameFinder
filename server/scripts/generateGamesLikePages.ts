@@ -102,7 +102,7 @@ async function build(seedName: string): Promise<SeoPage | null> {
   return {
     kind: "like",
     seedGameId: seed.id,
-    slug: slugify(seed.name),
+    slug: slugify(short).replace(/^the-/, ""),
     title: `Games Like ${short} (2026): Matched by Keywords, Not Genre`,
     description: `Games like ${short}, matched on what makes it tick: ${traits}. Ranked by player rating, with every filter open to tweak.`,
     intro: `Looking for games like ${seed.name}? Instead of vague "similar games" lists, this page matches on the specific ingredients that define it: ${traits}. Every filter below is editable, so you can keep the parts you loved and drop the rest.`,

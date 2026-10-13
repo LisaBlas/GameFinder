@@ -132,7 +132,7 @@ export const GAMES_LIKE_PAGES: SeoPage[] = [
   {
     "kind": "like",
     "seedGameId": 472,
-    "slug": "the-elder-scrolls-v-skyrim",
+    "slug": "skyrim",
     "title": "Games Like Skyrim (2026): Matched by Keywords, Not Genre",
     "description": "Games like Skyrim, matched on what makes it tick: assassin, orcs, bloody, role-playing (rpg). Ranked by player rating, with every filter open to tweak.",
     "intro": "Looking for games like The Elder Scrolls V: Skyrim? Instead of vague \"similar games\" lists, this page matches on the specific ingredients that define it: assassin, orcs, bloody, role-playing (rpg). Every filter below is editable, so you can keep the parts you loved and drop the rest.",
@@ -279,7 +279,7 @@ export const GAMES_LIKE_PAGES: SeoPage[] = [
   {
     "kind": "like",
     "seedGameId": 1942,
-    "slug": "the-witcher-3-wild-hunt",
+    "slug": "witcher-3",
     "title": "Games Like The Witcher 3 (2026): Matched by Keywords, Not Genre",
     "description": "Games like The Witcher 3, matched on what makes it tick: monsters, bloody, role-playing (rpg). Ranked by player rating, with every filter open to tweak.",
     "intro": "Looking for games like The Witcher 3: Wild Hunt? Instead of vague \"similar games\" lists, this page matches on the specific ingredients that define it: monsters, bloody, role-playing (rpg). Every filter below is editable, so you can keep the parts you loved and drop the rest.",
@@ -644,7 +644,7 @@ export const GAMES_LIKE_PAGES: SeoPage[] = [
   {
     "kind": "like",
     "seedGameId": 7346,
-    "slug": "the-legend-of-zelda-breath-of-the-wild",
+    "slug": "zelda-breath-of-the-wild",
     "title": "Games Like Zelda: Breath of the Wild (2026): Matched by Keywords, Not Genre",
     "description": "Games like Zelda: Breath of the Wild, matched on what makes it tick: crafting, archery. Ranked by player rating, with every filter open to tweak.",
     "intro": "Looking for games like The Legend of Zelda: Breath of the Wild? Instead of vague \"similar games\" lists, this page matches on the specific ingredients that define it: crafting, archery. Every filter below is editable, so you can keep the parts you loved and drop the rest.",
@@ -720,7 +720,7 @@ export const GAMES_LIKE_PAGES: SeoPage[] = [
   {
     "kind": "like",
     "seedGameId": 76882,
-    "slug": "sekiro-shadows-die-twice",
+    "slug": "sekiro",
     "title": "Games Like Sekiro (2026): Matched by Keywords, Not Genre",
     "description": "Games like Sekiro, matched on what makes it tick: ninja, adventure. Ranked by player rating, with every filter open to tweak.",
     "intro": "Looking for games like Sekiro: Shadows Die Twice? Instead of vague \"similar games\" lists, this page matches on the specific ingredients that define it: ninja, adventure. Every filter below is editable, so you can keep the parts you loved and drop the rest.",
