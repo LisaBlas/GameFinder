@@ -2,13 +2,13 @@
 
 Hard rules that must not be violated without a deliberate, explicit decision.
 
-## `npm run build` is mutating and shell-sensitive
-`npm run build` is not a pure verification command. It currently runs
-`npm install --include=dev` first, then the Vite client build and esbuild
-server bundle, then a Unix `cp -r client/src/assets dist/` step. On Windows
-shells that final copy step fails; on any platform the command can also
-mutate the install state before the build even starts. Do not treat
-`npm run build` as a clean read-only check.
+## `npm run build` does not install; Render must
+`npm run build` is the Vite client build, the esbuild server bundle, then a
+Unix `cp -r client/src/assets dist/` step (fails in plain Windows shells; Git
+Bash works). It no longer installs dependencies, so the Render build command
+must be `npm ci --include=dev && npm run build` (dev deps: vite, esbuild,
+tailwind). Never put `npm install` back in the script: it re-resolves the
+lockfile on every deploy.
 
 ## Typecheck baseline
 `npm run check` (root `tsc` against the whole app) is expected to pass.
