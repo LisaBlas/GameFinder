@@ -15,6 +15,7 @@
     "db:push": "drizzle-kit push --force --config=./drizzle.config.ts",
     "db:seed": "tsx db/seed.ts",
     "seo:refresh-cache": "tsx server/scripts/refreshSeoCache.ts",
+    "seo:check-cache": "tsx server/scripts/checkSeoCache.ts",
     "seo:generate-pages": "tsx server/scripts/generateSeoPages.ts",
     "seo:generate-like-pages": "tsx server/scripts/generateGamesLikePages.ts",
     "kinguin:refresh": "tsx server/scripts/refreshKinguinOffers.ts",

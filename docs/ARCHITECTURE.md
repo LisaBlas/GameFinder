@@ -169,7 +169,13 @@ Key files:
   is unset; SEO pages degrade gracefully (render without game listings).
 - `server/scripts/refreshSeoCache.ts` — iterates all SEO pages, calls IGDB
   with each page's filters, upserts top 10 results into `seo_page_cache`. Run
-  via `npm run seo:refresh-cache`.
+  via `npm run seo:refresh-cache`. Exits 1 if any page fails; never overwrites a
+  row with an empty game list.
+- `server/scripts/checkSeoCache.ts` + `server/services/seoCacheHealth.ts` —
+  read-only health check (`npm run seo:check-cache`): newest row >36h old, >5
+  missing rows, >5 empty rows, or DB unreachable -> Telegram alert + exit 1.
+  Needs `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in the VPS `.env`. Cron
+  (after the 03:00 refresh): `20 3 * * * cd ~/projects/GameFinder && PATH=<node>:$PATH npm run seo:check-cache >> logs/seo-check.log 2>&1`.
 - `server/scripts/refreshKinguinOffers.ts` + `server/services/kinguinFeed.ts` —
   stream the Kinguin affiliate feed into `kinguin_offers` (steam_id PK, price_eur, url).
 - `shared/schema.ts` — includes `seo_page_cache` table (slug PK, games jsonb,
