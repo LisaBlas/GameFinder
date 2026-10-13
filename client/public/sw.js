@@ -1,13 +1,16 @@
 // Service Worker for GameFinder
 // Provides offline caching and faster repeat visits
 
-const CACHE_NAME = 'gamefinder-v1';
+const CACHE_NAME = 'gamefinder-v2';
 const RUNTIME_CACHE = 'gamefinder-runtime-v1';
 
 // Assets to cache on install
 const PRECACHE_URLS = [
   '/',
   '/favicon.png',
+  '/favicon-48.png',
+  '/favicon-192.png',
+  '/apple-touch-icon.png',
   '/og-image.jpg',
 ];
 

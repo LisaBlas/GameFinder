@@ -184,7 +184,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
   <meta name="twitter:description" content="${descEsc}" />
   <meta name="twitter:image" content="${BASE_URL}/og-image.jpg" />
 
-  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Brygada+1918:ital,wght@0,400;0,600;0,700;1,400&family=Castoro+Titling&family=Familjen+Grotesk:wght@400;500;600;700&family=Grenze:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -556,7 +556,7 @@ export function renderNotFoundPage(): string {
   <meta name="theme-color" content="#030807" />
   <title>Page Not Found - GameFinder</title>
   <meta name="robots" content="noindex" />
-  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Brygada+1918:wght@600;700&family=Familjen+Grotesk:wght@400;600&family=Grenze:wght@600&display=swap" rel="stylesheet" />

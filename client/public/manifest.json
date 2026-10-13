@@ -4,12 +4,12 @@
   "description": "Discover your next favorite game with ultra specific keywords",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1d29",
-  "theme_color": "#047857",
+  "background_color": "#030807",
+  "theme_color": "#030807",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/favicon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
