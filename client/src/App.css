@@ -4469,6 +4469,22 @@ button.kmap-crumb:hover,
   fill: rgba(var(--c-danger-rgb), 0.12);
 }
 
+/* Refresh is the third small action around the centred keyword. Its exact
+   relic colours and activation effects live with the map skin. */
+.kmap-center-action--refresh.is-disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
+.kmap-center-refresh-rotation {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.kmap-center-refresh-rotation.is-spinning {
+  animation: kmap-refresh-spin 0.6s cubic-bezier(0.3, 0.8, 0.3, 1);
+}
+
 .kmap-dock-keyword,
 .kmap-dock-actions {
   display: flex;

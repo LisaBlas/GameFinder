@@ -38,9 +38,9 @@ for full detail.
 - There is no separate "Roll"/"Uniques" card deck above manual keyword
   browsing (that `DiscoveryCard` deck was removed 2026-10-10). All six draw
   modes now live only in the Wayfinder (see below): **Popular** (curated
-  popular keys, e.g. Action Roguelike → Souls-like), **Curated** (hand-picked
-  combos, id `rare-combo`), **Any key** (single random keyword, infinite, id
-  `common-keyword`), **Hidden gem** (id `user-crafts`; a random pairing from
+  popular keys, e.g. Action Roguelike → Souls-like), **Curated craft** (hand-picked
+  combos, id `rare-combo`), **Random** (single random keyword, infinite, id
+  `common-keyword`), **Hidden craft** (id `user-crafts`; a random pairing from
   `client/src/assets/hidden_gems.json`, served by `GET /api/hidden-gems` and
   prebuilt by `npm run gems:build`. A pairing qualifies when its games — fetched
   from IGDB — are few (≤15), come from ≥3 independent families (franchise,
@@ -49,20 +49,20 @@ for full detail.
   culture. Rules in `shared/hiddenGems.ts`; candidates from `findRarePairings`
   in `shared/keywordDiscoveries.ts`. Re-run after a co-occurrence crawl or an
   editorial change; `KEYWORD_EDITORIAL.block` prunes a pair (and cleans the
-  map). Falls back to Cosmic Horror + Indie if the pool is unavailable), and the uniques **Unique key** / **Unique craft** —
+  map). Falls back to Cosmic Horror + Indie if the pool is unavailable), and the uniques **Unique** / **Unique craft** —
   rare/low-result discovery sequences. They wrap back to the first item
   instead of locking; sequence progress is intentionally hidden in the
   Wayfinder.
-- **Discovery architecture:** both breakpoints render the 6 modes as six clickable gem bearings in `Wayfinder` (`client/src/components/Wayfinder.tsx`), layered over a dimmed-but-mounted keyword map. The map's graph and chrome (including the selection pills, which live in the top map controls) recede/go inert, but the Search button floats above the Wayfinder itself (not dimmed, not inert) — see `docs/SYSTEM_INVARIANTS.md`. The top three gems are single-keyword rolls (Any Key, Popular, Unique Key); the bottom three are combination rolls (Unique Craft, Curated, Hidden Gem). Icons sit inside the gems, with the mode name beside them. Display names and clockwise socket order live in `renderWayfinder` (`KeywordSection`). Types `RevealCard`, `RarityTier`, and `getRarity()` are exported from that lib — do not redefine them inline in `KeywordSection`.
+- **Discovery architecture:** both breakpoints render the 6 modes as six clickable gem bearings in `Wayfinder` (`client/src/components/Wayfinder.tsx`), layered over a dimmed-but-mounted keyword map. The map's graph and chrome (including the selection pills, which live in the top map controls) recede/go inert, but the Search button floats above the Wayfinder itself (not dimmed, not inert) — see `docs/SYSTEM_INVARIANTS.md`. The top three gems are single-keyword rolls (Random, Popular, Unique); the bottom three are combination rolls (Unique Craft, Curated Craft, Hidden Craft). Icons sit inside the gems, with the mode name beside them. Display names and clockwise socket order live in `renderWayfinder` (`KeywordSection`). Types `RevealCard`, `RarityTier`, and `getRarity()` are exported from that lib — do not redefine them inline in `KeywordSection`.
 - **Adding a 7th mode:** add its ID to `RevealCard` (`client/src/lib/discoveryCards.ts`), write `applyXxx()` in `KeywordSection`, then add it to the Wayfinder bearings in `renderWayfinder` (six bearings are laid out on six sockets; a 7th needs chassis art and layout work).
 - **Card states:** `idle` (never pressed) → `unidentified` (pressed, search running, "Unidentified" overlay shows) → `revealed` (search done, rarity badge + content shown).
-- Future intent: save user searches/keyword combinations so strong community discoveries can feed Popular and Hidden Gem. Not live yet — see `docs/MEMORY.md` item 4.
+- Future intent: save user searches/keyword combinations so strong community discoveries can feed Popular and Hidden craft. Not live yet — see `docs/MEMORY.md` item 4.
 - "Best crafts": keyword/filter combos with a low result count — treated as a signal for niche/unique game discovery.
 
 ## Keyword Map Navigation
 - The keyword map is one continuous hierarchy: a map root with the three main categories → subcategories → keywords → related keywords. Do not restore a separate category-card/door screen.
 - Once inside a category, the header keeps an explicit **All categories** action visible so users understand they can return to the root and combine keywords from unrelated directions.
-- Map controls keep **Only compatible** and the selected-filter pills at the top-left. On mobile the smaller, pointed green pills form a horizontally scrollable row beneath **Only compatible**, and the compatibility explanation is hidden. The compact icon-only **New options** control sits beside Search at bottom-right, announces its first activation with an ember burst, and keeps a soft animated glow until its first click; that action cluster is measured as one layout obstacle.
+- Map controls keep **Only compatible** and the always-visible keyword search field together at the top-left, with the selected-filter pills in a second row beneath them on both breakpoints. On mobile the smaller, pointed pills form a horizontally scrollable row and the compatibility explanation is hidden. The compact icon-only **New options** control sits beneath the centred map node and matches its **Exclude** / **Add** actions; it keeps a soft animated glow until its first click. The primary Search CTA remains at bottom-right and is measured as a layout obstacle.
 
 ## SEO Pages
 Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. Game listings (top 10 per page) are cached in Neon (`seo_page_cache`) and injected at render time — refresh via `npm run seo:refresh-cache` on the VPS. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See [docs/ARCHITECTURE.md](/home/blas/projects/GameFinder/docs/ARCHITECTURE.md) for full details.

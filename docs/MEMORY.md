@@ -21,32 +21,33 @@ Durable decisions and context not derivable from source alone.
    both breakpoints; its six bearings are the draw sources, all owned by
    `KeywordSection`: **Popular** (curated static sequence of popular keys,
    e.g. Action Roguelike → Souls-like; not backed by live ranking data),
-   **Curated** (`rare-combo`, hand-picked combos, first entry is Memory Loss +
-   Horror theme), **Any key** (`common-keyword`, random single keyword from
-   the full pool, infinite), **Hidden gem** (`user-crafts`; a random validated
+   **Curated craft** (`rare-combo`, hand-picked combos, first entry is Memory Loss +
+   Horror theme), **Random** (`common-keyword`, random single keyword from
+   the full pool, infinite), **Hidden craft** (`user-crafts`; a random validated
    pairing from the prebuilt editorial pool, with Cosmic Horror + Indie only
    as the unavailable-pool fallback; not community-fed data, see item 4
-   below), and the uniques **Unique key** / **Unique craft** — rare sequences that
+   below), and the uniques **Unique** / **Unique craft** — rare sequences that
    tend to surface very few results. (The old `DiscoveryCard` deck was
    removed 2026-10-10.)
 3. **Draw steps** — bearings show sequence progress like `1/7` instead of
    remaining-count copy. Finite sequences wrap back to the first item instead
-   of locking; Any key uses the infinity icon. `gamefinder_unique_limits`
-   records the last Unique key / Unique craft draw — not a hard daily limit.
+   of locking; Random uses the infinity icon. `gamefinder_unique_limits`
+   records the last Unique / Unique craft draw — not a hard daily limit.
    A destination is charted (count pending) then found (rarity by count).
    `RevealCard`, `RarityTier`, and `getRarity()` live in
    `client/src/lib/discoveryCards.ts`.
 4. **Future community search memory (planned)** — save user searches/keyword
    combinations and their result counts so the app can surface strong
    discoveries to other users. Most Popular should come from high-use/
-   high-engagement combinations. Hidden Gem should eventually highlight
+   high-engagement combinations. Hidden craft should eventually highlight
    community-found combinations, especially low-result "best crafts", because
    low result count is a proxy for unique/niche games. That pipeline is not
    live yet: searches are only written to volatile in-memory `MemStorage`
    (capped at 100 entries, wiped on every restart/deploy) — not enough to
    back a "live community data" claim, which is why the card was relabeled
-   from "User Crafted" to "Hidden Gem" (2026-07-23) rather than wired to it.
-   Since 2026-10-12 Hidden Gem draws from a prebuilt pool of validated
+   from "User Crafted" to "Hidden Gem" (2026-07-23), then "Hidden craft"
+   (2026-10-13), rather than wired to it.
+   Since 2026-10-12 Hidden craft draws from a prebuilt pool of validated
    pairings (`npm run gems:build`, rules in `shared/hiddenGems.ts`). Lesson:
    rarity alone admits coincidences (one studio's tagging habit); judging a
    pairing by its actual games (independent families + a rated payoff +

@@ -116,8 +116,8 @@ tween.
 it carry the "receded" scale/blur/opacity + `inert` treatment while the
 Wayfinder is open: `.kmap-viewport-content` (the map scene/empty-states,
 inside `.kmap-viewport`) and `.kmap-map-chrome` (toolbar — including the
-selection pills — search lens, dock). The bottom-right Refresh/Search cluster
-(`renderSelectionOverlays()`) is deliberately left out of both — a Wayfinder draw applies its filters
+inline keyword search and selection pills — and dock). The bottom-right Search
+CTA (`renderSelectionOverlays()`) is deliberately left out of both — a Wayfinder draw applies its filters
 immediately (`clearAllFilters()` + `addFilter()`), so Search must stay
 reachable without closing the panel first. Its z-index (13) is set above
 `.kmap-spark-stage` (12) so it renders on top of the Wayfinder too; this only

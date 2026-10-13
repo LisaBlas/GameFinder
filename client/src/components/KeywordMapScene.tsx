@@ -1,6 +1,6 @@
 import React, { useId, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
-import { Ban, Check, Plus, type LucideIcon } from 'lucide-react';
+import { Ban, Check, Plus, RefreshCw, type LucideIcon } from 'lucide-react';
 import { BADGE_ROOM, CARD, badgeRoom, nodeLabel, titleCase, type LabelNode, type MapNode } from '../lib/keywordMap';
 import { nearestInDirection, type Direction, type Size } from '../lib/keywordMapLayout';
 import { TIMING, type SceneEdge, type TransitionPlan } from '../lib/keywordMapMotion';
@@ -76,6 +76,17 @@ interface Props {
   tagFor?: (node: MapNode) => string | undefined;
   /** Mobile swipe: show the next set of neighbours, rotating in the swipe direction. */
   onSwipe?: (dir: 1 | -1) => void;
+  /** Small refresh control beneath the centred keyword. */
+  refresh?: {
+    disabled: boolean;
+    label: string;
+    title: string;
+    round: number;
+    spin: 1 | -1;
+    firstActive: boolean;
+    awaitingClick: boolean;
+    onClick: () => void;
+  };
 }
 
 /**
@@ -103,6 +114,7 @@ export const KeywordMapScene: React.FC<Props> = ({
   fitCountOf,
   showFitTags = false,
   tagFor,
+  refresh,
 }) => {
   const nodeEls = useRef(new Map<number, SVGGElement>());
   const [hoveredId, setHoveredId] = useState<number | null>(null);
@@ -218,6 +230,7 @@ export const KeywordMapScene: React.FC<Props> = ({
    */
   const renderEndActions = (node: MapNode, w: number, mode: KeywordMode | null) => {
     const isCenter = node.level === 0;
+    const nodeHeight = heightOf(node);
     const tip = (w + PLATE_EXTRA) / 2;
     const r = variant === 'mobile' ? 10 : 9;
     const action = (kind: KeywordMode, cx: number) => {
@@ -257,7 +270,58 @@ export const KeywordMapScene: React.FC<Props> = ({
       </g>
       );
     };
-    return <g className="kmap-center-actions">{action('exclude', -tip)}{action('include', tip)}</g>;
+    const refreshAction = isCenter && refresh && (
+      <g
+        className={`kmap-center-action kmap-center-action--refresh${refresh.firstActive ? ' kmap-center-action--refresh-first-active' : ''}${refresh.awaitingClick ? ' kmap-center-action--refresh-awaiting' : ''}${refresh.disabled ? ' is-disabled' : ''}`}
+        transform={`translate(0 ${nodeHeight / 2 + (variant === 'mobile' ? 17 : 16)})`}
+        role="button"
+        tabIndex={refresh.disabled ? undefined : 0}
+        aria-label={refresh.label}
+        aria-disabled={refresh.disabled}
+        onClick={e => {
+          e.stopPropagation();
+          if (!refresh.disabled) refresh.onClick();
+        }}
+        onDoubleClick={e => e.stopPropagation()}
+        onKeyDown={e => {
+          if (refresh.disabled || (e.key !== 'Enter' && e.key !== ' ')) return;
+          e.preventDefault();
+          e.stopPropagation();
+          refresh.onClick();
+        }}
+      >
+        <title>{refresh.title}</title>
+        <g className="kmap-center-refresh-particles" aria-hidden="true">
+          <circle r={1.5} /><circle r={1.5} /><circle r={1.5} /><circle r={1.5} /><circle r={1.5} />
+          <circle r={1.5} /><circle r={1.5} /><circle r={1.5} /><circle r={1.5} /><circle r={1.5} />
+        </g>
+        <circle className="kmap-center-action-hit" r={variant === 'mobile' ? 16 : 12} />
+        <circle className="kmap-center-action-base" r={r} />
+        <circle className="kmap-center-action-bg" r={r} />
+        <g
+          key={refresh.round}
+          className={refresh.round ? 'kmap-center-refresh-rotation is-spinning' : 'kmap-center-refresh-rotation'}
+          style={{ '--spin-dir': refresh.spin } as React.CSSProperties}
+          aria-hidden="true"
+        >
+          <RefreshCw
+            className="kmap-center-refresh-icon"
+            x={-6}
+            y={-6}
+            width={12}
+            height={12}
+            strokeWidth={2.5}
+          />
+        </g>
+      </g>
+    );
+    return (
+      <g className="kmap-center-actions">
+        {node.id >= 0 && action('exclude', -tip)}
+        {node.id >= 0 && action('include', tip)}
+        {refreshAction}
+      </g>
+    );
   };
 
   const renderEdge = (e: SceneEdge) => {
@@ -455,7 +519,7 @@ export const KeywordMapScene: React.FC<Props> = ({
           }}
           onBlur={() => hover(null)}
         >
-          {!isCenter && <title>{`${isVirtual ? 'Open' : 'Explore'} ${name}${rareGames ? ` — rare pairing: ${rareGames} games share both` : ''}`}</title>}
+          {!isCenter && <title>{`${isVirtual ? 'Open ' : ''}${name}${rareGames ? ` — rare pairing: ${rareGames} games share both` : ''}`}</title>}
           {/* Shape morphs when a neighbour becomes the centre: hex plate (or card tablet) with inner rail and a bottom stud. */}
           <motion.path
             className="kmap-node-shape"
@@ -486,7 +550,7 @@ export const KeywordMapScene: React.FC<Props> = ({
           {/* Included keywords carry no badge (their bright styling says it). Desktop: the badge only marks an
               avoided keyword, and hover swaps it for the end buttons. Mobile has no hover: the + stays. */}
           {badgeSlot && (variant === 'mobile' || !hoveredHere) && renderBadge(n, w, mode)}
-          {!isVirtual && (isCenter || (variant === 'desktop' && hoveredHere)) && renderEndActions(n, w, mode)}
+          {(isCenter || (!isVirtual && variant === 'desktop' && hoveredHere)) && renderEndActions(n, w, mode)}
           {groupTag && !card && (
             <text className="kmap-count-tag kmap-group-tag" y={h / 2 + 10} textAnchor="middle" dominantBaseline="central" aria-hidden="true">
               {groupTag}

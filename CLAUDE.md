@@ -19,7 +19,7 @@ npm run start               # production
 npm run db:push             # push schema to Neon
 npm run db:seed             # seed database
 npm run seo:refresh-cache   # repopulate seo_page_cache from IGDB (run on VPS, needs env vars)
-npm run gems:build          # rebuild the Wayfinder's Hidden gem pool from IGDB (needs .env; ~2 min)
+npm run gems:build          # rebuild the Wayfinder's Hidden craft pool from IGDB (needs .env; ~2 min)
 npm run check               # TypeScript check; expected to pass
 npm test                    # node:test via tsx on client/src/**, shared/**, server/**/*.test.ts (no vitest)
 ```

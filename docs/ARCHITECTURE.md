@@ -8,7 +8,7 @@ Split workspace layout:
 Mobile (< 1024px): the same KeywordSection/KeywordMap, full screen
   Map view: KeywordMap variant="mobile" (relic skin rescaled in the mobile
     block of kmap-relic.css; 4 diagonal neighbours, swipe = next set), with the
-    same floating selection chips, search lens, Search CTA and Wayfinder
+    same top-left controls and selection chips, Search CTA and Wayfinder
   Results view: ResultsSection/SearchResults with a sticky relic header
     (.mobile-results-header: Map, filters, sort, share, saved)
   The CTA searches and switches to Results ("View N games" once searched);

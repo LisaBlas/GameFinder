@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Home, ListFilter, Map as MapIcon, RefreshCw, Sparkles, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home, ListFilter, Map as MapIcon, Sparkles, X } from 'lucide-react';
 import { useFilters, type Filter } from '../context/FilterContext';
 import {
   CARD,
@@ -183,7 +183,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   const { location, navigate, depthRef } = useMapHistory<MapLocation>(variant, start.location);
   const sectionRef = useRef<HTMLElement>(null);
   // The receded map is visual context only while the Wayfinder is open: its
-  // graph/content and its chrome (toolbar, search lens, dock) recede and go
+  // graph/content and its chrome (toolbar, inline keyword search, dock) recede and go
   // inert. The floating selection pills and Search stay live and on top —
   // Wayfinder draws apply their filters immediately, so Search must still work.
   const mapContentRef = useRef<HTMLDivElement>(null);
@@ -631,12 +631,14 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
   const remaining = visiblePool.filter(n => !shownNow.has(nameKey(n.name))).length;
   const canRefresh = visiblePool.length > shape.level1Count;
   const refreshActivatedRef = useRef(false);
-  const [refreshActivatedOnce, setRefreshActivatedOnce] = useState(false);
+  const [refreshIgniting, setRefreshIgniting] = useState(false);
   const [refreshAcknowledged, setRefreshAcknowledged] = useState(false);
   useEffect(() => {
     if (!canRefresh || refreshActivatedRef.current) return;
     refreshActivatedRef.current = true;
-    setRefreshActivatedOnce(true);
+    setRefreshIgniting(true);
+    const timeout = window.setTimeout(() => setRefreshIgniting(false), 1650);
+    return () => window.clearTimeout(timeout);
   }, [canRefresh]);
 
   const refresh = (dir: 1 | -1 = 1) => {
@@ -695,17 +697,20 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     return (
       <div className="kmap-modes-row">
         <div className="kmap-modes" aria-label="Map controls">
-          <button
-            type="button"
-            role="switch"
-            aria-checked={fitMode}
-            className="kmap-mode kmap-fit-control"
-            onClick={() => setFitMode(!fitMode)}
-            title={disabled ? 'Add a keyword to your search first' : 'Only show keywords that still return games'}
-          >
-            <ListFilter className="h-3.5 w-3.5" aria-hidden="true" />
-            Only compatible
-          </button>
+          <div className="kmap-primary-controls">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={fitMode}
+              className="kmap-mode kmap-fit-control"
+              onClick={() => setFitMode(!fitMode)}
+              title={disabled ? 'Add a keyword to your search first' : 'Only show keywords that still return games'}
+            >
+              <ListFilter className="h-3.5 w-3.5" aria-hidden="true" />
+              Only compatible
+            </button>
+            {search && <div className="kmap-search kmap-search--inline">{search}</div>}
+          </div>
           {selection && <div className="kmap-user-selection-filters kmap-user-selection-filters--controls">{selection}</div>}
         </div>
         {note && (
@@ -717,36 +722,23 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     );
   };
 
-  const renderRefreshButton = () => (
-    <button
-      type="button"
-      className={`kmap-refresh-control kmap-refresh-compact${refreshActivatedOnce ? ' kmap-refresh-compact--first-active' : ''}${canRefresh && !refreshAcknowledged ? ' kmap-refresh-compact--awaiting-click' : ''}`}
-      onClick={() => {
-        setRefreshAcknowledged(true);
-        refresh();
-      }}
-      disabled={!canRefresh}
-      aria-label={sceneKind === 'root' ? 'Show other categories' : sceneKind === 'category' ? 'Show other subcategories' : 'Show other keywords'}
-      title={
-        !canRefresh
-          ? 'Nothing else to show'
-          : remaining > 0
-            ? `Show ${remaining} more ${sceneKind === 'root' ? 'categories' : sceneKind === 'category' ? 'subcategories' : 'keywords'}`
-            : 'Start over'
-      }
-    >
-      {/* Remounts per round so each refresh (click or swipe) spins it once, in the swipe's direction. */}
-      <RefreshCw
-        key={round}
-        className={round ? 'kmap-refresh-spin' : undefined}
-        style={{ '--spin-dir': spin } as React.CSSProperties}
-        aria-hidden="true"
-      />
-      <span className="kmap-refresh-embers" aria-hidden="true">
-        <i /><i /><i /><i /><i /><i /><i /><i /><i /><i />
-      </span>
-    </button>
-  );
+  const refreshControl = {
+    disabled: !canRefresh,
+    label: sceneKind === 'root' ? 'Show other categories' : sceneKind === 'category' ? 'Show other subcategories' : 'Show other keywords',
+    title: !canRefresh
+      ? 'Nothing else to show'
+      : remaining > 0
+        ? `Show ${remaining} more ${sceneKind === 'root' ? 'categories' : sceneKind === 'category' ? 'subcategories' : 'keywords'}`
+        : 'Refresh',
+    round,
+    spin,
+    firstActive: refreshIgniting,
+    awaitingClick: canRefresh && !refreshAcknowledged,
+    onClick: () => {
+      setRefreshAcknowledged(true);
+      refresh();
+    },
+  };
 
   const renderMap = () => {
     let content: React.ReactNode = null;
@@ -796,6 +788,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
           showFitTags={fitActive}
           tagFor={tagFor}
           onSwipe={variant === 'mobile' ? refresh : undefined}
+          refresh={refreshControl}
         />
       );
     }
@@ -826,12 +819,10 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     );
   };
 
-  /** Refresh and Search share the bottom-right action cluster, measured as one
-   *  layout obstacle so keywords are pushed out from under it. */
+  /** Search stays in the bottom-right and is measured as a layout obstacle. */
   const renderSelectionOverlays = () => (
     <>
       <div ref={overlayRef} className="kmap-user-selection-actions">
-        {renderRefreshButton()}
         {actions}
       </div>
     </>
@@ -1046,8 +1037,6 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
               aria-hidden={sparkOpen || undefined}
             >
               {renderMapControls()}
-              {/* Collapsed to a lens; expands on hover/focus (incl. the "/" shortcut). */}
-              {search && <div className="kmap-search kmap-search--float">{search}</div>}
               {renderDock()}
             </motion.div>
           </div>
