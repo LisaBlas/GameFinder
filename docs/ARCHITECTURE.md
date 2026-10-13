@@ -213,6 +213,10 @@ key event for affiliate-click conversion reporting.
   embeds.
 - `GET /api/games/:id` — single game detail endpoint.
 - `GET /api/filters` — dynamic platform/genre/theme endpoint if needed.
+- `GET /api/hidden-gems` — serves the prebuilt `hidden_gems.json` pool used
+  by the Wayfinder. `npm run gems:build` rebuilds that asset from IGDB; the
+  client fetches it once per session and falls back to Cosmic Horror + Indie
+  if it is unavailable.
 
 ## Include And Exclude Filters
 New keyword selections default to include. Once selected, keyword pills

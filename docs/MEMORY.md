@@ -23,9 +23,10 @@ Durable decisions and context not derivable from source alone.
    e.g. Action Roguelike → Souls-like; not backed by live ranking data),
    **Curated** (`rare-combo`, hand-picked combos, first entry is Memory Loss +
    Horror theme), **Any key** (`common-keyword`, random single keyword from
-   the full pool, infinite), **Gem** (`user-crafts`; fixed editorial pick —
-   Cosmic Horror + Indie — not real community-fed data, see item 4 below),
-   and the uniques **Unique key** / **Unique craft** — rare sequences that
+   the full pool, infinite), **Hidden gem** (`user-crafts`; a random validated
+   pairing from the prebuilt editorial pool, with Cosmic Horror + Indie only
+   as the unavailable-pool fallback; not community-fed data, see item 4
+   below), and the uniques **Unique key** / **Unique craft** — rare sequences that
    tend to surface very few results. (The old `DiscoveryCard` deck was
    removed 2026-10-10.)
 3. **Draw steps** — bearings show sequence progress like `1/7` instead of

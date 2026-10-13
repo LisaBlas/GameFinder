@@ -1,4 +1,4 @@
-You already have the right foundation: a curated co-occurrence graph, deterministic layout logic, SVG rendering, and Framer Motion. But the current implementation replaces the entire SVG with a short crossfade whenever the center changes. That makes it functional, not yet “top-of-the-line.”
+The original implementation had a curated co-occurrence graph, deterministic layout logic, SVG rendering, and Framer Motion, but replaced the entire SVG with a short crossfade whenever the center changed. The current map instead uses the persistent keyed scene described in Phase 1 below.
 
 I’d turn it into a living “taste atlas”: the user should feel as though they are travelling through an interconnected game-design space, not loading a succession of diagrams.
 
@@ -323,7 +323,9 @@ A premium map must not depend on animation or pointer precision.
 
 ## Mobile
 
-The map is currently desktop-only. I would not squeeze the complete graph into the existing mobile panel.
+The original plan assumed a desktop-only map. The current mobile Build view
+uses the same map in a compact layout; the remaining mobile ideas below are
+future possibilities, not a description of the live UI.
 
 Build a dedicated full-screen mobile “Map mode”:
 
