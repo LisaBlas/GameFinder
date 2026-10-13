@@ -100,9 +100,11 @@ journey's `?map=` would be dropped before the map reads it. The sync copies
   auto-generate them.
 - Do not add unnecessary dependencies.
 - Do not take screenshots to check visual work unless explicitly requested.
-- Affiliate marketplace prices (Eneba, G2A, Kinguin, Instant Gaming) are not
-  fetchable — those stores have no public pricing API. Only the official
-  Steam price is live (`GET /api/steam-price`, 6h in-memory cache).
+- Affiliate marketplace prices (Eneba, G2A, Instant Gaming) are not
+  fetchable — those stores have no public pricing API. The live price is the
+  official Steam one (`GET /api/steam-price`, 6h in-memory cache). Kinguin is
+  the exception: its affiliate feed gives a price per Steam app ID, served
+  from the `kinguin_offers` table (see below).
 
 ## Never spring an SVG path `d` in framer-motion
 framer-motion cannot spring-interpolate a path string: it writes `NaN`
@@ -131,3 +133,13 @@ The selection-overlay div (`.kmap-user-selection-actions`) must stay a direct
 child of the exact DOM node `viewportRef` points to (`.kmap-viewport`) —
 `measureOverlays()` in `KeywordMap.tsx` queries it with a `:scope >` selector to compute layout
 obstacles; moving it deeper breaks that silently.
+
+## Kinguin feed: stream it, detach what you keep
+The feed (`AFF_multicurrency_en_AED.xml`) is ~2.15 GB, so it only runs via
+`npm run kinguin:refresh` on the VPS (~2 min), never on Render. Two memory
+traps in `server/services/kinguinFeed.ts`: do not use `readline`'s async
+iterator (no backpressure, OOM at ~1 GB), and copy any string you keep
+(`detach`) — a substring pins its whole 64 KB stream chunk, so 30k kept
+offers would hold ~2 GB. The script refuses to write under 5,000 offers so a
+truncated download cannot wipe the table. Kinguin feed links carry no
+affiliate ref: `GameCard` adds `r=` itself (`withKinguinRef`).

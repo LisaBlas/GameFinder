@@ -170,6 +170,8 @@ Key files:
 - `server/scripts/refreshSeoCache.ts` — iterates all SEO pages, calls IGDB
   with each page's filters, upserts top 10 results into `seo_page_cache`. Run
   via `npm run seo:refresh-cache`.
+- `server/scripts/refreshKinguinOffers.ts` + `server/services/kinguinFeed.ts` —
+  stream the Kinguin affiliate feed into `kinguin_offers` (steam_id PK, price_eur, url).
 - `shared/schema.ts` — includes `seo_page_cache` table (slug PK, games jsonb,
   updated_at) and `CachedGame` type.
 

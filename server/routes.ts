@@ -11,7 +11,7 @@ import keywordsRouter from "./routes/keywords";
 import { SEO_PAGE_MAP, LIKE_PAGE_MAP, seoCacheKey, type SeoPage } from "./seoPages";
 import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
 import { db } from "./db";
-import { seoPageCache } from "../shared/schema";
+import { seoPageCache, kinguinOffers } from "../shared/schema";
 import axios from "axios";
 import type { CachedGame } from "../shared/schema";
 
@@ -25,6 +25,9 @@ interface SteamPriceResult {
 
 const steamPriceCache = new Map<string, SteamPriceResult>();
 const STEAM_PRICE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+
+const KINGUIN_OFFER_TTL = 6 * 60 * 60 * 1000; // the table refreshes at most daily
+const kinguinOfferCache = new Map<string, { offer: { priceEur: number; url: string } | null; fetchedAt: number }>();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize IGDB service
@@ -409,6 +412,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('[routes] Steam price fetch failed:', error?.message);
       res.json({ price: null, originalPrice: null, discount: null, isFree: false });
+    }
+  });
+
+  // Kinguin offer for a Steam app, from the feed table the VPS refreshes
+  // (npm run kinguin:refresh). `offer: null` = no usable key; the card then
+  // falls back to the plain Kinguin search link.
+  app.get('/api/kinguin-offer', async (req, res) => {
+    const appId = String(req.query.appId ?? '').trim();
+    if (!/^\d+$/.test(appId)) return res.status(400).json({ message: 'Invalid appId' });
+    const cached = kinguinOfferCache.get(appId);
+    if (cached && Date.now() - cached.fetchedAt < KINGUIN_OFFER_TTL) return res.json({ offer: cached.offer });
+    if (!db) return res.json({ offer: null });
+    try {
+      const [row] = await db.select().from(kinguinOffers).where(eq(kinguinOffers.steamId, appId)).limit(1);
+      const offer = row ? { priceEur: Number(row.priceEur), url: row.url } : null;
+      kinguinOfferCache.set(appId, { offer, fetchedAt: Date.now() });
+      res.json({ offer });
+    } catch (error: any) {
+      console.error('[routes] Kinguin offer lookup failed:', error?.message);
+      res.json({ offer: null });
     }
   });
 

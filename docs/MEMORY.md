@@ -73,7 +73,10 @@ Durable decisions and context not derivable from source alone.
    Kinguin, and G2A. Each outbound affiliate link preserves its partner ID,
    adds GameFinder campaign UTM parameters, and fires the GA4
    `affiliate_outbound_click` event. Kinguin uses a direct affiliate search
-   link rather than a cookie-setting redirect flow.
+   link rather than a cookie-setting redirect flow. When the game's Steam app
+   ID matches a Kinguin feed offer (`/api/kinguin-offer`), Kinguin moves to
+   the top of the partners and shows "from €X" with a deep link; unmatched
+   games keep the per-game rotation.
 9. **Saved games** — users can save/unsave games from cards and open the
    saved-games panel from mobile and desktop headers.
 10. **Quality filters** — `FilterBar` exposes `Has studio`

@@ -122,6 +122,8 @@ const encodeGameTitle = (title: string): string => {
   return encodeURIComponent(title.trim().toLowerCase());
 };
 
+const KINGUIN_REF = '6821d3b3a5047';
+
 const withAffiliateTracking = (url: string, partner: string): string => {
   const trackedUrl = new URL(url);
   trackedUrl.searchParams.set('utm_source', 'gamefinder');
@@ -161,11 +163,19 @@ const InstantGamingIcon = (props: React.ImgHTMLAttributes<HTMLImageElement>) => 
   <img src={InstantGamingIconImg} alt="Instant-Gaming-Store-Icon" {...props} className={`w-5 h-5 object-contain ${props.className || ''}`} />
 );
 
+// A feed match is a deep link to the exact product; it needs the same partner
+// ref as the search link or the click earns nothing.
+const withKinguinRef = (offerUrl: string): string => {
+  const url = new URL(offerUrl);
+  url.searchParams.set('r', KINGUIN_REF);
+  return withAffiliateTracking(url.toString(), 'kinguin');
+};
+
 const getAffiliateLinks = (gameTitle: string) => {
   const encodedTitle = encodeGameTitle(gameTitle);
   return {
     kinguin: {
-      url: withAffiliateTracking(`https://kinguin.net/catalogsearch/result/index/?q=${encodedTitle}&r=6821d3b3a5047`, 'kinguin'),
+      url: withAffiliateTracking(`https://kinguin.net/catalogsearch/result/index/?q=${encodedTitle}&r=${KINGUIN_REF}`, 'kinguin'),
       name: 'Kinguin',
       icon: KinguinIcon
     },
@@ -199,6 +209,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
   const [hasLoadedVideos, setHasLoadedVideos] = useState(false);
   const [steamPrice, setSteamPrice] = useState<{ price: string | null; originalPrice: string | null; discount: number | null; isFree: boolean } | null>(null);
   const [hasLoadedSteamPrice, setHasLoadedSteamPrice] = useState(false);
+  const [kinguinOffer, setKinguinOffer] = useState<{ priceEur: number; url: string } | null>(null);
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
   const [synopsisClamped, setSynopsisClamped] = useState(false);
   const [otherStoresExpanded, setOtherStoresExpanded] = useState(false);
@@ -243,8 +254,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       const match = steamEntry.url.match(/\/app\/(\d+)/);
       if (!match) { setHasLoadedSteamPrice(true); return; }
       try {
-        const resp = await fetch(`/api/steam-price?appId=${match[1]}`);
-        if (resp.ok) setSteamPrice(await resp.json());
+        const [priceResp, offerResp] = await Promise.all([
+          fetch(`/api/steam-price?appId=${match[1]}`),
+          fetch(`/api/kinguin-offer?appId=${match[1]}`).catch(() => null),
+        ]);
+        if (priceResp.ok) setSteamPrice(await priceResp.json());
+        if (offerResp?.ok) setKinguinOffer((await offerResp.json()).offer ?? null);
       } catch {
         // silently fail — price is non-critical
       } finally {
@@ -574,7 +589,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       name: affiliateLinks.kinguin.name,
       descriptor: 'Compare keys and seller ratings',
       icon: <KinguinIcon />,
-      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(e, affiliateLinks.kinguin.url, 'Kinguin', 'affiliate', linkPosition)
+      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(e, kinguinOffer ? withKinguinRef(kinguinOffer.url) : affiliateLinks.kinguin.url, 'Kinguin', 'affiliate', linkPosition)
     },
     {
       key: 'g2a',
@@ -585,16 +600,28 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     }
   ];
   const partnerStoreOffset = getStablePartnerOffset(game.id, game.name, partnerStores.length);
-  const partnerDestinations = [
+  const rotatedPartners = [
     ...partnerStores.slice(partnerStoreOffset),
     ...partnerStores.slice(0, partnerStoreOffset)
-  ].map((store, index): Destination => ({
-    key: `partner-${store.key}`,
-    label: `Search ${store.name}`,
-    sub: store.descriptor,
-    icon: store.icon,
-    onClick: (e) => store.onClick(e, index === 0 ? 'primary' : 'alternate'),
-  }));
+  ];
+  // A game with a Kinguin feed match (exact product + real price) leads the
+  // partners; otherwise the per-game rotation decides, as before.
+  const orderedPartners = kinguinOffer
+    ? [...rotatedPartners.filter(store => store.key === 'kinguin'), ...rotatedPartners.filter(store => store.key !== 'kinguin')]
+    : rotatedPartners;
+  const partnerDestinations = orderedPartners.map((store, index): Destination => {
+    const hasOffer = store.key === 'kinguin' && !!kinguinOffer;
+    return {
+      key: `partner-${store.key}`,
+      label: hasOffer ? `View on ${store.name}` : `Search ${store.name}`,
+      sub: hasOffer ? 'Region-free key, price varies by seller' : store.descriptor,
+      price: hasOffer ? (
+        <span className="game-card-store-price text-[10px] font-semibold">from €{kinguinOffer!.priceEur.toFixed(2)}</span>
+      ) : undefined,
+      icon: store.icon,
+      onClick: (e) => store.onClick(e, index === 0 ? 'primary' : 'alternate'),
+    };
+  });
 
   // One strong path, one alternative (the game's key marketplace), the rest
   // behind a disclosure. With no official store, the marketplace leads.

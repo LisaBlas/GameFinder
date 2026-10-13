@@ -17,6 +17,7 @@
     "seo:refresh-cache": "tsx server/scripts/refreshSeoCache.ts",
     "seo:generate-pages": "tsx server/scripts/generateSeoPages.ts",
     "seo:generate-like-pages": "tsx server/scripts/generateGamesLikePages.ts",
+    "kinguin:refresh": "tsx server/scripts/refreshKinguinOffers.ts",
     "gems:build": "tsx scripts/build-hidden-gems.ts"
   },
   "dependencies": {
