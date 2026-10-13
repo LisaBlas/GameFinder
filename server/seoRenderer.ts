@@ -175,6 +175,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
   <meta property="og:description" content="${descEsc}" />
   <meta property="og:url" content="${canonicalUrl}" />
   <meta property="og:image" content="${BASE_URL}/og-image.jpg" />
+  <meta property="og:image:alt" content="GameFinder Wayfinder emblem with the message: Find games by what you actually enjoy" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:locale" content="en_US" />
@@ -183,6 +184,7 @@ export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
   <meta name="twitter:title" content="${titleEsc}" />
   <meta name="twitter:description" content="${descEsc}" />
   <meta name="twitter:image" content="${BASE_URL}/og-image.jpg" />
+  <meta name="twitter:image:alt" content="GameFinder Wayfinder emblem with the message: Find games by what you actually enjoy" />
 
   <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
