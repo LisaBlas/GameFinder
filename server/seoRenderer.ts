@@ -1,4 +1,4 @@
-import { type SeoPage, type SeoFilter, buildAppUrl, SEO_PAGES } from "./seoPages";
+import { type SeoPage, type SeoFilter, buildAppUrl, seoPagePath, SEO_PAGES, ALL_SEO_PAGES } from "./seoPages";
 import type { CachedGame } from "../shared/schema.js";
 
 const BASE_URL = "https://gamefinder-app.com";
@@ -17,7 +17,7 @@ function safeJsonLd(value: unknown): string {
 }
 
 function shortTitle(page: SeoPage): string {
-  return page.title.split("-")[0].trim();
+  return page.title.split(page.kind === "like" ? ":" : "-")[0].trim();
 }
 
 function filterChipHtml(filter: SeoFilter): string {
@@ -36,7 +36,7 @@ function relatedLinkHtml(slug: string): string {
   if (!page) return "";
   const label = shortTitle(page).replace(/^Best\s+/, "").replace(/\s+Games$/, "");
 
-  return `<a href="${BASE_URL}/best/${escapeHtml(slug)}" class="related-link">
+  return `<a href="${BASE_URL}${seoPagePath(page)}" class="related-link">
     <span>${escapeHtml(label)}</span><span aria-hidden="true">↗</span>
   </a>`;
 }
@@ -73,12 +73,12 @@ function buildJsonLd(page: SeoPage, games?: CachedGame[]): string {
     "@type": "CollectionPage",
     name: page.title,
     description: page.description,
-    url: `${BASE_URL}/best/${page.slug}`,
+    url: `${BASE_URL}${seoPagePath(page)}`,
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: `${BASE_URL}/` },
-        { "@type": "ListItem", position: 2, name: shortTitle(page), item: `${BASE_URL}/best/${page.slug}` },
+        { "@type": "ListItem", position: 2, name: shortTitle(page), item: `${BASE_URL}${seoPagePath(page)}` },
       ],
     },
   };
@@ -118,7 +118,7 @@ function buildJsonLd(page: SeoPage, games?: CachedGame[]): string {
 
 export function renderSeoPage(page: SeoPage, games?: CachedGame[]): string {
   const appUrl = buildAppUrl(page.filters);
-  const canonicalUrl = `${BASE_URL}/best/${page.slug}`;
+  const canonicalUrl = `${BASE_URL}${seoPagePath(page)}`;
   const searchLabel = page.searchLabel ?? "Find these games";
   const filterChips = page.filters.map(filterChipHtml).join("\n");
   const relatedLinks = page.relatedSlugs.map(relatedLinkHtml).filter(Boolean).join("\n");
@@ -585,9 +585,9 @@ export function renderSitemap(): string {
   const now = new Date().toISOString().split("T")[0];
   const urls = [
     `  <url>\n    <loc>${BASE_URL}/</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>`,
-    ...SEO_PAGES.map(
+    ...ALL_SEO_PAGES.map(
       (page) =>
-        `  <url>\n    <loc>${BASE_URL}/best/${page.slug}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`
+        `  <url>\n    <loc>${BASE_URL}${seoPagePath(page)}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`
     ),
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>`;

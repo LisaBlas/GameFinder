@@ -8,7 +8,7 @@ import { createCountCache } from "./services/countCache";
 import { getGraphSlice, getHiddenGems, knownKeywordIds } from "./services/keywordGraph";
 import { createFacetService } from "./services/facetCache";
 import keywordsRouter from "./routes/keywords";
-import { SEO_PAGE_MAP, type SeoPage } from "./seoPages";
+import { SEO_PAGE_MAP, LIKE_PAGE_MAP, seoCacheKey, type SeoPage } from "./seoPages";
 import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
 import { db } from "./db";
 import { seoPageCache } from "../shared/schema";
@@ -44,10 +44,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const seoFallbackCache = new Map<string, { games: CachedGame[]; expiresAt: number }>();
   const seoFallbackPending = new Map<string, Promise<CachedGame[]>>();
   const getLiveSeoGames = (page: SeoPage): Promise<CachedGame[]> => {
-    const cached = seoFallbackCache.get(page.slug);
+    const cacheKey = seoCacheKey(page);
+    const cached = seoFallbackCache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) return Promise.resolve(cached.games);
 
-    const pending = seoFallbackPending.get(page.slug);
+    const pending = seoFallbackPending.get(cacheKey);
     if (pending) return pending;
 
     const request = (async () => {
@@ -74,7 +75,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         (filters[filter.category] ??= []).push({ id: filter.id, name: filter.name });
       }
 
-      const results = await igdbService.searchGames(filters, 'rating', 1, [], excludeKeywords, false, false, excludeFilters);
+      const results = await igdbService.searchGames(filters, 'rating', 1, page.seedGameId ? [page.seedGameId] : [], excludeKeywords, false, false, excludeFilters);
       const games: CachedGame[] = results.slice(0, 10).map((game: any) => {
         const rawCover = typeof game.cover === 'string' ? game.cover : game.cover?.url;
         const cover = rawCover
@@ -88,11 +89,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           summary: game.summary,
         };
       });
-      seoFallbackCache.set(page.slug, { games, expiresAt: Date.now() + 6 * 60 * 60 * 1000 });
+      seoFallbackCache.set(cacheKey, { games, expiresAt: Date.now() + 6 * 60 * 60 * 1000 });
       return games;
-    })().finally(() => seoFallbackPending.delete(page.slug));
+    })().finally(() => seoFallbackPending.delete(cacheKey));
 
-    seoFallbackPending.set(page.slug, request);
+    seoFallbackPending.set(cacheKey, request);
     return request;
   };
 
@@ -107,8 +108,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SEO landing pages — server-rendered, crawlable, before the SPA fallback
-  app.get('/best/:slug', async (req, res) => {
-    const page = SEO_PAGE_MAP.get(req.params.slug);
+  const serveSeoPage = (pages: Map<string, SeoPage>) => async (req: express.Request, res: express.Response) => {
+    const page = pages.get(req.params.slug);
     if (!page) {
       return res.status(404).set('Content-Type', 'text/html').send(renderNotFoundPage());
     }
@@ -116,7 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     let cachedGames: CachedGame[] | undefined;
     if (db) {
       try {
-        const rows = await db.select().from(seoPageCache).where(eq(seoPageCache.slug, req.params.slug)).limit(1);
+        const rows = await db.select().from(seoPageCache).where(eq(seoPageCache.slug, seoCacheKey(page))).limit(1);
         cachedGames = rows[0]?.games ?? undefined;
       } catch {
         // DB unavailable — render without games
@@ -137,7 +138,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Content-Type', 'text/html');
     res.set('Cache-Control', 'public, max-age=3600');
     res.send(renderSeoPage(page, cachedGames));
-  });
+  };
+  app.get('/best/:slug', serveSeoPage(SEO_PAGE_MAP));
+  app.get('/games-like/:slug', serveSeoPage(LIKE_PAGE_MAP));
 
   // API routes
   app.get('/api/status', (req, res) => {

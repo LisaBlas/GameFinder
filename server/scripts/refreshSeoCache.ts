@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { db } from "../db.js";
 import { seoPageCache } from "../../shared/schema.js";
-import { SEO_PAGES } from "../seoPages.js";
+import { ALL_SEO_PAGES, seoCacheKey } from "../seoPages.js";
 import { IGDBService } from "../services/igdbService.js";
 import type { CachedGame } from "../../shared/schema.js";
 
@@ -23,7 +23,7 @@ async function refreshSeoCache() {
   let refreshed = 0;
   let failed = 0;
 
-  for (const page of SEO_PAGES) {
+  for (const page of ALL_SEO_PAGES) {
     const filters: Record<string, Array<{ id: number; name: string }>> = {};
     for (const f of page.filters) {
       if (f.mode === "exclude") continue;
@@ -32,7 +32,7 @@ async function refreshSeoCache() {
     }
 
     try {
-      const results = await igdb.searchGames(filters, "rating");
+      const results = await igdb.searchGames(filters, "rating", 1, page.seedGameId ? [page.seedGameId] : []);
       const top10: CachedGame[] = results.slice(0, 10).map((g: any) => ({
         id: g.id,
         name: g.name,
@@ -43,7 +43,7 @@ async function refreshSeoCache() {
 
       await database
         .insert(seoPageCache)
-        .values({ slug: page.slug, games: top10, updatedAt: new Date() })
+        .values({ slug: seoCacheKey(page), games: top10, updatedAt: new Date() })
         .onConflictDoUpdate({
           target: seoPageCache.slug,
           set: { games: top10, updatedAt: new Date() },

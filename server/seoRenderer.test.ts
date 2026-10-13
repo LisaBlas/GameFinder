@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { renderNotFoundPage, renderSeoPage } from "./seoRenderer";
+import { renderNotFoundPage, renderSeoPage, renderSitemap } from "./seoRenderer";
 import type { SeoPage } from "./seoPages";
 
 const page: SeoPage = {
@@ -55,4 +55,12 @@ test("SEO not-found page stays in the fantasy visual system", () => {
   assert.match(html, /The path ends here/);
   assert.match(html, /meta name="robots" content="noindex"/);
   assert.match(html, /Back to GameFinder/);
+});
+
+test("games-like pages use the /games-like/ path and are in the sitemap", () => {
+  const likePage: SeoPage = { ...page, slug: "stardew-valley", kind: "like", seedGameId: 17000, title: "Games Like Stardew Valley (2026): Matched by Keywords" };
+  const html = renderSeoPage(likePage);
+  assert.match(html, /<link rel="canonical" href="https:\/\/gamefinder-app\.com\/games-like\/stardew-valley"/);
+  assert.doesNotMatch(html, /\/best\/stardew-valley/);
+  assert.match(renderSitemap(), /<loc>https:\/\/gamefinder-app\.com\/games-like\/stardew-valley<\/loc>/);
 });

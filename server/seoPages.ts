@@ -13,7 +13,18 @@ export interface SeoPage {
   filters: SeoFilter[];
   relatedSlugs: string[];
   searchLabel?: string;
+  /** "like" = /games-like/<slug> page seeded from one game; default is /best/<slug>. */
+  kind?: "best" | "like";
+  /** For "like" pages: the seed game, left out of its own results. */
+  seedGameId?: number;
 }
+
+export const seoPagePath = (page: Pick<SeoPage, "slug" | "kind">) =>
+  `/${page.kind === "like" ? "games-like" : "best"}/${page.slug}`;
+
+/** Key for seo_page_cache; "like" pages are prefixed so they cannot collide with /best/ slugs. */
+export const seoCacheKey = (page: Pick<SeoPage, "slug" | "kind">) =>
+  page.kind === "like" ? `like:${page.slug}` : page.slug;
 
 const toSlug = (name: string) =>
   name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
@@ -50,6 +61,7 @@ export function buildAppUrl(filters: SeoFilter[], sort = "relevance"): string {
 }
 
 import { GENERATED_SEO_PAGES } from './generatedSeoPages.js';
+import { GAMES_LIKE_PAGES } from './gamesLikePages.js';
 
 const MANUAL_SEO_PAGES: SeoPage[] = [
   {
@@ -81,7 +93,7 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
       { category: "Keywords", id: 2084, name: "Relaxing" },
       { category: "Keywords", id: 1697, name: "Atmospheric" },
     ],
-    relatedSlugs: ["cozy-farming-games", "cute-wholesome-games", "relaxing-simulation-games"],
+    relatedSlugs: ["cozy-farming-games", "cute-wholesome-games", "relaxing-simulation-games", "cozy-horror-games", "gardening-games", "witch-games", "village-life-games", "life-sim-games", "calming-games-for-anxiety"],
     searchLabel: "Find cozy games",
   },
   {
@@ -815,7 +827,7 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
       { category: "Keywords", id: 2084, name: "Relaxing" },
       { category: "genres", id: 13, name: "Simulator" },
     ],
-    relatedSlugs: ["cozy-farming-games", "village-life-games", "relaxing-simulation-games", "no-combat-games"],
+    relatedSlugs: ["cozy-farming-games", "village-life-games", "relaxing-simulation-games", "no-combat-games", "cozy-games"],
     searchLabel: "Find gardening games",
   },
   {
@@ -831,7 +843,7 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
       { category: "genres", id: 12, name: "Role-playing (RPG)" },
       { category: "themes", id: 17, name: "Fantasy" },
     ],
-    relatedSlugs: ["fantasy-rpg-games", "cozy-horror-games", "dark-fantasy-rpg-games", "shopkeeper-games"],
+    relatedSlugs: ["fantasy-rpg-games", "cozy-horror-games", "dark-fantasy-rpg-games", "shopkeeper-games", "cozy-games"],
     searchLabel: "Find witch games",
   },
   {
@@ -862,7 +874,7 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
       { category: "Keywords", id: 24685, name: "cozy" },
       { category: "genres", id: 13, name: "Simulator" },
     ],
-    relatedSlugs: ["cozy-farming-games", "relaxing-simulation-games", "gardening-games", "shopkeeper-games"],
+    relatedSlugs: ["cozy-farming-games", "relaxing-simulation-games", "gardening-games", "shopkeeper-games", "cozy-games"],
     searchLabel: "Find village life games",
   },
   {
@@ -909,7 +921,7 @@ const MANUAL_SEO_PAGES: SeoPage[] = [
       { category: "Keywords", id: 1697, name: "Atmospheric" },
       { category: "genres", id: 13, name: "Simulator" },
     ],
-    relatedSlugs: ["village-life-games", "cozy-farming-games", "relaxing-simulation-games", "cute-wholesome-games"],
+    relatedSlugs: ["village-life-games", "cozy-farming-games", "relaxing-simulation-games", "cute-wholesome-games", "cozy-games"],
     searchLabel: "Find life sim games",
   },
   {
@@ -1005,3 +1017,10 @@ export const SEO_PAGES: SeoPage[] = [...MANUAL_SEO_PAGES, ...GENERATED_SEO_PAGES
 export const SEO_PAGE_MAP = new Map<string, SeoPage>(
   SEO_PAGES.map((p) => [p.slug, p])
 );
+
+export const LIKE_PAGE_MAP = new Map<string, SeoPage>(
+  GAMES_LIKE_PAGES.map((p) => [p.slug, p])
+);
+
+/** Every indexable SEO page: /best/ guides and /games-like/ pages. */
+export const ALL_SEO_PAGES: SeoPage[] = [...SEO_PAGES, ...GAMES_LIKE_PAGES];
