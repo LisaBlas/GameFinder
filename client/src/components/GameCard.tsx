@@ -546,9 +546,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
         sub: isSteam && steamPriceLabel ? undefined : 'Check price',
         price: isSteam && steamPriceLabel ? (
           <span className="flex items-center gap-1.5">
-            {originalLabel && <span className="text-[10px] font-normal text-slate-500 line-through">{originalLabel}</span>}
-            {discountPct && <span className="text-[10px] font-bold text-[var(--c-emerald)] bg-[rgba(var(--c-emerald-rgb),0.12)] px-1 rounded">{discountPct}% off</span>}
-            <span className={`game-card-store-price text-[10px] font-semibold ${discountPct ? 'text-[var(--c-emerald)]' : ''}`}>{steamPriceLabel}</span>
+            {originalLabel && <span className="text-xs font-normal text-slate-500 line-through">{originalLabel}</span>}
+            {discountPct && <span className="text-xs font-bold text-[var(--c-emerald)] bg-[rgba(var(--c-emerald-rgb),0.12)] px-1 rounded">{discountPct}% off</span>}
+            <span className={`game-card-store-price text-sm font-bold leading-tight ${discountPct ? 'text-[var(--c-emerald)]' : ''}`}>{steamPriceLabel}</span>
           </span>
         ) : undefined,
       };
@@ -616,7 +616,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       label: hasOffer ? `View on ${store.name}` : `Search ${store.name}`,
       sub: hasOffer ? 'Region-free key, price varies by seller' : store.descriptor,
       price: hasOffer ? (
-        <span className="game-card-store-price text-[10px] font-semibold">from €{kinguinOffer!.priceEur.toFixed(2)}</span>
+        <span className="game-card-store-price text-sm font-bold leading-tight">from €{kinguinOffer!.priceEur.toFixed(2)}</span>
       ) : undefined,
       icon: store.icon,
       onClick: (e) => store.onClick(e, index === 0 ? 'primary' : 'alternate'),

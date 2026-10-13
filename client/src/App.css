@@ -2606,7 +2606,7 @@ h3{
 }
 
 .game-card-store-price {
-  color: rgba(176, 186, 179, 0.82);
+  color: rgba(226, 233, 228, 0.95);
 }
 
 /* Expanded body: grouped by decision, not by data type.
@@ -2715,6 +2715,10 @@ h3{
 .game-card-primary-store .game-card-store-sub,
 .game-card-primary-store .game-card-store-price {
   color: rgba(186, 247, 220, 0.78);
+}
+
+.game-card-primary-store .game-card-store-price {
+  color: #f0fff8;
 }
 
 .game-card-primary-store:hover .game-card-store-arrow,
