@@ -142,7 +142,10 @@ iterator (no backpressure, OOM at ~1 GB), and copy any string you keep
 (`detach`) — a substring pins its whole 64 KB stream chunk, so 30k kept
 offers would hold ~2 GB. The script refuses to write under 5,000 offers so a
 truncated download cannot wipe the table. Kinguin feed links carry no
-affiliate ref: `GameCard` adds `r=` itself (`withKinguinRef`).
+affiliate ref: `GameCard` adds `r=` itself (`withKinguinRef`). Kinguin
+confirmed by email (2026-10-13) that appending the referral ID to feed links
+attributes sales. They update the feed every 180 minutes; the table refreshes
+daily (cron 03:30), which is enough for a "from €X" hint.
 
 ## Kinguin offers: rank by `country_limitations`, never by region label
 `g:region` is unreliable ("Steam OTHER" can be unrestricted; "REGION FREE"
