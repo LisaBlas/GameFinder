@@ -1,4 +1,5 @@
 import "dotenv/config";
+import fs from "node:fs";
 import { sql } from "drizzle-orm";
 import { db } from "../db.js";
 import { seoPageCache } from "../../shared/schema.js";
@@ -7,15 +8,32 @@ import { evaluateSeoCacheHealth } from "../services/seoCacheHealth.js";
 
 // Usage: npm run seo:check-cache
 // Read-only. Exits 1 and sends a Telegram alert when seo_page_cache is stale,
-// empty or incomplete. Needs TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in .env.
+// empty or incomplete. Telegram credentials come from the shared VPS secrets
+// file (single place to rotate); only the two keys we need are read from it,
+// never loaded into process.env, since the file holds many unrelated secrets.
+const SHARED_ENV = process.env.SHARED_ENV_FILE ?? "/home/blas/secrets/shared.env";
+
+function readTelegramCreds(): { token?: string; chatId?: string } {
+  let raw: string;
+  try {
+    raw = fs.readFileSync(SHARED_ENV, "utf8");
+  } catch {
+    console.error(`Cannot read ${SHARED_ENV}.`);
+    return {};
+  }
+  const pick = (key: string) => {
+    const m = raw.match(new RegExp(`^${key}=(.*)$`, "m"));
+    return m?.[1].trim().replace(/^(["'])(.*)\1$/, "$2") || undefined;
+  };
+  return { token: pick("TELEGRAM_BOT_TOKEN"), chatId: pick("TELEGRAM_CHAT_ID") };
+}
 
 async function alert(problems: string[]) {
   const text = `🚨 GameFinder SEO cache:\n- ${problems.join("\n- ")}`;
   console.error(text);
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const { token, chatId } = readTelegramCreds();
   if (!token || !chatId) {
-    console.error("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set - alert not sent.");
+    console.error("Telegram credentials not found - alert not sent.");
     return;
   }
   try {

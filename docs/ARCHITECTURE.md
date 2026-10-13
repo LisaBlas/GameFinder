@@ -174,7 +174,7 @@ Key files:
 - `server/scripts/checkSeoCache.ts` + `server/services/seoCacheHealth.ts` —
   read-only health check (`npm run seo:check-cache`): newest row >36h old, >5
   missing rows, >5 empty rows, or DB unreachable -> Telegram alert + exit 1.
-  Needs `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in the VPS `.env`. Cron
+  Reads only `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` from `~/secrets/shared.env` (not loaded into `process.env`). Cron
   (after the 03:00 refresh): `20 3 * * * cd ~/projects/GameFinder && PATH=<node>:$PATH npm run seo:check-cache >> logs/seo-check.log 2>&1`.
 - `server/scripts/refreshKinguinOffers.ts` + `server/services/kinguinFeed.ts` —
   stream the Kinguin affiliate feed into `kinguin_offers` (steam_id PK, price_eur, url).
