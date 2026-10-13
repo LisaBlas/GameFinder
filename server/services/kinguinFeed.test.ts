@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFeed, regionRank, splitLines } from './kinguinFeed';
+import { readFeed, splitLines } from './kinguinFeed';
 
-const item = (o: { steam?: string; region?: string; eur?: string; type?: string; platform?: string; stock?: string; steamType?: string }) => `
+const item = (o: { steam?: string; limits?: string; eur?: string; type?: string; platform?: string; stock?: string; steamType?: string }) => `
 <item>
   <title><![CDATA[x]]></title>
   <prices>
@@ -19,7 +19,7 @@ const item = (o: { steam?: string; region?: string; eur?: string; type?: string;
   <g:platform><![CDATA[${o.platform ?? 'Steam'}]]></g:platform>
   <g:steam_id>${o.steam ?? '42'}</g:steam_id>
   <g:steam_type>${o.steamType ?? 'app'}</g:steam_type>
-  <g:region><![CDATA[${o.region ?? 'Steam REGION FREE'}]]></g:region>
+  <g:country_limitations>${o.limits ?? ''}</g:country_limitations>
 </item>`;
 
 async function* lines(text: string) { for (const l of text.split('\n')) yield l; }
@@ -35,30 +35,29 @@ test('cheapest region-free key wins', async () => {
   assert.equal(m.get('42')?.priceEur, 7.5);
 });
 
-test('region-free beats a cheaper Europe-only key; Europe beats nothing', async () => {
-  const m = await run(item({ region: 'Steam EUROPE', eur: '3.00' }), item({ eur: '8.00' }));
-  assert.equal(m.get('42')?.priceEur, 8);
-  const only = await run(item({ region: 'Steam  EUROPE - all countries', eur: '3.00' }));
-  assert.equal(only.get('42')?.priceEur, 3);
+test('ignores the region label; a few excluded countries are fine', async () => {
+  const m = await run(item({ limits: 'SA,AQ,BV,TF,HM,GS,XK', eur: '14.41' }), item({ eur: '40.00' }));
+  assert.equal(m.get('42')?.priceEur, 14.41);
 });
 
-test('skips ASIA keys, non-games, non-Steam, bundles, out of stock and non-numeric IDs', async () => {
+test('skips keys restricted to a region (many excluded countries)', async () => {
+  const many = Array.from({ length: 200 }, (_, i) => `C${i}`).join(',');
+  const m = await run(item({ limits: many, eur: '3.00' }));
+  assert.equal(m.size, 0);
+  const ok = await run(item({ limits: many, eur: '3.00' }), item({ eur: '9.00' }));
+  assert.equal(ok.get('42')?.priceEur, 9);
+});
+
+test('skips non-games, non-Steam, bundles, out of stock and non-numeric IDs', async () => {
   const m = await run(
-    item({ region: 'Steam ASIA' }),
     item({ type: 'DLC' }),
+    item({ type: 'ALTERGIFT' }),
     item({ platform: 'Other' }),
     item({ steamType: 'bundle' }),
     item({ stock: 'out of stock' }),
     item({ steam: 'abc' }),
   );
   assert.equal(m.size, 0);
-});
-
-test('regionRank', () => {
-  assert.equal(regionRank('Steam REGION FREE'), 0);
-  assert.equal(regionRank('Steam EUROPE'), 1);
-  assert.equal(regionRank('Steam ASIA'), null);
-  assert.equal(regionRank(undefined), null);
 });
 
 test('splitLines rejoins lines cut across chunks', async () => {

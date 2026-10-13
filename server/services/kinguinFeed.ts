@@ -11,7 +11,7 @@ export interface KinguinOffer {
 interface RawItem {
   productType?: string;
   platform?: string;
-  region?: string;
+  restricted?: number;
   steamId?: string;
   steamType?: string;
   inStock: boolean;
@@ -19,19 +19,17 @@ interface RawItem {
   eurLink?: string;
 }
 
-// Lower is better. Keys that activate everywhere beat Europe-only keys; any
-// other region (ASIA, US-only, ...) is skipped because it fails for most buyers.
-export function regionRank(region: string | undefined): number | null {
-  const r = (region ?? '').toUpperCase();
-  if (r.includes('REGION FREE') || r.includes('GLOBAL')) return 0;
-  if (r.includes('EUROPE')) return 1;
-  return null;
-}
+// `g:country_limitations` lists the countries where a key does NOT activate.
+// The region label is unreliable (a "Steam OTHER" key can be unrestricted, a
+// "REGION FREE" one can exclude 250 countries), so the count decides. A few
+// excluded countries (the "RoW" keys omit uninhabited territories and a
+// handful of states) still work for nearly every buyer.
+export const MAX_RESTRICTED_COUNTRIES = 15;
 
 const FIELD_SETTERS: Array<[string, (item: RawItem, value: string) => void]> = [
   ['g:product_type', (i, v) => { i.productType = v; }],
   ['g:platform', (i, v) => { i.platform = v; }],
-  ['g:region', (i, v) => { i.region = v; }],
+  ['g:country_limitations', (i, v) => { i.restricted = v ? v.split(',').length : 0; }],
   ['g:steam_id', (i, v) => { i.steamId = v; }],
   ['g:steam_type', (i, v) => { i.steamType = v; }],
   ['g:availability', (i, v) => { i.inStock = v === 'in stock'; }],
@@ -49,17 +47,16 @@ const tagValue = (line: string, tag: string): string | null => {
 // offers would hold ~2 GB. Copy anything that outlives the line.
 const detach = (s: string): string => Buffer.from(s, 'utf8').toString('utf8');
 
-function toOffer(item: RawItem): { offer: KinguinOffer; rank: number } | null {
+function toOffer(item: RawItem): KinguinOffer | null {
   if (item.productType !== 'GAME' || item.platform !== 'Steam' || item.steamType !== 'app') return null;
   if (!item.inStock || !item.steamId || !/^\d+$/.test(item.steamId)) return null;
   if (item.eurPrice == null || !(item.eurPrice > 0) || !item.eurLink) return null;
-  const rank = regionRank(item.region);
-  if (rank === null) return null;
-  return { offer: { steamId: detach(item.steamId), priceEur: item.eurPrice, url: detach(item.eurLink) }, rank };
+  if ((item.restricted ?? 0) > MAX_RESTRICTED_COUNTRIES) return null;
+  return { steamId: detach(item.steamId), priceEur: item.eurPrice, url: detach(item.eurLink) };
 }
 
 export async function readFeed(lines: AsyncIterable<string>): Promise<Map<string, KinguinOffer>> {
-  const best = new Map<string, { offer: KinguinOffer; rank: number }>();
+  const best = new Map<string, KinguinOffer>();
   let item: RawItem | null = null;
   let inPrice = false;
   let currency = '';
@@ -75,10 +72,8 @@ export async function readFeed(lines: AsyncIterable<string>): Promise<Map<string
     if (line === '</item>') {
       const cand = toOffer(item);
       if (cand) {
-        const cur = best.get(cand.offer.steamId);
-        if (!cur || cand.rank < cur.rank || (cand.rank === cur.rank && cand.offer.priceEur < cur.offer.priceEur)) {
-          best.set(cand.offer.steamId, cand);
-        }
+        const cur = best.get(cand.steamId);
+        if (!cur || cand.priceEur < cur.priceEur) best.set(cand.steamId, cand);
       }
       item = null;
       continue;
@@ -99,7 +94,7 @@ export async function readFeed(lines: AsyncIterable<string>): Promise<Map<string
       if (value !== null) { set(item, value); break; }
     }
   }
-  return new Map(Array.from(best).map(([k, v]) => [k, v.offer]));
+  return best;
 }
 
 // Line splitter with real backpressure (readline's async iterator queues lines

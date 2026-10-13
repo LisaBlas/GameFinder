@@ -614,7 +614,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     return {
       key: `partner-${store.key}`,
       label: hasOffer ? `View on ${store.name}` : `Search ${store.name}`,
-      sub: hasOffer ? 'Region-free key, price varies by seller' : store.descriptor,
+      sub: hasOffer ? 'Instant key, check region before buying' : store.descriptor,
       price: hasOffer ? (
         <span className="game-card-store-price text-sm font-bold leading-tight">from €{kinguinOffer!.priceEur.toFixed(2)}</span>
       ) : undefined,

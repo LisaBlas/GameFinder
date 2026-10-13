@@ -4,6 +4,9 @@ Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
 ## 2026-10-13
+- Kinguin matching now ranks keys by `country_limitations` (≤15 excluded
+  countries, cheapest) instead of the region label, which dropped real
+  global keys (RoW, "OTHER"). Re-run `npm run kinguin:refresh` after deploy.
 - Kinguin feed integration: `npm run kinguin:refresh` (VPS) streams the 2 GB
   affiliate feed into `kinguin_offers` (cheapest in-stock region-free, else
   Europe, Steam key per Steam app ID; EUR). `/api/kinguin-offer?appId=`

@@ -143,3 +143,11 @@ iterator (no backpressure, OOM at ~1 GB), and copy any string you keep
 offers would hold ~2 GB. The script refuses to write under 5,000 offers so a
 truncated download cannot wipe the table. Kinguin feed links carry no
 affiliate ref: `GameCard` adds `r=` itself (`withKinguinRef`).
+
+## Kinguin offers: rank by `country_limitations`, never by region label
+`g:region` is unreliable ("Steam OTHER" can be unrestricted; "REGION FREE"
+can exclude 250 countries). `g:country_limitations` lists the countries where
+a key does NOT activate. `kinguinFeed.ts` keeps Steam `GAME` keys with at
+most `MAX_RESTRICTED_COUNTRIES` (15) excluded countries, cheapest wins. Games
+Kinguin sells only as accounts, Altergift, or on other platforms (e.g.
+Bloodborne, PS4-only) have no match and keep the plain search link.
