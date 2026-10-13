@@ -41,6 +41,9 @@ async function refreshSeoCache() {
         summary: g.summary,
       }));
 
+      // A bad IGDB response must not overwrite good rows with an empty list.
+      if (top10.length === 0) throw new Error("IGDB returned 0 games; keeping existing cache row");
+
       await database
         .insert(seoPageCache)
         .values({ slug: seoCacheKey(page), games: top10, updatedAt: new Date() })
@@ -61,6 +64,7 @@ async function refreshSeoCache() {
   }
 
   console.log(`\nDone - ${refreshed} refreshed, ${failed} failed.`);
+  if (failed > 0) process.exitCode = 1;
 }
 
 refreshSeoCache().catch((err) => {
