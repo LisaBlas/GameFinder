@@ -32,9 +32,11 @@ const trackAffiliateClick = (
   gameId: number,
   gameTitle: string,
   linkPosition: 'primary' | 'alternate',
+  extra: Record<string, string | number> = {},
 ) => {
   if (typeof gtag !== 'undefined') {
     gtag('event', 'affiliate_outbound_click', {
+      ...extra,
       affiliate_partner: partner,
       game_id: gameId,
       game_name: gameTitle,
@@ -409,11 +411,12 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
     storeName: string,
     storeType: 'official' | 'affiliate' = 'official',
     linkPosition?: 'primary' | 'alternate',
+    extra?: Record<string, string | number>,
   ) => {
     e.preventDefault();
     e.stopPropagation();
     if (storeType === 'affiliate') {
-      trackAffiliateClick(storeName, game.id, game.name, linkPosition ?? 'primary');
+      trackAffiliateClick(storeName, game.id, game.name, linkPosition ?? 'primary', extra);
     } else {
       trackExternalClick(storeName, storeType, game.name);
     }
@@ -589,7 +592,15 @@ const GameCard: React.FC<GameCardProps> = ({ game, isSelected, onSelect, fullscr
       name: affiliateLinks.kinguin.name,
       descriptor: 'Compare keys and seller ratings',
       icon: <KinguinIcon />,
-      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(e, kinguinOffer ? withKinguinRef(kinguinOffer.url) : affiliateLinks.kinguin.url, 'Kinguin', 'affiliate', linkPosition)
+      onClick: (e: React.MouseEvent, linkPosition: 'primary' | 'alternate') => handleLinkClick(
+        e,
+        kinguinOffer ? withKinguinRef(kinguinOffer.url) : affiliateLinks.kinguin.url,
+        'Kinguin',
+        'affiliate',
+        linkPosition,
+        // Splits Kinguin clicks in GA4 so they can be compared with Kinguin's own dashboard.
+        kinguinOffer ? { link_kind: 'product', offer_price_eur: kinguinOffer.priceEur } : { link_kind: 'search' },
+      )
     },
     {
       key: 'g2a',

@@ -76,7 +76,8 @@ Durable decisions and context not derivable from source alone.
    link rather than a cookie-setting redirect flow. When the game's Steam app
    ID matches a Kinguin feed offer (`/api/kinguin-offer`), Kinguin moves to
    the top of the partners and shows "from €X" with a deep link; unmatched
-   games keep the per-game rotation.
+   games keep the per-game rotation. Kinguin clicks carry `link_kind`
+   (`product`/`search`) and `offer_price_eur` on the GA4 event.
 9. **Saved games** — users can save/unsave games from cards and open the
    saved-games panel from mobile and desktop headers.
 10. **Quality filters** — `FilterBar` exposes `Has studio`
