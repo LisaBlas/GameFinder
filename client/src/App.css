@@ -1524,7 +1524,7 @@ h3{
   --forge-rgb: 111, 126, 119;
   --forge-soft-rgb: 195, 207, 199;
   --forge-frame-opacity: 0.22;
-  --forge-frame: url("./assets/ui/game-card-frame-common.png");
+  --forge-frame: url("./assets/ui/game-card-frame-common.webp");
   --forge-border-width: 22px;
   --forge-border-outset: 2px;
   --corner-size: 16px;
@@ -1571,7 +1571,7 @@ h3{
   --forge-rgb: var(--c-emerald-rgb);
   --forge-soft-rgb: 213, 255, 240;
   --forge-frame-opacity: 0.25;
-  --forge-frame: url("./assets/ui/game-card-frame-uncommon.png");
+  --forge-frame: url("./assets/ui/game-card-frame-uncommon.webp");
   --forge-border-width: 23px;
   --forge-border-outset: 2px;
 }
@@ -1580,7 +1580,7 @@ h3{
   --forge-rgb: var(--c-rare-blue-rgb);
   --forge-soft-rgb: 224, 244, 255;
   --forge-frame-opacity: 0.42;
-  --forge-frame: url("./assets/ui/game-card-frame-rare.png");
+  --forge-frame: url("./assets/ui/game-card-frame-rare.webp");
   --forge-border-width: 24px;
   --forge-border-outset: 3px;
 }
@@ -1589,7 +1589,7 @@ h3{
   --forge-rgb: var(--c-purple-rgb);
   --forge-soft-rgb: 247, 229, 255;
   --forge-frame-opacity: 0.58;
-  --forge-frame: url("./assets/ui/game-card-frame-epic.png");
+  --forge-frame: url("./assets/ui/game-card-frame-epic.webp");
   --forge-border-width: 26px;
   --forge-border-outset: 3px;
 }
@@ -1598,7 +1598,7 @@ h3{
   --forge-rgb: var(--c-unique-rgb);
   --forge-soft-rgb: 255, 244, 218;
   --forge-frame-opacity: 0.68;
-  --forge-frame: url("./assets/ui/game-card-frame-unique.png");
+  --forge-frame: url("./assets/ui/game-card-frame-unique.webp");
   --forge-border-width: 28px;
   --forge-border-outset: 4px;
 }

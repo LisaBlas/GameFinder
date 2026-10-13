@@ -300,7 +300,7 @@ classes make unwieldy:
   rarity frames. Fresh searches advance a forge cycle in `SearchResults` so
   cards materialize once; rare/epic/unique tiers briefly cool from white-hot
   into blue/purple/orange. Each tier has a transparent nine-slice material
-  asset under `assets/ui/game-card-frame-*.png`: common slate/iron, uncommon
+  asset under `assets/ui/game-card-frame-*.webp`: common slate/iron, uncommon
   serpentine/iron, rare blue granite/steel, epic obsidian/amethyst, and unique
   meteorite/blackened gold. Uncommon uses a separate top-center ornament and
   unique a bottom-center relic core so those sockets never stretch with the border. The small
