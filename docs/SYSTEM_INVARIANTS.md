@@ -52,8 +52,9 @@ must be enforced in application code after fetching, in
 
 ## Sitemap is generated, not static
 `client/public/sitemap.xml` is ignored in production. The real sitemap is
-generated dynamically from `SEO_PAGES` in `server/seoRenderer.ts`. Do not edit
-the static file expecting it to take effect.
+generated dynamically from `ALL_SEO_PAGES` in `server/seoRenderer.ts`, so it
+includes both `/best/*` and `/games-like/*` pages. Do not edit the static file
+expecting it to take effect.
 
 ## Pre-commit hook requires Node >=20.12
 The `pre-commit` hook runs ESLint 10.7, which calls `util.styleText` and

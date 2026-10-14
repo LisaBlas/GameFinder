@@ -145,17 +145,18 @@ Primary state:
 
 ## SEO Architecture
 
-Server-rendered intent pages live at `/best/:slug` — crawlable HTML, no React
-required. They are registered in `server/routes.ts` **before** the SPA
-fallback so Express handles them directly.
+Server-rendered intent pages live at `/best/:slug` and `/games-like/:slug` —
+crawlable HTML, no React required. They are registered in `server/routes.ts`
+**before** the SPA fallback so Express handles them directly.
 
 Key files:
-- `server/seoPages.ts` — exports the final `SEO_PAGES` list and
-  `SEO_PAGE_MAP`. It merges hand-written `MANUAL_SEO_PAGES` with generated
-  entries from `server/generatedSeoPages.ts`.
+- `server/seoPages.ts` — exports the final `SEO_PAGES` / `SEO_PAGE_MAP` for
+  `/best/*`, `LIKE_PAGE_MAP` for `/games-like/*`, and `ALL_SEO_PAGES` for
+  shared cache and sitemap work. `SEO_PAGES` merges hand-written
+  `MANUAL_SEO_PAGES` with generated entries from `server/generatedSeoPages.ts`.
 - `server/generatedSeoPages.ts` — generated SEO page configs. Regenerate with
   `npm run seo:generate-pages`; do not hand-edit the generated file.
-- `server/seoRenderer.ts` — renders full HTML for `/best/:slug` pages.
+- `server/seoRenderer.ts` — renders full HTML for both SEO page routes.
   `renderSeoPage(page, games?)` accepts an optional `CachedGame[]` and renders
   a fantasy-styled field guide with compact filter plates in the ranked-results
   heading, game cards (cover, rating, summary), related searches, ranking-method disclosure, and

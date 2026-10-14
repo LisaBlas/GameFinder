@@ -3,6 +3,10 @@
 Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
+## 2026-10-14
+- Documentation maintenance: corrected the SEO architecture and sitemap
+  references to include the live `/games-like/*` route and `ALL_SEO_PAGES`.
+
 ## 2026-10-13
 - Kinguin matching now ranks keys by `country_limitations` (≤15 excluded
   countries, cheapest) instead of the region label, which dropped real
