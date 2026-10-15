@@ -7,7 +7,7 @@ Durable decisions and context not derivable from source alone.
    are curated and sorted intentionally; preserve their order and meaning.
    Desktop's left panel is built around the keyword map explorer
    (category -> subcategory -> map); exploring the map never adds keywords
-   implicitly. Discovery cards are mobile-only.
+   implicitly.
    In expanded `GameCard`s, the Keywords tag group's header becomes "Why
    this matched" (instead of "Keywords") whenever the game has keywords
    overlapping the active search's selected `Keywords` filters — those

@@ -16,7 +16,7 @@ Mobile (< 1024px): the same KeywordSection/KeywordMap, full screen
   phone Back, the Map button or a right swipe return to the map.
 
 Desktop:
-  Left panel (40%): KeywordSection
+  Left panel (50%): KeywordSection
     Sticky desktop Navbar inside KeywordSection
     Desktop action bar with SelectedFilters lanes (Clear/Search live in the map)
     KeywordMap section: header (All categories, back, crumbs,
@@ -25,7 +25,7 @@ Desktop:
       controls, Avoid / Add icon buttons on the centre node's ends (on
       other keywords while hovered), selection pills floating bottom-left
       (absent until a first pick) and "Show N games" bottom-right
-  Right panel (60%): ResultsSection/SearchResults
+  Right panel (50%): ResultsSection/SearchResults
     Sticky results header with count, FilterBar, sort select
 ```
 
@@ -176,7 +176,7 @@ Key files:
   read-only health check (`npm run seo:check-cache`): newest row >36h old, >5
   missing rows, >5 empty rows, or DB unreachable -> Telegram alert + exit 1.
   Reads only `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` from `~/secrets/shared.env` (not loaded into `process.env`). Cron
-  (after the 03:00 refresh): `20 3 * * * cd ~/projects/GameFinder && PATH=<node>:$PATH npm run seo:check-cache >> logs/seo-check.log 2>&1`.
+  Expected production schedule (after the 03:00 refresh): `20 3 * * * cd ~/projects/GameFinder && PATH=<node>:$PATH npm run seo:check-cache >> logs/seo-check.log 2>&1`.
 - `server/scripts/refreshKinguinOffers.ts` + `server/services/kinguinFeed.ts` —
   stream the Kinguin affiliate feed into `kinguin_offers` (steam_id PK, price_eur, url).
 - `shared/schema.ts` — includes `seo_page_cache` table (slug PK, games jsonb,

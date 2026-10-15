@@ -9,7 +9,8 @@ covers, ratings, trailers, and store links.
 Two halves of the app:
 - **The React SPA** (`client/`) — the interactive keyword-picker and results
   browser most visitors use.
-- **Server-rendered SEO pages** (`server/seoRenderer.ts`, `/best/:slug`) —
+- **Server-rendered SEO pages** (`server/seoRenderer.ts`, `/best/:slug` and
+  `/games-like/:slug`) —
   plain crawlable HTML pages (no React) targeting specific search intents
   ("best cozy farming games"), so Google can index curated lists directly.
   This is the main organic-traffic driver.

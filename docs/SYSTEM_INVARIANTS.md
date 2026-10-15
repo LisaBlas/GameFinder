@@ -65,11 +65,11 @@ Do not work around it with `git commit --no-verify` without asking first;
 use a supported Node release (the workspace used v22.22.2 on 2026-09-25),
 or downgrade `eslint` to a Node-18-compatible release.
 
-## The desktop keyword pane is 40% of the viewport, not full width
+## The desktop keyword pane is half the viewport, not full width
 `home.tsx` splits the desktop workspace into a keyword build panel
-(`lg:w-2/5`) and a results panel (`lg:flex-1`). Everything `KeywordSection`
-renders on desktop therefore lives in a pane of roughly **400–1000px**
-(399px at a 1024 viewport, 565px at 1440, 1013px at 2560) — never the full
+(`lg:w-1/2`) and a results panel (`lg:flex-1`). Everything `KeywordSection`
+renders on desktop therefore lives in a pane of roughly **512–1280px**
+(512px at a 1024 viewport, 720px at 1440, 1280px at 2560) — never the full
 window. Do not give that subtree fixed multi-column grids or `min-w-*` boxes
 sized for a full-width page: the pane's ancestor is `overflow-x: auto`, so an
 oversized child does not throw a document-level scrollbar or fail any check
@@ -95,7 +95,7 @@ journey's `?map=` would be dropped before the map reads it. The sync copies
 
 ## Product/brand constraints
 - Dark theme only — do not add a light mode toggle.
-- Deep forest neutral system with emerald (`#10b981`) as the primary accent —
+- Deep forest neutral system with `--c-emerald` (`#20e6a7`) as the primary accent —
   keep brand consistent.
 - Keywords are curated with editorial intent — do not reorder or
   auto-generate them.

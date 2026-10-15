@@ -1,9 +1,12 @@
 # Worksheets
 
 ## Open
-- 2026-07-23-work-on-trello-card-gamefinder-audit.md
+(none)
 
 ## Done
+- 2026-07-19-work-on-trello-card-gamefinder-capture.md — expired; outcome not verified
+- 2026-07-23-work-on-trello-card-gamefinder-audit.md — expired; outcome not verified
+- 2026-07-24-work-on-trello-card-gamefinder-pass.md — expired; outcome not verified
 - 2026-07-24-work-on-trello-card-gamefinder-reconcile.md
 - 2026-07-24-work-on-trello-card-gamefinder-reconcile-2.md
 - 2026-07-23-work-on-trello-card-gamefinder-decouple.md

@@ -1,6 +1,6 @@
 # work-on-trello-card-gamefinder-audit — started 2026-07-23
 
-Status: open
+Status: expired
 
 ## Goal
 Work on Trello card: [GameFinder] Audit and fix discovery-card copy for stale claims
@@ -24,6 +24,9 @@ Model: single_file
 
 ## Log
 - 2026-07-23 12:19 UTC — created
+- 2026-10-15 — Documentation maintenance marked this inactive worksheet expired;
+  its outcome was not verified.
 
 ## Handoff
-(none — still in progress)
+Do not assume this audit was completed. Review the current Wayfinder copy and
+the originating task before resuming it.

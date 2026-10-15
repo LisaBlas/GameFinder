@@ -1,6 +1,6 @@
 # work-on-trello-card-gamefinder-capture — started 2026-07-19
 
-Status: open
+Status: expired
 
 ## Goal
 Work on Trello card: [GameFinder] Capture and document CTR/EPC baseline (pre-2026-07-18)
@@ -22,6 +22,9 @@ Capture last-14-days CTR/EPC baseline for affiliate clicks now, before more time
 
 ## Log
 - 2026-07-19 17:12 UTC — created
+- 2026-10-15 — Documentation maintenance marked this inactive worksheet expired;
+  its outcome was not verified.
 
 ## Handoff
-(none — still in progress)
+Do not assume the baseline was captured. Obtain a current analytics export and
+confirm the intended comparison period before resuming it.

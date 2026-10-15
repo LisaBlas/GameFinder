@@ -1,6 +1,6 @@
 # work-on-trello-card-gamefinder-pass — started 2026-07-24
 
-Status: open
+Status: expired
 
 ## Goal
 Work on Trello card: [GameFinder] Pass highlightFilters through SearchResults and highlight matched tags
@@ -24,6 +24,10 @@ In [SearchResults.tsx](/home/blas/projects/GameFinder/client/src/components/Sear
 
 ## Log
 - 2026-07-24 14:20 UTC — created
+- 2026-10-15 — Documentation maintenance marked this inactive worksheet expired;
+  its outcome was not verified.
 
 ## Handoff
-(none — still in progress)
+Do not assume the requested behavior was completed from this worksheet alone.
+Inspect the current `SearchResults.tsx` and `GameCard.tsx` behavior before
+resuming it.

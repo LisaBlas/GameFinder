@@ -3,6 +3,13 @@
 Append what changed with date and a one-line summary. Prune entries older
 than 7 days.
 
+## 2026-10-15
+
+- Documentation maintenance: corrected the desktop split, Wayfinder overlay,
+  emerald-token, and SEO-route references; marked the SEO-cache cron command
+  as the expected production schedule rather than a repository-verifiable fact;
+  expired three inactive worksheets whose outcomes were not verified.
+
 ## 2026-10-14
 - Documentation maintenance: corrected the SEO architecture and sitemap
   references to include the live `/games-like/*` route and `ALL_SEO_PAGES`.

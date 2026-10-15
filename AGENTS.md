@@ -65,7 +65,7 @@ for full detail.
 - Map controls keep **Only compatible** and the always-visible keyword search field together at the top-left, with the selected-filter pills in a second row beneath them on both breakpoints. On mobile the smaller, pointed pills form a horizontally scrollable row and the compatibility explanation is hidden. The compact icon-only **New options** control sits beneath the centred map node and matches its **Exclude** / **Add** actions; it keeps a soft animated glow until its first click. The primary Search CTA remains at bottom-right and is measured as a layout obstacle.
 
 ## SEO Pages
-Server-rendered landing pages exist at `/best/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. Game listings (top 10 per page) are cached in Neon (`seo_page_cache`) and injected at render time — refresh via `npm run seo:refresh-cache` on the VPS. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See [docs/ARCHITECTURE.md](/home/blas/projects/GameFinder/docs/ARCHITECTURE.md) for full details.
+Server-rendered landing pages exist at `/best/:slug` and `/games-like/:slug`. Configs live in `server/seoPages.ts`; renderer in `server/seoRenderer.ts`. Game listings (top 10 per page) are cached in Neon (`seo_page_cache`) and injected at render time — refresh via `npm run seo:refresh-cache` on the VPS. The sitemap is generated dynamically — do not edit `client/public/sitemap.xml`. See [docs/ARCHITECTURE.md](/home/blas/projects/GameFinder/docs/ARCHITECTURE.md) for full details.
 
 ## Verification Defaults
 - Documentation-only changes: re-read edited files and run lightweight presence/readability checks.
