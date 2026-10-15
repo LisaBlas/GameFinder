@@ -10,6 +10,7 @@ import { createFacetService } from "./services/facetCache";
 import keywordsRouter from "./routes/keywords";
 import { SEO_PAGE_MAP, LIKE_PAGE_MAP, seoCacheKey, type SeoPage } from "./seoPages";
 import { renderSeoPage, renderNotFoundPage, renderSitemap } from "./seoRenderer";
+import { renderAboutPage } from "./aboutRenderer";
 import { db } from "./db";
 import { seoPageCache, kinguinOffers } from "../shared/schema";
 import axios from "axios";
@@ -142,6 +143,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('Cache-Control', 'public, max-age=3600');
     res.send(renderSeoPage(page, cachedGames));
   };
+  // About page — static, server-rendered so crawlers and AI search tools read the facts directly
+  app.get('/about', (_req, res) => {
+    res.set('Content-Type', 'text/html');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(renderAboutPage());
+  });
   app.get('/best/:slug', serveSeoPage(SEO_PAGE_MAP));
   app.get('/games-like/:slug', serveSeoPage(LIKE_PAGE_MAP));
 

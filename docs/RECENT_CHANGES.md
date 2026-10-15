@@ -5,6 +5,11 @@ than 7 days.
 
 ## 2026-10-15
 
+- Added server-rendered `/about` (`server/aboutRenderer.ts`): eight sections,
+  a `<table>` of key facts, FAQ with matching FAQPage JSON-LD, and a sitemap
+  entry. The relic CSS moved out of `seoRenderer.ts` into `server/seoStyles.ts`
+  so `/best`, `/games-like` and `/about` share it. Facts on the page are
+  hand-written; update them if pricing, data source or revenue model changes.
 - Documentation maintenance: corrected the desktop split, Wayfinder overlay,
   emerald-token, and SEO-route references; marked the SEO-cache cron command
   as the expected production schedule rather than a repository-verifiable fact;
