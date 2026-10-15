@@ -4058,7 +4058,7 @@ button.kmap-crumb:hover,
   padding: 0.75rem 1.25rem 0;
 }
 
-/* "Need a spark?": a small header pill that swaps the map for the roll deck. */
+/* "Wayfinder": a small header pill that swaps the map for the roll deck. */
 .kmap-spark-btn {
   /* Grid: the two labels stack in one cell and cross-fade (see .kmap-spark-face). */
   display: inline-grid;
@@ -4873,7 +4873,7 @@ button.kmap-crumb:hover,
   100% { transform: none; }
 }
 
-/* "Need a spark?" ⇄ "Back to map": a flip wheel. Leaving labels exit up,
+/* "Wayfinder" ⇄ "Back to map": a flip wheel. Leaving labels exit up,
    arriving ones rise in from below (and the reverse on the way back). */
 .kmap-spark-face {
   grid-area: 1 / 1;

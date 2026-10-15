@@ -55,7 +55,7 @@ const FAQS: Faq[] = [
   },
   {
     q: "Can I get a game recommendation without picking keywords?",
-    a: "Yes. Search for a game you like and GameFinder builds a starting search from its keywords, genre and theme. The 'Need a spark?' Wayfinder also draws a destination for you, such as a popular, random or hidden keyword combination.",
+    a: "Yes. Search for a game you like and GameFinder builds a starting search from its keywords, genre and theme. The Wayfinder also draws a destination for you, such as a popular, random or hidden keyword combination.",
   },
 ];
 

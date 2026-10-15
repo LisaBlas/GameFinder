@@ -245,7 +245,24 @@
   color: #9d9a8e;
 }
 
-/* "Need a spark?": pointed gold plate. */
+/* About: quiet text link beside the GameFinder title (map root only). */
+.keyword-build-panel .kmap .kmap-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+}
+.keyword-build-panel .kmap .kmap-about-link {
+  color: #cbb47e;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-underline-offset: 4px;
+  text-shadow: 0 1px 0 #000;
+}
+.keyword-build-panel .kmap .kmap-about-link:hover { color: var(--c-gold); text-decoration: underline; }
+.keyword-build-panel .kmap .kmap-about-link:focus-visible { outline: 2px solid var(--c-emerald); outline-offset: 3px; }
+
+/* Wayfinder button: pointed gold plate. */
 .keyword-build-panel .kmap .kmap-spark-btn {
   --plate-shape: var(--plate-hex);
   --cut: 14px;
@@ -1085,7 +1102,7 @@
    The desktop pane is 40-50% of the window, so at small desktop widths a
    keyword step's header (root, back, crumbs, spark, saved) would push its
    actions past the frame. Sized by the pane, not the viewport: "All
-   categories" and "Need a spark?" become icon plates and the crumbs keep room. */
+   categories" and "Wayfinder" become icon plates and the crumbs keep room. */
 .keyword-build-panel .kmap {
   container: kmap / inline-size;
 }

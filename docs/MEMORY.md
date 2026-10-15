@@ -17,7 +17,7 @@ Durable decisions and context not derivable from source alone.
    media; the desktop inline-expand card (`fullscreen=false`) keeps
    video/stores first, tags panel after. `GameCard.tsx` builds both blocks
    as JSX variables (`tagsPanel`) and reorders by the `fullscreen` prop.
-2. **Discovery draws (Wayfinder)** — "Need a spark?" opens the Wayfinder on
+2. **Discovery draws (Wayfinder)** — The "Wayfinder" button opens the Wayfinder on
    both breakpoints; its six bearings are the draw sources, all owned by
    `KeywordSection`: **Popular** (curated static sequence of popular keys,
    e.g. Action Roguelike → Souls-like; not backed by live ranking data),

@@ -20,7 +20,7 @@ Desktop:
     Sticky desktop Navbar inside KeywordSection
     Desktop action bar with SelectedFilters lanes (Clear/Search live in the map)
     KeywordMap section: header (All categories, back, crumbs,
-      "Need a spark?"), built-in KeywordSearch, then root map -> category map
+      "Wayfinder"), built-in KeywordSearch, then root map -> category map
       -> keyword maps, drawn in a map window: Only compatible / New options
       controls, Avoid / Add icon buttons on the centre node's ends (on
       other keywords while hovered), selection pills floating bottom-left
@@ -35,7 +35,7 @@ Desktop:
 - Desktop left panel is one `KeywordMap` section (`client/src/components/KeywordMap.tsx`)
   with the search built in (`search` prop; on desktop a collapsed lens in the map
   window's top-right that expands on hover/focus) and the desktop Wayfinder behind a
-  small "Need a spark?" header button (`spark` prop). The Wayfinder is an overlay:
+  small "Wayfinder" header button (`spark` prop). The Wayfinder is an overlay:
   the map remains mounted, recedes visually, and restores its exact state when closed. Steps:
   root map (the 3 categories as nodes) -> category map (its
   subcategories as nodes, 8 per page desktop / 4 mobile, refresh pages; each
@@ -129,7 +129,7 @@ Desktop:
   shared by counts and facets; `igdbLimiter.ts` is the one IGDB concurrency
   budget (2) for counts, facets and probes. Client: `lib/keywordFit.ts`;
   `selectKeywordGraph(…, { allow })` applies the filter to both rings.
-- The Wayfinder is the only "Need a spark?" view, on both breakpoints
+- The Wayfinder is the only "Wayfinder" button view, on both breakpoints
   (wayfinder.css has a portrait layout: bearings in a row above and below
   the ring, sized with container-query units).
 - `SelectedFilters variant="chips"` floats on the map on both breakpoints.

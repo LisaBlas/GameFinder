@@ -148,7 +148,7 @@ interface Props {
   onClose?: () => void;
   /** Keyword/game search: a collapsed lens in the map window's top-right. */
   search?: React.ReactNode;
-  /** "Need a spark?" content, swapped in for the map on demand. A function
+  /** Wayfinder content, swapped in for the map on demand. A function
    *  receives `close` so the content can hand the user back to the map. */
   spark?: React.ReactNode | ((close: () => void) => React.ReactNode);
   /** Search actions (Clear, Search) for the map's bottom bar. */
@@ -903,7 +903,7 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
         {/* Both labels stay stacked (stable width) and cross-fade; only the visible one is announced. */}
         <span className="kmap-spark-face kmap-spark-face--spark" aria-hidden={sparkOpen || undefined}>
           <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-          Need a spark?
+          Wayfinder
         </span>
         <span className="kmap-spark-face kmap-spark-face--back" aria-hidden={!sparkOpen || undefined}>
           <MapIcon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -921,8 +921,10 @@ export const KeywordMap: React.FC<Props> = ({ variant = 'desktop', initialLocati
     if (step === 'categories') {
       return (
         <div className="kmap-header">
-          <div className="min-w-0 flex-1">
+          <div className="kmap-brand min-w-0 flex-1">
             <h1 className="kmap-brand-title font-brand">GameFinder</h1>
+            {/* Plain link, not wouter: /about is server-rendered. */}
+            <a className="kmap-about-link" href="/about">About</a>
           </div>
           {headerActions}
         </div>

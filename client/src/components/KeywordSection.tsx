@@ -209,7 +209,7 @@ interface KeywordSectionProps {
 /**
  * The keyword builder: one KeywordMap (desktop pane or full mobile screen) with
  * the search built in, the selection and Search floating on it, and the
- * Wayfinder behind "Need a spark?". Owns all Wayfinder draw state.
+ * Wayfinder behind the "Wayfinder" button. Owns all Wayfinder draw state.
  */
 export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults }) => {
   const searchRef = useRef<HTMLInputElement>(null);
@@ -487,7 +487,7 @@ export const KeywordSection: React.FC<KeywordSectionProps> = ({ onShowResults })
     );
   };
 
-  /** "Need a spark?": six bearings on the Wayfinder. */
+  /** "Wayfinder": six bearings on the Wayfinder. */
   const renderWayfinder = (closeSpark: () => void) => {
     // Clockwise from the top: the top three sockets are single-keyword rolls,
     // while the bottom three sockets are combination rolls.
