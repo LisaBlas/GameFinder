@@ -71,3 +71,9 @@ Server-rendered landing pages exist at `/best/:slug` and `/games-like/:slug`. Co
 - Documentation-only changes: re-read edited files and run lightweight presence/readability checks.
 - UI/behavior changes: run the smallest relevant build/test/check first, then broaden only when the touched surface warrants it.
 - `npm run check` passes cleanly; run it as a baseline signal and treat failures as regressions.
+
+## Deploy facts
+- Remote: `origin` = github.com/LisaBlas/GameFinder. Branch: `main`.
+- Push: only when I ask. Render deploys `main` automatically, so a push to `main` is a prod deploy.
+- Restart: none (no VPS service).
+- Preview: `preview-runner` already serves GameFinder branches at `p1`/`p2.preview.blasalviz.com` (Basic Auth). It starts from a Trello card (`POST :8009/previews`, 24-hex card id). Check UI changes there before merging to `main`.
