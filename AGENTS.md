@@ -39,11 +39,8 @@ rules around these commands.
   positioning.
 - `docs/RECENT_CHANGES.md` — what changed recently.
 
-## Environment
-- Linux VPS; workspace is local-first. Default stack: npm, React, TypeScript, Vite, Express.
-- Treat this file plus the core docs in `docs/` as durable project memory; keep them updated when facts change.
-
 ## Workflow
+- Treat this file plus the core docs in `docs/` as durable project memory; keep them updated when facts change.
 - From Slack, mention `@bot projects/GameFinder <task>` to start a session here.
 - Read the current code before changing behavior; this project moves quickly and docs can lag.
 - `npm run check` (full tsc) is expected to pass — treat new failures as regressions.
